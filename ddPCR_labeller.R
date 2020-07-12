@@ -4,11 +4,11 @@
 # User inputs ----
 
 
-flnm <- 'dd.WW5_630_N1-N2'  # set the filename
+flnm <- 'dd.WW7_707 part2_N1/N2'  # set the filename
 template_volume <- 10 /22 * 20 # ul template volume per well of the ddPCR reaction
 
 # Biobot ID sheet to draw sample names from
-bb_sheets <- c('Week 12 (6/29)')
+bb_sheets <- c('Week 13 (7/6)')
 
 # Loading pre-reqisites ----
 
@@ -40,7 +40,7 @@ bring_results <- fl %>% # select only the results used for plotting, calculation
   select(`Sample Name`, `Copy #`, Target, everything())
 
 # Bring WWTP names from google sheet: "Biobot Sample IDs"
-biobot_lookup <- map_df(bb_sheets , ~read_sheet('https://docs.google.com/spreadsheets/d/1ghb_GjTS4yMFbzb65NskAlm-2Gb5M4SNYi4FHE4YVyI/edit#gid=677034958', sheet = .x, range = 'H:J')) %>% rename('Biobot ID' = matches('Biobot|Comments', ignore.case = T), 'WWTP' = contains('SYMBOL', ignore.case = T)) %>% mutate('Biobot ID' = str_remove(`Biobot ID`,'\\.'), WWTP = as.character(WWTP))
+biobot_lookup <- map_df(bb_sheets , ~read_sheet('https://docs.google.com/spreadsheets/d/1ghb_GjTS4yMFbzb65NskAlm-2Gb5M4SNYi4FHE4YVyI/edit#gid=677034958', sheet = .x, range = 'H:K')) %>% rename('Biobot ID' = matches('Biobot|Comments', ignore.case = T), 'WWTP' = contains('SYMBOL', ignore.case = T)) %>% mutate('Biobot ID' = str_remove(`Biobot ID`,'\\.'), WWTP = as.character(WWTP))
 
 # polishing qPCR data - Make Biobot ID column clean
 # isolate the primer pair and assay_variable into 3 columns : Sample name, assay variable and primer pair 
