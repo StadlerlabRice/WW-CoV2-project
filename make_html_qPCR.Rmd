@@ -11,7 +11,7 @@ output:
 
 ```{r setup, include=FALSE}
 library(knitr)
-knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 16, fig.height = 4)
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 12, fig.height = 4)
 
 # Loading libraries, functions and user inputs
 source('./general_functions.R') # Source the general_functions file
@@ -34,7 +34,7 @@ title_name <- '706 Rice'
 bb_sheets <- c('Week 13 (7/6)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
-extra_categories = 'Std|TR2' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
+extra_categories = 'Std|Control' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
 
 # To rename samples with descriptive category/names (usually for extra TR experiments)
 # - For other samples: Make it empty an string (like this '' ) to avoid messing up names inadvertantly
@@ -184,6 +184,7 @@ if(spike_qpcr %>% plyr::empty() %>% !.) {
   reco_plot <- plot_mean_sd_jitter(long_vol_qpcr_summary, long_vol_qpcr_raw, long_format = T, measure_var = 'Recovered', sample_var = str_c(extra_categories), exclude_sample = T, x_var = WWTP, ylabel = 'Genome copies/l Wastewater') 
   
   reco_plot %>%  format_logscale_y() %>% print()
+
 }
 
 ```
@@ -196,9 +197,34 @@ if(spike_qpcr %>% plyr::empty() %>% !.) {
 spike_qpcr %>% plyr::empty() %>% if(!.)
 {
   plot_mean_sd_jitter(long_vol_qpcr_summary, long_vol_qpcr_raw, sample_var = str_c(extra_categories, '|Vaccine'), exclude_sample = T, long_format = T,  measure_var = 'Recovery fraction', x_var = WWTP, ylabel = 'Fraction of spike-in recovered') %>% print()
+  
 }
   
 ```
+
+### Controls and additional samples
+
+```{r controls_recos, fig.width= 6}
+
+  
+extra_samples_to_plot <- str_c(extra_categories, '|Vaccine|NTC') %>% str_remove('\\|Std|Std\\|')
+
+# N1/N2 and BCoV plots
+plot_mean_sd_jitter(summary_bb_qpcr, bb_qpcr, sample_var = extra_samples_to_plot, exclude_sample = F, x_var = WWTP) %>% format_logscale_y() %>% print()
+
+if(spike_qpcr %>% plyr::empty() %>% !.) {
+    
+  # recovered vs spiked in plot for extra samples
+   plot_mean_sd_jitter(long_vol_qpcr_summary, long_vol_qpcr_raw, long_format = T, measure_var = 'Recovered', sample_var = extra_samples_to_plot, exclude_sample = F, x_var = WWTP, ylabel = 'Genome copies/l Wastewater') %>%
+     format_logscale_y() %>% print()
+  
+   # % plot for extra samples
+   plot_mean_sd_jitter(long_vol_qpcr_summary, long_vol_qpcr_raw, sample_var = extra_samples_to_plot, exclude_sample = F, long_format = T,  measure_var = 'Recovery fraction', x_var = WWTP, ylabel = 'Fraction of spike-in recovered') %>% print()
+   
+}
+  
+```
+
 
 ## Scatter plots
 
