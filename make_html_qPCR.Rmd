@@ -212,6 +212,12 @@ extra_samples_to_plot <- str_c(extra_categories, '|Vaccine|NTC') %>% str_remove(
 # N1/N2 and BCoV plots
 plot_mean_sd_jitter(summary_bb_qpcr, bb_qpcr, sample_var = extra_samples_to_plot, exclude_sample = F, x_var = WWTP) %>% format_logscale_y() %>% print()
 
+# Normalized recovery: N1/N2 and BCoV plots
+reco_ex <- vol_qpcr %>% filter(str_detect(`Sample Name`,extra_samples_to_plot)) %>% ggplot(aes(x = WWTP, y = Recovered, colour = Target)) + geom_point() + facet_grid(~ `Sample Name`,  scales = 'free_x', space = 'free_x') + ylab('Genome copies/l Wastewater') + xlab('Sample Name')
+
+reco_ex %>% format_logscale_y() %>% format_classic() %>% print()
+
+
 if(spike_qpcr %>% plyr::empty() %>% !.) {
     
   # recovered vs spiked in plot for extra samples
