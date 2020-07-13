@@ -11,7 +11,7 @@ output:
 
 ```{r setup, include=FALSE}
 library(knitr)
-knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 12, fig.height = 4)
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 16, fig.height = 4)
 
 # Loading libraries, functions and user inputs
 source('./general_functions.R') # Source the general_functions file
@@ -143,7 +143,7 @@ vol_qpcr <- bb_qpcr %>% left_join(volumes_data, by = 'Label_tube') %>%
   left_join(all_spike_virus_conc, by = 'Target') %>%  # spike in concentrations (BCoV and BRSV)
   
   # Calculations for spiked in and recovered copies of the virus
-  mutate(`Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e6/HA_concentration_factor, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
+  mutate(`Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e3 * elution_volume/vol_extracted, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
   mutate_cond(str_detect(`Sample Name`, 'Vaccine'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (.050 * 1e-3), Recovered = `Copy #` * 1e6 * 50/20, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
   select(-spike_virus_conc)
  
@@ -169,7 +169,7 @@ if(!sum(translate_id_manual == 'none'))
 # Below code and plots executed only if spike quantification exists in the data
 if(spike_qpcr %>% plyr::empty() %>% !.) {
   # Summarize mean and SD for biological replicates
-  vol_qpcr_summary <- spike_qpcr %>% select(-WW_vol) %>% group_by(Target, `Sample Name`, `FACILITY NAME`, WWTP) %>% summarise_at(vars(2,3:5), funs(mean(.,na.rm = T), sd(.,na.rm = T))) 
+  vol_qpcr_summary <- spike_qpcr %>% select(-WW_vol, -vol_extracted) %>% group_by(Target, `Sample Name`, `FACILITY NAME`, WWTP) %>% summarise_at(vars(2,3:5), funs(mean(.,na.rm = T), sd(.,na.rm = T))) 
   
   # order samples by ascending order of BCoV copies
   # WWTP_order <- vol_qpcr_summary %>% filter(str_detect(Target,'BCoV')) %>% arrange(`Copy #_mean`) %>% pull(WWTP) 
