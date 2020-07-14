@@ -2,7 +2,11 @@
 title: "Weekly comparisons"
 author: "Prashant Kalvapalle"
 date: "29 June 2020"
-output: ioslides_presentation
+output: 
+  html_document:
+    theme: flatly
+    toc: TRUE
+    toc_float: TRUE
 ---
 
 ```{r setup, include=FALSE}
@@ -18,7 +22,7 @@ read_these_sheets <- c('608 Rice', '615 Rice', '622 Rice', '629 Rice', '706 Rice
 title_name <- 'June Rice' # name of the filename for writing presentable data and plot title
 
 # Extra categories to exclude from plotting (separate by | like this 'Vaccine|Troubleshooting')
-extra_categories = 'Std|Vaccine|NTC|TR|Blank'
+extra_categories = 'Std|Vaccine|Control|Water|NTC|TR|Blank'
 ```
 
 ## Recovery | Density plot
@@ -34,6 +38,7 @@ list_rawqpcr <- map(read_these_sheets, ~ read_sheet('https://docs.google.com/spr
 
 rawqpcr <- bind_rows(list_rawqpcr)
 results_abs <- rawqpcr %>% filter(!str_detect(Facility, extra_categories)) %>%  # remove unnecessary data
+  filter(!str_detect(Target, 'BRSV')) %>% 
   mutate_at('Week', ~ as_factor(.))
 
 # long_recovery <- results_abs %>% pivot_wider(names_from = 'Week', values_from = 'Recovery fraction') 
@@ -60,3 +65,57 @@ results_wide %>% ggplot(aes(x = `SARS CoV-2 N1`, y = `SARS CoV-2 N2`, colour = W
 
 ```
 
+
+## Weekly timeseries - N1/N2/BcoV
+
+```{r timeseries, fig.width= 16, fig.height= 12}
+
+# Make mean of biological replicates
+raw_results <- results_abs %>% mutate('Sample Name' = Week)
+
+ summary_results <- results_abs %>% select(Facility, WWTP, Target, `Copies/ul RNA`: `Recovery fraction`, Week, -Bottle) %>%
+  mutate('Sample Name' = Week) %>% 
+  group_by(`Sample Name`, Target, Facility, WWTP, Week) %>% summarise_at(c('Copies/l WW'), lst(mean, sd), na.rm = T)
+
+plt_week1 <- plot_mean_sd_jitter(summary_results, raw_results, sample_var = extra_categories, exclude_sample = T, x_var = Week, y_var = `Copies/l WW`, facet_var = WWTP, colour_var = Target, ylabel = 'Genome copies/l Wastewater', facet_style = 'wrap free') + geom_line(aes(group = Target))
+
+# plt_week1 <- summary_results %>% ggplot(aes(x = WWTP, y = mean, colour = Target)) + geom_point() + geom_line() 
+plt_week1 %>% print()
+```
+
+
+## Weekly timeseries - N1/N2 
+
+```{r timeseriesN, fig.width= 16, fig.height= 12}
+only_N12 <- list(summary_results, raw_results) %>% map(filter, str_detect(Target, 'N1|N2')) %>% setNames(c('summ', 'raw'))
+
+plt_week2 <- plot_mean_sd_jitter(only_N12$summ, only_N12$raw, sample_var = extra_categories, exclude_sample = T, x_var = Week, y_var = `Copies/l WW`, facet_var = WWTP, colour_var = Target, ylabel = 'Genome copies/l Wastewater', facet_style = 'manual') + geom_line(aes(group = Target)) + facet_wrap(facets = ~WWTP, scales = 'free_x')
+
+plt_week2 %>% print()
+```
+
+## Weekly timeseries - BCoV 
+
+```{r timeseriesbcov, fig.width= 16, fig.height= 12}
+only_bcov <- list(summary_results, raw_results) %>% map(filter, str_detect(Target, 'BCoV')) %>% setNames(c('summ', 'raw'))
+
+plt_week3 <- plot_mean_sd_jitter(only_bcov$summ, only_bcov$raw, sample_var = extra_categories, exclude_sample = T, x_var = Week, y_var = `Copies/l WW`, facet_var = WWTP, colour_var = Target, ylabel = 'Genome copies/l Wastewater', facet_style = 'manual') + geom_line(aes(group = Target)) + facet_wrap(facets = ~WWTP, scales = 'free_x')
+
+plt_week3 %>% print()
+```
+
+## Weekly timeseries - Percentage recovery 
+
+```{r timeseriespercentreco, fig.width= 16, fig.height= 12}
+
+summary_reco <- results_abs %>% select(Facility, WWTP, Target, `Copies/ul RNA`: `Recovery fraction`, Week, -Bottle) %>%
+  mutate('Sample Name' = Week) %>% 
+  group_by(`Sample Name`, Target, Facility, WWTP, Week) %>% 
+  summarise_at(c('Recovery fraction'), lst(mean, sd), na.rm = T)
+
+recovery_data <- list(summary_reco, raw_results) %>% map(filter, str_detect(Target, 'BCoV')) %>% setNames(c('summ', 'raw'))
+
+plt_week3 <- plot_mean_sd_jitter(recovery_data$summ, recovery_data$raw, sample_var = extra_categories, exclude_sample = T, x_var = Week, y_var = `Recovery fraction`, facet_var = WWTP, colour_var = Target, ylabel = 'Percentage of BCoV copies recovered', facet_style = 'manual') + geom_line(aes(group = Target)) + facet_wrap(facets = ~WWTP, scales = 'free_x')
+
+plt_week3 %>% print()
+```
