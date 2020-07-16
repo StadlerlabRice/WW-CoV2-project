@@ -19,7 +19,8 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 
 
 # Spike in and concentration details
-HA_concentration_factor <- 1000 # concentration factor of wastewater -> RNA
+# HA_concentration_factor <- 1000 # concentration factor of wastewater -> RNA
+elution_volume <- 50 # ul - RNA extraction final volume
 
 # copies/ul viral suspension spiked in (Spike ID: S16)
 all_spike_virus_conc <- tibble(Target = c('BCoV_M', 'BRSV_N'), spike_virus_conc = c(10609, NA))
@@ -33,12 +34,14 @@ title_name <- '706 Rice'
 bb_sheets <- c('Week 13 (7/6)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
-extra_categories = 'Std|TR2' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
+extra_categories = 'Std|Control' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
 
 # To rename samples with descriptive category/names (usually for extra TR experiments)
 # - For other samples: Make it empty an string (like this '' ) to avoid messing up names inadvertantly
 # translate_id_manual <- c('WW/Field', 'Water/Field', 'WW/Lab',  'Water/Lab', 'Solids/Present', 'Solids/Removed', 'Bead-beating/Dilter', 'Bead-beating/No filter') %>% setNames(str_c('^', c('A','B','C','D','E','F','G','H')))
 translate_id_manual <- c('none' = 'none')
+
+same_bottle_for_triplicates <- 'yes' # 'yes' if 1 bottle yields 3 x 50 ml. 'no' if 3 independant bottles yield 50 ml each
 ```
 
 ## Goal of the analysis
@@ -118,19 +121,29 @@ open circles : Viral copies spiked in
 ```{r Recovery_calculations}
 
 # Get volumes data from google sheet : "Sample registry"
-volumes_data <- read_sheet('https://docs.google.com/spreadsheets/d/1mJcCt1wMiOuBic6sRlBZJf8KSNu2y-B5PjzCUu7jPM8/edit#gid=521099478', sheet = 'Concentrated samples', range = 'A:F') %>% 
-  rename('WW_vol' = `Total WW vol measured (ml)`, 'Label_tube' = `Label on tube`) %>% 
+volumes_data <- read_sheet('https://docs.google.com/spreadsheets/d/1mJcCt1wMiOuBic6sRlBZJf8KSNu2y-B5PjzCUu7jPM8/edit#gid=521099478', sheet = 'Concentrated samples') %>% 
+  rename('WW_vol' = `Total WW vol measured (ml)`, 'Label_tube' = `Label on tube`, vol_extracted = `WW volume extracted (ml)`) %>% 
   mutate('WW_vol' = coalesce(WW_vol, `Total WW volume calculated (ml)`) ) %>% 
-  select(WW_vol, Label_tube) %>% 
+  select(WW_vol, Label_tube, vol_extracted) %>% 
   distinct() %>% 
-  mutate_at('Label_tube', ~str_remove_all(., " "))
+  mutate_at('Label_tube', ~str_remove_all(., " ")) %>% 
   
+  # removing wrongly entered volumes for replicates, replacing with the max volume
+  {if(same_bottle_for_triplicates == 'yes') { 
+    mutate(., unique_labels = str_remove(Label_tube,'[1-3]$')) %>% 
+    group_by(unique_labels) %>% 
+    mutate_at('WW_vol', max, na.rm = T) %>% 
+    ungroup() %>% 
+    select(-unique_labels)
+    }
+  }
+    
 # join the results with the WWTP identifiers and names
 vol_qpcr <- bb_qpcr %>% left_join(volumes_data, by = 'Label_tube') %>% 
   left_join(all_spike_virus_conc, by = 'Target') %>%  # spike in concentrations (BCoV and BRSV)
   
   # Calculations for spiked in and recovered copies of the virus
-  mutate(`Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e6/HA_concentration_factor, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
+  mutate(`Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e3 * elution_volume/vol_extracted, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
   mutate_cond(str_detect(`Sample Name`, 'Vaccine'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (.050 * 1e-3), Recovered = `Copy #` * 1e6 * 50/20, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
   select(-spike_virus_conc)
  
@@ -140,7 +153,7 @@ vol_qpcr <- bb_qpcr %>% left_join(volumes_data, by = 'Label_tube') %>%
 ```{r summarizing_plot}
 
 # Adding a dummy CT column (if only ddPCR data is being loaded; which lacks the CT column) - for compatibility with qPCR code
-if(vol_qpcr %>%  {'CT' %in% colnames(.)}) vol_qpcr$CT = NA
+if(vol_qpcr %>%  {!'CT' %in% colnames(.)}) vol_qpcr$CT = NA
 
 # Picking out only spike-in quantification
 spike_qpcr <- vol_qpcr %>% filter(str_detect(Target, 'BCoV|BRSV')) %>% 
@@ -156,7 +169,7 @@ if(!sum(translate_id_manual == 'none'))
 # Below code and plots executed only if spike quantification exists in the data
 if(spike_qpcr %>% plyr::empty() %>% !.) {
   # Summarize mean and SD for biological replicates
-  vol_qpcr_summary <- spike_qpcr %>% select(-WW_vol) %>% group_by(Target, `Sample Name`, `FACILITY NAME`, WWTP) %>% summarise_at(vars(2,3:5), funs(mean(.,na.rm = T), sd(.,na.rm = T))) 
+  vol_qpcr_summary <- spike_qpcr %>% select(-WW_vol, -vol_extracted) %>% group_by(Target, `Sample Name`, `FACILITY NAME`, WWTP) %>% summarise_at(vars(2,3:5), funs(mean(.,na.rm = T), sd(.,na.rm = T))) 
   
   # order samples by ascending order of BCoV copies
   # WWTP_order <- vol_qpcr_summary %>% filter(str_detect(Target,'BCoV')) %>% arrange(`Copy #_mean`) %>% pull(WWTP) 
@@ -171,6 +184,7 @@ if(spike_qpcr %>% plyr::empty() %>% !.) {
   reco_plot <- plot_mean_sd_jitter(long_vol_qpcr_summary, long_vol_qpcr_raw, long_format = T, measure_var = 'Recovered', sample_var = str_c(extra_categories), exclude_sample = T, x_var = WWTP, ylabel = 'Genome copies/l Wastewater') 
   
   reco_plot %>%  format_logscale_y() %>% print()
+
 }
 
 ```
@@ -183,9 +197,40 @@ if(spike_qpcr %>% plyr::empty() %>% !.) {
 spike_qpcr %>% plyr::empty() %>% if(!.)
 {
   plot_mean_sd_jitter(long_vol_qpcr_summary, long_vol_qpcr_raw, sample_var = str_c(extra_categories, '|Vaccine'), exclude_sample = T, long_format = T,  measure_var = 'Recovery fraction', x_var = WWTP, ylabel = 'Fraction of spike-in recovered') %>% print()
+  
 }
   
 ```
+
+### Controls and additional samples
+
+```{r controls_recos, fig.width= 6}
+
+  
+extra_samples_to_plot <- str_c(extra_categories, '|Vaccine|NTC') %>% str_remove('\\|Std|Std\\|')
+
+# N1/N2 and BCoV plots
+plot_mean_sd_jitter(summary_bb_qpcr, bb_qpcr, sample_var = extra_samples_to_plot, exclude_sample = F, x_var = WWTP) %>% format_logscale_y() %>% print()
+
+# Normalized recovery: N1/N2 and BCoV plots
+reco_ex <- vol_qpcr %>% filter(str_detect(`Sample Name`,extra_samples_to_plot)) %>% ggplot(aes(x = WWTP, y = Recovered, colour = Target)) + geom_point() + facet_grid(~ `Sample Name`,  scales = 'free_x', space = 'free_x') + ylab('Genome copies/l Wastewater') + xlab('Sample Name')
+
+reco_ex %>% format_logscale_y() %>% format_classic() %>% print()
+
+
+if(spike_qpcr %>% plyr::empty() %>% !.) {
+    
+  # recovered vs spiked in plot for extra samples
+   plot_mean_sd_jitter(long_vol_qpcr_summary, long_vol_qpcr_raw, long_format = T, measure_var = 'Recovered', sample_var = extra_samples_to_plot, exclude_sample = F, x_var = WWTP, ylabel = 'Genome copies/l Wastewater') %>%
+     format_logscale_y() %>% print()
+  
+   # % plot for extra samples
+   plot_mean_sd_jitter(long_vol_qpcr_summary, long_vol_qpcr_raw, sample_var = extra_samples_to_plot, exclude_sample = F, long_format = T,  measure_var = 'Recovery fraction', x_var = WWTP, ylabel = 'Fraction of spike-in recovered') %>% print()
+   
+}
+  
+```
+
 
 ## Scatter plots
 
@@ -276,6 +321,7 @@ presentable_vol_qpcr <- vol_qpcr %>%
   mutate_at('Facility', ~if_else(. == assay_variable, str_c(`Sample Name`, '/', assay_variable), .)) %>%
   mutate(Tube_ID = if_else(biological_replicates == ''|is.na(biological_replicates), str_c(`Sample Name`, ' ', assay_variable), str_c(`Sample Name`, ' ', assay_variable, '', biological_replicates)) ) %>% 
   mutate(WWTP_ID = if_else(biological_replicates == ''|is.na(biological_replicates), str_c(`Sample Name`, '.', WWTP) , str_c(`Sample Name`, '.', WWTP, '-', biological_replicates))) %>% 
+  mutate('Limit of detection (copies/ul RNA)' = if_else(str_detect(`Target Name`, 'N1|N2'), 0.3, 0.5 )) %>% 
   
   # Arrange rows by WWTP facility 
   arrange(Facility, biological_replicates) %>%
@@ -292,8 +338,8 @@ write_sheet(presentable_vol_qpcr,'https://docs.google.com/spreadsheets/d/1ltvW7x
 
 
 # presentable data for health department
-present_N_data <- presentable_vol_qpcr %>% filter(!str_detect(Facility, "Vaccine|NTC|Blank|Std"), str_detect(`Target Name`, "^SARS")) %>%  # select only N1,N2 - remove distracting data
-select(-`Recovery fraction`, -`Spiked-in Copies/l WW`, -matches('_ID'))
+present_N_data <- presentable_vol_qpcr %>% filter(!str_detect(Facility, "Vaccine|Controls|Water|NTC|Blank|Std"), str_detect(`Target Name`, "^SARS")) %>%  # select only N1,N2 - remove distracting data
+select(-`Recovery fraction`, -`Spiked-in Copies/l WW`, -Tube_ID)
 
 # Write data if not empty
 if(present_N_data %>% is_empty() %>% !.){

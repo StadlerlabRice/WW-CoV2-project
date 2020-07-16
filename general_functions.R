@@ -164,7 +164,7 @@ plottm1 <- function(results_relevant)
 
 
 # Plotting mean, sd and individual replicates jitter
-plot_mean_sd_jitter <- function(summary_data = summary_results, raw_data = results_abs, long_format = F, measure_var = 'Copy #', sample_var = '.*', exclude_sample = F, colour_var = Target, x_var = assay_variable, y_var = `Copy #`, facet_var = `Sample Name`, title_text = title_name, ylabel = 'Genome copies/ul RNA', xlabel = plot_assay_variable)
+plot_mean_sd_jitter <- function(summary_data = summary_results, raw_data = results_abs, long_format = F, measure_var = 'Copy #', sample_var = '.*', exclude_sample = F, colour_var = Target, x_var = assay_variable, y_var = `Copy #`, facet_var = `Sample Name`, title_text = title_name, ylabel = 'Genome copies/ul RNA', xlabel = plot_assay_variable, facet_style = 'grid')
 { # Convenient handle for repetitive plotting in the same format; Reads data only in long format or wide (specify in long_format)
   
   # filtering variables by user inputs
@@ -191,8 +191,13 @@ plot_mean_sd_jitter <- function(summary_data = summary_results, raw_data = resul
              geom_line(data = filter(summary_data, str_detect(Measurement,'Actual'), str_detect(`Sample Name`, sample_var, negate = exclude_sample)), aes(group = {{colour_var}})))
     } +
     
-    # Facetting and labelling
-    facet_grid(cols =  vars({{facet_var}}), scales = 'free_x', space = 'free_x') +
+    # Facetting 
+    { if (facet_style == 'grid') facet_grid(cols = vars({{facet_var}}), scales = 'free_x', space = 'free_x')
+      if (facet_style == 'wrap free') facet_wrap(facets =  vars({{facet_var}}), scales = 'free') 
+      else NULL
+    } +
+    
+    # Labelling
     ggtitle(title_text) + ylab(ylabel) + xlab(xlabel)
 
   plt1.formatted <- plt1 %>% format_classic() # clean formatting
