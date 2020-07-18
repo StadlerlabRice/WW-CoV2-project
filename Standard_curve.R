@@ -4,11 +4,16 @@ source('./general_functions.R') # Source the general_functions file before runni
 
 # User inputs ----
 # choose file name, in the same directory as Rproject
-flnm <- 'WW29_707 batch2_BCoV_Std13'  # set the filename
+flnm <- 'WW32_706-1 repeat- Baylor-2_BCoV_Std15'  # set the filename
 flpath <- str_c('excel files/',flnm,'.xls') # this completes the file path
 templates_sheet <- 'https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=478762118'
 
-title_name <- 'qPCR Standard curve 13: BCoV - Fastvirus 4x'
+title_name <- 'qPCR Standard curve 15: BCoV - Fastvirus 4x'
+fl_namer <- c('Std[:alnum:]*', 'BCoV|N1|N2|BRSV|pMMoV', 'WW[:alnum:]*') %>% 
+ map_chr(~str_match(flnm, .)) %>% 
+  str_c(collapse = '_')
+  
+  # str_c(flnm %>% str_match('Std[:alnum:]*'), , flnm %>% str_match('WW[:alnum:]*'), sep = '_')
 
 # Data input ----
 
@@ -25,7 +30,7 @@ bring_results <- fl$Results %>% select(`Well Position`, `Sample Name`, CT, start
   filter(!is.na(Target))
 
 # optional filtering to remove low concentration points in standard curve
-# bring_results %<>% filter(Quantity > 1| Quantity == 0) # filtering only standard curve within the linear range
+bring_results %<>% filter(Quantity > 1| Quantity == 0) # filtering only standard curve within the linear range
 
 # plotting ----
 
@@ -46,7 +51,7 @@ std_table$dat$CT <- max(standard_curve_vars$CT, na.rm = T) - 2 * seq_along(std_t
 
 # Add labels to plot - linear regression equation
 plt + geom_text(data = std_table$dat, label = std_table$equation, parse = TRUE, show.legend = F, hjust = 'inward', nudge_x = 0, force = 10)
-ggsave(str_c('qPCR analysis/', flnm %>% str_match('Std[:alnum:]*'), '_', flnm %>% str_match('WW[:alnum:]*') , '.png'), width = 5, height = 4)
+ggsave(str_c('qPCR analysis/', fl_namer , '.png'), width = 5, height = 4)
 
 # Data output ----
 
@@ -55,7 +60,7 @@ ggsave(str_c('qPCR analysis/', flnm %>% str_match('Std[:alnum:]*'), '_', flnm %>
 efficiency_table <- tibble(Slope = std_table$params %>% 
                              pull(slope), y_intercept = std_table$params %>% 
                              pull(y_intercept) , Efficiency = 10^(-1/Slope), '% Efficiency' = (Efficiency -1)*100 , 'R-square' = std_table$params %>% 
-                             pull(r_square) %>% round(2)
+                             pull(r_square) %>% round(3)
                            ) %>% 
   mutate(Target = std_table$dat$`Target`) %>% 
   select(Target, everything())
@@ -63,5 +68,5 @@ efficiency_table <- tibble(Slope = std_table$params %>%
 View(efficiency_table)
 
 # Writing data
-write_sheet(efficiency_table,'https://docs.google.com/spreadsheets/d/1ouk-kCJHERRhOMNP07lXfiC3aGB4wtWXpnYf5-b2CI4/edit#gid=0', sheet = flnm %>% str_match('Std[:alnum:]*')) # save results to a google sheet
+write_sheet(efficiency_table,'https://docs.google.com/spreadsheets/d/1ouk-kCJHERRhOMNP07lXfiC3aGB4wtWXpnYf5-b2CI4/edit#gid=0', sheet = fl_namer) # save results to a google sheet
 
