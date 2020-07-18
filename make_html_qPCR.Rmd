@@ -1,7 +1,7 @@
 ---
-title: "706 Rice"
+title: "713 Rice"
 author: "Prashant Kalvapalle"
-date: "12 July 2020"
+date: "17 July 2020"
 output: 
   html_document:
     theme: flatly
@@ -23,15 +23,15 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 elution_volume <- 50 # ul - RNA extraction final volume
 
 # copies/ul viral suspension spiked in (Spike ID: S16)
-all_spike_virus_conc <- tibble(Target = c('BCoV_M', 'BRSV_N'), spike_virus_conc = c(10609, NA))
+all_spike_virus_conc <- tibble(Target = c('BCoV_M', 'BRSV_N'), spike_virus_conc = c(NA, NA))
 spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 450 and varies for each sample)
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c('dd.WW6_706-1_N1/N2', 'dd.WW7_706-2_N1/N2', 'WW28_706-1_BCoV', 'WW29_706-2_BCoV_Std13')
-title_name <- '706 Rice'
+read_these_sheets <- c('dd.WW8_713_N1/N2')
+title_name <- '713 Rice'
 
 # Biobot ID sheet
-bb_sheets <- c('Week 13 (7/6)')
+bb_sheets <- c('Week 14 (7/13)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|Control' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
@@ -264,7 +264,7 @@ plot_scatter(long_targets_vol_summary) %>% print()
 ### BCoV vs N2 avg
 
 ```{r n2bcov}
-long_targets_vol_summary %>% {'BCoV_M' %in% colnames(.)} 
+long_targets_vol_summary %>% {'BCoV_M' %in% colnames(.)} %>% if(.)
 {
  plot_scatter(long_targets_vol_summary, x_var = BCoV_M) %>% print()
 }

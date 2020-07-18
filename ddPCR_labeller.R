@@ -4,7 +4,7 @@
 # User inputs ----
 
 
-flnm <- 'dd.WW7_706-2_N1/N2'  # set the filename
+flnm <- 'dd.WW8_713_N1/N2'  # set the filename
 template_volume <- 10 /22 * 20 # ul template volume per well of the ddPCR reaction
 
 # Loading pre-reqisites ----
