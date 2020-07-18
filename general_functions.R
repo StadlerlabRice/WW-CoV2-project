@@ -35,7 +35,7 @@ primer_table <- c('q1-3' = 'Flipped', 'q4-5' = 'Flipped',
 absolute_backcalc <- function(df, std_par)
 {
   target_current <- df$Target %>% unique()
-  std_current <- std_par %>% filter(target == target_current)
+  std_current <- std_par %>% filter(str_detect(target_current, target))
   
   df %>% mutate(`Copy #` = 10^( (CT - std_current$intercept)/std_current$slope) )
 }

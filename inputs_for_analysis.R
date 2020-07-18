@@ -18,6 +18,10 @@ std_par <- tibble(                       # Input the slope and intercept from st
 )
 template_volume <- 4 # ul template volume in qPCR reaction
 
+# Ad hoc - marking the samples from baylor (will append /baylor to target name)
+baylor_wells <- '[A-H]9|10'
+
+
 # Other parameters ----
 
 # Additional parameters (changed rarely)
