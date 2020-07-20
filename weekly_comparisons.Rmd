@@ -18,7 +18,7 @@ source('./general_functions.R') # Source the general_functions file
 source('./inputs_for_analysis.R') # Source the file with user inputs
 
 # sheets to read from "qPCR data to present + recoveries"" google sheet
-read_these_sheets <- c('608 Rice', '615 Rice', '622 Rice', '629 Rice', '706 Rice') # sheet name(s) in the raw data file (qPCR data dump) - Separate by comma (,)
+read_these_sheets <- c('608 Rice', '615 Rice', '622 Rice', '629 Rice', '706 Rice', '713 Rice') # sheet name(s) in the raw data file (qPCR data dump) - Separate by comma (,)
 title_name <- 'June Rice' # name of the filename for writing presentable data and plot title
 
 # file for metadata - flow rate litres/day; population by WWTP area
