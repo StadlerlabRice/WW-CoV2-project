@@ -94,8 +94,8 @@ biobot_lookup <- map_df(bb_sheets ,
 qpcr_polished <- results_abs %>% unite('Biobot ID', c(`Sample Name`, assay_variable), sep = '', remove = F) %>%
   select(-`Well Position`) %>% 
   mutate_at('assay_variable', as.character) %>% 
-  mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
-  mutate(Lab = if_else(str_detect(Target, 'Baylor'), 'B', 'R'))
+  mutate_at('biological_replicates', ~str_replace_na(., '')) #%>% 
+  # mutate(Lab = if_else(str_detect(Target, 'Baylor'), 'B', 'R'))
 
 # Join WWTP names to qPCR dataset
 bb_qpcr <- left_join(qpcr_polished, biobot_lookup, by = 'Biobot ID') %>% mutate_at(c('WWTP', 'FACILITY NAME'), ~if_else(str_detect(., '^X')|is.na(.), assay_variable, .)) %>% 
@@ -164,7 +164,7 @@ vol_B <- bb_qpcr %>%
   filter(str_detect(Target, 'Baylor')) %>%
   left_join(baylor_volumes, by = 'Label_tube') %>% 
   mutate(vol_extracted = 1.5) %>% 
-  mutate(spike_virus_conc = all_spike_virus_conc$spike_virus_conc['BCoV'])  # spike in concentrations (BCoV and BRSV)
+  mutate(spike_virus_conc = all_spike_virus_conc %>% filter(str_detect(Target, 'BCoV') ) %>% pull(spike_virus_conc))  # spike in concentrations (BCoV and BRSV)
 }
 
 # join the results with the WWTP identifiers and names
@@ -374,9 +374,6 @@ select(-`Recovery fraction`, -`Spiked-in Copies/l WW`, -Tube_ID)
 if(present_N_data %>% is_empty() %>% !.){
   write_sheet(present_N_data,'https://docs.google.com/spreadsheets/d/1dBESjgWSFsOBodFFpYNhWIOAQ2a3wvoLkrn12V_rFck/edit#gid=0', sheet = title_name) # save results to a google sheet
 }
-
-# summary_results %<>% mutate_if(is.numeric, format, digits = 3, scientific = T)
-# kable(summary_results, caption = 'Summary of estimated copy #s')
 ```
 
 <!-- ### Individual replicates -->
