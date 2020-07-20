@@ -23,7 +23,7 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 elution_volume <- 50 # ul - RNA extraction final volume
 
 # copies/ul viral suspension spiked in (Spike ID: S16)
-all_spike_virus_conc <- tibble(Target = c('BCoV_M', 'BRSV_N'), spike_virus_conc = c(NA, NA))
+all_spike_virus_conc <- tibble(Target = c('BCoV_M', 'BRSV_N'), spike_virus_conc = c(10609.1, NA))
 spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 450 and varies for each sample)
 
 # sheets to read from qPCR data dump excel file
@@ -94,7 +94,8 @@ biobot_lookup <- map_df(bb_sheets ,
 qpcr_polished <- results_abs %>% unite('Biobot ID', c(`Sample Name`, assay_variable), sep = '', remove = F) %>%
   select(-`Well Position`) %>% 
   mutate_at('assay_variable', as.character) %>% 
-  mutate_at('biological_replicates', ~str_replace_na(., ''))
+  mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
+  mutate(Lab = if_else(str_detect(Target, 'Baylor'), 'B', 'R'))
 
 # Join WWTP names to qPCR dataset
 bb_qpcr <- left_join(qpcr_polished, biobot_lookup, by = 'Biobot ID') %>% mutate_at(c('WWTP', 'FACILITY NAME'), ~if_else(str_detect(., '^X')|is.na(.), assay_variable, .)) %>% 
@@ -142,21 +143,32 @@ volumes_data <- read_sheet('https://docs.google.com/spreadsheets/d/1mJcCt1wMiOuB
 if (bb_qpcr$Target %>% str_detect('Baylor') %>% sum()) {
   baylor_volumes <- str_c('excel files/Baylor/', 'Baylor_sample volumes', '.xlsx') %>% 
     read_xlsx (sheet = '706') %>% 
-    rename('WWTP' = contains('SYMBOL', ignore.case = T), 'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T)) %>% 
-    mutate_at('Sample ID', ~str_remove(., '\\.') ) %>% 
+    rename('WWTP' = contains('SYMBOL', ignore.case = T), 'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T), 'Label_tube' = `Sample ID`) %>% 
+    mutate_at('Label_tube', ~str_remove(., '\\.') ) %>% 
     
     pivot_longer(cols = starts_with('Volume'), names_to = 'index', values_to = 'WW_vol') %>% 
     separate(index, into =  c(NA, 'biological_replicates')) %>% 
-    select(-`FACILITY NAME`) %>% 
-    mutate(`Sample ID` = str_c(`Sample ID`, '.', biological_replicates), WW_tr = WW_vol %>% setNames(`Sample ID`))
+    mutate(Label_tube = str_c(Label_tube, biological_replicates), vol_extracted = 1.5) %>% 
+    select(-`FACILITY NAME`, -biological_replicates, -WWTP)
   }
 
+# join the results with the volumes
+vol_R <- bb_qpcr %>% 
+  filter(!str_detect(Target, 'Baylor')) %>% 
+  left_join(volumes_data, by = 'Label_tube') %>% 
+  left_join(all_spike_virus_conc, by = 'Target') # spike in concentrations (BCoV and BRSV)
+
+# Baylor WWTP volumes
+if (bb_qpcr$Target %>% str_detect('Baylor') %>% sum()) {
+vol_B <- bb_qpcr %>% 
+  filter(str_detect(Target, 'Baylor')) %>%
+  left_join(baylor_volumes, by = 'Label_tube') %>% 
+  mutate(vol_extracted = 1.5) %>% 
+  mutate(spike_virus_conc = all_spike_virus_conc$spike_virus_conc['BCoV'])  # spike in concentrations (BCoV and BRSV)
+}
 
 # join the results with the WWTP identifiers and names
-vol_qpcr <- bb_qpcr %>% left_join(volumes_data, by = 'Label_tube') %>% 
-  left_join(all_spike_virus_conc, by = 'Target') %>%  # spike in concentrations (BCoV and BRSV)
-  
-  {if (str_detect(.$Target, 'Baylor') %>% sum()) mutate_cond(., str_detect(.$Target, 'Baylor'),  'WW_vol' = str_replace_all(WW_vol, baylor_volumes$WW_tr)) } %>% 
+vol_qpcr <- bind_rows(vol_R, vol_B) %>% 
   
   # Calculations for spiked in and recovered copies of the virus
   mutate(`Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e3 * elution_volume/vol_extracted, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
