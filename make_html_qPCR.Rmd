@@ -27,11 +27,11 @@ all_spike_virus_conc <- tibble(Target = c('BCoV_M', 'BRSV_N'), spike_virus_conc 
 spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 450 and varies for each sample)
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c('dd.WW8_713_N1/N2')
-title_name <- '713 Rice'
+read_these_sheets <- c('WW31_706 Baylor-1_BCoV_Std14', 'WW32_706-1 repeat- Baylor-2_BCoV_Std15')
+title_name <- '706 Baylor-part Rice'
 
 # Biobot ID sheet
-bb_sheets <- c('Week 14 (7/13)')
+bb_sheets <- c('Week 13 (7/6)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|Control' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
@@ -137,14 +137,31 @@ volumes_data <- read_sheet('https://docs.google.com/spreadsheets/d/1mJcCt1wMiOuB
     select(-unique_labels)
     }
   }
+
+# baylor's volumes from a separate excel file    
+if (bb_qpcr$Target %>% str_detect('Baylor') %>% sum()) {
+  baylor_volumes <- str_c('excel files/Baylor/', 'Baylor_sample volumes', '.xlsx') %>% 
+    read_xlsx (sheet = '706') %>% 
+    rename('WWTP' = contains('SYMBOL', ignore.case = T), 'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T)) %>% 
+    mutate_at('Sample ID', ~str_remove(., '\\.') ) %>% 
     
+    pivot_longer(cols = starts_with('Volume'), names_to = 'index', values_to = 'WW_vol') %>% 
+    separate(index, into =  c(NA, 'biological_replicates')) %>% 
+    select(-`FACILITY NAME`) %>% 
+    mutate(`Sample ID` = str_c(`Sample ID`, '.', biological_replicates), WW_tr = WW_vol %>% setNames(`Sample ID`))
+  }
+
+
 # join the results with the WWTP identifiers and names
 vol_qpcr <- bb_qpcr %>% left_join(volumes_data, by = 'Label_tube') %>% 
   left_join(all_spike_virus_conc, by = 'Target') %>%  # spike in concentrations (BCoV and BRSV)
   
+  {if (str_detect(.$Target, 'Baylor') %>% sum()) mutate_cond(., str_detect(.$Target, 'Baylor'),  'WW_vol' = str_replace_all(WW_vol, baylor_volumes$WW_tr)) } %>% 
+  
   # Calculations for spiked in and recovered copies of the virus
   mutate(`Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e3 * elution_volume/vol_extracted, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
   mutate_cond(str_detect(`Sample Name`, 'Vaccine'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (.050 * 1e-3), Recovered = `Copy #` * 1e6 * 50/20, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
+  mutate_cond(str_detect(Target, 'Baylor'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e6 /30, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
   select(-spike_virus_conc)
  
 ```
