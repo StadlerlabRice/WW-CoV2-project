@@ -63,6 +63,54 @@ mutate_when <- function(data, ...)
 }
 
 
+# Reads single column of data and converts into a 96 well plate format (Baylor sample names)
+baylor_col_to_plate <- function(flnm)
+{
+  bb_sheet <- c('Week 13 (7/6)')
+  
+  # week_match <- flnm %>% str_extract('[:digit:]+(?=-|_)') 
+  target<- 'BCoV'
+  
+  biobot_url <- 'https://docs.google.com/spreadsheets/d/1ghb_GjTS4yMFbzb65NskAlm-2Gb5M4SNYi4FHE4YVyI/edit#gid=233791008' 
+  
+  # Getting biobot names: named vector for backconversion
+  biobot_translator <- read_sheet(biobot_url, sheet = bb_sheet) %>% 
+    rename('Biobot ID' = matches('Biobot|Comments', ignore.case = T), 
+           'WWTP' = contains('SYMBOL', ignore.case = T), 
+           'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T)) %>%
+    
+    drop_na(WWTP) %>% 
+    mutate('biobot_baylor' = str_replace(`Biobot ID`,'\\.', '_'), WWTP = as.character(WWTP)) %>%  
+    mutate(bb_translator = set_names(biobot_baylor , WWTP)) %>% 
+    pull(bb_translator)
+  
+  
+  # Read sample sheet
+  
+  baylor_names <- str_c('excel files/Baylor/', flnm, '.xlsx') %>% 
+    read_xlsx (sheet = '706-1', col_names = F) %>% 
+    select(-1) %>% 
+    setNames(c('well', 'Sample') ) %>% 
+    mutate('row' = str_match(well, '[:upper:]'), 'col' = str_match(well, '[:digit:]+')) %>% 
+    select(-well) %>% 
+    
+    # correct names - put a dot before replicate number
+    mutate_at('Sample', ~str_match(., '(^[:upper:]+|^[:digit:]+).*([:digit:]$)') %>% {str_c(.[,2], .[,3], sep = '.')}) %>%
+    
+    # substitute biobot ids in
+    mutate_at('Sample', str_replace_all , biobot_translator) %>% 
+    mutate_at('Sample', ~str_c(target, '-', .))
+  
+  # Convert column to table - 96 well
+  
+  baylor_table <- baylor_names %>% 
+    pivot_wider(names_from = 'col', values_from = 'Sample') %>% 
+    rename('<>' = row)
+  
+  View(baylor_table) # manually copy paste wherever
+  
+}
+
 # mutates a subset of data and returns a new array (does multiple mutations on same condition)
 mutate_cond <- function(.data, condition, ..., envir = parent.frame()) 
 { # Source: Stackoverflow -  https://stackoverflow.com/a/34096575/9049673
