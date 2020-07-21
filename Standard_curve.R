@@ -4,15 +4,17 @@ source('./general_functions.R') # Source the general_functions file before runni
 
 # User inputs ----
 # choose file name, in the same directory as Rproject
-flnm <- 'WW32_706-1 repeat- Baylor-2_BCoV_Std15'  # set the filename
+flnm <- 'WW33_716 direct WW tests_BCoV_Std16'  # set the filename
 flpath <- str_c('excel files/',flnm,'.xls') # this completes the file path
 templates_sheet <- 'https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=478762118'
+data_dump_sheet <- 'https://docs.google.com/spreadsheets/d/1ouk-kCJHERRhOMNP07lXfiC3aGB4wtWXpnYf5-b2CI4/edit#gid=0'
 
-title_name <- 'qPCR Standard curve 15: BCoV - Fastvirus 4x'
 fl_namer <- c('Std[:alnum:]*', 'BCoV|N1|N2|BRSV|pMMoV', 'WW[:alnum:]*') %>% 
  map_chr(~str_match(flnm, .)) %>% 
   str_c(collapse = '_')
-  
+
+title_name <- str_c('qPCR Standard curve: ', fl_namer ,' - Fastvirus 4x')
+
   # str_c(flnm %>% str_match('Std[:alnum:]*'), , flnm %>% str_match('WW[:alnum:]*'), sep = '_')
 
 # Data input ----
@@ -68,5 +70,5 @@ efficiency_table <- tibble(Slope = std_table$params %>%
 View(efficiency_table)
 
 # Writing data
-write_sheet(efficiency_table,'https://docs.google.com/spreadsheets/d/1ouk-kCJHERRhOMNP07lXfiC3aGB4wtWXpnYf5-b2CI4/edit#gid=0', sheet = fl_namer) # save results to a google sheet
+write_sheet(efficiency_table, data_dump_sheet, sheet = fl_namer) # save results to a google sheet
 
