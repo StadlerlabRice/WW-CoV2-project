@@ -1,5 +1,5 @@
 ---
-title: "713 Rice"
+title: "706 Rice"
 author: "Prashant Kalvapalle"
 date: "17 July 2020"
 output: 
@@ -28,7 +28,7 @@ spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 
 
 # sheets to read from qPCR data dump excel file
 read_these_sheets <- c('dd.WW6_706-1_N1/N2', 'dd.WW7_706-2_N1/N2', 'WW29_706-2_BCoV_Std13', 'WW31_706 Baylor-1_BCoV_Std14', 'WW32_706-1 repeat- Baylor-2_BCoV_Std15')
-title_name <- '706 Baylor-part Rice'
+title_name <- '706 Rice + Baylor'
 
 # Biobot ID sheet
 bb_sheets <- c('Week 13 (7/6)')
