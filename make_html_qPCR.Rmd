@@ -1,7 +1,7 @@
 ---
-title: "706 Rice"
+title: "716 Rice"
 author: "Prashant Kalvapalle"
-date: "17 July 2020"
+date: "20 July 2020"
 output: 
   html_document:
     theme: flatly
@@ -22,13 +22,13 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # HA_concentration_factor <- 1000 # concentration factor of wastewater -> RNA
 elution_volume <- 50 # ul - RNA extraction final volume
 
-# copies/ul viral suspension spiked in (Spike ID: S16)
-all_spike_virus_conc <- tibble(Target = c('BCoV_M', 'BRSV_N'), spike_virus_conc = c(10609.1, NA))
+# copies/ul viral suspension spiked in                                          (Spike ID: S19)
+all_spike_virus_conc <- tibble(Target = c('BCoV_M', 'BRSV_N'), spike_virus_conc = c(7913.4, NA))
 spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 450 and varies for each sample)
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c('dd.WW6_706-1_N1/N2', 'dd.WW7_706-2_N1/N2', 'WW29_706-2_BCoV_Std13', 'WW31_706 Baylor-1_BCoV_Std14', 'WW32_706-1 repeat- Baylor-2_BCoV_Std15')
-title_name <- '706 Rice + Baylor'
+read_these_sheets <- c('WW33_716 direct_BCoV_Std16', 'dd.WW9_716 direct_N1/N2')
+title_name <- '716 Direct_tests'
 
 # Biobot ID sheet
 bb_sheets <- c('Week 13 (7/6)')
@@ -165,7 +165,7 @@ vol_B <- bb_qpcr %>%
   left_join(baylor_volumes, by = 'Label_tube') %>% 
   mutate(vol_extracted = 1.5) %>% 
   mutate(spike_virus_conc = all_spike_virus_conc %>% filter(str_detect(Target, 'BCoV') ) %>% pull(spike_virus_conc))  # spike in concentrations (BCoV and BRSV)
-}
+} else vol_B <- tibble(NULL)
 
 # join the results with the WWTP identifiers and names
 vol_qpcr <- bind_rows(vol_R, vol_B) %>% 
