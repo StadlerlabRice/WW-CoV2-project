@@ -4,7 +4,7 @@ source('./general_functions.R') # Source the general_functions file before runni
 
 # User inputs ----
 # choose file name, in the same directory as Rproject
-flnm <- 'WW34_713_BCoV_Std17'  # set the filename
+flnm <- 'WW35_716_Direct extr_BCoV_Std18'  # set the filename
 
 
 flpath <- str_c('excel files/',flnm,'.xls') # this completes the file path

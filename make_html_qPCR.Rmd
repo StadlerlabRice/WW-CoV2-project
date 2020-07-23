@@ -1,7 +1,7 @@
 ---
-title: "716 Rice"
+title: "716 Direct extr"
 author: "Prashant Kalvapalle"
-date: "20 July 2020"
+date: "23 July 2020"
 output: 
   html_document:
     theme: flatly
@@ -27,11 +27,11 @@ all_spike_virus_conc <- tibble(Target = c('BCoV_M', 'BRSV_N'), spike_virus_conc 
 spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 450 and varies for each sample)
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c('WW33_716 direct_BCoV_Std16', 'dd.WW9_716 direct_N1/N2')
-title_name <- '716 Direct_tests'
+read_these_sheets <- c('WW35_716_Direct extr_BCoV_Std18', 'dd.WW10_716_David_Extracts')
+title_name <- '716 Direct extr'
 
 # Biobot ID sheet
-bb_sheets <- c('Week 13 (7/6)')
+bb_sheets <- c('Week 14 (7/13)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|Control' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
