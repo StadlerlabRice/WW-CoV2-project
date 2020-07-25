@@ -1,7 +1,7 @@
 ---
-title: "716 Direct extr"
+title: "720 Rice"
 author: "Prashant Kalvapalle"
-date: "23 July 2020"
+date: "24 July 2020"
 output: 
   html_document:
     theme: flatly
@@ -19,19 +19,18 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 
 
 # Spike in and concentration details
-# HA_concentration_factor <- 1000 # concentration factor of wastewater -> RNA
 elution_volume <- 50 # ul - RNA extraction final volume
 
-# copies/ul viral suspension spiked in                                          (Spike ID: S19)
-all_spike_virus_conc <- tibble(Target = c('BCoV_M', 'BRSV_N'), spike_virus_conc = c(7913.4, NA))
+# copies/ul viral suspension spiked in                                          (Spike ID: S20)
+all_spike_virus_conc <- tibble(Target = c('BCoV_M', 'BRSV_N'), spike_virus_conc = c(522.3, NA))
 spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 450 and varies for each sample)
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c('WW35_716_Direct extr_BCoV_Std18', 'dd.WW10_716_David_Extracts')
-title_name <- '716 Direct extr'
+read_these_sheets <- c('WW36_720_BCoV_Std19', 'dd.WW11_720_N1/N2')
+title_name <- '720 Rice'
 
 # Biobot ID sheet
-bb_sheets <- c('Week 14 (7/13)')
+bb_sheets <- c('Week 15 (7/20)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|Control' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
@@ -78,7 +77,7 @@ plot_mean_sd_jitter(summary_data = summary_results_abs, raw_data = results_abs, 
 
 ## Comprehensive plots (WWTP labels)
 
-### Summary plot
+### Summary plot (copies per ul RNA)
 
 ```{r biobot_to_WWTP}
 

@@ -4,7 +4,7 @@
 # User inputs ----
 
 
-flnm <- 'dd.WW9_716 direct_N1/N2'  # set the filename
+flnm <- 'dd.WW11_720_N1/N2'  # set the filename
 template_volume <- 10 /22 * 20 # ul template volume per well of the ddPCR reaction
 
 # Loading pre-reqisites ----
@@ -15,13 +15,14 @@ source('./general_functions.R') # Source the general_functions file
 
 # Data input ----
 
+raw_ddpcr_sheet <- 'https://docs.google.com/spreadsheets/d/1jdO_P9SZGezSTLiIARtSmA7qaUuX3wA-jCe7YiQ1sCI/edit#gid=0'
 templates_sheet <- 'https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=478762118'
 data_dump_sheet <- 'https://docs.google.com/spreadsheets/d/1ouk-kCJHERRhOMNP07lXfiC3aGB4wtWXpnYf5-b2CI4/edit#gid=0'
 
 # Read the ddPCR master file
 
 # Read in qPCR data and labels from plate template
-fl <- read_sheet('https://docs.google.com/spreadsheets/d/1jdO_P9SZGezSTLiIARtSmA7qaUuX3wA-jCe7YiQ1sCI/edit#gid=0', sheet = flnm) # read excel file exported by Quantstudio
+fl <- read_sheet(raw_ddpcr_sheet, sheet = flnm) # read excel file exported by Quantstudio
 plate_template <- get_template_for(flnm, templates_sheet)  # Get the plate template matching file name, convert to 1 column 
 
 # Polishing ----

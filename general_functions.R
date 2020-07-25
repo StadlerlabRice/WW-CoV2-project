@@ -140,6 +140,45 @@ get_template_for <- function(bait, sheet_url = templates_sheet)
   
 }
 
+
+# Data writing output ----
+
+# This function writes to the specified google sheet if the current sheet does
+# not exist. If the sheet does exist it will ask the user before writing.
+check_ok_and_write <- function(data, sheet_URL, title_name)
+{
+  write_ok <- TRUE
+  sheet_dne <- FALSE
+  
+  # this block sets sheet_dne to true if the sheet does not exist
+  sheet_dne <- tryCatch(
+    expr = {
+      read_sheet(sheet_URL, sheet = title_name)
+      message("Sheet already exists")
+      return(FALSE)
+    },
+    error = function(e){
+      message('Sheet does not exist')
+      return(TRUE)
+      print(e)
+    }
+  )
+  
+  # if the sheet exists (sheet_dne is false), then ask the user if
+  # they want to overwrite. If the user selects cancel, then abort
+  if (!sheet_dne) {
+    write_ok <- askYesNo(paste("A sheet with the name", title_name, "already exists. Do you want to overwrite?", sep=" "))
+    if (is.na(write_ok)){
+      stop("Cancel selected, script aborted.")
+    }
+  }
+  
+  if (write_ok) {
+    write_sheet(data, sheet_URL, sheet=title_name)
+  }
+
+}
+
 # standard curve and regressions ----
 
 # Plot Standard curve
@@ -168,7 +207,7 @@ lm_std_curve <- function(df, trig = 0)
 lm_eqn <- function(m, trig = 0){
   
   eq <- substitute(italic(y) == b %.% italic(x)+ a*","~~italic(r)^2~":"~r2, 
-                   list(a = format(unname(coef(m)[1]), digits = 2), 
+                   list(a = format(unname(coef(m)[1]), digits = 4), 
                         b = format(unname(coef(m)[2]), digits = 3), 
                         r2 = format(summary(m)$r.squared, digits = 3)))
   # if(trig == 'coeff') c(round(coef(m)[2], 2), round(summary(m)$r.squared, 2))
@@ -347,35 +386,3 @@ format_logscale_x <- function(plt)
   
   # use as ggplot(df,aes(x,y)) + geom_point() + scale_y_log10(labels = fancy_scientific)
   
-# This function writes to the specified google sheet if the current sheet does
-# not exist. If the sheet does exist it will ask the user before writing.
-check_ok_and_write <- function(data, sheet_URL, title_name)
-  write_ok <- TRUE
-  sheet_dne <- FALSE
-  
-  # this block sets sheet_dne to true if the sheet does not exist
-  sheet_dne <- tryCatch(
-    expr = {
-      read_sheet(sheet_URL, sheet = title_name)
-      message("Sheet already exists")
-      return(FALSE)
-    },
-    error = function(e){
-      message('Sheet does not exist')
-      return(TRUE)
-      print(e)
-    }
-  )
-  
-  # if the sheet exists (sheet_dne is false), then ask the user if
-  # they want to overwrite. If the user selects cancel, then abort
-  if (!sheet_dne) {
-    write_ok <- askYesNo(paste("A sheet with the name", title_name, "already exists. Do you want to overwrite?", sep=" "))
-    if (is.na(write_ok)){
-      stop("Cancel selected, script aborted.")
-    }
-  }
-
-  if (write_ok) {
-    write_sheet(data, sheet_URL, sheet=title_name)
-  }
