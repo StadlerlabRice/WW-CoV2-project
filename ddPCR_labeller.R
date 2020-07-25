@@ -4,7 +4,7 @@
 # User inputs ----
 
 
-flnm <- 'dd.WW7_706-2_N1/N2'  # set the filename
+flnm <- 'dd.WW9_716 direct_N1/N2'  # set the filename
 template_volume <- 10 /22 * 20 # ul template volume per well of the ddPCR reaction
 
 # Loading pre-reqisites ----
@@ -16,6 +16,7 @@ source('./general_functions.R') # Source the general_functions file
 # Data input ----
 
 templates_sheet <- 'https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=478762118'
+data_dump_sheet <- 'https://docs.google.com/spreadsheets/d/1ouk-kCJHERRhOMNP07lXfiC3aGB4wtWXpnYf5-b2CI4/edit#gid=0'
 
 # Read the ddPCR master file
 
@@ -52,5 +53,5 @@ polished_results <- bring_results %>% separate(`Sample Name`,c(NA, 'Sample Name'
 # Data output ----
 # this is usually commented out to prevent overwriting existing data; turn on only when needed for a single run
 
-write_sheet(polished_results,'https://docs.google.com/spreadsheets/d/1ouk-kCJHERRhOMNP07lXfiC3aGB4wtWXpnYf5-b2CI4/edit#gid=0', sheet = flnm) # save results to a google sheet
+write_sheet(polished_results, data_dump_sheet, sheet = flnm) # save results to a google sheet
 # ggsave('qPCR analysis/', WW1_Baylor-bovine_pilot.png', plot = plt.formatted, width = 8, height = 4)
