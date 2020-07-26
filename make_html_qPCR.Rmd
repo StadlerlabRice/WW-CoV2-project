@@ -1,5 +1,5 @@
 ---
-title: "720 Rice"
+title: "713-715 Baylor"
 author: "Prashant Kalvapalle"
 date: "24 July 2020"
 output: 
@@ -21,8 +21,8 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Spike in and concentration details
 elution_volume <- 50 # ul - RNA extraction final volume
 
-# copies/ul viral suspension spiked in                                          (Spike ID: S20)
-all_spike_virus_conc <- tibble(Target = c('BCoV_M', 'BRSV_N'), spike_virus_conc = c(522.3, NA))
+# copies/ul viral suspension spiked in                                          (Spike ID: S18)
+all_spike_virus_conc <- tibble(Target = c('BCoV_M', 'BRSV_N'), spike_virus_conc = c(6817.7, NA))
 spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 450 and varies for each sample)
 
 # sheets to read from qPCR data dump excel file
@@ -54,7 +54,7 @@ Quantifying CoV2-N1,N2 (multiplexed) and BCoV spike in in 6/8 wastewater samples
 ```{r scripts, fig.width = 12}
 
 # Acquire all the pieces of the data : read saved raw qPCR results from a google sheet
-list_rawqpcr <- map(read_these_sheets, ~ read_sheet('https://docs.google.com/spreadsheets/d/1ouk-kCJHERRhOMNP07lXfiC3aGB4wtWXpnYf5-b2CI4/edit#gid=0', sheet = ., range = 'A:H')) 
+list_rawqpcr <- map(read_these_sheets, ~ read_sheet(sheeturls$data_dump, sheet = ., range = 'A:H')) 
 
 rawqpcr <- bind_rows(list_rawqpcr)
 results_abs <- rawqpcr %>% filter(!str_detect(`Sample Name`, '/')) # remove Baylor samples (5/26 and 6/2) - processed separately
@@ -83,7 +83,7 @@ plot_mean_sd_jitter(summary_data = summary_results_abs, raw_data = results_abs, 
 
 # Bring WWTP names from google sheet: "Biobot Sample IDs"
 biobot_lookup <- map_df(bb_sheets , 
-                        ~ read_sheet('https://docs.google.com/spreadsheets/d/1ghb_GjTS4yMFbzb65NskAlm-2Gb5M4SNYi4FHE4YVyI/edit#gid=233791008', sheet = .x) %>% 
+                        ~ read_sheet(sheeturls$biobot_id , sheet = .x) %>% 
   rename('Biobot ID' = matches('Biobot|Comments', ignore.case = T), 'WWTP' = contains('SYMBOL', ignore.case = T), 'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T)) %>% 
   mutate('Biobot ID' = str_remove(`Biobot ID`,'\\.'), WWTP = as.character(WWTP)) %>% 
   select(`Biobot ID`, `FACILITY NAME`, WWTP)
@@ -121,7 +121,7 @@ open circles : Viral copies spiked in
 ```{r Recovery_calculations}
 
 # Get volumes data from google sheet : "Sample registry"
-volumes_data <- read_sheet('https://docs.google.com/spreadsheets/d/1mJcCt1wMiOuBic6sRlBZJf8KSNu2y-B5PjzCUu7jPM8/edit#gid=521099478', sheet = 'Concentrated samples') %>% 
+volumes_data <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrated samples') %>% 
   rename('WW_vol' = `Total WW vol measured (ml)`, 'Label_tube' = `Label on tube`, vol_extracted = `WW volume extracted (ml)`) %>% 
   mutate('WW_vol' = coalesce(WW_vol, `Total WW volume calculated (ml)`) ) %>% 
   select(WW_vol, Label_tube, vol_extracted) %>% 

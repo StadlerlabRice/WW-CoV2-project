@@ -10,15 +10,12 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 
 # Data input ----
 
-templates_sheet <- 'https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=478762118'
-data_dump_sheet <- 'https://docs.google.com/spreadsheets/d/1ouk-kCJHERRhOMNP07lXfiC3aGB4wtWXpnYf5-b2CI4/edit#gid=0'
-
 # Preperation steps
 flpath <- str_c('excel files/',flnm,'.xls') # this completes the file path
 
 # Read in qPCR data and labels from plate template
 fl <- readqpcr(flpath) # read excel file exported by Quantstudio
-plate_template <- get_template_for(flnm, templates_sheet)
+plate_template <- get_template_for(flnm, sheeturls$templates)
 
 sample_order = columnwise_index(fl) # this gives a vector to order the samples columnwise in the PCR plate or strip (by default : data is shown row-wise) => This command will enable plotting column wise order
 
@@ -76,5 +73,5 @@ print(plt.formatted)
 # Data output ----
 # this is usually commented out to prevent overwriting existing data; turn on only when needed for a single run
 
-write_sheet(results_abs, data_dump_sheet, sheet = title_name) # save results to a google sheet
+write_sheet(results_abs, sheeturls$data_dump, sheet = title_name) # save results to a google sheet
 # ggsave('qPCR analysis/', WW1_Baylor-bovine_pilot.png', plot = plt.formatted, width = 8, height = 4)

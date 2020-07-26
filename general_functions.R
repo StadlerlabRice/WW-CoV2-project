@@ -6,6 +6,15 @@
 # calling libraries ; make sure they are installed (install.packages)
 library(readxl); library(magrittr); library(tidyverse); library(ggrepel); library(googlesheets4) 
 
+sheeturls <- list(templates = 'https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=478762118',
+                  biobot_id = 'https://docs.google.com/spreadsheets/d/1ghb_GjTS4yMFbzb65NskAlm-2Gb5M4SNYi4FHE4YVyI/edit#gid=233791008',
+                  sample_registry = 'https://docs.google.com/spreadsheets/d/1mJcCt1wMiOuBic6sRlBZJf8KSNu2y-B5PjzCUu7jPM8/edit#gid=521099478',
+                  
+                  data_dump = 'https://docs.google.com/spreadsheets/d/1ouk-kCJHERRhOMNP07lXfiC3aGB4wtWXpnYf5-b2CI4/edit#gid=0',
+                  raw_ddpcr <- 'https://docs.google.com/spreadsheets/d/1jdO_P9SZGezSTLiIARtSmA7qaUuX3wA-jCe7YiQ1sCI/edit#gid=0',
+                  complete_data = 'https://docs.google.com/spreadsheets/d/1ltvW7xZf2aUPoBchD4NFGuV0gGWPkdsOW3a0Hxalm-Y/edit#gid=1363292517'
+)
+
 # reading files and manipulating columns ----
 
 # read in the excel file (from row 36 onwards)
@@ -134,7 +143,7 @@ mutate_cond <- function(.data, condition, ..., envir = parent.frame())
 }
 
 # Gets the 96 well layout with template names matching the experiment ID from filename in a google sheet
-get_template_for <- function(bait, sheet_url = templates_sheet)
+get_template_for <- function(bait, sheet_url = sheeturls$templates)
 { # Looking for WWx or Stdx - example WW21 or Std7 within the filename; Assumes plate spans from row B to N (1 row below the matching ID)
  
    # Finding the plate to be read
@@ -146,7 +155,7 @@ get_template_for <- function(bait, sheet_url = templates_sheet)
   range_to_get <- str_c('B', m_row + 1, ':N', m_row + 9)
   
   # read the template corresponding to the file name
-  plate_template_raw <- read_sheet(templates_sheet, sheet = 'Plate layouts', range = range_to_get)
+  plate_template_raw <- read_sheet(sheet_url, sheet = 'Plate layouts', range = range_to_get)
   
   # Convert the 96 well into a single column, alongside the Well position
   plate_template <- read_plate_to_column(plate_template_raw, 'Sample Name') # convert plate template (sample names) into a single vector, columnwise
