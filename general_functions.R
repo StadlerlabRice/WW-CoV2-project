@@ -350,6 +350,7 @@ format_logscale_x <- function(plt)
 # This function writes to the specified google sheet if the current sheet does
 # not exist. If the sheet does exist it will ask the user before writing.
 check_ok_and_write <- function(data, sheet_URL, title_name)
+{
   write_ok <- TRUE
   sheet_dne <- FALSE
   
@@ -379,3 +380,4 @@ check_ok_and_write <- function(data, sheet_URL, title_name)
   if (write_ok) {
     write_sheet(data, sheet_URL, sheet=title_name)
   }
+}
