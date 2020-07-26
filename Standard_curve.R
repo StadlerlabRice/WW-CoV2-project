@@ -67,10 +67,11 @@ efficiency_table <- tibble(Slope = std_table$params %>%
                              pull(r_square) %>% round(3)
                            ) %>% 
   mutate(Target = std_table$dat$`Target`) %>% 
-  select(Target, everything())
+  select(Target, everything()) %>% 
+  mutate(ID = fl_namer, .before = 1)
 
 View(efficiency_table)
 
 # Writing data
-write_sheet(efficiency_table, data_dump_sheet, sheet = fl_namer) # save results to a google sheet
-
+# write_sheet(efficiency_table, data_dump_sheet, sheet = fl_namer) # save results to a google sheet
+sheet_append(data_dump_sheet, efficiency_table, sheet = 'Standard curves') # Add parameters to standard curves in data dump google sheet
