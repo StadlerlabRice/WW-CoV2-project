@@ -8,18 +8,17 @@
 # BCoV-608_A.2; ignore-facet_(x axis variable).biological replicate (BCoV is ignored, only for pipetting reference, actual target is taken from the qPCR results)
 # If code fails, first thing: check the number of lines to skip before the data begins and tally with the code (including the headings)
 
-flnm <- 'WW36_720_BCoV_Std19'  # set the filename
+flnm.here <- 'WW38_716 baylor_BCoV_Std21'  # set the filename (if sourcing analysis.R to run)
 
-title_name <- flnm
 std_par <- tibble(                       # Input the slope and intercept from standard curve of various primer pairs/targets here - Target should match Target field (provided in excel sheet - Sample input reference.csv) 
-  target = c('BRSV_N', 'BCoV_M', 'N1_CoV2', 'N2_CoV2', 'N1_multiplex',  'N2_multiplex', 'pMMoV_Vgp1'),
-  slope =  c(-3.61,    -3.33,    -2.98,     -3.12,     -3.08,           -3.06,           -3.13),
-  intercept = c(38,     34.55,       39,        40,        38,              37,              35.87) # values for various targets
+  Target = c('BRSV_N', 'BCoV_M', 'N1_CoV2', 'N2_CoV2', 'N1_multiplex',  'N2_multiplex', 'pMMoV_Vgp1'),
+  Slope =  c(-3.61,    -3.33,    -2.98,     -3.12,     -3.08,           -3.06,           -3.13),
+  y_intercept = c(38,  34.55,       39,        40,        38,              37,              35.87) # values for various targets
 )
 template_volume <- 4 # ul template volume in qPCR reaction
 
 # Ad hoc - marking the samples from baylor (will append /baylor to target name)
-baylor_wells <- 'none'
+baylor_wells <- '[A-D][1-3]'  # choose : none, '.*' for all, '[A-H][1-9]$|10' etc. 
 
 
 # Other parameters ----
