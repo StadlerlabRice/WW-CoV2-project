@@ -1,7 +1,7 @@
 ---
 title: "713-715 Baylor"
 author: "Prashant Kalvapalle"
-date: "24 July 2020"
+date: "27 July 2020"
 output: 
   html_document:
     theme: flatly
@@ -22,15 +22,15 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 elution_volume <- 50 # ul - RNA extraction final volume
 
 # copies/ul viral suspension spiked in                                          (Spike ID: S18)
-all_spike_virus_conc <- tibble(Target = c('BCoV_M', 'BRSV_N'), spike_virus_conc = c(6817.7, NA))
+# all_spike_virus_conc <- tibble(Target = c('BCoV_M', 'BRSV_N'), spike_virus_conc = c(6817.7, NA))
 spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 450 and varies for each sample)
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c('WW36_720_BCoV_Std19', 'dd.WW11_720_N1/N2')
-title_name <- '720 Rice'
+read_these_sheets <- c('WW37_713 baylor_BCoV_Std20', 'WW38_716 baylor_BCoV_Std21', 'WW39_baylor 713-716-2_BCoV_Std22', 'WW40_baylor 713-716-2_723 direct_BCoV_Std23')
+title_name <- '713-715 Baylor'
 
-# Biobot ID sheet
-bb_sheets <- c('Week 15 (7/20)')
+# Biobot_id sheet
+bb_sheets <- c('Week 15.2 (7/22)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|Control' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
@@ -47,9 +47,6 @@ same_bottle_for_triplicates <- 'yes' # 'yes' if 1 bottle yields 3 x 50 ml. 'no' 
 
 Quantifying CoV2-N1,N2 (multiplexed) and BCoV spike in in 6/8 wastewater samples
 
-## Plots with raw names
-
-### Individual biological replicates
 
 ```{r scripts, fig.width = 12}
 
@@ -57,78 +54,80 @@ Quantifying CoV2-N1,N2 (multiplexed) and BCoV spike in in 6/8 wastewater samples
 list_rawqpcr <- map(read_these_sheets, ~ read_sheet(sheeturls$data_dump, sheet = ., range = 'A:H')) 
 
 rawqpcr <- bind_rows(list_rawqpcr)
-results_abs <- rawqpcr %>% filter(!str_detect(`Sample Name`, '/')) # remove Baylor samples (5/26 and 6/2) - processed separately
+# results_abs <- rawqpcr 
+
+# polishing qPCR data - Make Biobot_id column clean
+qpcr_polished <- rawqpcr %>% 
+  rename(Sample_name = 'Sample Name') %>% 
+  # unite('Biobot_id', c(Sample_name, assay_variable), sep = '', remove = F) %>%
+  select(-`Well Position`) %>% 
+  mutate_at('assay_variable', as.character) %>% 
+  mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
+  mutate_at('Tube ID', ~str_remove(., "\\.")) %>% 
+  unite('Label_tube', c('Sample_name', 'Tube ID'), sep = "", remove = F) # make a unique column for matching volumes 
+  #%>% 
+  # mutate(Lab = if_else(str_detect(Target, 'Baylor'), 'B', 'R'))
 
 
 # plot individual biological replicates
-map2(list_rawqpcr, read_these_sheets, ~(plot_biological_replicates(.x, title_text = .y)))
+# map2(list_rawqpcr, read_these_sheets, ~(plot_biological_replicates(.x, title_text = .y)))
 
 ```
 
-### Summary plot
+<!-- ### Summary plot -->
 
-```{r summary}
+<!-- ```{r summary} -->
 
-summary_results_abs <- results_abs %>% group_by(Target, `Sample Name`, assay_variable) %>% summarise_at('Copy #', funs(mean(.,na.rm = T), sd(., na.rm = T)))
+<!-- summary_results_abs <- results_abs %>% group_by(Target, Sample_name, assay_variable) %>% summarise_at('Copy #', funs(mean(.,na.rm = T), sd(., na.rm = T))) -->
 
-# plot copy # vs sample (assay_variable)
-plot_mean_sd_jitter(summary_data = summary_results_abs, raw_data = results_abs, long_format = F) %>% format_logscale_y() %>% print()
-```
+<!-- # plot copy # vs sample (assay_variable) -->
+<!-- plot_mean_sd_jitter(summary_data = summary_results_abs, raw_data = results_abs, long_format = F) %>% format_logscale_y() %>% print() -->
+<!-- ``` -->
 
 ## Comprehensive plots (WWTP labels)
 
-### Summary plot (copies per ul RNA)
 
-```{r biobot_to_WWTP}
+```{r get_relevant_sheets_data}
+
+# determine which biobot sheets to get for Rice data : Under development
+# bb_sheet_match <- qpcr_polished %>% 
+#   filter(!str_detect(Target, 'Baylor')) %>% # filter only Rice data
+#   pull(Sample_name) %>% 
+#   str_match('[:digit:]+') %>% 
+#   unique() %>% 
+#   as.character() %>% 
+#   .[!is.na(.)]
+# 
+# # Or this one
+# bb_sheet_match <- read_these_sheets %>% 
+#      str_extract_all('[:digit:]{3}') %>% unlist()  
+
 
 # Bring WWTP names from google sheet: "Biobot Sample IDs"
-biobot_lookup <- map_df(bb_sheets , 
+biobot_lookup <- map_df(bb_sheets, 
                         ~ read_sheet(sheeturls$biobot_id , sheet = .x) %>% 
-  rename('Biobot ID' = matches('Biobot|Comments', ignore.case = T), 'WWTP' = contains('SYMBOL', ignore.case = T), 'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T)) %>% 
-  mutate('Biobot ID' = str_remove(`Biobot ID`,'\\.'), WWTP = as.character(WWTP)) %>% 
-  select(`Biobot ID`, `FACILITY NAME`, WWTP)
+  rename('Biobot_id' = matches('Biobot|Comments', ignore.case = T), 'WWTP' = contains('SYMBOL', ignore.case = T), 'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T)) %>% 
+  mutate('Biobot_id' = str_remove(`Biobot_id`,'\\.'), WWTP = as.character(WWTP)) %>% 
+  select(`Biobot_id`, `FACILITY NAME`, WWTP)
 )
 
-# polishing qPCR data - Make Biobot ID column clean
-qpcr_polished <- results_abs %>% unite('Biobot ID', c(`Sample Name`, assay_variable), sep = '', remove = F) %>%
-  select(-`Well Position`) %>% 
-  mutate_at('assay_variable', as.character) %>% 
-  mutate_at('biological_replicates', ~str_replace_na(., '')) #%>% 
-  # mutate(Lab = if_else(str_detect(Target, 'Baylor'), 'B', 'R'))
-
-# Join WWTP names to qPCR dataset
-bb_qpcr <- left_join(qpcr_polished, biobot_lookup, by = 'Biobot ID') %>% mutate_at(c('WWTP', 'FACILITY NAME'), ~if_else(str_detect(., '^X')|is.na(.), assay_variable, .)) %>% 
-  mutate_at('Tube ID', ~str_remove(., "\\.")) %>%  unite('Label_tube', c('Sample Name', 'Tube ID'), sep = "", remove = F) # make a unique column for matching volumes
-
-summary_bb_qpcr <- bb_qpcr %>% group_by(Target, `Sample Name`, `FACILITY NAME`, WWTP) %>% summarise_at('Copy #', funs(mean(.,na.rm = T), sd(., na.rm = T)))
-
-# order samples by ascending order of BCoV
-WWTP_order_1 <- summary_bb_qpcr %>% 
-  filter( str_detect(Target,'BCoV')) %>% arrange(`mean`) %>% 
-  pull(WWTP) %>% 
-  unique() # accounts for duplicate labels - for controls and standards
-
-summary_bb_qpcr$WWTP %<>%  fct_relevel(levels = WWTP_order_1) # order samples by ascending order of BCoV 
-
-
-plot_mean_sd_jitter(summary_bb_qpcr, bb_qpcr, sample_var = extra_categories, exclude_sample = T, x_var = WWTP) %>% format_logscale_y() %>% print()
-
-```
-
-### Recovery
-
-open circles : Viral copies spiked in
-```{r Recovery_calculations}
 
 # Get volumes data from google sheet : "Sample registry"
-volumes_data <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrated samples') %>% 
-  rename('WW_vol' = `Total WW vol measured (ml)`, 'Label_tube' = `Label on tube`, vol_extracted = `WW volume extracted (ml)`) %>% 
+volumes_data_Rice <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrated samples') %>% 
+  rename('WW_vol' = `Total WW vol measured (ml)`, 
+         'Label_tube' = `Label on tube`, 
+         vol_extracted = `WW volume extracted (ml)`,
+         Vaccine_ID = `Stock ID of Spike`,
+         'Biobot_id' = `Biobot/other ID`) %>% 
   mutate('WW_vol' = coalesce(WW_vol, `Total WW volume calculated (ml)`) ) %>% 
-  select(WW_vol, Label_tube, vol_extracted) %>% 
+  
+  select(WW_vol, Label_tube, vol_extracted, Vaccine_ID, `Biobot_id`) %>% 
   distinct() %>% 
   mutate_at('Label_tube', ~str_remove_all(., " ")) %>% 
+  mutate_at('Biobot_id', str_remove,  ' ') %>% 
   
-  # removing wrongly entered volumes for replicates, replacing with the max volume
+  # removing wrongly entered volumes for replicates, replacing with the max volume 
+# (this is a temporary fix, a wiser function that looks for empty elements in weight column should be written)
   {if(same_bottle_for_triplicates == 'yes') { 
     mutate(., unique_labels = str_remove(Label_tube,'[1-3]$')) %>% 
     group_by(unique_labels) %>% 
@@ -138,75 +137,153 @@ volumes_data <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrated sam
     }
   }
 
-# baylor's volumes from a separate excel file    
-if (bb_qpcr$Target %>% str_detect('Baylor') %>% sum()) {
-  baylor_volumes <- str_c('excel files/Baylor/', 'Baylor_sample volumes', '.xlsx') %>% 
-    read_xlsx (sheet = '706') %>% 
-    rename('WWTP' = contains('SYMBOL', ignore.case = T), 'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T), 'Label_tube' = `Sample ID`) %>% 
-    mutate_at('Label_tube', ~str_remove(., '\\.') ) %>% 
+# baylor's ID, vols ----    
+
+baylor_trigger <- qpcr_polished$Target %>% str_detect('Baylor') %>% any()
+
+# Getting baylor's volumes from a separate excel file (from Austen's email)
+if (baylor_trigger) {
+  
+  baylor_volumes <- qpcr_polished %>% 
+    filter(str_detect(Target, 'Baylor')) %>%  
+    pull(Sample_name) %>% unique() %>%  # get all Baylor sheets in data
+    
+    # read the sheets matching the names, while renaming columns
+    map_dfr( ~ read_xlsx (str_c('excel files/Baylor/', 'Baylor_sample volumes', '.xlsx'), sheet = .x) %>%
+           rename('WWTP' = contains('SYMBOL', ignore.case = T), 
+                  'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T), 
+                  'Biobot_id' = `Sample ID`) %>% 
+             mutate('Label_tube' = str_c(.x, WWTP)) ) %>% 
+    mutate_at('Biobot_id', ~str_remove(., '\\.')) %>% 
     
     pivot_longer(cols = starts_with('Volume'), names_to = 'index', values_to = 'WW_vol') %>% 
     separate(index, into =  c(NA, 'biological_replicates')) %>% 
     mutate(Label_tube = str_c(Label_tube, biological_replicates), vol_extracted = 1.5) %>% 
-    select(-`FACILITY NAME`, -biological_replicates, -WWTP)
-  }
+    select(-biological_replicates)
+}
 
-# join the results with the volumes
-vol_R <- bb_qpcr %>% 
-  filter(!str_detect(Target, 'Baylor')) %>% 
-  left_join(volumes_data, by = 'Label_tube') %>% 
-  left_join(all_spike_virus_conc, by = 'Target') # spike in concentrations (BCoV and BRSV)
+# Vaccine spike concentrations
+spike_list <- read_sheet(sheeturls$data_dump, sheet = 'Preamble', range = 'B6:G', col_types = 'ccnnnc') %>% 
+  rename(spike_virus_conc = `[Stock conc.]`, Sample_name = Week)  
 
-# Baylor WWTP volumes
-if (bb_qpcr$Target %>% str_detect('Baylor') %>% sum()) {
-vol_B <- bb_qpcr %>% 
-  filter(str_detect(Target, 'Baylor')) %>%
-  left_join(baylor_volumes, by = 'Label_tube') %>% 
-  mutate(vol_extracted = 1.5) %>% 
-  mutate(spike_virus_conc = all_spike_virus_conc %>% filter(str_detect(Target, 'BCoV') ) %>% pull(spike_virus_conc))  # spike in concentrations (BCoV and BRSV)
+# # join Biobot_id and Facility names for Baylor data
+# if (qpcr_polished$Target %>% str_detect('Baylor') %>% any()) {
+# bb_qpcr_B <- qpcr_polished %>% 
+#   filter(str_detect(Target, 'Baylor')) %>%
+#   mutate(WWTP = assay_variable) %>% 
+#   
+#   left_join(biobot_lookup %>% select(-`Biobot_id`), by = 'WWTP')
+#   
+# } else bb_qpcr_B <- tibble(NULL)
+# 
+# # join rice and baylor data with WWTP matched Biobot_ids
+# bb_qpcr <- bind_rows(bb_qpcr_R, bb_qpcr_B) 
+
+```
+
+
+```{r attaching_volumes_biobots}
+
+# Join WWTP names to qPCR dataset for Rice data
+
+vol_R <- qpcr_polished %>% 
+  filter(!str_detect(Target, 'Baylor')) %>% # filter only Rice data
+  
+  left_join(volumes_data_Rice, by = 'Label_tube') %>%
+  mutate_at('Biobot_id', ~if_else(is.na(.x), str_c(Sample_name, assay_variable), .x)) %>% # stand-by name for missing cols
+  
+  left_join(spike_list %>% select(Vaccine_ID, spike_virus_conc),  by = 'Vaccine_ID' ) %>% 
+  left_join(biobot_lookup, by = 'Biobot_id') %>% 
+  # left_join(all_spike_virus_conc, by = 'Target') # spike in concentrations (BCoV and BRSV)
+  mutate_at(c('WWTP', 'FACILITY NAME'), ~if_else(str_detect(., '^X')|is.na(.), assay_variable, .)) 
+
+# Join Baylor WWTP volumes
+if (baylor_trigger) {
+
+  vol_B <- qpcr_polished %>% 
+    filter(str_detect(Target, 'Baylor')) %>% 
+    # select(-`Biobot_id`) %>% 
+    left_join(baylor_volumes, by = 'Label_tube') %>% 
+    fuzzyjoin::regex_right_join(spike_list %>% select(Sample_name, Vaccine_ID, spike_virus_conc),
+                                ., by = 'Sample_name') %>% 
+    select(-`Sample_name.x`) %>% rename(Sample_name = `Sample_name.y`)
+    
+    
 } else vol_B <- tibble(NULL)
+
+```
+
+
+```{r recovery_calculations}
 
 # join the results with the WWTP identifiers and names
 vol_qpcr <- bind_rows(vol_R, vol_B) %>% 
   
   # Calculations for spiked in and recovered copies of the virus
   mutate(`Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e3 * elution_volume/vol_extracted, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
-  mutate_cond(str_detect(`Sample Name`, 'Vaccine'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (.050 * 1e-3), Recovered = `Copy #` * 1e6 * 50/20, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
+  mutate_cond(str_detect(Sample_name, 'Vaccine'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (.050 * 1e-3), Recovered = `Copy #` * 1e6 * 50/20, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
   mutate_cond(str_detect(Target, 'Baylor'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e6 /30, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
   select(-spike_virus_conc)
- 
-```
-
-
-```{r summarizing_plot}
 
 # Adding a dummy CT column (if only ddPCR data is being loaded; which lacks the CT column) - for compatibility with qPCR code
 if(vol_qpcr %>%  {!'CT' %in% colnames(.)}) vol_qpcr$CT = NA
 
+# Summary and long_format ----
+# (under development)
+vol_brief = list( raw.dat = vol_qpcr %>% 
+                    select(Target, Sample_name, WWTP, where(is.numeric) ))
+vol_brief$summ.dat <- vol_brief$raw.dat %>% 
+                    group_by(Target, Sample_name, WWTP) %>% 
+                    summarize_all(.funs = lst(mean, sd), na.rm = T)
+
+
+```
+
+### Summary plot (copies per ul RNA)
+
+```{r all_plot}
+
+```
+
+
+### Recovery
+
+open circles : Copies of surrogate virus spiked in
+filled circles : Copies of surrogate virus recovered
+
+
+```{r summarizing_plot}
+
+
 # Picking out only spike-in quantification
 spike_qpcr <- vol_qpcr %>% filter(str_detect(Target, 'BCoV|BRSV')) %>% 
-  select(c(CT, Target, `Sample Name`, `Copy #`:`Recovery fraction` ))
+  select(c(CT, Target, Sample_name, `Copy #`:`Recovery fraction` ))
 
 if(!sum(translate_id_manual == 'none'))
 { spike_qpcr %<>% mutate_at(c('WWTP', 'FACILITY NAME'), ~str_replace_all(., translate_id_manual)) %>% 
   separate(WWTP, c('WWTP', 'tmp')) %>% 
-  mutate_cond(str_detect(`Sample Name`, 'TR'), 'Sample Name' = WWTP, 'WWTP' = tmp) %>% 
+  mutate_cond(str_detect(Sample_name, 'TR'), 'Sample_name' = WWTP, 'WWTP' = tmp) %>% 
   select(-tmp)
 }
 
 # Below code and plots executed only if spike quantification exists in the data
 if(spike_qpcr %>% plyr::empty() %>% !.) {
   # Summarize mean and SD for biological replicates
-  vol_qpcr_summary <- spike_qpcr %>% select(-WW_vol, -vol_extracted) %>% group_by(Target, `Sample Name`, `FACILITY NAME`, WWTP) %>% summarise_at(vars(2,3:5), funs(mean(.,na.rm = T), sd(.,na.rm = T))) 
+  vol_qpcr_summary <- spike_qpcr %>% select(-WW_vol, -vol_extracted) %>% group_by(Target, Sample_name, `FACILITY NAME`, WWTP) %>% summarise_at(vars(2,3:5), funs(mean(.,na.rm = T), sd(.,na.rm = T))) 
   
   # order samples by ascending order of BCoV copies
-  # WWTP_order <- vol_qpcr_summary %>% filter(str_detect(Target,'BCoV')) %>% arrange(`Copy #_mean`) %>% pull(WWTP) 
+  WWTP_order_1 <- vol_qpcr_summary %>% 
+    filter(str_detect(Target,'BCoV')) %>% 
+    arrange(`Copy #_mean`) %>% 
+    pull(WWTP) %>% 
+    unique() # accounts for duplicate labels - for controls and standards
+  
   vol_qpcr_summary$WWTP %<>%  fct_relevel(levels = WWTP_order_1) # order samples by BCoV ascending order
   
   # Convert data into long form
-  long_vol_qpcr_summary <- vol_qpcr_summary %>% gather(key = 'Measurement', value = 'Reading', -Target, -`Sample Name`, -`FACILITY NAME`, -WWTP) %>% separate(Measurement, into = c('Measurement','val'),"_") %>% spread(val,Reading) # Seperate mean and variance and group by variable of measurement
+  long_vol_qpcr_summary <- vol_qpcr_summary %>% gather(key = 'Measurement', value = 'Reading', -Target, -Sample_name, -`FACILITY NAME`, -WWTP) %>% separate(Measurement, into = c('Measurement','val'),"_") %>% spread(val,Reading) # Seperate mean and variance and group by variable of measurement
   
-  long_vol_qpcr_raw <- spike_qpcr %>% gather(key = 'Measurement', value = 'val', -Target, -`Sample Name`, -WWTP, -`FACILITY NAME`) # Seperate mean and variance and group by variable of measurement
+  long_vol_qpcr_raw <- spike_qpcr %>% gather(key = 'Measurement', value = 'val', -Target, -Sample_name, -WWTP, -`FACILITY NAME`) # Seperate mean and variance and group by variable of measurement
   
   # plot recovery and spiked in
   reco_plot <- plot_mean_sd_jitter(long_vol_qpcr_summary, long_vol_qpcr_raw, long_format = T, measure_var = 'Recovered', sample_var = str_c(extra_categories), exclude_sample = T, x_var = WWTP, ylabel = 'Genome copies/l Wastewater') 
@@ -241,7 +318,7 @@ extra_samples_to_plot <- str_c(extra_categories, '|Vaccine|NTC') %>% str_remove(
 plot_mean_sd_jitter(summary_bb_qpcr, bb_qpcr, sample_var = extra_samples_to_plot, exclude_sample = F, x_var = WWTP) %>% format_logscale_y() %>% print()
 
 # Normalized recovery: N1/N2 and BCoV plots
-reco_ex <- vol_qpcr %>% filter(str_detect(`Sample Name`,extra_samples_to_plot)) %>% ggplot(aes(x = WWTP, y = Recovered, colour = Target)) + geom_point() + facet_grid(~ `Sample Name`,  scales = 'free_x', space = 'free_x') + ylab('Genome copies/l Wastewater') + xlab('Sample Name')
+reco_ex <- vol_qpcr %>% filter(str_detect(Sample_name,extra_samples_to_plot)) %>% ggplot(aes(x = WWTP, y = Recovered, colour = Target)) + geom_point() + facet_grid(~ Sample_name,  scales = 'free_x', space = 'free_x') + ylab('Genome copies/l Wastewater') + xlab('Sample_name')
 
 reco_ex %>% format_logscale_y() %>% format_classic() %>% print()
 
@@ -267,8 +344,8 @@ if(spike_qpcr %>% plyr::empty() %>% !.) {
 ```{r n1n2}
 
 long_targets_vol <- vol_qpcr %>% 
-  select(c(Target, `Sample Name`, biological_replicates:WWTP , -CT)) %>% 
-  filter(!str_detect(`Sample Name`, str_c(extra_categories, '|NTC'))) %>% 
+  select(c(Target, Sample_name, biological_replicates:WWTP , -CT)) %>% 
+  filter(!str_detect(Sample_name, str_c(extra_categories, '|NTC'))) %>% 
   pivot_wider(names_from = 'Target', values_from = 'Copy #')
 
 # NOTE: This function is very useful - errors here indicate that there are overlapping labels in the data: Check the sample naming sheet first thing
@@ -281,9 +358,9 @@ plot_scatter(long_targets_vol) %>% print()
 
 long_targets_vol_summary <- vol_qpcr %>% 
   select(-WW_vol) %>% 
-  group_by(Target, `Sample Name`, `FACILITY NAME`, WWTP) %>% 
+  group_by(Target, Sample_name, `FACILITY NAME`, WWTP) %>% 
   summarise_at('Copy #', funs(mean(.,na.rm = T))) %>% 
-  filter(!str_detect(`Sample Name`, str_c(extra_categories, '|NTC|Vaccine'))) %>% 
+  filter(!str_detect(Sample_name, str_c(extra_categories, '|NTC|Vaccine'))) %>% 
   pivot_wider(names_from = 'Target', values_from = 'Copy #')
 
 plot_scatter(long_targets_vol_summary) %>% print()
@@ -349,10 +426,10 @@ presentable_vol_qpcr <- vol_qpcr %>%
   mutate(Detection_Limit = if_else(str_detect(`Target Name`, 'N1|N2'), 330, 
                                    if_else(str_detect(`Target Name`, 'Baylor'), 23500, 705) 
                                    ) , Sample_Type = NA, Comments = NA) %>% 
-  mutate_at('Sample Name', ~as.character(.)) %>%
-  mutate_at('Facility', ~if_else(. == assay_variable, str_c(`Sample Name`, '/', assay_variable), .)) %>%
-  mutate(Tube_ID = if_else(biological_replicates == ''|is.na(biological_replicates), str_c(`Sample Name`, ' ', assay_variable), str_c(`Sample Name`, ' ', assay_variable, '', biological_replicates)) ) %>% 
-  mutate(WWTP_ID = if_else(biological_replicates == ''|is.na(biological_replicates), str_c(`Sample Name`, '.', WWTP) , str_c(`Sample Name`, '.', WWTP, '-', biological_replicates))) %>% 
+  mutate_at('Sample_name', ~as.character(.)) %>%
+  mutate_at('Facility', ~if_else(. == assay_variable, str_c(Sample_name, '/', assay_variable), .)) %>%
+  mutate(Tube_ID = if_else(biological_replicates == ''|is.na(biological_replicates), str_c(Sample_name, ' ', assay_variable), str_c(Sample_name, ' ', assay_variable, '', biological_replicates)) ) %>% 
+  mutate(WWTP_ID = if_else(biological_replicates == ''|is.na(biological_replicates), str_c(Sample_name, '.', WWTP) , str_c(Sample_name, '.', WWTP, '-', biological_replicates))) %>% 
   mutate('Limit of detection (copies/ul RNA)' = if_else(str_detect(`Target Name`, 'N1|N2'), 0.3, 0.5 )) %>% 
   
   # Arrange rows by WWTP facility 
@@ -366,8 +443,8 @@ presentable_vol_qpcr <- vol_qpcr %>%
 
 
 
-# presentable data for discussion with Baylor
-write_sheet(presentable_vol_qpcr,'https://docs.google.com/spreadsheets/d/1ltvW7xZf2aUPoBchD4NFGuV0gGWPkdsOW3a0Hxalm-Y/edit#gid=2113120147', sheet = title_name)  # save results to a google sheet
+# Output data - including controls
+check_ok_and_write(presentable_vol_qpcr, sheeturls$complete_data, title_name) # save results to a google sheet, ask for overwrite
 
 
 # presentable data for health department
@@ -378,7 +455,7 @@ present_WW_data <- presentable_vol_qpcr %>% filter(!str_detect(Facility, "Vaccin
 
 # Write data if not empty
 if(present_WW_data %>% is_empty() %>% !.){
-  write_sheet(present_WW_data,'https://docs.google.com/spreadsheets/d/1dBESjgWSFsOBodFFpYNhWIOAQ2a3wvoLkrn12V_rFck/edit#gid=0', sheet = title_name) # save results to a google sheet
+  check_ok_and_write(present_WW_data, sheeturls$wwtp_only_data, title_name) # save results to a google sheet, ask for overwrite
 }
 ```
 
