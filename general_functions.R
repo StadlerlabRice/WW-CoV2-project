@@ -73,10 +73,10 @@ mutate_when <- function(data, ...)
 }
 
 
-# Reads single column of data and converts into a 96 well plate format (Baylor sample names)
+# Reads single column of data and converts into a 96 well plate format (Baylor Sample_names)
 baylor_col_to_plate <- function(sheetnm)
 {
-  target <- 'BCoV' # appends to the sample name for direct pasting in qPCR template sheet
+  target <- 'BCoV' # appends to the Sample_name for direct pasting in qPCR template sheet
   flnm <- 'baylor_labels'
   registry_sheet <- 'https://docs.google.com/spreadsheets/d/1mJcCt1wMiOuBic6sRlBZJf8KSNu2y-B5PjzCUu7jPM8/edit#gid=1011717808'
   
@@ -159,7 +159,7 @@ get_template_for <- function(bait, sheet_url = sheeturls$templates)
   plate_template_raw <- read_sheet(sheet_url, sheet = 'Plate layouts', range = range_to_get)
   
   # Convert the 96 well into a single column, alongside the Well position
-  plate_template <- read_plate_to_column(plate_template_raw, 'Sample Name') # convert plate template (sample names) into a single vector, columnwise
+  plate_template <- read_plate_to_column(plate_template_raw, 'Sample_name') # convert plate template (Sample_names) into a single vector, columnwise
   
 }
 
@@ -242,7 +242,7 @@ lm_eqn <- function(m, trig = 0){
   
   optional1 <- function()
     {# output the difference between consecutive CT values
-    tsumrev <- trev %>% group_by(`Sample Name`) %>% summarise(CT = mean(CT), Quantity = mean(Quantity), CT_sd = sd(CT))
+    tsumrev <- trev %>% group_by(`Sample_name`) %>% summarise(CT = mean(CT), Quantity = mean(Quantity), CT_sd = sd(CT))
     diff(tsumrev$CT) %>% round(2)}
 
 # Tm plots ----
@@ -252,10 +252,10 @@ lm_eqn <- function(m, trig = 0){
 plotalltms <- function(results_relevant)
 { 
   # Gather the Tm's into another data frame and merge into 1 column
-  tmfl <- results_relevant %>% select(`Sample Name`, starts_with('Tm')) %>% gather('Peak number','Tm',-`Sample Name`)
+  tmfl <- results_relevant %>% select(`Sample_name`, starts_with('Tm')) %>% gather('Peak number','Tm',-`Sample_name`)
   
   # plot the Tm ; Graph will now show
-  plttm2 <- tmfl %>% ggplot(.) + aes(x = `Sample Name`, y = Tm) + geom_point(aes(color = `Peak number`), size = 2) +
+  plttm2 <- tmfl %>% ggplot(.) + aes(x = `Sample_name`, y = Tm) + geom_point(aes(color = `Peak number`), size = 2) +
     theme_classic() + scale_color_brewer(palette="Set1") + 
     theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, hjust = 1, vjust = .3)) + 
     ggtitle(paste(title_name,': Melting curves')) + facet_grid(~`Primer pair`, scales = 'free_x', space = 'free_x')
@@ -264,7 +264,7 @@ plotalltms <- function(results_relevant)
 # plot the first Tm only ; Graph will now show
 plottm1 <- function(results_relevant)
 { 
-  plttm <- results_relevant %>% ggplot(.) + aes(x = `Sample Name`, y = Tm1) + geom_point(color = 'red', size = 2) +
+  plttm <- results_relevant %>% ggplot(.) + aes(x = `Sample_name`, y = Tm1) + geom_point(color = 'red', size = 2) +
     theme_classic() + scale_color_brewer(palette="Set1") + 
     theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, hjust = 1, vjust = .3)) + 
     ggtitle(paste(title_name,': Melting curves')) + facet_grid(~`Primer pair`, scales = 'free_x', space = 'free_x')
@@ -275,19 +275,21 @@ plottm1 <- function(results_relevant)
 
 
 # Plotting mean, sd and individual replicates jitter
-plot_mean_sd_jitter <- function(summary_data = summary_results, raw_data = results_abs, long_format = F, measure_var = 'Copy #', sample_var = '.*', exclude_sample = F, colour_var = Target, x_var = assay_variable, y_var = `Copy #`, facet_var = `Sample Name`, title_text = title_name, ylabel = 'Genome copies/ul RNA', xlabel = plot_assay_variable, facet_style = 'grid')
-{ # Convenient handle for repetitive plotting in the same format; Reads data only in long format or wide (specify in long_format)
+plot_mean_sd_jitter <- function(summary_data = summary_results, raw_data = results_abs, long_format = F, measure_var = 'Copy #', sample_var = '.*', exclude_sample = F, target_filter = '.*', colour_var = Target, x_var = assay_variable, y_var = `Copy #`, facet_var = `Sample_name`, title_text = title_name, ylabel = 'Genome copies/ul RNA', xlabel = plot_assay_variable, facet_style = 'grid')
+{ # Convenient handle for repetitive plotting in the same format; Specify data format: long vs wide (specify in long_format = TRUE or FALSE)
   
   # filtering variables by user inputs
   if(long_format) # use long format if not plotting Copy #s - ex. Recovery, % recovery etc.
   {
-    summ_relevant <- summary_data %>% filter(Measurement == measure_var, str_detect(`Sample Name`, sample_var, negate = exclude_sample))
-    raw_relevant <- raw_data %>% filter(Measurement == measure_var, str_detect(`Sample Name`, sample_var, negate = exclude_sample))
-    y_var <- sym('val') # default y variable is val
+    summ_relevant <- summary_data %>% filter(Measurement == measure_var, str_detect(`Sample_name`, sample_var, negate = exclude_sample), str_detect(Target, target_filter))
+    raw_relevant <- raw_data %>% filter(Measurement == measure_var, str_detect(`Sample_name`, sample_var, negate = exclude_sample), str_detect(Target, target_filter))
+    y_var <- sym('value') # default y variable is value
+    
+    summ_actual_spike_in <- filter(summary_data, str_detect(Measurement,'Actual'), str_detect(`Sample_name`, sample_var, negate = exclude_sample), str_detect(Target, target_filter))
   } else 
     {
-      summ_relevant <- summary_data %>% filter(str_detect(`Sample Name`, sample_var, negate = exclude_sample))
-      raw_relevant <- raw_data %>% filter(str_detect(`Sample Name`, sample_var, negate = exclude_sample))
+      summ_relevant <- summary_data %>% filter(str_detect(`Sample_name`, sample_var, negate = exclude_sample), str_detect(Target, target_filter))
+      raw_relevant <- raw_data %>% filter(str_detect(`Sample_name`, sample_var, negate = exclude_sample), str_detect(Target, target_filter))
     }
   
   plt1 <- summ_relevant %>% ggplot(aes(x = {{x_var}}, y = mean, colour = {{colour_var}})) +
@@ -297,16 +299,19 @@ plot_mean_sd_jitter <- function(summary_data = summary_results, raw_data = resul
     geom_jitter(data = raw_relevant, aes(y = {{y_var}}, alpha = map_chr({{y_var}}, ~. == 0), size = map_chr({{y_var}}, ~. == 0)), width = .2, show.legend = F ) +
     scale_alpha_manual(values = c(.3, 1)) + scale_size_manual(values = c(1, 2)) + # manual scale for emphasizing unamplified samples
     
-    # Plotting actual spike ins (only for Recovery plot)
-    { if(measure_var == 'Recovered') list(geom_point(data = filter(summary_data, str_detect(Measurement,'Actual'), str_detect(`Sample Name`, sample_var, negate = exclude_sample)), colour = 'black', shape = 21), 
-             geom_line(data = filter(summary_data, str_detect(Measurement,'Actual'), str_detect(`Sample Name`, sample_var, negate = exclude_sample)), aes(group = {{colour_var}})))
+    # Plotting actual spike ins (only for Recovery plot'; only with long format data )
+    { if(measure_var == 'Recovered') list(geom_point(data = summ_actual_spike_in, colour = 'black', shape = 21), 
+             geom_line(data = summ_actual_spike_in, aes(group = {{colour_var}})))
     } +
     
-    # Facetting 
-    { if (facet_style == 'grid') facet_grid(cols = vars({{facet_var}}), scales = 'free_x', space = 'free_x')
-      if (facet_style == 'wrap free') facet_wrap(facets =  vars({{facet_var}}), scales = 'free') 
-      else NULL
-    } +
+    # Facetting
+    facet_grid(cols = vars({{facet_var}}), scales = 'free_x', space = 'free_x') +
+    
+    # experimental - conditional facetting (doesn't work for unknown reasons)
+    # { if (facet_style == 'grid') list(facet_grid(cols = vars({{facet_var}}), scales = 'free_x', space = 'free_x'))
+    #   if (facet_style == 'wrap free') list(facet_wrap(facets =  vars({{facet_var}}), scales = 'free')) 
+    #   else NULL
+    # } +
     
     # Labelling
     ggtitle(title_text) + ylab(ylabel) + xlab(xlabel)
@@ -320,7 +325,7 @@ plot_biological_replicates <- function(results_abs, title_text = title_name, xla
 { # Convenient handle for repetitive plotting 'Copy #' vs biological replicate
   
   plt <- results_abs %>% ggplot(aes(x = `Tube ID`, y = `Copy #`, color = Target)) + ylab('Copies/ul RNA extract') +    # Specify the plotting variables 
-    geom_point(size = 2) + facet_grid(~`Sample Name`, scales = 'free_x', space = 'free_x') + # plot points and facetting
+    geom_point(size = 2) + facet_grid(~`Sample_name`, scales = 'free_x', space = 'free_x') + # plot points and facetting
     ggtitle(title_text) + xlab(xlabel)
   plt.formatted <- plt %>% format_classic(.) %>% format_logscale_y() # formatting plot, axes labels, title and logcale plotting
 }
@@ -332,11 +337,11 @@ plot_scatter <- function(plot_data = results_abs, long_format = F, measure_var =
   # filtering variables by user inputs
   if(long_format) # use long format if not plotting Copy #s - ex. Recovery, % recovery etc.
   {
-    plot_relevant <- plot_data %>% filter(Measurement == measure_var, str_detect(`Sample Name`, sample_var, negate = exclude_sample))
+    plot_relevant <- plot_data %>% filter(Measurement == measure_var, str_detect(`Sample_name`, sample_var, negate = exclude_sample))
     y_var <- sym('val') # default y variable is val
   } else 
   {
-    plot_relevant <- plot_data %>% filter(str_detect(`Sample Name`, sample_var, negate = exclude_sample)) %>% ungroup()
+    plot_relevant <- plot_data %>% filter(str_detect(`Sample_name`, sample_var, negate = exclude_sample)) %>% ungroup()
     
   }
   
