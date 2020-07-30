@@ -9,7 +9,11 @@ dat.all <- map_dfr(read_these_sheets, ~ read_sheet(sheeturls$wwtp_only_data , sh
                     
 ) 
 
-plt1 <- dat.all %>% {ggplot(., aes(x = WWTP, y = Recovery_Rate, colour = Lab)) + 
+dat.all1 <- dat.all %>% 
+  arrange(Facility) %>% 
+  mutate_at('WWTP', as_factor)
+
+plt1 <- dat.all1 %>% {ggplot(., aes(x = WWTP, y = Recovery_Rate, colour = Lab)) + 
     geom_point() + ggtitle('713 Rice vs Baylor')} %>% 
   format_classic() 
 
