@@ -226,7 +226,7 @@ long_processed_minimal$summ.dat %<>% separate(Measurement, into = c('Measurement
 
 ```{r all_plot}
 
-  concWW_plot <- plot_mean_sd_jitter(long_processed_minimal$summ.dat, long_processed_minimal$raw.dat, long_format = T, measure_var = 'Recovered', sample_var = str_c(extra_categories), exclude_sample = T, x_var = WWTP, ylabel = 'Genome copies/l Wastewater') 
+  concWW_plot <- plot_mean_sd_jitter(measure_var = 'Recovered', sample_var = extra_categories, exclude_sample = T, x_var = WWTP, ylabel = 'Genome copies/l Wastewater') 
   
   concWW_plot %>% format_logscale_y() %>% print()
   
@@ -238,10 +238,9 @@ long_processed_minimal$summ.dat %<>% separate(Measurement, into = c('Measurement
 open circles : Copies of surrogate virus spiked in
 filled circles : Copies of surrogate virus recovered
 
-
 ```{r summarizing_plot}
 
-plot_mean_sd_jitter(long_processed_minimal$summ.dat, long_processed_minimal$raw.dat, long_format = T, measure_var = 'Recovered', sample_var = str_c(extra_categories), exclude_sample = T, target_filter = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Genome copies/l Wastewater') %>%  format_logscale_y() %>% print()
+plot_mean_sd_jitter(measure_var = 'Recovered', sample_var = str_c(extra_categories), exclude_sample = T, target_filter = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Genome copies/l Wastewater') %>%  format_logscale_y() %>% print()
 
 ```
 
@@ -250,7 +249,7 @@ plot_mean_sd_jitter(long_processed_minimal$summ.dat, long_processed_minimal$raw.
 ```{r percentreco}
 
 
-  percentreco_plt <- plot_mean_sd_jitter(long_processed_minimal$summ.dat, long_processed_minimal$raw.dat, long_format = T, measure_var = 'Recovery fraction', sample_var = str_c(extra_categories, '|Vaccine'), exclude_sample = T, target_filter = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Fraction of spike-in recovered') 
+  percentreco_plt <- plot_mean_sd_jitter(measure_var = 'Recovery fraction', sample_var = str_c(extra_categories, '|Vaccine'), exclude_sample = T, target_filter = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Fraction of spike-in recovered') 
   
  percentreco_plt %>% print()
 
@@ -268,11 +267,11 @@ plot_mean_sd_jitter(long_processed_minimal$summ.dat, long_processed_minimal$raw.
 extra_samples_to_plot <- str_c(extra_categories, '|Vaccine|NTC') %>% str_remove('\\|Std|Std\\|')
 
 # N1/N2 and BCoV plots : Copies/ul RNA
-plot_mean_sd_jitter(long_processed_minimal$summ.dat, long_processed_minimal$raw.dat, long_format = T, sample_var = extra_samples_to_plot, exclude_sample = F, x_var = WWTP) %>% format_logscale_y() %>% print()
+plot_mean_sd_jitter(sample_var = extra_samples_to_plot, exclude_sample = F, x_var = WWTP) %>% format_logscale_y() %>% print()
 
 
 # Copies/l WW: N1/N2 and BCoV plots
-plot_mean_sd_jitter(long_processed_minimal$summ.dat, long_processed_minimal$raw.dat, long_format = T, measure_var = 'Recovered', sample_var = extra_samples_to_plot, x_var = WWTP, ylabel = 'Genome copies/l Wastewater') %>% 
+plot_mean_sd_jitter(measure_var = 'Recovered', sample_var = extra_samples_to_plot, x_var = WWTP, ylabel = 'Genome copies/l Wastewater') %>% 
   format_logscale_y() %>% print()
 
 # # recovered vs spiked in plot for extra samples
@@ -280,7 +279,7 @@ plot_mean_sd_jitter(long_processed_minimal$summ.dat, long_processed_minimal$raw.
 #   format_logscale_y() %>% print()
 
 # % plot for extra samples
-plot_mean_sd_jitter(long_processed_minimal$summ.dat, long_processed_minimal$raw.dat, long_format = T, measure_var = 'Recovery fraction', sample_var = extra_samples_to_plot, target_filter = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Fraction of spike-in recovered') 
+plot_mean_sd_jitter(measure_var = 'Recovery fraction', sample_var = extra_samples_to_plot, target_filter = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Fraction of spike-in recovered') %>% print()
 
 ```
 
@@ -338,7 +337,7 @@ bb_Ndata <- list(summary_bb_qpcr, bb_qpcr) %>%
       ) %>%
   setNames(c('summary', 'raw'))
 
-pltN <- plot_mean_sd_jitter(bb_Ndata$summary, bb_Ndata$raw, sample_var = str_c(extra_categories,'|NTC|Vaccine'), exclude_sample = T, x_var = as_factor(WWTP), facet_var = NULL) 
+pltN <- plot_mean_sd_jitter(bb_Ndata, long_format = T, sample_var = str_c(extra_categories,'|NTC|Vaccine'), exclude_sample = T, x_var = as_factor(WWTP), facet_var = NULL) 
 
 pltN %>% print()
 pltN %>% format_logscale_y() %>% print()

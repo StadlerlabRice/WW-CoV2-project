@@ -275,28 +275,35 @@ plottm1 <- function(results_relevant)
 
 
 # Plotting mean, sd and individual replicates jitter
-plot_mean_sd_jitter <- function(summary_data = summary_results, raw_data = results_abs, long_format = F, measure_var = 'Copy #', sample_var = '.*', exclude_sample = F, target_filter = '.*', colour_var = Target, x_var = assay_variable, y_var = `Copy #`, facet_var = `Sample_name`, title_text = title_name, ylabel = 'Genome copies/ul RNA', xlabel = plot_assay_variable, facet_style = 'grid')
+plot_mean_sd_jitter <- function(.data_list = long_processed_minimal, long_format = TRUE, measure_var = 'Copy #', sample_var = '.*', exclude_sample = F, target_filter = '.*', colour_var = Target, x_var = assay_variable, y_var = `Copy #`, facet_var = `Sample_name`, title_text = title_name, ylabel = 'Genome copies/ul RNA', xlabel = plot_assay_variable, facet_style = 'grid')
 { # Convenient handle for repetitive plotting in the same format; Specify data format: long vs wide (specify in long_format = TRUE or FALSE)
   
-  # filtering variables by user inputs
+  .dat_filtered <- .data_list %>% map( filter, 
+                                  str_detect(`Sample_name`, sample_var, negate = exclude_sample), 
+                                  str_detect(Target, target_filter))
+  
+  # filtering data to be plotted by user inputs
   if(long_format) # use long format if not plotting Copy #s - ex. Recovery, % recovery etc.
   {
-    summ_relevant <- summary_data %>% filter(Measurement == measure_var, str_detect(`Sample_name`, sample_var, negate = exclude_sample), str_detect(Target, target_filter))
-    raw_relevant <- raw_data %>% filter(Measurement == measure_var, str_detect(`Sample_name`, sample_var, negate = exclude_sample), str_detect(Target, target_filter))
+    
+    .data_to_plot <- .dat_filtered %>% map(filter,
+                                           Measurement == measure_var)
+    
     y_var <- sym('value') # default y variable is value
     
-    summ_actual_spike_in <- filter(summary_data, str_detect(Measurement,'Actual'), str_detect(`Sample_name`, sample_var, negate = exclude_sample), str_detect(Target, target_filter))
-  } else 
-    {
-      summ_relevant <- summary_data %>% filter(str_detect(`Sample_name`, sample_var, negate = exclude_sample), str_detect(Target, target_filter))
-      raw_relevant <- raw_data %>% filter(str_detect(`Sample_name`, sample_var, negate = exclude_sample), str_detect(Target, target_filter))
-    }
+    summ_actual_spike_in <- .dat_filtered$summ.dat %>% filter(str_detect(Measurement,'Actual'))
+    
+  } else
+    
+  {
+    .data_to_plot <- .dat_filtered
+  }
   
-  plt1 <- summ_relevant %>% ggplot(aes(x = {{x_var}}, y = mean, colour = {{colour_var}})) +
+  plt1 <- .data_to_plot$summ.dat %>% ggplot(aes(x = {{x_var}}, y = mean, colour = {{colour_var}})) +
     geom_point(size = 2) + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd), width = .1) +
     
     # Individual data points
-    geom_jitter(data = raw_relevant, aes(y = {{y_var}}, alpha = map_chr({{y_var}}, ~. == 0), size = map_chr({{y_var}}, ~. == 0)), width = .2, show.legend = F ) +
+    geom_jitter(data = .data_to_plot$raw.dat, aes(y = {{y_var}}, alpha = map_chr({{y_var}}, ~. == 0), size = map_chr({{y_var}}, ~. == 0)), width = .2, show.legend = F ) +
     scale_alpha_manual(values = c(.3, 1)) + scale_size_manual(values = c(1, 2)) + # manual scale for emphasizing unamplified samples
     
     # Plotting actual spike ins (only for Recovery plot'; only with long format data )
@@ -307,7 +314,7 @@ plot_mean_sd_jitter <- function(summary_data = summary_results, raw_data = resul
     # Facetting
     facet_grid(cols = vars({{facet_var}}), scales = 'free_x', space = 'free_x') +
     
-    # experimental - conditional facetting (doesn't work for unknown reasons)
+    # experimental - conditional facetting (doesn't work for unknown reasons) : Just facet_grid the output to remove facets or add new!
     # { if (facet_style == 'grid') list(facet_grid(cols = vars({{facet_var}}), scales = 'free_x', space = 'free_x'))
     #   if (facet_style == 'wrap free') list(facet_wrap(facets =  vars({{facet_var}}), scales = 'free')) 
     #   else NULL
@@ -331,31 +338,27 @@ plot_biological_replicates <- function(results_abs, title_text = title_name, xla
 }
 
 # Scatter plot with a linear regression fit and equation
-plot_scatter <- function(plot_data = results_abs, long_format = F, measure_var = 'Copy #', sample_var = '.*', exclude_sample = F, colour_var = NULL, x_var = N1_multiplex, y_var = N2_multiplex, title_text = title_name)
-{ # Convenient handle for repetitive plotting in the same format; Reads data only in long format or wide (specify in long_format)
+plot_scatter <- function(.data = processed_quant_data, text_cols = minimal_label_columns, measure_var = 'Copy #', sample_var = str_c(extra_categories, '|NTC'), exclude_sample = T, colour_var = NULL, x_var = N1_multiplex, y_var = N2_multiplex, title_text = title_name)
+{ # Convenient handle for repetitive plotting in the same format; Reads data in wide format only
   
-  # filtering variables by user inputs
-  if(long_format) # use long format if not plotting Copy #s - ex. Recovery, % recovery etc.
-  {
-    plot_relevant <- plot_data %>% filter(Measurement == measure_var, str_detect(`Sample_name`, sample_var, negate = exclude_sample))
-    y_var <- sym('val') # default y variable is val
-  } else 
-  {
-    plot_relevant <- plot_data %>% filter(str_detect(`Sample_name`, sample_var, negate = exclude_sample)) %>% ungroup()
-    
-  }
+  .data_for_plot <- .data %>% 
+    select(all_of(text_cols), all_of(measure_var)) %>% 
+    str_detect(`Sample_name`, sample_var, negate = exclude_sample) %>% 
+    pivot_wider(names_from = 'Target', values_from = 'Copy #') %>% 
+    ungroup()
   
+
   # Making linear regression formula (source: https://stackoverflow.com/a/50054285/9049673)
   fmla <- as.formula(paste(substitute(y_var), "~", substitute(x_var)))
   
   # Max and ranges for plotting
   strx <- paste(substitute(x_var)); stry <- paste(substitute(y_var))
-  xyeq <- plot_relevant %>%  summarise_all(~ max(., na.rm = T)) %>% select(all_of(c(strx, stry))) %>% min() %>% {.*0.9}
+  xyeq <- .data_for_plot %>%  summarise_all(~ max(., na.rm = T)) %>% select(all_of(c(strx, stry))) %>% min() %>% {.*0.9}
     
   # linear regression equation
-  lin_reg_eqn <- plot_relevant %>% lm(fmla, data = .) %>% lm_eqn(.)
+  lin_reg_eqn <- .data_for_plot %>% lm(fmla, data = .) %>% lm_eqn(.)
   
-  plt1 <- plot_relevant %>% ggplot(aes(x = {{x_var}}, y =  {{y_var}}, colour = {{colour_var}})) +
+  plt1 <- .data_for_plot %>% ggplot(aes(x = {{x_var}}, y =  {{y_var}}, colour = {{colour_var}})) +
     geom_point(size = 2) +
     
     # linear regression
