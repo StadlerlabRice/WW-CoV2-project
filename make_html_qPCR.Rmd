@@ -290,36 +290,25 @@ plot_mean_sd_jitter(measure_var = 'Recovery fraction', sample_var = extra_sample
 
 ```{r n1n2}
 
-long_targets_vol <- processed_quant_data %>% 
-  select(c(Target, Sample_name, biological_replicates:WWTP , -CT)) %>% 
-  filter(!str_detect(Sample_name, str_c(extra_categories, '|NTC'))) %>% 
-  pivot_wider(names_from = 'Target', values_from = 'Copy #')
-
 # NOTE: This function is very useful - errors here indicate that there are overlapping labels in the data: Check the sample naming sheet first thing
-plot_scatter(long_targets_vol) %>% print()
+
+plot_scatter(processed_quant_data) %>% print()
+
 ```
 
-### N1 vs N2 avg
+### N1 vs N2 logscale
 
 ```{r n1n2avg}
 
-long_targets_vol_summary <- processed_quant_data %>% 
-  select(-WW_vol) %>% 
-  group_by(Target, Sample_name, `FACILITY NAME`, WWTP) %>% 
-  summarise_at('Copy #', funs(mean(.,na.rm = T))) %>% 
-  filter(!str_detect(Sample_name, str_c(extra_categories, '|NTC|Vaccine'))) %>% 
-  pivot_wider(names_from = 'Target', values_from = 'Copy #')
+plot_scatter(processed_quant_data, x_var = log10(N1_multiplex), y_var = log10(N2_multiplex)) %>% print()
 
-plot_scatter(long_targets_vol_summary) %>% print()
 ```
 
 ### BCoV vs N2 avg
 
 ```{r n2bcov}
-long_targets_vol_summary %>% {'BCoV_M' %in% colnames(.)} %>% if(.)
-{
+
  plot_scatter(long_targets_vol_summary, x_var = BCoV_M) %>% print()
-}
 
 ```
 

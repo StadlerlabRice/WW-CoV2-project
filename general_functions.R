@@ -338,15 +338,18 @@ plot_biological_replicates <- function(results_abs, title_text = title_name, xla
 }
 
 # Scatter plot with a linear regression fit and equation
-plot_scatter <- function(.data = processed_quant_data, text_cols = minimal_label_columns, measure_var = 'Copy #', sample_var = str_c(extra_categories, '|NTC'), exclude_sample = T, colour_var = NULL, x_var = N1_multiplex, y_var = N2_multiplex, title_text = title_name)
+plot_scatter <- function(.data = processed_quant_data, text_cols = minimal_label_columns, measure_var = 'Copy #', sample_var = str_c(extra_categories, '|NTC|Vaccine'), exclude_sample = T, colour_var = NULL, x_var = N1_multiplex, y_var = N2_multiplex, title_text = title_name)
 { # Convenient handle for repetitive plotting in the same format; Reads data in wide format only
   
   .data_for_plot <- .data %>% 
-    select(all_of(text_cols), all_of(measure_var)) %>% 
-    str_detect(`Sample_name`, sample_var, negate = exclude_sample) %>% 
+    select(all_of(text_cols), biological_replicates, all_of(measure_var)) %>% 
+    filter(str_detect(`Sample_name`, sample_var, negate = exclude_sample)) %>% 
     pivot_wider(names_from = 'Target', values_from = 'Copy #') %>% 
     ungroup()
   
+  if(.data_for_plot %>% names() %>% 
+     {str_c(enexpr(x_var)) %in% . & str_c(enexpr(y_var)) %in% . } %>% 
+     !.) return('No targets for this scatterplot')
 
   # Making linear regression formula (source: https://stackoverflow.com/a/50054285/9049673)
   fmla <- as.formula(paste(substitute(y_var), "~", substitute(x_var)))
