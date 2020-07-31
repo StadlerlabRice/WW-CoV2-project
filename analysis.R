@@ -97,3 +97,12 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL)
 
 # function call (uncomment if sourcing the script to run)
 # process_qpcr(flnm.here)
+
+# Grand function call
+
+# if dd in file name, get droplet file(- from google drive)
+# googledrive::drive_get(path =  "~/Stadler research group/COV2 Wastewater Surveillance/Results and raw data/ddPCR/Weekly Results in Individual Files/", file = ..)
+# write to Raw.ddpcr (just in case?>?)
+# 
+# if not then invoke process_qpcr
+#  (chekc for standard curve and process it)
