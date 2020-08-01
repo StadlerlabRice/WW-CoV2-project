@@ -302,6 +302,10 @@ plot_mean_sd_jitter <- function(.data_list = long_processed_minimal, long_format
     .data_to_plot <- .dat_filtered
   }
   
+  # Exit with a useful message if data is empty
+  if(.data_to_plot %>% map_lgl(plyr::empty) %>% any()) return('Data does not exist')  
+  
+  # plotting
   plt1 <- .data_to_plot$summ.dat %>% ggplot(aes(x = {{x_var}}, y = mean, colour = {{colour_var}})) +
     geom_point(size = 2) + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd), width = .1) +
     
