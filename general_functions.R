@@ -4,7 +4,7 @@
   # Make sure to include raw data as well
 
 # calling libraries ; make sure they are installed (install.packages)
-library(readxl); library(magrittr); library(tidyverse); library(ggrepel); library(googlesheets4) 
+library(readxl); library(magrittr); library(tidyverse); library(ggrepel); library(googlesheets4); library(rlang) 
 
 sheeturls <- list(templates = 'https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=478762118',
                   biobot_id = 'https://docs.google.com/spreadsheets/d/1ghb_GjTS4yMFbzb65NskAlm-2Gb5M4SNYi4FHE4YVyI/edit#gid=233791008',
@@ -275,7 +275,7 @@ plottm1 <- function(results_relevant)
 
 
 # Plotting mean, sd and individual replicates jitter
-plot_mean_sd_jitter <- function(.data_list = long_processed_minimal, long_format = TRUE, measure_var = 'Copy #', sample_var = '.*', exclude_sample = F, target_filter = '.*', colour_var = Target, x_var = assay_variable, y_var = `Copy #`, facet_var = `Sample_name`, title_text = title_name, ylabel = 'Genome copies/ul RNA', xlabel = plot_assay_variable, facet_style = 'grid')
+plot_mean_sd_jitter <- function(.data_list = long_processed_minimal, long_format = TRUE, measure_var = 'Copy #', sample_var = '.*', exclude_sample = F, target_filter = '.*', colour_var = Target, x_var = assay_variable, y_var = `Copy #`, ascending_order = FALSE, facet_var = `Sample_name`, title_text = title_name, ylabel = 'Genome copies/ul RNA', xlabel = plot_assay_variable, facet_style = 'grid')
 { # Convenient handle for repetitive plotting in the same format; Specify data format: long vs wide (specify in long_format = TRUE or FALSE)
   
   .dat_filtered <- .data_list %>% map( filter, 
@@ -288,6 +288,9 @@ plot_mean_sd_jitter <- function(.data_list = long_processed_minimal, long_format
     
     .data_to_plot <- .dat_filtered %>% map(filter,
                                            Measurement == measure_var)
+    if(ascending_order) .data_to_plot$summ.dat %<>% mutate_at('WWTP', as.character) %>% 
+      arrange(`mean`) %>% 
+      mutate_at('WWTP', as_factor)
     
     y_var <- sym('value') # default y variable is value
     
@@ -321,7 +324,7 @@ plot_mean_sd_jitter <- function(.data_list = long_processed_minimal, long_format
     # } +
     
     # Labelling
-    ggtitle(title_text) + ylab(ylabel) + xlab(xlabel)
+    ggtitle(title_text) + ylab(ylabel) #+ xlab(xlabel)
 
   plt1.formatted <- plt1 %>% format_classic() # clean formatting
   
@@ -341,35 +344,56 @@ plot_biological_replicates <- function(results_abs, title_text = title_name, xla
 plot_scatter <- function(.data = processed_quant_data, text_cols = minimal_label_columns, measure_var = 'Copy #', sample_var = str_c(extra_categories, '|NTC|Vaccine'), exclude_sample = T, colour_var = NULL, x_var = N1_multiplex, y_var = N2_multiplex, title_text = title_name)
 { # Convenient handle for repetitive plotting in the same format; Reads data in wide format only
   
+  # convert column names (target names) into string
+  checkx <- strx <- paste(substitute(x_var)) 
+  checky <- stry <- paste(substitute(y_var))
+  
+  modx <- function(x) x
+  
+  # filtering data for plotting according to function inputs
   .data_for_plot <- .data %>% 
     select(all_of(text_cols), biological_replicates, all_of(measure_var)) %>% 
     filter(str_detect(`Sample_name`, sample_var, negate = exclude_sample)) %>% 
     pivot_wider(names_from = 'Target', values_from = 'Copy #') %>% 
     ungroup()
   
+  
+  # If plotting transformations of variables
+  if(enexpr(x_var) %>% is.call()) {checkx <-  enexpr(x_var)[2] %>% paste(); }# modx <- eval(enexpr(x_var)[1])}
+  if(enexpr(y_var) %>% is.call()) checky <-  enexpr(y_var)[2] %>% paste()
+  
+  # If targets are not present in the data, stop running and print a message
   if(.data_for_plot %>% names() %>% 
-     {str_c(enexpr(x_var)) %in% . & str_c(enexpr(y_var)) %in% . } %>% 
-     !.) return('No targets for this scatterplot')
-
+     {checkx %in% . & checky %in% . } %>% 
+     !.) return('Targets for this scatterplot are not present in the data')
+  
+  # If duplicates of data exist in the data, stop running and print a message
+  if((.data_for_plot %>% select(all_of(c(checkx, checky))) %>% 
+     map_lgl(~class(.) == 'numeric') %>% 
+     sum()) < 2) return('Repeated data instances for the same WWTP found in this scatterplot')
+    
   # Making linear regression formula (source: https://stackoverflow.com/a/50054285/9049673)
-  fmla <- as.formula(paste(substitute(y_var), "~", substitute(x_var)))
+  fmla <- new_formula(enexpr(y_var), enexpr(x_var))
   
   # Max and ranges for plotting
-  strx <- paste(substitute(x_var)); stry <- paste(substitute(y_var))
-  xyeq <- .data_for_plot %>%  summarise_all(~ max(., na.rm = T)) %>% select(all_of(c(strx, stry))) %>% min() %>% {.*0.9}
+  xyeq <- .data_for_plot %>%  summarise(across(where(is.numeric), max, na.rm = T)) %>% select(all_of(c(checkx, checky))) %>% min() %>% {.*0.9} %>% modx()
     
   # linear regression equation
-  lin_reg_eqn <- .data_for_plot %>% lm(fmla, data = .) %>% lm_eqn(.)
+  lin_reg_eqn <- .data_for_plot %>% mutate(across(all_of(c(checkx, checky)), ~if_else(.x == 0, NaN, .x))) %>% 
+    lm(fmla, data = ., na.action = na.exclude) %>% lm_eqn(.)
   
   plt1 <- .data_for_plot %>% ggplot(aes(x = {{x_var}}, y =  {{y_var}}, colour = {{colour_var}})) +
     geom_point(size = 2) +
     
     # linear regression
     geom_smooth(method = 'lm') + 
-    geom_text(data = . %>% summarise_all(~ max(., na.rm = T)), label = lin_reg_eqn, parse = TRUE, show.legend = F, hjust = 'inward', nudge_x = -5) +
+    geom_text(data = . %>% summarise(across(where(is.numeric), max, na.rm = T)), label = lin_reg_eqn, parse = TRUE, show.legend = F, hjust = 'inward', nudge_x = -5) +
     
     # Dummy y = x line
-    geom_abline(slope = 1, intercept = 0, alpha = .4) + annotate(geom = 'text', x = xyeq, y = xyeq, label = 'y = x', alpha = .3)
+    geom_abline(slope = 1, intercept = 0, alpha = .4) + annotate(geom = 'text', x = xyeq, y = xyeq, label = 'y = x', alpha = .3) +
+    
+    # Labelling
+    ggtitle(title_text, subtitle = measure_var)
 }
 
 # plot formatting ---- 

@@ -1,7 +1,7 @@
 ---
-title: "713-715 Baylor"
+title: "727 Rice"
 author: "Prashant Kalvapalle"
-date: "27 July 2020"
+date: "31 July 2020"
 output: 
   html_document:
     theme: flatly
@@ -26,14 +26,14 @@ elution_volume <- 50 # ul - RNA extraction final volume
 spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 450 and varies for each sample)
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c('WW37_713 baylor_BCoV_Std20', 'WW38_716 baylor_BCoV_Std21', 'WW39_baylor 713-716-2_BCoV_Std22', 'WW40_baylor 713-716-2_723 direct_BCoV_Std23')
-title_name <- '713-715 Baylor'
+read_these_sheets <- c( 'dd.WW13_727_N1/N2', 'WW41_727_BCoV_Std24')
+title_name <- '727 Rice'
 
 # Biobot_id sheet
-bb_sheets <- c('Week 15.2 (7/22)')
+bb_sheets <- c('Week 16 (7/27)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
-extra_categories = 'Std|Control' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
+extra_categories = 'Std|Control|e728' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
 
 # To rename samples with descriptive category/names (usually for extra TR experiments)
 # - For other samples: Make it empty an string (like this '' ) to avoid messing up names inadvertantly
@@ -55,7 +55,7 @@ list_raw_quant_data <- map(read_these_sheets, ~ read_sheet(sheeturls$data_dump, 
 
 # bind multiple reads and clean up names
 raw_quant_data <- bind_rows(list_raw_quant_data) %>% 
-  rename(Sample_name = 'Sample Name') %>% 
+  rename(Sample_name = any_of('Sample Name')) %>% # if name is according to old convension, this will rename it 
   # unite('Biobot_id', c(Sample_name, assay_variable), sep = '', remove = F) %>%
   select(-`Well Position`) %>% 
   mutate_at('assay_variable', as.character) %>% 
@@ -188,7 +188,7 @@ if (baylor_trigger) {
 ```
 
 
-```{r recovery_calculations}
+```{r volumetric_calculations}
 
 # join the results with the WWTP identifiers and names
 processed_quant_data <- bind_rows(vol_R, vol_B) %>% 
@@ -197,7 +197,11 @@ processed_quant_data <- bind_rows(vol_R, vol_B) %>%
   mutate(`Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e3 * elution_volume/vol_extracted, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
   mutate_cond(str_detect(Sample_name, 'Vaccine'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (.050 * 1e-3), Recovered = `Copy #` * 1e6 * 50/20, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
   mutate_cond(str_detect(Target, 'Baylor'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e6 /30, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
-  select(-spike_virus_conc)
+  select(-spike_virus_conc) %>% 
+  
+  # arranging data by facility name alphabetical
+  arrange(`FACILITY NAME`) %>% 
+  mutate_at('WWTP', as_factor)
 
 # Adding a dummy CT column (if only ddPCR data is being loaded; which lacks the CT column) - for compatibility with qPCR code
 if(processed_quant_data %>%  {!'CT' %in% colnames(.)}) processed_quant_data$CT = NA
@@ -308,42 +312,32 @@ plot_scatter(processed_quant_data, x_var = log10(N1_multiplex), y_var = log10(N2
 
 ```{r n2bcov}
 
- plot_scatter(long_targets_vol_summary, x_var = BCoV_M) %>% print()
+ plot_scatter(processed_quant_data, x_var = BCoV_M) %>% print()
 
 ```
 
-## Streamlined plots
+## Ordered plots
 
-### N1 N2 data
+### (copies/l)
 
 ```{r n1n2streamlined}
 
-bb_Ndata <- list(summary_bb_qpcr, bb_qpcr) %>% 
-  map(~ 
-        filter(., str_detect(Target, '^N')) %>% 
-        mutate_at('WWTP', ~as.character(.)) %>%
-        arrange(`FACILITY NAME`) 
-      ) %>%
-  setNames(c('summary', 'raw'))
+ordered_plt1 <- plot_mean_sd_jitter(measure_var = 'Recovered', sample_var = str_c(extra_categories, '|NTC|Vaccine'), exclude_sample = T, x_var = WWTP, ascending_order = T, ylabel = 'Genome copies/l Wastewater')
 
-pltN <- plot_mean_sd_jitter(bb_Ndata, long_format = T, sample_var = str_c(extra_categories,'|NTC|Vaccine'), exclude_sample = T, x_var = as_factor(WWTP), facet_var = NULL) 
+ordered_plt1 %>% print()
+ordered_plt1 %>% format_logscale_y() %>% print()
 
-pltN %>% print()
-pltN %>% format_logscale_y() %>% print()
 ```
 
 
 
-### Recovery data
+### % Recovery
 
 ```{r percentRecoverystreamlined}
 
-spike_qpcr %>% plyr::empty() %>% if(!.)
-{
-  recostr_plot <- plot_mean_sd_jitter(long_vol_qpcr_summary, long_vol_qpcr_raw, long_format = T, measure_var = 'Recovery fraction', sample_var = str_c(extra_categories,'|NTC|Vaccine'), exclude_sample = T, x_var = as_factor(WWTP), facet_var = NULL, ylabel = 'Percentage recovery')
+  recostr_plot <- plot_mean_sd_jitter(measure_var = 'Recovery fraction', sample_var = str_c(extra_categories,'|NTC|Vaccine'), exclude_sample = T, x_var = WWTP, ascending_order = T, ylabel = 'Percentage recovery of surrogate')
   
   recostr_plot %>% print()
-}
 
 ```
 
@@ -384,7 +378,8 @@ check_ok_and_write(presentable_vol_qpcr, sheeturls$complete_data, title_name) # 
 
 
 # presentable data for health department
-present_WW_data <- presentable_vol_qpcr %>% filter(!str_detect(Facility, "Vaccine|Controls|Water|NTC|Blank|Std")) %>%  # retain only WWTP data
+present_WW_data <- presentable_vol_qpcr %>% 
+  filter(!str_detect(Facility, str_c(extra_categories, "Vaccine|NTC|Blank"))) %>%  # retain only WWTP data
    rename('Copies_per_uL_RNA' = `Copies/ul RNA`, 'Copies_Per_Litre_WW' = `Copies/l WW`, 'Recovery_Rate' = `Recovery fraction`, Target_Name = `Target Name`) %>% 
   mutate_at('Target_Name', ~str_remove(., '/Baylor')) %>% 
   select(-contains('Volume'), -`Spiked-in Copies/l WW`, -Tube_ID)
