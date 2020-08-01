@@ -7,10 +7,14 @@
 flnm.here <- 'dd.WW13_727_N1/N2'  # set the filename
 
 # ddPCR processing: Attach sample labels from template table, calculate copies/ul using template volume/reaction, make names similar to qPCR data 
-process_ddpcr <- function(flnm = flnm.here)
-{
+process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none')
+{ # Baylor wells : choose 1) none, 2) '.*' for all, 3) '[A-H][1-9]$|10' etc. for specific wells 
   
   template_volume <- 10 /22 * 20 # ul template volume per well of the ddPCR reaction
+  
+  # Ad hoc - marking the samples from baylor (will append /baylor to target name)
+    
+  
   
   # Loading pre-reqisites ----
   
@@ -49,8 +53,14 @@ process_ddpcr <- function(flnm = flnm.here)
     # unite('Biobot ID', c(`Sample_name`, assay_variable), sep = '', remove = F) %>%
     
     mutate_at('assay_variable', as.character) %>% 
-    mutate_at('biological_replicates', ~str_replace_na(., ''))
+    mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
   
+  # Adding tag to target for baylor smaples
+  { if(!str_detect(baylor_wells, 'none|None')) { 
+    mutate_at(., 'Target', as.character) %>% 
+      mutate_cond(str_detect(`Well Position`, baylor_wells), Target = str_c(Target, '/Baylor'))
+  } else .
+    }
   
   # Data output ----
   # this is usually commented out to prevent overwriting existing data; turn on only when needed for a single run
