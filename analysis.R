@@ -1,9 +1,9 @@
 # Read in the qPCR file and do manual analysis and plotting
 # Author: Prashant Kalvapalle;  June 16 2020
 
-# enter the file name, standard curve mentioned within filename is used unless override is provided
+# qPCR processing: Calculate copy number from Cq and attach sample labels from template table 
 process_qpcr <- function(flnm = flnm.here, std_override = NULL)
-  
+  # enter the file name, standard curve mentioned within filename is used unless override is provided
 {
 
   # Loading pre-reqisites ----
@@ -49,15 +49,15 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL)
   # Separate the sample name into columns and make factors in the right order for plotting (same order as the plate setup)
   
   # isolate the primer pair and assay_variable into 3 columns : Sample name, assay variable and primer pair 
-  polished_results <- bring_results %>% separate(`Sample Name`,c(NA, 'Sample Name'),'-') %>% separate(`Sample Name`,c('Sample Name','Tube ID'),'_') %>% 
-    mutate(`Tube ID` = if_else(`Sample Name` == 'NTC', '0', `Tube ID`)) %>% 
+  polished_results <- bring_results %>% separate(`Sample_name`,c(NA, 'Sample_name'),'-') %>% separate(`Sample_name`,c('Sample_name','Tube ID'),'_') %>% 
+    mutate(`Tube ID` = if_else(`Sample_name` == 'NTC', '0', `Tube ID`)) %>% 
     separate(`Tube ID`, c('assay_variable', 'biological_replicates'), remove = F) %>%  # Separate out biological replicates 
     unite('Tube ID', c(assay_variable, biological_replicates), sep = '.', remove = F, na.rm = T) %>% # remaking Tube ID - removes spaces after 'dot'
     arrange(assay_variable, biological_replicates) %>% mutate_if(is.character,as_factor) # Factorise the sample name and rearrange in column order of appearance on the plate (for plotting)
   
   # select samples to plot (or to exclude write a similar command)
-  results_relevant <- polished_results %>% filter(str_detect(`Sample Name`, paste('^', plot_select_facet, sep = ''))) %>%  # Include only desired facets : str_detect will find for regular expression; ^x => starting with x
-    filter(!str_detect(`Sample Name`, plot_exclude_facet)) %>%  # exclude unwanted facets (sample_name) 
+  results_relevant <- polished_results %>% filter(str_detect(`Sample_name`, paste('^', plot_select_facet, sep = ''))) %>%  # Include only desired facets : str_detect will find for regular expression; ^x => starting with x
+    filter(!str_detect(`Sample_name`, plot_exclude_facet)) %>%  # exclude unwanted facets (sample_name) 
     filter(!str_detect(assay_variable, plot_exclude_assay_variable)) %>%  # excluding unwanted x axis variables from assay_variable
     
     # Adding tag to target for baylor smaples
@@ -75,11 +75,11 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL)
   
   # Finding mean and standard deviation within replicates (both technical and biological)
   
-  summary_results <- results_abs %>%  group_by(`Sample Name`, Target, assay_variable) %>% summarise_at(vars(`Copy #`), rlang::list2(mean, sd), na.rm = T) # find mean and SD of individual copy #s for each replicate
+  summary_results <- results_abs %>%  group_by(`Sample_name`, Target, assay_variable) %>% summarise_at(vars(`Copy #`), rlang::list2(mean, sd), na.rm = T) # find mean and SD of individual copy #s for each replicate
   results_abs$`Copy #` %<>% replace_na(0) # make unamplified values 0 for plotting
   
   plt <- results_abs %>% ggplot(aes(x = `Tube ID`, y = `Copy #`, color = Target)) + ylab('Copies/ul RNA extract') +    # Specify the plotting variables 
-    geom_point(size = 2) + facet_grid(~`Sample Name`, scales = 'free_x', space = 'free_x') + # plot points and facetting
+    geom_point(size = 2) + facet_grid(~`Sample_name`, scales = 'free_x', space = 'free_x') + # plot points and facetting
     ggtitle(flnm) + xlab(plot_assay_variable)
   plt.formatted <- plt %>% format_classic(.) %>% format_logscale_y() # formatting plot, axes labels, title and logcale plotting
   

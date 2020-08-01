@@ -4,8 +4,9 @@
 # User inputs ----
 
 
-flnm.here <- 'dd.WW11_720_N1/N2'  # set the filename
+flnm.here <- 'dd.WW13_727_N1/N2'  # set the filename
 
+# ddPCR processing: Attach sample labels from template table, calculate copies/ul using template volume/reaction, make names similar to qPCR data 
 process_ddpcr <- function(flnm = flnm.here)
 {
   
@@ -36,16 +37,16 @@ process_ddpcr <- function(flnm = flnm.here)
     mutate_at('Target', ~str_replace_all(., c('N1' = 'N1_multiplex' , 'N2' = 'N2_multiplex'))) %>% 
     filter(!is.na(Target)) %>% 
     mutate('Copy #' = CopiesPer20uLWell/ template_volume) %>% 
-    select(`Sample Name`, `Copy #`, Target, everything())
+    select(`Sample_name`, `Copy #`, Target, everything())
   
   
   # polishing qPCR data - Make Biobot ID column clean
   # isolate the primer pair and assay_variable into 3 columns : Sample name, assay variable and primer pair 
-  polished_results <- bring_results %>% separate(`Sample Name`,c(NA, 'Sample Name'),'-') %>% separate(`Sample Name`,c('Sample Name','Tube ID'),'_') %>% 
-    mutate(`Tube ID` = if_else(`Sample Name` == 'NTC', '0', `Tube ID`)) %>% 
+  polished_results <- bring_results %>% separate(`Sample_name`,c(NA, 'Sample_name'),'-') %>% separate(`Sample_name`,c('Sample_name','Tube ID'),'_') %>% 
+    mutate(`Tube ID` = if_else(`Sample_name` == 'NTC', '0', `Tube ID`)) %>% 
     separate(`Tube ID`, c('assay_variable', 'biological_replicates'), remove = F) %>%  # Separate out biological replicates 
     unite('Tube ID', c(assay_variable, biological_replicates), sep = '.', remove = F, na.rm = T) %>% # remaking Tube ID - removes spaces after 'dot'
-    unite('Biobot ID', c(`Sample Name`, assay_variable), sep = '', remove = F) %>%
+    # unite('Biobot ID', c(`Sample_name`, assay_variable), sep = '', remove = F) %>%
     
     mutate_at('assay_variable', as.character) %>% 
     mutate_at('biological_replicates', ~str_replace_na(., ''))
@@ -54,7 +55,7 @@ process_ddpcr <- function(flnm = flnm.here)
   # Data output ----
   # this is usually commented out to prevent overwriting existing data; turn on only when needed for a single run
   
-  write_sheet(polished_results, sheeturls$data_dump, sheet = flnm) # save results to a google sheet
+  check_ok_and_write(polished_results, sheeturls$data_dump, flnm) # save results to a google sheet
   
 }
 
