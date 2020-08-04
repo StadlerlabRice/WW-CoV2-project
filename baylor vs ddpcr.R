@@ -27,10 +27,11 @@ q.merge <- bind_rows(q713, q716) %>%
   rename('Copies_Per_Litre_WW' = 'Copies_Per_Liter_WW')
   
 # head to head fight!
-merge.data <- bind_rows(dd, q.merge)
+merge.data <- bind_rows(dd, q.merge) %>% 
+  mutate(Week = str_extract(WWTP_ID, '[:digit:]*(?=.)'))
 
 # plotting
-plt1 <- merge.data %>% ggplot(aes(WWTP, Copies_Per_Litre_WW, colour = Method)) + geom_point() + facet_grid(rows = vars(Target_Name), scales = 'free_y') + ggtitle('713-715 Baylor ddPCR vs qPCR')
+plt1 <- merge.data %>% ggplot(aes(WWTP, Copies_Per_Litre_WW, colour = Method)) + geom_point() + facet_grid(rows = vars(Target_Name), cols = vars(Week), scales = 'free_y') + ggtitle('713-715 Baylor ddPCR vs qPCR')
 
 plt1 %>% format_logscale_y() %>% print()
 
@@ -38,7 +39,7 @@ plt1 %>% format_logscale_y() %>% print()
 long_target <- merge.data %>% select(-Copies_per_uL_RNA) %>% 
   pivot_wider(names_from = 'Target_Name', values_from = Copies_Per_Litre_WW)
   
-plt2 <- long_target %>% ggplot(aes(`SARS CoV-2 N1`, `SARS CoV-2 N2`, colour = Method)) + geom_point() + ggtitle('713-715 Baylor ddPCR vs qPCR', subtitle = 'Copies_Per_Litre_WW')
+plt2 <- long_target %>% ggplot(aes(`SARS CoV-2 N1`, `SARS CoV-2 N2`, colour = Method, shape = Week)) + geom_point() + scale_shape_manual(values = c(19, 2)) + ggtitle('713-715 Baylor ddPCR vs qPCR', subtitle = 'Copies_Per_Litre_WW')
 
 plt2 %>% format_logscale_x() %>% format_logscale_y() %>% print()
 
