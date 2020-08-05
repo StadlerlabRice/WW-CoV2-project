@@ -30,17 +30,3 @@ plot_assay_variable <- 'Sample' # printed on the x axis of the graph
 plot_select_facet <- '' # Options ('' or 'something') ; filters a particular template name to plot 
 plot_exclude_facet <- '^none' # Regex pattern: 'Controls2', '^MHT*', '^none; exclude categories for plotting; ex: Controls etc.: filters based on `Sample Name`: works only in assay mode
 plot_exclude_assay_variable <- '^none' # Regex pattern: '^N', '^none' or ''; exclude assay_variables for plotting; ex: no template control etc.: filters based on assay_variable: works only in assay mode
-
-
-# plot_colour_by <- quo(Target) # Options : (quo(Target) or quo(Sample Name); Determines which variable is chosen for plotting in different colours
-# errorbar_width = 0.1; # width of errorbars - emperically change
-# plot_normalized_to_recovery <- 'no' # Options: ('yes' or 'no'); plots copy #'s normalized to recovery % 
-# 
-# # Obsolete variables (will be phased out soon)
-# # can be implemented easily with generalized plotting function
-# plot_mode <-  'absolute_quantification'  # Options : ('absolute_quantification' or ''); absolute_quantification will calculate copy #'s based on intercept and slope from standard curve - manually entered below ; else, Cq values are plotted
-# plot_mean_and_sd <- 'yes' # Options: ('yes' or 'no'); plots mean and errorbars instead of each replicate as a point: Only in absolute_quantification mode
-# experiment_mode <- 'assay' # options ('small_scale' ; 'assay') ; future implementation: 'custom'. Explanation below : can be plotting tube labels or WWTP names
-# # 'assay' =  Plots for Assays (facetted by Sample category = control vs experiment ; naming: 'Sample Name'_variable primer pair)
-# # 'small_scale' = plots for troubleshooting expts : faceted by primer pair and sample name = template
-

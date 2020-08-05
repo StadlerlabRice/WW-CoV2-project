@@ -1,7 +1,7 @@
 ---
-title: "727 Rice"
+title: "730 Maxwell-extraction elution testing"
 author: "Prashant Kalvapalle"
-date: "31 July 2020"
+date: "4 Aug 2020"
 output: 
   html_document:
     theme: flatly
@@ -26,14 +26,14 @@ elution_volume <- 50 # ul - RNA extraction final volume
 spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 450 and varies for each sample)
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW13_727_N1/N2', 'WW41_727_BCoV_Std24')
-title_name <- '727 Rice'
+read_these_sheets <- c( 'WW42_730 Elution extraction testing_BCoV_Std25', 'dd.WW14_Extraction;Elution Testing')
+title_name <- '730 Maxwell-extraction elution testing'
 
 # Biobot_id sheet
-bb_sheets <- c('Week 16 (7/27)')
+bb_sheets <- c('Week 16.2 (7/29)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
-extra_categories = 'Std|Control|e728' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
+extra_categories = 'Std|Control' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
 
 # To rename samples with descriptive category/names (usually for extra TR experiments)
 # - For other samples: Make it empty an string (like this '' ) to avoid messing up names inadvertantly
@@ -149,7 +149,7 @@ if (baylor_trigger) {
 
 # Vaccine spike concentrations
 spike_list <- read_sheet(sheeturls$data_dump, sheet = 'Preamble', range = 'B6:G', col_types = 'ccnnnc') %>% 
-  rename(spike_virus_conc = `[Stock conc.]`, Sample_name = Week)  
+  rename(spike_virus_conc = matches('Stock conc.'), Sample_name = Week)  
 
 
 

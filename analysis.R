@@ -1,5 +1,6 @@
 # Read in the qPCR file and do manual analysis and plotting
-# Author: Prashant Kalvapalle;  June 16 2020
+# Author: Prashant Kalvapalle;  June 16 2020.
+# Merged with other /R files Aug 4, 2020
 
 # qPCR processing: Calculate copy number from Cq and attach sample labels from template table 
 process_qpcr <- function(flnm = flnm.here, std_override = NULL)
