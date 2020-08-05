@@ -1,0 +1,149 @@
+---
+author: "Prashant Kalvapalle"
+date: "4 Aug 2020"
+output: 
+  html_document:
+    theme: flatly
+    toc: TRUE
+    toc_float: TRUE
+---
+
+---
+title: `r title_name`
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 12, fig.height = 4)
+
+```
+
+## Goal of the analysis
+
+Quantifying CoV2-N1,N2 (multiplexed) and BCoV surrogate spiked into wastewater samples
+
+```{r scripts, fig.width = 12}
+
+# plot individual biological replicates (for quality control)
+# map2(list_rawqpcr, read_these_sheets, ~(plot_biological_replicates(.x, title_text = .y)))
+
+```
+
+
+## Plots (WWTP labels)
+
+
+### Summary plot (copies per ul RNA)
+
+```{r all_plot}
+
+  concWW_plot <- plot_mean_sd_jitter(measure_var = 'Recovered', sample_var = extra_categories, exclude_sample = T, x_var = WWTP, ylabel = 'Genome copies/l Wastewater') 
+  
+  concWW_plot %>% format_logscale_y() %>% print()
+  
+```
+
+
+### Recovery
+
+open circles : Copies of surrogate virus spiked in
+filled circles : Copies of surrogate virus recovered
+
+```{r summarizing_plot}
+
+plot_mean_sd_jitter(measure_var = 'Recovered', sample_var = str_c(extra_categories), exclude_sample = T, target_filter = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Genome copies/l Wastewater') %>%  format_logscale_y() %>% print()
+
+```
+
+### % recovery
+
+```{r percentreco}
+
+
+  percentreco_plt <- plot_mean_sd_jitter(measure_var = 'Recovery fraction', sample_var = str_c(extra_categories, '|Vaccine'), exclude_sample = T, target_filter = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Fraction of spike-in recovered') 
+  
+ percentreco_plt %>% print()
+
+ # same plot in logscale y axis  
+ percentreco_plt %>% format_logscale_y() %>% print()
+  
+  
+```
+
+### Controls and additional samples
+
+```{r controls_recos, fig.width= 6}
+
+extra_samples_to_plot <- str_c(extra_categories, '|Vaccine|NTC') %>% str_remove('\\|Std|Std\\|')
+
+# N1/N2 and BCoV plots : Copies/ul RNA
+plot_mean_sd_jitter(sample_var = extra_samples_to_plot, exclude_sample = F, x_var = WWTP) %>% format_logscale_y() %>% print()
+
+
+# Copies/l WW: N1/N2 and BCoV plots
+plot_mean_sd_jitter(measure_var = 'Recovered', sample_var = extra_samples_to_plot, x_var = WWTP, ylabel = 'Genome copies/l Wastewater') %>% 
+  format_logscale_y() %>% print()
+
+# # recovered vs spiked in plot for extra samples
+# plot_mean_sd_jitter(long_vol_qpcr_summary, long_vol_qpcr_raw, long_format = T, measure_var = 'Recovered', sample_var = extra_samples_to_plot, exclude_sample = F, x_var = WWTP, ylabel = 'Genome copies/l Wastewater') %>%
+#   format_logscale_y() %>% print()
+
+# % plot for extra samples
+plot_mean_sd_jitter(measure_var = 'Recovery fraction', sample_var = extra_samples_to_plot, target_filter = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Fraction of spike-in recovered') %>% print()
+
+```
+
+
+## Scatter plots
+
+### N1 vs N2 replicate
+
+```{r n1n2}
+
+# NOTE: This function is very useful - errors here indicate that there are overlapping labels in the data: Check the sample naming sheet first thing
+
+plot_scatter(processed_quant_data) %>% print()
+
+```
+
+### N1 vs N2 logscale
+
+```{r n1n2avg}
+
+plot_scatter(processed_quant_data, x_var = log10(N1_multiplex), y_var = log10(N2_multiplex)) %>% print()
+
+```
+
+### BCoV vs N2 avg
+
+```{r n2bcov}
+
+ plot_scatter(processed_quant_data, x_var = BCoV_M) %>% print()
+
+```
+
+## Ordered plots
+
+### (copies/l)
+
+```{r n1n2streamlined}
+
+ordered_plt1 <- plot_mean_sd_jitter(measure_var = 'Recovered', sample_var = str_c(extra_categories, '|NTC|Vaccine'), exclude_sample = T, x_var = WWTP, ascending_order = T, ylabel = 'Genome copies/l Wastewater')
+
+ordered_plt1 %>% print()
+ordered_plt1 %>% format_logscale_y() %>% print()
+
+```
+
+
+
+### % Recovery
+
+```{r percentRecoverystreamlined}
+
+  recostr_plot <- plot_mean_sd_jitter(measure_var = 'Recovery fraction', sample_var = str_c(extra_categories,'|NTC|Vaccine'), exclude_sample = T, x_var = WWTP, ascending_order = T, ylabel = 'Percentage recovery of surrogate')
+  
+  recostr_plot %>% print()
+
+```
+
