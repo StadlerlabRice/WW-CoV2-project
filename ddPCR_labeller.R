@@ -4,7 +4,10 @@
 # User inputs ----
 
 
+
 flnm.here <- 'dd.WW13_727_N1/N2'  # set the filename
+
+template_volume <- 10 /22 * 20 # ul template volume per well of the ddPCR reaction
 
 # ddPCR processing: Attach sample labels from template table, calculate copies/ul using template volume/reaction, make names similar to qPCR data 
 process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none')
