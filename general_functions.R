@@ -4,7 +4,17 @@
   # Make sure to include raw data as well
 
 # calling libraries ; make sure they are installed (install.packages)
-library(readxl); library(magrittr); library(tidyverse); library(ggrepel); library(googlesheets4) 
+library(readxl); library(magrittr); library(tidyverse); library(ggrepel); library(googlesheets4); library(rlang) 
+
+sheeturls <- list(templates = 'https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=478762118',
+                  biobot_id = 'https://docs.google.com/spreadsheets/d/1ghb_GjTS4yMFbzb65NskAlm-2Gb5M4SNYi4FHE4YVyI/edit#gid=233791008',
+                  sample_registry = 'https://docs.google.com/spreadsheets/d/1mJcCt1wMiOuBic6sRlBZJf8KSNu2y-B5PjzCUu7jPM8/edit#gid=521099478',
+                  
+                  data_dump = 'https://docs.google.com/spreadsheets/d/1ouk-kCJHERRhOMNP07lXfiC3aGB4wtWXpnYf5-b2CI4/edit#gid=0',
+                  raw_ddpcr = 'https://docs.google.com/spreadsheets/d/1jdO_P9SZGezSTLiIARtSmA7qaUuX3wA-jCe7YiQ1sCI/edit#gid=0',
+                  complete_data = 'https://docs.google.com/spreadsheets/d/1ltvW7xZf2aUPoBchD4NFGuV0gGWPkdsOW3a0Hxalm-Y/edit#gid=1363292517',
+                  wwtp_only_data = 'https://docs.google.com/spreadsheets/d/1dBESjgWSFsOBodFFpYNhWIOAQ2a3wvoLkrn12V_rFck/edit#gid=0' 
+)
 
 # reading files and manipulating columns ----
 
@@ -35,9 +45,9 @@ primer_table <- c('q1-3' = 'Flipped', 'q4-5' = 'Flipped',
 absolute_backcalc <- function(df, std_par)
 {
   target_current <- df$Target %>% unique()
-  std_current <- std_par %>% filter(str_detect(target_current, target))
+  std_current <- std_par %>% filter(str_detect(target_current, Target))
   
-  df %>% mutate(`Copy #` = 10^( (CT - std_current$intercept)/std_current$slope) )
+  df %>% mutate(`Copy #` = 10^( (CT - std_current$y_intercept)/std_current$Slope) )
 }
 
 read_plate_to_column <- function(data_tibble, val_name)
@@ -63,51 +73,64 @@ mutate_when <- function(data, ...)
 }
 
 
-# Reads single column of data and converts into a 96 well plate format (Baylor sample names)
-baylor_col_to_plate <- function(flnm)
+# Reads single column of data and converts into a 96 well plate format (Baylor Sample_names)
+baylor_col_to_plate <- function(sheetnm)
 {
-  bb_sheet <- c('Week 13 (7/6)')
+  target <- 'BCoV' # appends to the Sample_name for direct pasting in qPCR template sheet
+  flnm <- 'baylor_labels'
+  registry_sheet <- 'https://docs.google.com/spreadsheets/d/1mJcCt1wMiOuBic6sRlBZJf8KSNu2y-B5PjzCUu7jPM8/edit#gid=1011717808'
   
-  # week_match <- flnm %>% str_extract('[:digit:]+(?=-|_)') 
-  target<- 'BCoV'
-  
-  biobot_url <- 'https://docs.google.com/spreadsheets/d/1ghb_GjTS4yMFbzb65NskAlm-2Gb5M4SNYi4FHE4YVyI/edit#gid=233791008' 
-  
-  # Getting biobot names: named vector for backconversion
-  biobot_translator <- read_sheet(biobot_url, sheet = bb_sheet) %>% 
-    rename('Biobot ID' = matches('Biobot|Comments', ignore.case = T), 
-           'WWTP' = contains('SYMBOL', ignore.case = T), 
-           'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T)) %>%
-    
-    drop_na(WWTP) %>% 
-    mutate('biobot_baylor' = str_replace(`Biobot ID`,'\\.', '_'), WWTP = as.character(WWTP)) %>%  
-    mutate(bb_translator = set_names(biobot_baylor , WWTP)) %>% 
-    pull(bb_translator)
+  # bb_sheet <- c('Week 13 (7/6)')
+  # 
+  # # week_match <- flnm %>% str_extract('[:digit:]+(?=-|_)') 
+  # 
+  # 
+  # biobot_url <- 'https://docs.google.com/spreadsheets/d/1ghb_GjTS4yMFbzb65NskAlm-2Gb5M4SNYi4FHE4YVyI/edit#gid=233791008' 
+  # 
+  # # Getting biobot names: named vector for backconversion
+  # biobot_translator <- read_sheet(biobot_url, sheet = bb_sheet) %>% 
+  #   rename('Biobot ID' = matches('Biobot|Comments', ignore.case = T), 
+  #          'WWTP' = contains('SYMBOL', ignore.case = T), 
+  #          'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T)) %>%
+  #   
+  #   drop_na(WWTP) %>% 
+  #   mutate('biobot_baylor' = str_replace(`Biobot ID`,'\\.', '_'), WWTP = as.character(WWTP)) %>%  
+  #   mutate(bb_translator = set_names(biobot_baylor , WWTP)) %>% 
+  #   pull(bb_translator)
   
   
   # Read sample sheet
   
   baylor_names <- str_c('excel files/Baylor/', flnm, '.xlsx') %>% 
-    read_xlsx (sheet = '706-1', col_names = F) %>% 
-    select(-1) %>% 
-    setNames(c('well', 'Sample') ) %>% 
-    mutate('row' = str_match(well, '[:upper:]'), 'col' = str_match(well, '[:digit:]+')) %>% 
-    select(-well) %>% 
+    read_xlsx (sheet = sheetnm) %>% 
+    rename('Sample' = matches('Site')) %>% 
+    select('Well', 'Sample') %>% 
+    
+    mutate('row' = str_match(Well, '[:upper:]'), 'col' = str_match(Well, '[:digit:]+')) %>% 
+    select(-Well) %>% 
     
     # correct names - put a dot before replicate number
-    mutate_at('Sample', ~str_match(., '(^[:upper:]+|^[:digit:]+).*([:digit:]$)') %>% {str_c(.[,2], .[,3], sep = '.')}) %>%
+    mutate_at('Sample', ~str_match(., '(^[:upper:]+|^[:digit:]+).*([:digit:])') %>% {str_c(.[,2], .[,3], sep = '.')}) %>%
+    
     
     # substitute biobot ids in
-    mutate_at('Sample', str_replace_all , biobot_translator) %>% 
-    mutate_at('Sample', ~str_c(target, '-', .))
+    # mutate_at('Sample', str_replace_all , biobot_translator) %>% 
+    
+    # attach template name and week ID
+    mutate_at('Sample', ~str_c(target, '-', str_extract(sheetnm, '[:digit:]*(?=-[:digit:])'), '_' , .))
   
   # Convert column to table - 96 well
   
   baylor_table <- baylor_names %>% 
     pivot_wider(names_from = 'col', values_from = 'Sample') %>% 
-    rename('<>' = row)
+    rename('<>' = row) %>% 
+    mutate('-' = '', .before = 1)
   
   View(baylor_table) # manually copy paste wherever
+  
+  # write to sample registry 96 well sheet
+  sheet_append(registry_sheet, sheet = '96 well RNA', tibble(c('', '', ''))) # append 3 empty rows
+  sheet_append(registry_sheet, sheet = '96 well RNA', baylor_table)
   
 }
 
@@ -121,7 +144,7 @@ mutate_cond <- function(.data, condition, ..., envir = parent.frame())
 }
 
 # Gets the 96 well layout with template names matching the experiment ID from filename in a google sheet
-get_template_for <- function(bait, sheet_url = templates_sheet)
+get_template_for <- function(bait, sheet_url = sheeturls$templates)
 { # Looking for WWx or Stdx - example WW21 or Std7 within the filename; Assumes plate spans from row B to N (1 row below the matching ID)
  
    # Finding the plate to be read
@@ -133,11 +156,51 @@ get_template_for <- function(bait, sheet_url = templates_sheet)
   range_to_get <- str_c('B', m_row + 1, ':N', m_row + 9)
   
   # read the template corresponding to the file name
-  plate_template_raw <- read_sheet(templates_sheet, sheet = 'Plate layouts', range = range_to_get)
+  plate_template_raw <- read_sheet(sheet_url, sheet = 'Plate layouts', range = range_to_get)
   
   # Convert the 96 well into a single column, alongside the Well position
-  plate_template <- read_plate_to_column(plate_template_raw, 'Sample Name') # convert plate template (sample names) into a single vector, columnwise
+  plate_template <- read_plate_to_column(plate_template_raw, 'Sample_name') # convert plate template (Sample_names) into a single vector, columnwise
   
+}
+
+
+# Data writing output ----
+
+# This function writes to the specified google sheet if the current sheet does
+# not exist. If the sheet does exist it will ask the user before writing.
+check_ok_and_write <- function(data, sheet_URL, title_name)
+{
+  write_ok <- TRUE
+  sheet_dne <- FALSE
+  
+  # this block sets sheet_dne to true if the sheet does not exist
+  sheet_dne <- tryCatch(
+    expr = {
+      read_sheet(sheet_URL, sheet = title_name)
+      message("Sheet already exists")
+      FALSE
+    },
+    error = function(e){
+      message('Sheet does not exist')
+      return(TRUE)
+      print(e)
+    }
+  )
+  
+  # if the sheet exists (sheet_dne is false), then ask the user if
+  # they want to overwrite. If the user selects cancel, then abort
+  if (!sheet_dne) {
+    # write_ok <- askYesNo(paste("A sheet with the name", title_name, "already exists. Do you want to overwrite?", sep=" "))
+    write_ok <- menu(c('Yes', 'No'), title = paste("A sheet with the name", title_name, "already exists. Do you want to overwrite?", sep=" "))
+    if (write_ok == 2){
+      stop("Cancel selected, script aborted.")
+    }
+  }
+  
+  if (write_ok == 1) {
+    write_sheet(data, sheet_URL, sheet=title_name)
+  }
+
 }
 
 # standard curve and regressions ----
@@ -168,7 +231,7 @@ lm_std_curve <- function(df, trig = 0)
 lm_eqn <- function(m, trig = 0){
   
   eq <- substitute(italic(y) == b %.% italic(x)+ a*","~~italic(r)^2~":"~r2, 
-                   list(a = format(unname(coef(m)[1]), digits = 2), 
+                   list(a = format(unname(coef(m)[1]), digits = 4), 
                         b = format(unname(coef(m)[2]), digits = 3), 
                         r2 = format(summary(m)$r.squared, digits = 3)))
   # if(trig == 'coeff') c(round(coef(m)[2], 2), round(summary(m)$r.squared, 2))
@@ -179,7 +242,7 @@ lm_eqn <- function(m, trig = 0){
   
   optional1 <- function()
     {# output the difference between consecutive CT values
-    tsumrev <- trev %>% group_by(`Sample Name`) %>% summarise(CT = mean(CT), Quantity = mean(Quantity), CT_sd = sd(CT))
+    tsumrev <- trev %>% group_by(`Sample_name`) %>% summarise(CT = mean(CT), Quantity = mean(Quantity), CT_sd = sd(CT))
     diff(tsumrev$CT) %>% round(2)}
 
 # Tm plots ----
@@ -189,10 +252,10 @@ lm_eqn <- function(m, trig = 0){
 plotalltms <- function(results_relevant)
 { 
   # Gather the Tm's into another data frame and merge into 1 column
-  tmfl <- results_relevant %>% select(`Sample Name`, starts_with('Tm')) %>% gather('Peak number','Tm',-`Sample Name`)
+  tmfl <- results_relevant %>% select(`Sample_name`, starts_with('Tm')) %>% gather('Peak number','Tm',-`Sample_name`)
   
   # plot the Tm ; Graph will now show
-  plttm2 <- tmfl %>% ggplot(.) + aes(x = `Sample Name`, y = Tm) + geom_point(aes(color = `Peak number`), size = 2) +
+  plttm2 <- tmfl %>% ggplot(.) + aes(x = `Sample_name`, y = Tm) + geom_point(aes(color = `Peak number`), size = 2) +
     theme_classic() + scale_color_brewer(palette="Set1") + 
     theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, hjust = 1, vjust = .3)) + 
     ggtitle(paste(title_name,': Melting curves')) + facet_grid(~`Primer pair`, scales = 'free_x', space = 'free_x')
@@ -201,7 +264,7 @@ plotalltms <- function(results_relevant)
 # plot the first Tm only ; Graph will now show
 plottm1 <- function(results_relevant)
 { 
-  plttm <- results_relevant %>% ggplot(.) + aes(x = `Sample Name`, y = Tm1) + geom_point(color = 'red', size = 2) +
+  plttm <- results_relevant %>% ggplot(.) + aes(x = `Sample_name`, y = Tm1) + geom_point(color = 'red', size = 2) +
     theme_classic() + scale_color_brewer(palette="Set1") + 
     theme(plot.title = element_text(hjust = 0.5),axis.text.x = element_text(angle = 90, hjust = 1, vjust = .3)) + 
     ggtitle(paste(title_name,': Melting curves')) + facet_grid(~`Primer pair`, scales = 'free_x', space = 'free_x')
@@ -212,41 +275,60 @@ plottm1 <- function(results_relevant)
 
 
 # Plotting mean, sd and individual replicates jitter
-plot_mean_sd_jitter <- function(summary_data = summary_results, raw_data = results_abs, long_format = F, measure_var = 'Copy #', sample_var = '.*', exclude_sample = F, colour_var = Target, x_var = assay_variable, y_var = `Copy #`, facet_var = `Sample Name`, title_text = title_name, ylabel = 'Genome copies/ul RNA', xlabel = plot_assay_variable, facet_style = 'grid')
-{ # Convenient handle for repetitive plotting in the same format; Reads data only in long format or wide (specify in long_format)
+plot_mean_sd_jitter <- function(.data_list = long_processed_minimal, long_format = TRUE, measure_var = 'Copy #', sample_var = '.*', exclude_sample = F, target_filter = '.*', colour_var = Target, x_var = assay_variable, y_var = `Copy #`, ascending_order = FALSE, facet_var = `Sample_name`, title_text = title_name, ylabel = 'Genome copies/ul RNA', xlabel = plot_assay_variable, facet_style = 'grid')
+{ # Convenient handle for repetitive plotting in the same format; Specify data format: long vs wide (specify in long_format = TRUE or FALSE)
   
-  # filtering variables by user inputs
+  .dat_filtered <- .data_list %>% map( filter, 
+                                  str_detect(`Sample_name`, sample_var, negate = exclude_sample), 
+                                  str_detect(Target, target_filter))
+  
+  # filtering data to be plotted by user inputs
   if(long_format) # use long format if not plotting Copy #s - ex. Recovery, % recovery etc.
   {
-    summ_relevant <- summary_data %>% filter(Measurement == measure_var, str_detect(`Sample Name`, sample_var, negate = exclude_sample))
-    raw_relevant <- raw_data %>% filter(Measurement == measure_var, str_detect(`Sample Name`, sample_var, negate = exclude_sample))
-    y_var <- sym('val') # default y variable is val
-  } else 
-    {
-      summ_relevant <- summary_data %>% filter(str_detect(`Sample Name`, sample_var, negate = exclude_sample))
-      raw_relevant <- raw_data %>% filter(str_detect(`Sample Name`, sample_var, negate = exclude_sample))
-    }
+    
+    .data_to_plot <- .dat_filtered %>% map(filter,
+                                           Measurement == measure_var)
+    if(ascending_order) .data_to_plot$summ.dat %<>% mutate_at('WWTP', as.character) %>% 
+      arrange(`mean`) %>% 
+      mutate_at('WWTP', as_factor)
+    
+    y_var <- sym('value') # default y variable is value
+    
+    summ_actual_spike_in <- .dat_filtered$summ.dat %>% filter(str_detect(Measurement,'Actual'))
+    
+  } else
+    
+  {
+    .data_to_plot <- .dat_filtered
+  }
   
-  plt1 <- summ_relevant %>% ggplot(aes(x = {{x_var}}, y = mean, colour = {{colour_var}})) +
+  # Exit with a useful message if data is empty
+  if(.data_to_plot %>% map_lgl(plyr::empty) %>% any()) return('Data does not exist')  
+  
+  # plotting
+  plt1 <- .data_to_plot$summ.dat %>% ggplot(aes(x = {{x_var}}, y = mean, colour = {{colour_var}})) +
     geom_point(size = 2) + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd), width = .1) +
     
     # Individual data points
-    geom_jitter(data = raw_relevant, aes(y = {{y_var}}, alpha = map_chr({{y_var}}, ~. == 0), size = map_chr({{y_var}}, ~. == 0)), width = .2, show.legend = F ) +
+    geom_jitter(data = .data_to_plot$raw.dat, aes(y = {{y_var}}, alpha = map_chr({{y_var}}, ~. == 0), size = map_chr({{y_var}}, ~. == 0)), width = .2, show.legend = F ) +
     scale_alpha_manual(values = c(.3, 1)) + scale_size_manual(values = c(1, 2)) + # manual scale for emphasizing unamplified samples
     
-    # Plotting actual spike ins (only for Recovery plot)
-    { if(measure_var == 'Recovered') list(geom_point(data = filter(summary_data, str_detect(Measurement,'Actual'), str_detect(`Sample Name`, sample_var, negate = exclude_sample)), colour = 'black', shape = 21), 
-             geom_line(data = filter(summary_data, str_detect(Measurement,'Actual'), str_detect(`Sample Name`, sample_var, negate = exclude_sample)), aes(group = {{colour_var}})))
+    # Plotting actual spike ins (only for Recovery plot'; only with long format data )
+    { if(measure_var == 'Recovered') list(geom_point(data = summ_actual_spike_in, colour = 'black', shape = 21), 
+             geom_line(data = summ_actual_spike_in, aes(group = {{colour_var}})))
     } +
     
-    # Facetting 
-    { if (facet_style == 'grid') facet_grid(cols = vars({{facet_var}}), scales = 'free_x', space = 'free_x')
-      if (facet_style == 'wrap free') facet_wrap(facets =  vars({{facet_var}}), scales = 'free') 
-      else NULL
-    } +
+    # Facetting
+    facet_grid(cols = vars({{facet_var}}), scales = 'free_x', space = 'free_x') +
+    
+    # experimental - conditional facetting (doesn't work for unknown reasons) : Just facet_grid the output to remove facets or add new!
+    # { if (facet_style == 'grid') list(facet_grid(cols = vars({{facet_var}}), scales = 'free_x', space = 'free_x'))
+    #   if (facet_style == 'wrap free') list(facet_wrap(facets =  vars({{facet_var}}), scales = 'free')) 
+    #   else NULL
+    # } +
     
     # Labelling
-    ggtitle(title_text) + ylab(ylabel) + xlab(xlabel)
+    ggtitle(title_text) + ylab(ylabel) #+ xlab(xlabel)
 
   plt1.formatted <- plt1 %>% format_classic() # clean formatting
   
@@ -257,45 +339,65 @@ plot_biological_replicates <- function(results_abs, title_text = title_name, xla
 { # Convenient handle for repetitive plotting 'Copy #' vs biological replicate
   
   plt <- results_abs %>% ggplot(aes(x = `Tube ID`, y = `Copy #`, color = Target)) + ylab('Copies/ul RNA extract') +    # Specify the plotting variables 
-    geom_point(size = 2) + facet_grid(~`Sample Name`, scales = 'free_x', space = 'free_x') + # plot points and facetting
+    geom_point(size = 2) + facet_grid(~`Sample_name`, scales = 'free_x', space = 'free_x') + # plot points and facetting
     ggtitle(title_text) + xlab(xlabel)
   plt.formatted <- plt %>% format_classic(.) %>% format_logscale_y() # formatting plot, axes labels, title and logcale plotting
 }
 
 # Scatter plot with a linear regression fit and equation
-plot_scatter <- function(plot_data = results_abs, long_format = F, measure_var = 'Copy #', sample_var = '.*', exclude_sample = F, colour_var = NULL, x_var = N1_multiplex, y_var = N2_multiplex, title_text = title_name)
-{ # Convenient handle for repetitive plotting in the same format; Reads data only in long format or wide (specify in long_format)
+plot_scatter <- function(.data = processed_quant_data, text_cols = minimal_label_columns, measure_var = 'Copy #', sample_var = str_c(extra_categories, '|NTC|Vaccine'), exclude_sample = T, colour_var = NULL, x_var = N1_multiplex, y_var = N2_multiplex, title_text = title_name)
+{ # Convenient handle for repetitive plotting in the same format; Reads data in wide format only
   
-  # filtering variables by user inputs
-  if(long_format) # use long format if not plotting Copy #s - ex. Recovery, % recovery etc.
-  {
-    plot_relevant <- plot_data %>% filter(Measurement == measure_var, str_detect(`Sample Name`, sample_var, negate = exclude_sample))
-    y_var <- sym('val') # default y variable is val
-  } else 
-  {
-    plot_relevant <- plot_data %>% filter(str_detect(`Sample Name`, sample_var, negate = exclude_sample)) %>% ungroup()
+  # convert column names (target names) into string
+  checkx <- strx <- paste(substitute(x_var)) 
+  checky <- stry <- paste(substitute(y_var))
+  
+  modx <- function(x) x
+  
+  # filtering data for plotting according to function inputs
+  .data_for_plot <- .data %>% 
+    select(all_of(text_cols), biological_replicates, all_of(measure_var)) %>% 
+    filter(str_detect(`Sample_name`, sample_var, negate = exclude_sample)) %>% 
+    pivot_wider(names_from = 'Target', values_from = 'Copy #') %>% 
+    ungroup()
+  
+  
+  # If plotting transformations of variables
+  if(enexpr(x_var) %>% is.call()) {checkx <-  enexpr(x_var)[2] %>% paste(); }# modx <- eval(enexpr(x_var)[1])}
+  if(enexpr(y_var) %>% is.call()) checky <-  enexpr(y_var)[2] %>% paste()
+  
+  # If targets are not present in the data, stop running and print a message
+  if(.data_for_plot %>% names() %>% 
+     {checkx %in% . & checky %in% . } %>% 
+     !.) return('Targets for this scatterplot are not present in the data')
+  
+  # If duplicates of data exist in the data, stop running and print a message
+  if((.data_for_plot %>% select(all_of(c(checkx, checky))) %>% 
+     map_lgl(~class(.) == 'numeric') %>% 
+     sum()) < 2) return('Repeated data instances for the same WWTP found in this scatterplot')
     
-  }
-  
   # Making linear regression formula (source: https://stackoverflow.com/a/50054285/9049673)
-  fmla <- as.formula(paste(substitute(y_var), "~", substitute(x_var)))
+  fmla <- new_formula(enexpr(y_var), enexpr(x_var))
   
   # Max and ranges for plotting
-  strx <- paste(substitute(x_var)); stry <- paste(substitute(y_var))
-  xyeq <- plot_relevant %>%  summarise_all(~ max(., na.rm = T)) %>% select(all_of(c(strx, stry))) %>% min() %>% {.*0.9}
+  xyeq <- .data_for_plot %>%  summarise(across(where(is.numeric), max, na.rm = T)) %>% select(all_of(c(checkx, checky))) %>% min() %>% {.*0.9} %>% modx()
     
   # linear regression equation
-  lin_reg_eqn <- plot_relevant %>% lm(fmla, data = .) %>% lm_eqn(.)
+  lin_reg_eqn <- .data_for_plot %>% mutate(across(all_of(c(checkx, checky)), ~if_else(.x == 0, NaN, .x))) %>% 
+    lm(fmla, data = ., na.action = na.exclude) %>% lm_eqn(.)
   
-  plt1 <- plot_relevant %>% ggplot(aes(x = {{x_var}}, y =  {{y_var}}, colour = {{colour_var}})) +
+  plt1 <- .data_for_plot %>% ggplot(aes(x = {{x_var}}, y =  {{y_var}}, colour = {{colour_var}})) +
     geom_point(size = 2) +
     
     # linear regression
     geom_smooth(method = 'lm') + 
-    geom_text(data = . %>% summarise_all(~ max(., na.rm = T)), label = lin_reg_eqn, parse = TRUE, show.legend = F, hjust = 'inward', nudge_x = -5) +
+    geom_text(data = . %>% summarise(across(where(is.numeric), max, na.rm = T)), label = lin_reg_eqn, parse = TRUE, show.legend = F, hjust = 'inward', nudge_x = -5) +
     
     # Dummy y = x line
-    geom_abline(slope = 1, intercept = 0, alpha = .4) + annotate(geom = 'text', x = xyeq, y = xyeq, label = 'y = x', alpha = .3)
+    geom_abline(slope = 1, intercept = 0, alpha = .4) + annotate(geom = 'text', x = xyeq, y = xyeq, label = 'y = x', alpha = .3) +
+    
+    # Labelling
+    ggtitle(title_text, subtitle = measure_var)
 }
 
 # plot formatting ---- 
@@ -347,6 +449,7 @@ format_logscale_x <- function(plt)
   
   # use as ggplot(df,aes(x,y)) + geom_point() + scale_y_log10(labels = fancy_scientific)
   
+
 # This function writes to the specified google sheet if the current sheet does
 # not exist. If the sheet does exist it will ask the user before writing.
 check_ok_and_write <- function(data, sheet_URL, title_name)
