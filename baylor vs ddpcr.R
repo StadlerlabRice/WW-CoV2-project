@@ -43,9 +43,14 @@ plt2 <- long_target %>% ggplot(aes(`SARS CoV-2 N1`, `SARS CoV-2 N2`, colour = Me
 
 plt2 %>% format_logscale_x() %>% format_logscale_y() %>% print()
 
-long_method <- merge.data %>% select(WWTP_ID, Copies_Per_Litre_WW, Target_Name, Method) %>% 
+long_method <- merge.data %>% select(WWTP_ID, Copies_Per_Litre_WW, Target_Name, Method, Week) %>% 
   pivot_wider(names_from = Method, values_from = Copies_Per_Litre_WW)
 
-plt3 <- long_method %>% ggplot(aes(`R-ddPCR`, `B-qPCR`, colour = Target_Name)) + geom_point() + ggtitle('713-715 Baylor ddPCR vs qPCR', subtitle = 'Copies_Per_Litre_WW') + geom_smooth(method = lm) + geom_abline(slope = 1, intercept = 0)
+plt3 <- long_method %>% ggplot(aes(`R-ddPCR`, `B-qPCR`, colour = Target_Name)) + geom_point() + ggtitle('713-715 Baylor ddPCR vs qPCR', subtitle = 'Copies_Per_Litre_WW') + geom_smooth(method = lm) + geom_abline(slope = 1, intercept = 0) + 
+  facet_grid(cols = vars(Week), scales = 'free_x')
+
+# formula and linear regression
+fmla <- as.formula(paste('`B-qPCR`', "~", '`R-ddPCR`'))
+lin_reg_eqn <- long_method %>% group_by(Week, Target_Name) %>% group_map(~lm(fmla, data = .) %>% lm_eqn(.))
 
 plt3 %>% format_logscale_x() %>% format_logscale_y() %>% print()
