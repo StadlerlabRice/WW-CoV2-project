@@ -4,11 +4,6 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 
 # Parameters ----------------------------------------------------------------------
 
-# Loading libraries, functions and user inputs
-source('./general_functions.R') # Source the general_functions file
-source('./inputs_for_analysis.R') # Source the file with user inputs
-
-
 # Spike in and concentration details
 elution_volume <- 50 # ul - RNA extraction final volume
 
@@ -126,7 +121,7 @@ if (baylor_trigger) {
 }
 
 # Vaccine spike concentrations
-spike_list <- read_sheet(sheeturls$data_dump, sheet = 'Preamble', range = 'B6:G', col_types = 'ccnnnc') %>% 
+spike_list <- read_sheet(sheeturls$data_dump, sheet = 'Preamble', range = 'B6:K', col_types = 'Dcccnnnccn') %>% 
   rename(spike_virus_conc = matches('Stock conc.'), Sample_name = Week)  
 
 
@@ -140,7 +135,7 @@ vol_R <- raw_quant_data %>%
   left_join(volumes_data_Rice, by = 'Label_tube') %>%
   mutate_at('Biobot_id', ~if_else(is.na(.x), str_c(Sample_name, assay_variable), .x)) %>% # stand-by name for missing cols
   
-  left_join(spike_list %>% select(Vaccine_ID, spike_virus_conc),  by = 'Vaccine_ID' ) %>% 
+  left_join(spike_list %>% select(Vaccine_ID, Target, spike_virus_conc),  by = c('Vaccine_ID', 'Target') ) %>% 
   left_join(biobot_lookup, by = 'Biobot_id') %>% 
   
   mutate_at(c('WWTP', 'FACILITY NAME'), ~if_else(str_detect(., '^X')|is.na(.), assay_variable, .)) 
@@ -152,8 +147,8 @@ if (baylor_trigger) {
     filter(str_detect(Target, 'Baylor')) %>% 
     # select(-`Biobot_id`) %>% 
     left_join(baylor_volumes_and_biobots, by = 'Label_tube') %>% 
-    fuzzyjoin::regex_right_join(spike_list %>% select(Sample_name, Vaccine_ID, spike_virus_conc),
-                                ., by = 'Sample_name') %>% 
+    fuzzyjoin::regex_right_join(spike_list %>% select(Sample_name, Vaccine_ID, Target, spike_virus_conc),
+                                ., by = c('Vaccine_ID', 'Target')) %>% 
     select(-`Sample_name.x`) %>% rename(Sample_name = `Sample_name.y`)
   
   
