@@ -12,14 +12,18 @@ elution_volume <- 50 # ul - RNA extraction final volume
 spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 450 and varies for each sample)
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'WW42_730 Elution extraction testing_BCoV_Std25', 'dd.WW14_Extraction;Elution Testing')
-title_name <- '730 Maxwell-extraction elution testing'
+read_these_sheets <- c( 'WW43_803_BCoV_Std26', 
+                        'WW45_805 SOH_BCoV_Std27',
+                        'dd.WW15_803_N1/N2',
+                        'dd.WW16_805 SOH_N1/N2')
+title_name <- '803 Rice'
 
 # Biobot_id sheet
-bb_sheets <- c('Week 16.2 (7/29)')
+bb_sheets <- c('Week 17 (8/3)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|Control' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
+special_samples = 'HCJ|SOH|HW' # putting special samples in a separate sheet
 
 # To rename samples with descriptive category/names (usually for extra TR experiments)
 # - For other samples: Make it empty an string (like this '' ) to avoid messing up names inadvertantly
@@ -87,7 +91,7 @@ volumes_data_Rice <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrate
   # removing wrongly entered volumes for replicates, replacing with the max volume 
   # (this is a temporary fix, a wiser function that looks for empty elements in weight column should be written)
   {if(same_bottle_for_triplicates == 'yes') { 
-    mutate(., unique_labels = str_remove(Label_tube,'[1-3]$')) %>% 
+    mutate(., unique_labels = str_remove(Label_tube,'[1-9]$')) %>%  # this will be changed to the 'Bottle' column soon
       group_by(unique_labels) %>% 
       mutate_at('WW_vol', max, na.rm = T) %>% 
       ungroup() %>% 
@@ -196,7 +200,7 @@ long_processed_minimal$summ.dat %<>% separate(Measurement, into = c('Measurement
 # Data output ----------------------------------------------------------------------
 
 
-presentable_vol_qpcr <- processed_quant_data %>% 
+presentable_data <- processed_quant_data %>% 
   
   # renaming variables
   rename('Facility' = `FACILITY NAME`, 'Original Sample Volume' = WW_vol, Ct = CT, 'Target Name' = Target) %>%
@@ -204,7 +208,7 @@ presentable_vol_qpcr <- processed_quant_data %>%
   rename('Volume Filtered' = vol_extracted) %>% 
   
   # Adding new variables, modifying existing variables
-  mutate(Date = 'Manual entry', Trpilicate_Number = NA, Lab = if_else(str_detect(`Target Name`, 'Baylor'), 'B', 'R')) %>% 
+  mutate(Date = 'Manual entry', Sample_ID = NA, Lab = if_else(str_detect(`Target Name`, 'Baylor'), 'B', 'R')) %>% 
   mutate(Detection_Limit = if_else(str_detect(`Target Name`, 'N1|N2'), 330, 
                                    if_else(str_detect(`Target Name`, 'Baylor'), 23500, 705) 
   ) , Sample_Type = NA, Comments = NA) %>% 
@@ -220,27 +224,35 @@ presentable_vol_qpcr <- processed_quant_data %>%
   mutate_cond(str_detect(`Target Name`, '^N'), `Recovery fraction` = NA, `Spiked-in Copies/l WW` = NA) %>%
   
   # Selecting column order
-  select(Facility, WWTP, Date, Lab, `Target Name`, `Original Sample Volume`, `Volume Filtered`, Ct, `Copies/ul RNA`, `Copies/l WW`, Trpilicate_Number, Detection_Limit, Sample_Type, `Spiked-in Copies/l WW`, `Recovery fraction`, WWTP_ID, Tube_ID, Comments) %>%
+  select(Facility, WWTP, Date, Lab, `Target Name`, `Original Sample Volume`, `Volume Filtered`, Ct, `Copies/ul RNA`, `Copies/l WW`, Sample_ID, Detection_Limit, Sample_Type, `Spiked-in Copies/l WW`, `Recovery fraction`, WWTP_ID, Tube_ID, Comments) %>%
   mutate_at('Target Name', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2')))
 
 
 
 # Output data - including controls
-check_ok_and_write(presentable_vol_qpcr, sheeturls$complete_data, title_name) # save results to a google sheet, ask for overwrite
+check_ok_and_write(presentable_data, sheeturls$complete_data, title_name) # save results to a google sheet, ask for overwrite
 
 
 # presentable data for health department
-present_WW_data <- presentable_vol_qpcr %>% 
-  filter(!str_detect(Facility, str_c(extra_categories, "Vaccine|NTC|Blank"))) %>%  # retain only WWTP data
-  rename('Copies_per_uL_RNA' = `Copies/ul RNA`, 'Copies_Per_Litre_WW' = `Copies/l WW`, 'Recovery_Rate' = `Recovery fraction`, Target_Name = `Target Name`) %>% 
+present_WW_data <- presentable_data %>% 
+  filter(!str_detect(Facility, str_c(extra_categories, "|Vaccine|NTC|Blank"))) %>%  # retain only WWTP data
+  rename('Copies_per_uL_RNA' = `Copies/ul RNA`, 'Copies_Per_Liter_WW' = `Copies/l WW`, 'Recovery_Rate' = `Recovery fraction`, Target_Name = `Target Name`) %>% 
   mutate_at('Target_Name', ~str_remove(., '/Baylor')) %>% 
   select(-contains('Volume'), -`Spiked-in Copies/l WW`, -Tube_ID)
 
+present_only_WW <- present_WW_data %>% filter(!str_detect(Facility, special_samples))
+
 # Write data if not empty
-if(present_WW_data %>% is_empty() %>% !.){
-  check_ok_and_write(present_WW_data, sheeturls$wwtp_only_data, title_name) # save results to a google sheet, ask for overwrite
+if(present_only_WW %>% is_empty() %>% !.){
+  check_ok_and_write(present_only_WW, sheeturls$wwtp_only_data, title_name) # save results to a google sheet, ask for overwrite
 }
 
+present_special_samples <- present_WW_data %>% filter(str_detect(Facility, special_samples))
+
+# Write data if not empty
+if(present_special_samples %>% is_empty() %>% !.){
+  check_ok_and_write(present_special_samples, sheeturls$wwtp_only_data, str_c(title_name, ' special samples')) # save results to a google sheet, ask for overwrite
+}
 
 # Plotting into html -----------------------------------------------------------------------
 

@@ -462,11 +462,11 @@ check_ok_and_write <- function(data, sheet_URL, title_name)
     expr = {
       read_sheet(sheet_URL, sheet = title_name)
       message("Sheet already exists")
-      return(FALSE)
+      FALSE
     },
     error = function(e){
       message('Sheet does not exist')
-      return(TRUE)
+      TRUE
       print(e)
     }
   )
@@ -474,13 +474,13 @@ check_ok_and_write <- function(data, sheet_URL, title_name)
   # if the sheet exists (sheet_dne is false), then ask the user if
   # they want to overwrite. If the user selects cancel, then abort
   if (!sheet_dne) {
-    write_ok <- askYesNo(paste("A sheet with the name", title_name, "already exists. Do you want to overwrite?", sep=" "))
-    if (is.na(write_ok)){
-      stop("Cancel selected, script aborted.")
+    write_ok <- menu(c('Yes', 'No'), title = paste("A sheet with the name", title_name, "already exists. Do you want to overwrite?", sep=" "))
+    if (write_ok == 2){
+      print(str_c("Not overwriting: ", title_name))
     }
   }
 
-  if (write_ok) {
+  if (write_ok == 1) {
     write_sheet(data, sheet_URL, sheet=title_name)
   }
 }
