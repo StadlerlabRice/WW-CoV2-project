@@ -35,6 +35,7 @@ Quantifying CoV2-N1,N2 (multiplexed) and BCoV surrogate spiked into wastewater s
 ### (copies per l WW)
 
 ```{r all_plot}
+# all the plotting functions plot data: "long_processed_minimal" by default
 
   concWW_plot <- plot_mean_sd_jitter(measure_var = 'Recovered', sample_var = extra_categories, exclude_sample = T, x_var = WWTP, ylabel = 'Genome copies/l Wastewater') 
   
@@ -42,11 +43,12 @@ Quantifying CoV2-N1,N2 (multiplexed) and BCoV surrogate spiked into wastewater s
   
 ```
 
+
 ### (copies per ul RNA)
 
 ```{r copiesrna}
 
-  concWW_plot <- plot_mean_sd_jitter(sample_var = extra_categories, exclude_sample = T, x_var = WWTP, ylabel = 'Genome copies/l Wastewater') 
+  concWW_plot <- plot_mean_sd_jitter(sample_var = extra_categories, exclude_sample = T, x_var = WWTP, ylabel = 'Genome copies/ul RNA') 
   
   concWW_plot %>% format_logscale_y() %>% print()
   
@@ -148,7 +150,7 @@ ordered_plt1 %>% format_logscale_y() %>% print()
 
 ```{r orderedrna}
 
-ordered_plt1 <- plot_mean_sd_jitter(sample_var = str_c(extra_categories, '|NTC|Vaccine'), exclude_sample = T, x_var = WWTP, ascending_order = T, ylabel = 'Genome copies/l Wastewater')
+ordered_plt1 <- plot_mean_sd_jitter(sample_var = str_c(extra_categories, '|NTC|Vaccine'), exclude_sample = T, x_var = WWTP, ascending_order = T, ylabel = 'Genome copies/ul RNA')
 
 ordered_plt1 %>% print()
 ordered_plt1 %>% format_logscale_y() %>% print()

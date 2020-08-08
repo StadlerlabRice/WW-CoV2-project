@@ -466,7 +466,7 @@ check_ok_and_write <- function(data, sheet_URL, title_name)
     },
     error = function(e){
       message('Sheet does not exist')
-      TRUE
+      return(TRUE)
       print(e)
     }
   )
@@ -476,6 +476,7 @@ check_ok_and_write <- function(data, sheet_URL, title_name)
   if (!sheet_dne) {
     write_ok <- menu(c('Yes', 'No'), title = paste("A sheet with the name", title_name, "already exists. Do you want to overwrite?", sep=" "))
     if (write_ok == 2){
+      # stop("Cancel selected, script aborted.")
       print(str_c("Not overwriting: ", title_name))
     }
   }

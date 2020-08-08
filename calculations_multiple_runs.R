@@ -243,14 +243,14 @@ present_WW_data <- presentable_data %>%
 present_only_WW <- present_WW_data %>% filter(!str_detect(Facility, special_samples))
 
 # Write data if not empty
-if(present_only_WW %>% is_empty() %>% !.){
+if(present_only_WW %>% plyr::empty() %>% !.){
   check_ok_and_write(present_only_WW, sheeturls$wwtp_only_data, title_name) # save results to a google sheet, ask for overwrite
 }
 
 present_special_samples <- present_WW_data %>% filter(str_detect(Facility, special_samples))
 
 # Write data if not empty
-if(present_special_samples %>% is_empty() %>% !.){
+if(present_special_samples %>% plyr::empty() %>% !.){
   check_ok_and_write(present_special_samples, sheeturls$wwtp_only_data, str_c(title_name, ' special samples')) # save results to a google sheet, ask for overwrite
 }
 
