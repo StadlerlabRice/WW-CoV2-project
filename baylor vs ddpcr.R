@@ -3,11 +3,12 @@
 # load ddPCR data
 dd <- read_sheet(sheeturls$wwtp_only_data, sheet = '713-715 baylor ddPCR') %>% 
   filter(Lab == 'B') %>% 
-  mutate('Method' = 'R-ddPCR')
+  mutate('Method' = 'R-ddPCR') %>% 
+  rename(Copies_Per_Liter_WW = Copies_Per_Litre_WW)
 
 # Load Rice-qPCR data
 qpr <- read_sheet(sheeturls$wwtp_only_data, sheet = '713-715 Baylor_qPCR N1N2') %>% 
-  filter(Lab == 'R') %>% 
+  filter(Lab == 'B') %>% 
   mutate('Method' = 'R-qPCR')
 
 # load Baylor's excel files
@@ -28,34 +29,16 @@ q716 <- 'C:/Users/new/Box Sync/Covid Tracking Project/Rice and Baylor Combined D
   ungroup()
 
 # q merge
-q.merge <- bind_rows(q713, q716) %>% 
-  rename('Copies_Per_Litre_WW' = 'Copies_Per_Liter_WW')
-  
+q.merge <- bind_rows(q713, q716) 
+r.merge <- bind_rows(dd, qpr) %>% mutate_at('Sample_Type', as.character)
+
 # head to head fight!
-merge.data <- bind_rows(dd, q.merge) %>% 
+merge.data <- bind_rows(r.merge, q.merge) %>% 
   mutate(Week = str_extract(WWTP_ID, '[:digit:]*(?=.)'))
 
-# plotting
-plt1 <- merge.data %>% ggplot(aes(WWTP, Copies_Per_Litre_WW, colour = Method)) + geom_point() + facet_grid(rows = vars(Target_Name), cols = vars(Week), scales = 'free_y') + ggtitle('713-715 Baylor ddPCR vs qPCR')
 
-plt1 %>% format_logscale_y() %>% print()
+rmarkdown::render('baylor vs ddpcr.Rmd', output_file = '713-715 Baylor-Rice ddPCR, qPCR x2.html')
 
 
-long_target <- merge.data %>% select(-Copies_per_uL_RNA) %>% 
-  pivot_wider(names_from = 'Target_Name', values_from = Copies_Per_Litre_WW)
-  
-plt2 <- long_target %>% ggplot(aes(`SARS CoV-2 N1`, `SARS CoV-2 N2`, colour = Method, shape = Week)) + geom_point() + scale_shape_manual(values = c(19, 2)) + ggtitle('713-715 Baylor ddPCR vs qPCR', subtitle = 'Copies_Per_Litre_WW')
 
-plt2 %>% format_logscale_x() %>% format_logscale_y() %>% print()
 
-long_method <- merge.data %>% select(WWTP_ID, Copies_Per_Litre_WW, Target_Name, Method, Week) %>% 
-  pivot_wider(names_from = Method, values_from = Copies_Per_Litre_WW)
-
-plt3 <- long_method %>% ggplot(aes(`R-ddPCR`, `B-qPCR`, colour = Target_Name)) + geom_point() + ggtitle('713-715 Baylor ddPCR vs qPCR', subtitle = 'Copies_Per_Litre_WW') + geom_smooth(method = lm) + geom_abline(slope = 1, intercept = 0) + 
-  facet_grid(cols = vars(Week), scales = 'free_x')
-
-# formula and linear regression
-fmla <- as.formula(paste('`B-qPCR`', "~", '`R-ddPCR`'))
-lin_reg_eqn <- long_method %>% group_by(Week, Target_Name) %>% group_map(~lm(fmla, data = .) %>% lm_eqn(.))
-
-plt3 %>% format_logscale_x() %>% format_logscale_y() %>% print()

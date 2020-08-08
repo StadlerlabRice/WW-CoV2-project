@@ -1,0 +1,57 @@
+---
+title: "baylor vs ddpcr"
+author: "Prashant Kalvapalle"
+date: "8th Aug 2020"
+output: 
+  html_document:
+    theme: flatly
+    toc: TRUE
+    toc_float: TRUE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 12)
+```
+
+## by WWTP
+
+```{r cars}
+# plotting
+plt1 <- merge.data %>% ggplot(aes(WWTP, Copies_Per_Liter_WW, colour = Method)) + geom_point() + facet_grid(rows = vars(Target_Name), cols = vars(Week), scales = 'free_y') + ggtitle('713-715 Baylor ddPCR vs qPCR')
+
+plt1 %>% format_logscale_y() %>% print()
+```
+
+## N1 vs N2 scatter plot
+
+
+```{r pressure, echo=FALSE}
+
+long_target <- merge.data %>% select(-Copies_per_uL_RNA, -Ct) %>% 
+  pivot_wider(names_from = 'Target_Name', values_from = Copies_Per_Liter_WW)
+  
+plt2 <- long_target %>% ggplot(aes(`SARS CoV-2 N1`, `SARS CoV-2 N2`, fill = Method, colour = Method)) + 
+  geom_point(shape = 19) +
+  geom_point(shape = 21, colour = 'black', aes(alpha = Week)) + 
+  scale_alpha_manual(values = c(0, 1)) +
+  ggtitle('713-715 Baylor ddPCR vs qPCR', subtitle = 'Copies_Per_Liter_WW')
+
+plt2 %>% format_logscale_x() %>% format_logscale_y() %>% print()
+```
+
+## ddPCR vs Baylor-qPCR
+
+```{r dd_vs_Bq}
+long_method <- merge.data %>% select(WWTP_ID, Copies_Per_Liter_WW, Target_Name, Method, Week) %>% 
+  pivot_wider(names_from = Method, values_from = Copies_Per_Liter_WW)
+
+plt3 <- long_method %>% ggplot(aes(`R-ddPCR`, `B-qPCR`, colour = Target_Name)) + geom_point() + ggtitle('713-715 Baylor ddPCR vs qPCR', subtitle = 'Copies_Per_Liter_WW') + geom_smooth(method = lm) + geom_abline(slope = 1, intercept = 0) + 
+  facet_grid(cols = vars(Week), scales = 'free_x')
+
+# formula and linear regression
+fmla <- as.formula(paste('`B-qPCR`', "~", '`R-ddPCR`'))
+lin_reg_eqn <- long_method %>% group_by(Week, Target_Name) %>% group_map(~lm(fmla, data = .) %>% lm_eqn(.))
+
+plt3 %>% format_logscale_x() %>% format_logscale_y() %>% print()
+```
+
