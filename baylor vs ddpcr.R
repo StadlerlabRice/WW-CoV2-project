@@ -5,6 +5,11 @@ dd <- read_sheet(sheeturls$wwtp_only_data, sheet = '713-715 baylor ddPCR') %>%
   filter(Lab == 'B') %>% 
   mutate('Method' = 'R-ddPCR')
 
+# Load Rice-qPCR data
+qpr <- read_sheet(sheeturls$wwtp_only_data, sheet = '713-715 Baylor_qPCR N1N2') %>% 
+  filter(Lab == 'R') %>% 
+  mutate('Method' = 'R-qPCR')
+
 # load Baylor's excel files
 q713 <- '../../../Covid Tracking Project/Rice and Baylor Combined Data/Baylor Data/7_13/' %>% 
   str_c('WWTP_713_Baylor_Results', '.csv') %>% 
