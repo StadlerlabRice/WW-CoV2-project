@@ -12,14 +12,11 @@ elution_volume <- 50 # ul - RNA extraction final volume
 spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 450 and varies for each sample)
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'WW43_803_BCoV_Std26', 
-                        'WW45_805 SOH_BCoV_Std27',
-                        'dd.WW15_803_N1/N2',
-                        'dd.WW16_805 SOH_N1/N2')
-title_name <- '803 Rice'
+read_these_sheets <- c( 'WW44_Baylor 713-715_N1N2_Std28')
+title_name <- '713-715 Baylor_qPCR N1N2'
 
 # Biobot_id sheet
-bb_sheets <- c('Week 17 (8/3)')
+bb_sheets <- c('Week 16.2 (7/29)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|Control' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
@@ -152,8 +149,8 @@ if (baylor_trigger) {
     # select(-`Biobot_id`) %>% 
     left_join(baylor_volumes_and_biobots, by = 'Label_tube') %>% 
     fuzzyjoin::regex_right_join(spike_list %>% select(Sample_name, Vaccine_ID, Target, spike_virus_conc),
-                                ., by = c('Vaccine_ID', 'Target')) %>% 
-    select(-`Sample_name.x`) %>% rename(Sample_name = `Sample_name.y`)
+                                ., by = c('Sample_name', 'Target')) %>% 
+    select(-`Sample_name.x`, -`Target.x`) %>% rename(Sample_name = `Sample_name.y`, Target = Target.y)
   
   
 } else vol_B <- tibble(NULL)

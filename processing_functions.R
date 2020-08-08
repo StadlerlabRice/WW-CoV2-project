@@ -14,7 +14,7 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 flnm.here <- 'WW36_720_BCoV_Std19'  # set the filename (if running through this file; uncomment the function call in the end)
 
 process_standard_curve <- function(flnm)
-{
+{ 
   
   # Preliminary naming ----
   
@@ -91,9 +91,9 @@ process_standard_curve <- function(flnm)
 
 
 # qPCR processing: Calculate copy number from Cq and attach sample labels from template table 
-process_qpcr <- function(flnm = flnm.here, std_override = NULL)
+process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = 'none')
   # enter the file name, standard curve mentioned within filename is used unless override is provided
-{
+{ # baylor_wells = # choose : none, '.*' for all, '[A-H][1-9]$|10' etc.  (will append /baylor to target name; Ad hoc - marking the samples from baylor)
   
   # Data input ----
   
