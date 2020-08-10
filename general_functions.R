@@ -346,14 +346,15 @@ plot_scatter <- function(plot_data = results_abs, long_format = F, measure_var =
   }
   
   # Making linear regression formula (source: https://stackoverflow.com/a/50054285/9049673)
-  fmla <- as.formula(paste(substitute(y_var), "~", substitute(x_var)))
+  # fmla <- as.formula(paste(substitute(y_var), "~", substitute(x_var)))
+  fmla <- substitute(y_var ~ x_var) %>% as.formula()
   
   # Max and ranges for plotting
   strx <- paste(substitute(x_var)); stry <- paste(substitute(y_var))
   xyeq <- plot_relevant %>%  summarise_all(~ max(., na.rm = T)) %>% select(all_of(c(strx, stry))) %>% min() %>% {.*0.9}
     
   # linear regression equation
-  lin_reg_eqn <- plot_relevant %>% lm(fmla, data = .) %>% lm_eqn(.)
+  lin_reg_eqn <- plot_relevant %>% lm(fmla, data = .) %>% lm_eqn(.) # Need to vectorize this across groups by - facet and colour_var
   
   plt1 <- plot_relevant %>% ggplot(aes(x = {{x_var}}, y =  {{y_var}}, colour = {{colour_var}})) +
     geom_point(size = 2) +

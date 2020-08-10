@@ -41,6 +41,7 @@ plt2 %>% format_logscale_x() %>% format_logscale_y() %>% print()
 
 ## ddPCR vs Baylor-qPCR
 
+linearscale
 ```{r dd_vs_Bq}
 long_method <- merge.data %>% select(WWTP_ID, Copies_Per_Liter_WW, Target_Name, Method, Week) %>% 
   pivot_wider(names_from = Method, values_from = Copies_Per_Liter_WW)
@@ -52,6 +53,50 @@ plt3 <- long_method %>% ggplot(aes(`R-ddPCR`, `B-qPCR`, colour = Target_Name)) +
 fmla <- as.formula(paste('`B-qPCR`', "~", '`R-ddPCR`'))
 lin_reg_eqn <- long_method %>% group_by(Week, Target_Name) %>% group_map(~lm(fmla, data = .) %>% lm_eqn(.))
 
+plt3 %>% print()
+```
+
+Log-log plot
+```{r dd_vs_Bqlogs}
+
 plt3 %>% format_logscale_x() %>% format_logscale_y() %>% print()
+```
+
+## Rice-qPCR vs Baylor-qPCR
+
+linearscale
+```{r Rq_vs_Bq}
+
+plt3b <- long_method %>% ggplot(aes(`R-qPCR`, `B-qPCR`, colour = Target_Name)) + geom_point() + ggtitle('713-715 Baylor qPCR vs Rice qPCR on Baylor RNA extracts', subtitle = 'Copies_Per_Liter_WW') + geom_smooth(method = lm) + geom_abline(slope = 1, intercept = 0) + 
+  facet_grid(cols = vars(Week), scales = 'free_x')
+
+plt3b %>% format_logscale_x() %>% format_logscale_y() %>% print()
+
+# formula and linear regression
+fmla <- as.formula(paste('`B-qPCR`', "~", '`R-ddPCR`'))
+lin_reg_eqn <- long_method %>% group_by(Week, Target_Name) %>% group_map(~lm(fmla, data = .) %>% lm_eqn(.))
+
+```
+
+Log-log plot
+```{r Rq_vs_Bqlogs}
+
+plt3 %>% format_logscale_x() %>% format_logscale_y() %>% print()
+```
+
+## ddPCR vs all qPCR
+```{r dd_vs_allq}
+
+long_method_bylab <- long_method %>% 
+  pivot_longer(cols = contains('qPCR'), names_to = 'qPCR_lab', values_to = 'qPCR', names_pattern = '(.)-.*$')
+  
+plt4 <- long_method_bylab %>% ggplot(aes(`R-ddPCR`, `qPCR`, colour = qPCR_lab)) + geom_point() + ggtitle('713-715 Baylor ddPCR vs qPCR', subtitle = 'Copies_Per_Liter_WW') + geom_smooth(method = lm) + geom_abline(slope = 1, intercept = 0) + 
+  facet_grid(rows = vars(Target_Name), cols = vars(Week), scales = 'free_x')
+
+plt4 %>% print()
+
+plt4 %>% format_logscale_x() %>% format_logscale_y() %>% print()
+
+# plot_scatter(long_method %>% mutate(Sample_name = 0), colour_var = Target_Name, x_var = `R-ddPCR`, y_var = `B-qPCR`,  title_text = '713-715 Baylor ddPCR vs qPCR') %>% print()
 ```
 

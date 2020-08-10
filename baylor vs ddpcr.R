@@ -33,9 +33,16 @@ q.merge <- bind_rows(q713, q716)
 r.merge <- bind_rows(dd, qpr) %>% mutate_at('Sample_Type', as.character)
 
 # head to head fight!
+make_LOD <- c('R-ddPCR' = '0.3',
+              'R-qPCR' = '0.5',
+              'B-qPCR' = '0.2')
+
 merge.data <- bind_rows(r.merge, q.merge) %>% 
   mutate(Week = str_extract(WWTP_ID, '[:digit:]*(?=.)'))
 
+# Including limits of detection for manual excel analysis
+merge.data.lod <- merge.data%>% 
+  mutate(Limit_of_detection = str_replace_all(Method, make_LOD) %>% as.numeric %>% {. * 1e6/30} )
 
 rmarkdown::render('baylor vs ddpcr.Rmd', output_file = '713-715 Baylor-Rice ddPCR, qPCR x2.html')
 
