@@ -149,6 +149,10 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
         mutate_cond(str_detect(`Well Position`, baylor_wells), Target = str_c(Target, '/Baylor'))
     } else .
     }
+  
+  # vaccine_data <- polished_results %>% filter(str_detect(Sample_name, 'Vaccine')) %>% 
+  #   mutate(Week = str_extract(flnm, [:digit:]{3}))
+  
   # Computation ----
   
   
@@ -273,5 +277,5 @@ process_all_pcr <- function(flname)
   if(str_detect(flname, 'Std[:digit:]*')) process_standard_curve(flname)
   
   # if it is a qPCR file (WWxx), call the qpcr processor
-  if(str_detect(flname, '(?<!dd)WW[:digit:]*')) process_standard_curve(flname)
+  if(str_detect(flname, '(?<!dd\\.)WW[:digit:]*')) process_qpcr(flname)
 }

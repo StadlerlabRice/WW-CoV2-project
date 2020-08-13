@@ -4,30 +4,34 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 
 # Parameters ----------------------------------------------------------------------
 
-# Spike in and concentration details
-elution_volume <- 50 # ul - RNA extraction final volume
-
-# copies/ul viral suspension spiked in                                          (Spike ID: S18)
-# all_spike_virus_conc <- tibble(Target = c('BCoV_M', 'BRSV_N'), spike_virus_conc = c(6817.7, NA))
-spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 450 and varies for each sample)
-
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'WW44_Baylor 713-715_N1N2_Std28')
-title_name <- '713-715 Baylor_qPCR N1N2'
+read_these_sheets <- c( 'WW47_806_BCoV_Std30',
+                        'WW48_806 extraction test_BCoV_Std31',
+                        'dd.WW17_806_N1/N2',
+                        'dd.WW18_806 extraction tests_N1/N2')
+title_name <- '806 Rice'
 
 # Biobot_id sheet
-bb_sheets <- c('Week 16.2 (7/29)')
+bb_sheets <- c('Week 17.2 (8/5)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
-extra_categories = 'Std|Control' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
-special_samples = 'HCJ|SOH|HW' # putting special samples in a separate sheet
+extra_categories = 'Std|Control|Phenol|Con|NaOH' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
+special_samples = 'HCJ|SOH|HW|ODM' # putting special samples in a separate sheet
 
 # To rename samples with descriptive category/names (usually for extra TR experiments)
-# - For other samples: Make it empty an string (like this '' ) to avoid messing up names inadvertantly
+# - For other samples: Make it empty an string (like this '' ) to avoid messing up names inadvertently
 # translate_id_manual <- c('WW/Field', 'Water/Field', 'WW/Lab',  'Water/Lab', 'Solids/Present', 'Solids/Removed', 'Bead-beating/Dilter', 'Bead-beating/No filter') %>% setNames(str_c('^', c('A','B','C','D','E','F','G','H')))
 translate_id_manual <- c('none' = 'none')
 
-same_bottle_for_triplicates <- 'yes' # 'yes' if 1 bottle yields 3 x 50 ml. 'no' if 3 independant bottles yield 50 ml each
+same_bottle_for_triplicates <- 'yes' # 'yes' if 1 bottle yields 3 x 50 ml. 'no' if 3 independent bottles yield 50 ml each
+
+# rarely changed parameters
+
+# Spike in and concentration details
+elution_volume <- 50 # ul - RNA extraction final volume
+
+# copies/ul viral suspension spiked in : This is auto-matched from the list of vaccine data in data dump/preamble
+spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 450 and varies for each sample)
 
 
 # Input data ----------------------------------------------------------------------
