@@ -14,7 +14,7 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 flnm.here <- 'WW36_720_BCoV_Std19'  # set the filename (if running through this file; uncomment the function call in the end)
 
 process_standard_curve <- function(flnm)
-{ 
+{ # note: Quantity of copies/well must be written in the template sheet for the standards
   
   # Preliminary naming ----
   
@@ -154,7 +154,7 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
   
   # Computing copy number from standard curve linear fit information
   results_abs <- results_relevant %>% group_by(Target) %>% do(., absolute_backcalc(., std_par)) %>%  # iteratively calculates copy #'s from standard curve parameters of each Target
-    mutate(`Copy #` = `Copy #`/template_volume) # Normalizing copy number per micro litre of template in the reaction
+    mutate(`Copy #` = `Copy #`/template_volume_qpcr) # Normalizing copy number per micro litre of template in the reaction
   
   # Finding mean and standard deviation within replicates (both technical and biological)
   
@@ -185,7 +185,7 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
 process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none')
 { # Baylor wells : choose 1) none, 2) '.*' for all, 3) '[A-H][1-9]$|10' etc. for specific wells 
   
-  template_volume <- 10 /22 * 20 # ul template volume per well of the ddPCR reaction
+  template_volume_dpcr <- 10 /22 * 20 # ul template volume per well of the ddPCR reaction
   
   # Ad hoc - marking the samples from baylor (will append /baylor to target name)
   
@@ -215,7 +215,7 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none')
     right_join(plate_template, by = 'Well Position') %>%  # Incorporate samples names from the google sheet by matching well position
     mutate_at('Target', ~str_replace_all(., c('N1' = 'N1_multiplex' , 'N2' = 'N2_multiplex'))) %>% 
     filter(!is.na(Target)) %>% 
-    mutate('Copy #' = CopiesPer20uLWell/ template_volume) %>% 
+    mutate('Copy #' = CopiesPer20uLWell/ template_volume_dpcr) %>% 
     select(`Sample_name`, `Copy #`, Target, everything())
   
   
@@ -261,3 +261,17 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none')
 # if not then invoke process_qpcr
 #  (chekc for standard curve and process it)
 
+
+# check the filename and call the appropriate ddPCR, standard curve or qpcr processing functions
+process_all_pcr <- function(flname)
+{ # use only when there are no special features on plate : Like Baylor wells, or overriding standard curves
+
+  # if it is a ddPCR file (dd.WWxx), call the ddPCR processor
+  if(str_detect(flname, 'dd.WW.*')) process_ddpcr(flname)
+  
+  # if it is a standard curve holding file (Stdx), call standard curve processor
+  if(str_detect(flname, 'Std[:digit:]*')) process_standard_curve(flname)
+  
+  # if it is a qPCR file (WWxx), call the qpcr processor
+  if(str_detect(flname, '(?<!dd)WW[:digit:]*')) process_standard_curve(flname)
+}
