@@ -24,7 +24,7 @@ special_samples = 'HCJ|SOH|HW|ODM' # putting special samples in a separate sheet
 # Spike in and concentration details
 elution_volume <- 50 # ul - RNA extraction final volume
 
-# copies/ul viral suspension spiked in : This is auto-matched from the list of vaccine data in data dump/preamble
+# copies/ul viral suspension spiked in : This is auto-matched from the list of vaccine data in data dump/Vaccine_summary
 spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 450 and varies for each sample)
 
 
@@ -118,7 +118,7 @@ if (baylor_trigger) {
 }
 
 # Vaccine spike concentrations
-spike_list <- read_sheet(sheeturls$data_dump, sheet = 'Preamble', range = 'B6:K', col_types = 'Dcccnnnccn') %>% 
+spike_list <- read_sheet(sheeturls$data_dump, sheet = 'Vaccine_summary', range = 'B6:K', col_types = 'Dcccnnnccn') %>% 
   rename(spike_virus_conc = matches('Stock conc.'), Sample_name = Week)  
 
 

@@ -150,9 +150,6 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
     } else .
     }
   
-  # vaccine_data <- polished_results %>% filter(str_detect(Sample_name, 'Vaccine')) %>% 
-  #   mutate(Week = str_extract(flnm, [:digit:]{3}))
-  
   # Computation ----
   
   
@@ -162,7 +159,7 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
   
   # Finding mean and standard deviation within replicates (both technical and biological)
   
-  summary_results <- results_abs %>%  group_by(`Sample_name`, Target, assay_variable) %>% summarise_at(vars(`Copy #`), rlang::list2(mean, sd), na.rm = T) # find mean and SD of individual copy #s for each replicate
+  summary_results <- results_abs %>%  group_by(`Sample_name`, Target, assay_variable) %>% summarise_at(vars(`Copy #`), lst(mean, sd), na.rm = T) # find mean and SD of individual copy #s for each replicate
   results_abs$`Copy #` %<>% replace_na(0) # make unamplified values 0 for plotting
   
   plt <- results_abs %>% ggplot(aes(x = `Tube ID`, y = `Copy #`, color = Target)) + ylab('Copies/ul RNA extract') +    # Specify the plotting variables 
@@ -179,7 +176,32 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
   
   # write_sheet(results_abs, sheeturls$data_dump, sheet = flnm) # save results to a google sheet
   # ggsave('qPCR analysis/', WW1_Baylor-bovine_pilot.png', plot = plt.formatted, width = 8, height = 4)
+ 
+   
+  # Saving vaccine data into Vaccines sheet in data dump: For easy book keeping
+  vaccine_data <- results_abs %>% filter(str_detect(Sample_name, 'Vaccine')) %>%
+    mutate('Prepared on' = '',
+           Week = str_extract(flnm, '[:digit:]{3}'),
+           Vaccine_ID = assay_variable, 
+           .before = 1) %>% 
+    mutate(Run_ID = str_extract(flnm, 'WW[:digit:]*'))
   
+  # Add to existing sheet
+  sheet_append(sheeturls$data_dump, vaccine_data, 'Vaccines')
+  
+  # Mean of vaccine data
+  vaccine_data.mean <- vaccine_data %>% ungroup() %>% 
+    select(1:3, Target, `Copy #`, Run_ID) %>% group_by(across(-`Copy #`)) %>% 
+    summarise(across(`Copy #`, list(Mean_qPCR = mean, SD_qPCR = sd), na.rm = T), .groups = 'keep') %>% 
+    mutate('[Stock conc.] copies/ul' = `Copy #_Mean_qPCR` * 50/20,
+           'Estimated factor' = '',
+           Comments = '',
+           'Conc normalized to estimated factor' = '') %>% 
+    relocate(Run_ID, .after = last_col()) %>% 
+    mutate('x' = '', .before = 1)
+  
+  # Add to existing sheet in Vaccine_summary
+  sheet_append(sheeturls$data_dump, vaccine_data.mean, 'Vaccine_summary')
 }
 
 # ddPCR processing ----
