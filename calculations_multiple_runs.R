@@ -209,10 +209,12 @@ presentable_data <- processed_quant_data %>%
   rename('Volume Filtered' = vol_extracted) %>% 
   
   # Adding new variables, modifying existing variables
-  mutate(Date = 'Manual entry', Lab = if_else(str_detect(`Target Name`, 'Baylor'), 'B', 'R')) %>% 
-  mutate(Detection_Limit = if_else(str_detect(`Target Name`, 'N1|N2'), 330, 
+  mutate(Date = flnm %>% str_extract('[:digit:]{3}') %>% str_replace('([:digit:])([:digit:]{2})', '\\1/\\2/20') , 
+         Lab = if_else(str_detect(`Target Name`, 'Baylor'), 'B', 'R'),
+         Detection_Limit = if_else(str_detect(`Target Name`, 'N1|N2'), 330, 
                                    if_else(str_detect(`Target Name`, 'Baylor'), 23500, 705) 
-  ) , Sample_Type = NA, Comments = NA) %>% 
+                                   ) ,
+         Sample_Type = NA, Comments = NA) %>% 
   mutate_at('Sample_name', ~as.character(.)) %>%
   mutate_at('Facility', ~if_else(. == assay_variable, str_c(Sample_name, '/', assay_variable), .)) %>%
   mutate(Tube_ID = if_else(biological_replicates == ''|is.na(biological_replicates), str_c(Sample_name, ' ', assay_variable), str_c(Sample_name, ' ', assay_variable, '', biological_replicates)) ,
