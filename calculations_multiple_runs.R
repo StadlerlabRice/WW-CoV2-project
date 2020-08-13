@@ -209,15 +209,16 @@ presentable_data <- processed_quant_data %>%
   rename('Volume Filtered' = vol_extracted) %>% 
   
   # Adding new variables, modifying existing variables
-  mutate(Date = 'Manual entry', Sample_ID = NA, Lab = if_else(str_detect(`Target Name`, 'Baylor'), 'B', 'R')) %>% 
+  mutate(Date = 'Manual entry', Lab = if_else(str_detect(`Target Name`, 'Baylor'), 'B', 'R')) %>% 
   mutate(Detection_Limit = if_else(str_detect(`Target Name`, 'N1|N2'), 330, 
                                    if_else(str_detect(`Target Name`, 'Baylor'), 23500, 705) 
   ) , Sample_Type = NA, Comments = NA) %>% 
   mutate_at('Sample_name', ~as.character(.)) %>%
   mutate_at('Facility', ~if_else(. == assay_variable, str_c(Sample_name, '/', assay_variable), .)) %>%
-  mutate(Tube_ID = if_else(biological_replicates == ''|is.na(biological_replicates), str_c(Sample_name, ' ', assay_variable), str_c(Sample_name, ' ', assay_variable, '', biological_replicates)) ) %>% 
-  mutate(WWTP_ID = if_else(biological_replicates == ''|is.na(biological_replicates), str_c(Sample_name, '.', WWTP) , str_c(Sample_name, '.', WWTP, '-', biological_replicates))) %>% 
-  mutate('Limit of detection (copies/ul RNA)' = if_else(str_detect(`Target Name`, 'N1|N2'), 0.3, 0.5 )) %>% 
+  mutate(Tube_ID = if_else(biological_replicates == ''|is.na(biological_replicates), str_c(Sample_name, ' ', assay_variable), str_c(Sample_name, ' ', assay_variable, '', biological_replicates)) ,
+         WWTP_ID = if_else(biological_replicates == ''|is.na(biological_replicates), str_c(Sample_name, '.', WWTP) , str_c(Sample_name, '.', WWTP, '-', biological_replicates)),
+         Sample_ID = WWTP_ID,
+         'Limit of detection (copies/ul RNA)' = if_else(str_detect(`Target Name`, 'N1|N2'), 0.3, 0.5 )) %>% 
   
   # Arrange rows by WWTP facility 
   arrange(Facility, biological_replicates) %>%
@@ -231,7 +232,7 @@ presentable_data <- processed_quant_data %>%
 
 
 # Output data - including controls
-check_ok_and_write(presentable_data, sheeturls$complete_data, title_name) # save results to a google sheet, ask for overwrite
+check_ok_and_write(presentable_data %>% select(-Sample_ID), sheeturls$complete_data, title_name) # save results to a google sheet, ask for overwrite
 
 
 # presentable data for health department
@@ -239,7 +240,7 @@ present_WW_data <- presentable_data %>%
   filter(!str_detect(Facility, str_c(extra_categories, "|Vaccine|NTC|Blank"))) %>%  # retain only WWTP data
   rename('Copies_per_uL_RNA' = `Copies/ul RNA`, 'Copies_Per_Liter_WW' = `Copies/l WW`, 'Recovery_Rate' = `Recovery fraction`, Target_Name = `Target Name`) %>% 
   mutate_at('Target_Name', ~str_remove(., '/Baylor')) %>% 
-  select(-contains('Volume'), -`Spiked-in Copies/l WW`, -Tube_ID)
+  select(-contains('Volume'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID)
 
 present_only_WW <- present_WW_data %>% filter(!str_detect(Facility, special_samples))
 
