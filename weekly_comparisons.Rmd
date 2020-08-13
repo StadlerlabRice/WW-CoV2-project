@@ -1,7 +1,7 @@
 ---
 title: "Weekly comparisons"
 author: "Prashant Kalvapalle"
-date: "29 June 2020"
+date: '`r format(Sys.time(), "%d %B, %Y")`'
 output: 
   html_document:
     theme: flatly
@@ -12,52 +12,20 @@ output:
 ```{r setup, include=FALSE}
 
 knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 6, fig.height = 4)
-
-# Loading libraries, functions and user inputs
-source('./general_functions.R') # Source the general_functions file
-source('./inputs_for_analysis.R') # Source the file with user inputs
-
-# sheets to read from "qPCR data to present + recoveries"" google sheet
-read_these_sheets <- c('608 Rice', '615 Rice', '622 Rice', '629 Rice', '706 Rice', '713 Rice') # sheet name(s) in the raw data file (qPCR data dump) - Separate by comma (,)
-title_name <- 'June Rice' # name of the filename for writing presentable data and plot title
-
-# file for metadata - flow rate litres/day; population by WWTP area
-meta_file <- 'WWTP_All_Results' %>% str_c('../../../Covid Tracking Project/Rice and Baylor Combined Data/', ., '.csv')
-
-# Extra categories to exclude from plotting (separate by | like this 'Vaccine|Troubleshooting')
-extra_categories = 'Std|Vaccine|Control|Water|NTC|TR|Blank'
 ```
 
 ## Recovery | Density plot
 
 ```{r}
 
-# Read the flow rates and population numbers from Kathy's files
-metadata <- read_csv(meta_file, col_types = 'cccccicciid') %>% select(WWTP, Date, Population, Flow.Rate.Liters.Per.Day) %>% 
-  unique() %>%  
-  
-  mutate('Week' = Date %>% as.character() %>% str_match('^(.*)/(.*)/.*') %>% 
-           {if_else( str_detect(.[,3], '[:digit:]{2}'), str_c(.[,2], .[,3]), 
-                     str_c(.[,2], .[,3], sep = '0')) } ) %>% 
-  select(-Date)
-
-# Acquire all the pieces of the data : read saved raw qPCR results from a google sheet
-list_rawqpcr <- map(read_these_sheets, ~ read_sheet(sheeturls$complete_data , sheet = .x) %>%  
-                      mutate('Week' = str_match(.x, '[:digit:]*(?= Rice)')) %>%
-                      rename('Target' = matches('Target'), 'Original Sample Volume' = matches('WW_vol|Original Sample Volume'), 'Ct' = matches('^CT', ignore.case = T)) %>% 
-                       mutate_at('Target', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2')))
-
-                      ) 
-
-rawqpcr <- bind_rows(list_rawqpcr)
-results_abs <- rawqpcr %>% filter(!str_detect(Facility, extra_categories)) %>%  # remove unnecessary data
-  filter(!str_detect(Target, 'BRSV')) %>% 
-  left_join(metadata) %>% 
-  mutate_at('Week', ~ as_factor(.)) %>% 
-  mutate('Viral load per capita per day' = `Copies/l WW` * Flow.Rate.Liters.Per.Day / Population)
-
-  
 results_abs %>% ggplot(aes(x = Week, y = `Recovery fraction`)) + geom_jitter(width = .1)
+```
+
+## Recovery | Violin + Density plot
+
+```{r}
+
+results_abs %>% ggplot(aes(x = Week, y = `Recovery fraction`)) + geom_jitter(width = .1) + geom_violin()
 ```
 
 ## Recovery | Dot plot
@@ -85,15 +53,17 @@ results_wide %>% ggplot(aes(x = `SARS CoV-2 N1`, y = `SARS CoV-2 N2`, colour = W
 ```{r timeseries, fig.width= 16, fig.height= 12}
 
 # Make mean of biological replicates
-raw_results <- results_abs %>% mutate('Sample Name' = Week)
+results_abs.list <- list(
+  raw.dat = results_abs %>% mutate('Sample_name' = Week), # dummy column - for compatibility with plot_mean_sd_jitter() function
 
- summary_results <- results_abs %>% select(Facility, WWTP, Target, `Copies/ul RNA`: `Recovery fraction`, Week, -Bottle) %>%
-  mutate('Sample Name' = Week) %>% 
-  group_by(`Sample Name`, Target, Facility, WWTP, Week) %>% summarise_at(c('Copies/l WW'), lst(mean, sd), na.rm = T)
+  summ.dat = results_abs %>% select(Facility, WWTP, Target, `Copies/ul RNA`: `Recovery fraction`, Week, -Bottle) %>%
+  group_by(Target, Facility, WWTP, Week) %>% summarise_at(c('Copies/l WW'), lst(mean, sd), na.rm = T) %>% 
+    mutate('Sample_name' = Week)
+)
 
-plt_week1 <- plot_mean_sd_jitter(summary_results, raw_results, sample_var = extra_categories, exclude_sample = T, x_var = Week, y_var = `Copies/l WW`, facet_var = WWTP, colour_var = Target, ylabel = 'Genome copies/l Wastewater', facet_style = 'wrap free') + geom_line(aes(group = Target))
+plt_week1 <- plot_mean_sd_jitter(results_abs.list, long_format = F, sample_var = extra_categories, exclude_sample = T, x_var = Week, y_var = `Copies/l WW`, colour_var = Target, ylabel = 'Genome copies/l Wastewater') + geom_line(aes(group = Target)) +
+  facet_wrap(facets = ~WWTP, scales = 'free_x')
 
-# plt_week1 <- summary_results %>% ggplot(aes(x = WWTP, y = mean, colour = Target)) + geom_point() + geom_line() 
 plt_week1 %>% print()
 ```
 
@@ -101,9 +71,10 @@ plt_week1 %>% print()
 ## Weekly timeseries - N1/N2 
 
 ```{r timeseriesN, fig.width= 16, fig.height= 12}
-only_N12 <- list(summary_results, raw_results) %>% map(filter, str_detect(Target, 'N1|N2')) %>% setNames(c('summ', 'raw'))
+only_N12 <- results_abs.list %>% map(filter, str_detect(Target, 'N1|N2'))
 
-plt_week2 <- plot_mean_sd_jitter(only_N12$summ, only_N12$raw, sample_var = extra_categories, exclude_sample = T, x_var = Week, y_var = `Copies/l WW`, facet_var = WWTP, colour_var = Target, ylabel = 'Genome copies/l Wastewater', facet_style = 'manual') + geom_line(aes(group = Target)) + facet_wrap(facets = ~WWTP, scales = 'free_x')
+plt_week2 <- plot_mean_sd_jitter(only_N12, long_format = F, sample_var = extra_categories, exclude_sample = T, x_var = Week, y_var = `Copies/l WW`, colour_var = Target, ylabel = 'Genome copies/l Wastewater') + geom_line(aes(group = Target)) +
+  facet_wrap(facets = ~WWTP, scales = 'free_x')
 
 plt_week2 %>% print()
 ```
@@ -111,9 +82,10 @@ plt_week2 %>% print()
 ## Weekly timeseries - BCoV 
 
 ```{r timeseriesbcov, fig.width= 16, fig.height= 12}
-only_bcov <- list(summary_results, raw_results) %>% map(filter, str_detect(Target, 'BCoV')) %>% setNames(c('summ', 'raw'))
+only_bcov <- results_abs.list %>% map(filter, str_detect(Target, 'BCoV'))
 
-plt_week3 <- plot_mean_sd_jitter(only_bcov$summ, only_bcov$raw, sample_var = extra_categories, exclude_sample = T, x_var = Week, y_var = `Copies/l WW`, facet_var = WWTP, colour_var = Target, ylabel = 'Genome copies/l Wastewater', facet_style = 'manual') + geom_line(aes(group = Target)) + facet_wrap(facets = ~WWTP, scales = 'free_x')
+plt_week3 <- plot_mean_sd_jitter(only_bcov, long_format = F, sample_var = extra_categories, exclude_sample = T, x_var = Week, y_var = `Copies/l WW`, colour_var = Target, ylabel = 'Genome copies/l Wastewater') + geom_line(aes(group = Target)) +
+  facet_wrap(facets = ~WWTP, scales = 'free_x')
 
 plt_week3 %>% print()
 ```
@@ -123,13 +95,13 @@ plt_week3 %>% print()
 ```{r timeseriespercentreco, fig.width= 16, fig.height= 12}
 
 summary_reco <- results_abs %>% select(Facility, WWTP, Target, `Copies/ul RNA`: `Recovery fraction`, Week, -Bottle) %>%
-  mutate('Sample Name' = Week) %>% 
-  group_by(`Sample Name`, Target, Facility, WWTP, Week) %>% 
+  mutate('Sample_name' = Week) %>% 
+  group_by(`Sample_name`, Target, Facility, WWTP, Week) %>% 
   summarise_at(c('Recovery fraction'), lst(mean, sd), na.rm = T)
 
-recovery_data <- list(summary_reco, raw_results) %>% map(filter, str_detect(Target, 'BCoV')) %>% setNames(c('summ', 'raw'))
+recovery_data.list <- list(summary_reco, results_abs.list$raw.dat) %>% map(filter, str_detect(Target, 'BCoV')) %>% setNames(c('summ.dat', 'raw.dat'))
 
-plt_week3 <- plot_mean_sd_jitter(recovery_data$summ, recovery_data$raw, sample_var = extra_categories, exclude_sample = T, x_var = Week, y_var = `Recovery fraction`, facet_var = WWTP, colour_var = Target, ylabel = 'Percentage of BCoV copies recovered', facet_style = 'manual') + geom_line(aes(group = Target)) + facet_wrap(facets = ~WWTP, scales = 'free_x')
+plt_week3 <- plot_mean_sd_jitter(recovery_data.list, long_format = F, sample_var = extra_categories, exclude_sample = T, x_var = Week, y_var = `Recovery fraction`, colour_var = Target, ylabel = 'Percentage of BCoV copies recovered') + geom_line(aes(group = Target)) + facet_wrap(facets = ~WWTP, scales = 'free_x')
 
 plt_week3 %>% print()
 ```
@@ -139,13 +111,13 @@ plt_week3 %>% print()
 ```{r normalizedcopiesn, fig.width= 16, fig.height= 12}
 
 summary_normalized <- results_abs %>% select(Facility, WWTP, Target, `Copies/ul RNA`: `Recovery fraction`, Week, `Viral load per capita per day`, -Bottle) %>%
-  mutate('Sample Name' = Week) %>% 
-  group_by(`Sample Name`, Target, Facility, WWTP, Week) %>% 
+  mutate('Sample_name' = Week) %>% 
+  group_by(`Sample_name`, Target, Facility, WWTP, Week) %>% 
   summarise_at(c('Viral load per capita per day'), lst(mean, sd), na.rm = T)
 
-normalized_copies_N12 <- list(summary_normalized, raw_results) %>% map(filter, str_detect(Target, 'N1|N2')) %>% setNames(c('summ', 'raw'))
+normalized_copies_N12 <- list(summary_normalized, results_abs.list$raw.dat) %>% map(filter, str_detect(Target, 'N1|N2')) %>% setNames(c('summ.dat', 'raw.dat'))
 
-plt_week4 <- plot_mean_sd_jitter(normalized_copies_N12$summ, normalized_copies_N12$raw, sample_var = extra_categories, exclude_sample = T, x_var = Week, y_var = `Viral load per capita per day`, facet_var = WWTP, colour_var = Target, ylabel = 'Viral load per capita per day', facet_style = 'manual') + geom_line(aes(group = Target)) + facet_wrap(facets = ~WWTP, scales = 'free_x')
+plt_week4 <- plot_mean_sd_jitter(normalized_copies_N12, long_format = F, sample_var = extra_categories, exclude_sample = T, x_var = Week, y_var = `Viral load per capita per day`, facet_var = WWTP, colour_var = Target, ylabel = 'Viral load per capita per day', facet_style = 'manual') + geom_line(aes(group = Target)) + facet_wrap(facets = ~WWTP, scales = 'free_x')
 
 plt_week4 %>% print()
 

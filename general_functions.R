@@ -299,7 +299,12 @@ plot_mean_sd_jitter <- function(.data_list = long_processed_minimal, long_format
   } else
     
   {
-    .data_to_plot <- .dat_filtered
+    .data_to_plot <- .dat_filtered 
+    
+    if(ascending_order) .data_to_plot$summ.dat %<>% mutate_at('WWTP', as.character) %>% 
+      arrange(`mean`) %>% 
+      mutate_at('WWTP', as_factor)
+    
   }
   
   # Exit with a useful message if data is empty
