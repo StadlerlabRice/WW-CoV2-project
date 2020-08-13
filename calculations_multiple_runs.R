@@ -18,12 +18,6 @@ bb_sheets <- c('Week 17.2 (8/5)')
 extra_categories = 'Std|Control|Phenol|Con|NaOH' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
 special_samples = 'HCJ|SOH|HW|ODM' # putting special samples in a separate sheet
 
-# To rename samples with descriptive category/names (usually for extra TR experiments)
-# - For other samples: Make it empty an string (like this '' ) to avoid messing up names inadvertently
-# translate_id_manual <- c('WW/Field', 'Water/Field', 'WW/Lab',  'Water/Lab', 'Solids/Present', 'Solids/Removed', 'Bead-beating/Dilter', 'Bead-beating/No filter') %>% setNames(str_c('^', c('A','B','C','D','E','F','G','H')))
-translate_id_manual <- c('none' = 'none')
-
-same_bottle_for_triplicates <- 'yes' # 'yes' if 1 bottle yields 3 x 50 ml. 'no' if 3 independent bottles yield 50 ml each
 
 # rarely changed parameters
 
@@ -81,24 +75,22 @@ volumes_data_Rice <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrate
          'Label_tube' = `Label on tube`, 
          vol_extracted = `WW volume extracted (ml)`,
          Vaccine_ID = `Stock ID of Spike`,
-         'Biobot_id' = `Biobot/other ID`) %>% 
+         'Biobot_id' = `Biobot/other ID`,
+         WW_weight = `Total WW weight measured (kg)`) %>% 
   mutate('WW_vol' = coalesce(WW_vol, `Total WW volume calculated (ml)`) ) %>% 
   
-  select(WW_vol, Label_tube, vol_extracted, Vaccine_ID, `Biobot_id`) %>% 
-  distinct() %>% 
+  select(WW_vol, Label_tube, vol_extracted, Vaccine_ID, `Biobot_id`, WW_weight) %>% # select only the useful columns
+  distinct() %>% # for removing repeated data in early stuff, before 608 (interferes with the merging of volumes for same bottles)
   mutate_at('Label_tube', ~str_remove_all(., " ")) %>% 
   mutate_at('Biobot_id', str_remove,  ' ') %>% 
   
   # removing wrongly entered volumes for replicates, replacing with the max volume 
-  # (this is a temporary fix, a wiser function that looks for empty elements in weight column should be written)
-  {if(same_bottle_for_triplicates == 'yes') { 
-    mutate(., unique_labels = str_remove(Label_tube,'[1-9]$')) %>%  # this will be changed to the 'Bottle' column soon
-      group_by(unique_labels) %>% 
-      mutate_at('WW_vol', max, na.rm = T) %>% 
-      ungroup() %>% 
-      select(-unique_labels)
-  }
-  }
+  mutate(., unique_labels = str_remove(Label_tube,'[1-9]$')) %>%  # this will be changed to the 'Bottle' column soon
+  group_by(unique_labels) %>% 
+  mutate(across(WW_vol, ~ifelse(is.na(WW_weight), max(., na.rm = T), .))) %>% 
+  ungroup() %>% 
+  select(-unique_labels)
+
 
 # baylor's ID, vols ----------------------------------------------------------------------   
 
