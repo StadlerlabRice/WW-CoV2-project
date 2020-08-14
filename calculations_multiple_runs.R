@@ -5,18 +5,17 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'WW47_806_BCoV_Std30',
-                        'WW48_806 extraction test_BCoV_Std31',
-                        'dd.WW17_806_N1/N2',
-                        'dd.WW18_806 extraction tests_N1/N2')
-title_name <- '806 Rice'
+read_these_sheets <- c( 'dd.WW20_810_N1/N2',
+                        'WW49_810_BCoV_Std32',
+                        'WW50_810 extra- famhex test_BCoV_Std33')
+title_name <- '810 Rice'
 
 # Biobot_id sheet
-bb_sheets <- c('Week 17.2 (8/5)')
+bb_sheets <- c('Week 18 (8/10)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
-extra_categories = 'Std|Control|Phenol|Con|NaOH' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
-special_samples = 'HCJ|SOH|HW|ODM' # putting special samples in a separate sheet
+extra_categories = 'Std|Control|e811|Acetone' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
+special_samples = 'HCJ|SOH|ODM' # putting special samples in a separate sheet
 
 
 # rarely changed parameters
@@ -89,7 +88,7 @@ volumes_data_Rice <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrate
   group_by(unique_labels) %>% 
   mutate(across(WW_vol, ~ifelse(is.na(WW_weight), max(., na.rm = T), .))) %>% 
   ungroup() %>% 
-  select(-unique_labels)
+  select(-unique_labels, -WW_weight)
 
 
 # baylor's ID, vols ----------------------------------------------------------------------   
@@ -232,7 +231,11 @@ check_ok_and_write(presentable_data %>% select(-Sample_ID), sheeturls$complete_d
 # presentable data for health department
 present_WW_data <- presentable_data %>% 
   filter(!str_detect(Facility, str_c(extra_categories, "|Vaccine|NTC|Blank"))) %>%  # retain only WWTP data
-  rename('Copies_per_uL_RNA' = `Copies/ul RNA`, 'Copies_Per_Liter_WW' = `Copies/l WW`, 'Recovery_Rate' = `Recovery fraction`, Target_Name = `Target Name`) %>% 
+  rename('Copies_per_uL' = `Copies/ul RNA`, 
+         'Copies_Per_Liter_WW' = `Copies/l WW`, 
+         'Recovery_Rate' = `Recovery fraction`, 
+         Target_Name = `Target Name`,
+         Facility_ID = WWTP) %>% 
   mutate_at('Target_Name', ~str_remove(., '/Baylor')) %>% 
   select(-contains('Volume'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID)
 

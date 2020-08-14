@@ -124,7 +124,7 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
     filter(!is.na(Target))
   
   # Remove unneccesary data
-  rm(fl, plate_template_raw)  # remove old data for sparsity
+  rm(fl)  # remove old data for sparsity
   
   # Data polishing ----
   
@@ -187,7 +187,7 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
     mutate(Run_ID = str_extract(flnm, 'WW[:digit:]*'))
   
   # Add to existing sheet
-  sheet_append(sheeturls$data_dump, vaccine_data, 'Vaccines')
+  if(vaccine_data %>% plyr::empty() %>% {!.}) sheet_append(sheeturls$data_dump, vaccine_data, 'Vaccines')
   
   # Mean of vaccine data
   vaccine_data.mean <- vaccine_data %>% ungroup() %>% 
@@ -201,7 +201,7 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
     mutate('x' = '', .before = 1)
   
   # Add to existing sheet in Vaccine_summary
-  sheet_append(sheeturls$data_dump, vaccine_data.mean, 'Vaccine_summary')
+  if(vaccine_data.mean %>% plyr::empty() %>% {!.}) sheet_append(sheeturls$data_dump, vaccine_data.mean, 'Vaccine_summary')
 }
 
 # ddPCR processing ----
