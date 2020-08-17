@@ -37,6 +37,23 @@ nameless <- results_abs %>% select(Week, `Recovery fraction`) %>% drop_na() %>% 
 nameless %>% ggplot(aes(x = id, y = `Recovery fraction`, colour = Week)) + geom_point() + geom_line()
 ```
 
+## Copies/L | Violin + Density plot
+
+```{r allviolin}
+
+results_abs %>% 
+  ggplot(aes(x = Week, y = `Copies/l WW`, colour = Target)) + geom_jitter(width = .1) + geom_violin()
+```
+
+## N1-N2 Copies/L | Violin + Density plot
+
+```{r n12violin}
+
+results_abs %>% filter(str_detect(Target, 'N1|N2')) %>% 
+  ggplot(aes(x = Week, y = `Copies/l WW`, colour = Target)) + geom_jitter(width = .1) + geom_violin()
+```
+
+
 ## N comparisions | Scatter
 
 ```{r}
@@ -56,7 +73,7 @@ results_wide %>% ggplot(aes(x = `SARS CoV-2 N1`, y = `SARS CoV-2 N2`, colour = W
 results_abs.list <- list(
   raw.dat = results_abs %>% mutate('Sample_name' = Week), # dummy column - for compatibility with plot_mean_sd_jitter() function
 
-  summ.dat = results_abs %>% select(Facility, WWTP, Target, `Copies/ul RNA`: `Recovery fraction`, Week, -Bottle) %>%
+  summ.dat = results_abs %>% select(Facility, WWTP, Target, `Copies/ul RNA`: `Recovery fraction`, Week, -any_of('Bottle')) %>%
   group_by(Target, Facility, WWTP, Week) %>% summarise_at(c('Copies/l WW'), lst(mean, sd), na.rm = T) %>% 
     mutate('Sample_name' = Week)
 )
@@ -79,6 +96,13 @@ plt_week2 <- plot_mean_sd_jitter(only_N12, long_format = F, sample_var = extra_c
 plt_week2 %>% print()
 ```
 
+## Logscale timeseries - N1/N2 
+
+```{r logtimeseriesN, fig.width= 16, fig.height= 12}
+
+plt_week2 %>% format_logscale_y() %>% print()
+```
+
 ## Weekly timeseries - BCoV 
 
 ```{r timeseriesbcov, fig.width= 16, fig.height= 12}
@@ -94,7 +118,7 @@ plt_week3 %>% print()
 
 ```{r timeseriespercentreco, fig.width= 16, fig.height= 12}
 
-summary_reco <- results_abs %>% select(Facility, WWTP, Target, `Copies/ul RNA`: `Recovery fraction`, Week, -Bottle) %>%
+summary_reco <- results_abs %>% select(Facility, WWTP, Target, `Copies/ul RNA`: `Recovery fraction`, Week, -any_of('Bottle')) %>%
   mutate('Sample_name' = Week) %>% 
   group_by(`Sample_name`, Target, Facility, WWTP, Week) %>% 
   summarise_at(c('Recovery fraction'), lst(mean, sd), na.rm = T)
@@ -110,7 +134,7 @@ plt_week3 %>% print()
 
 ```{r normalizedcopiesn, fig.width= 16, fig.height= 12}
 
-summary_normalized <- results_abs %>% select(Facility, WWTP, Target, `Copies/ul RNA`: `Recovery fraction`, Week, `Viral load per capita per day`, -Bottle) %>%
+summary_normalized <- results_abs %>% select(Facility, WWTP, Target, `Copies/ul RNA`: `Recovery fraction`, Week, `Viral load per capita per day`, -any_of('Bottle')) %>%
   mutate('Sample_name' = Week) %>% 
   group_by(`Sample_name`, Target, Facility, WWTP, Week) %>% 
   summarise_at(c('Viral load per capita per day'), lst(mean, sd), na.rm = T)
