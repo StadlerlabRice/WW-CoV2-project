@@ -49,10 +49,18 @@ results_abs %>%
 
 ```{r n12violin}
 
-results_abs %>% filter(str_detect(Target, 'N1|N2')) %>% 
+den.plt <- results_abs %>% filter(str_detect(Target, 'N1|N2')) %>% 
   ggplot(aes(x = Week, y = `Copies/l WW`, colour = Target)) + geom_jitter(width = .1) + geom_violin()
+
+print(den.plt)
 ```
 
+## Logscale N1-N2 Copies/L | Violin + Density plot
+
+```{r n12violin}
+
+den.plt %>% format_logscale_y() %>% print()
+```
 
 ## N comparisions | Scatter
 
