@@ -181,7 +181,7 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
   # Saving vaccine data into Vaccines sheet in data dump: For easy book keeping
   vaccine_data <- results_abs %>% filter(str_detect(Sample_name, 'Vaccine')) %>%
     mutate('Prepared on' = '',
-           Week = str_extract(flnm, '[:digit:]{3}'),
+           Week = str_extract(flnm, '[:digit:]{3}') %>% unlist() %>% str_c(collapse = ', '),
            Vaccine_ID = assay_variable, 
            .before = 1) %>% 
     mutate(Run_ID = str_extract(flnm, 'WW[:digit:]*'))
