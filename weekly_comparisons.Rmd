@@ -11,7 +11,7 @@ output:
 
 ```{r setup, include=FALSE}
 
-knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 6, fig.height = 4)
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 10, fig.height = 4)
 ```
 
 ## Recovery | Density plot
@@ -57,7 +57,7 @@ print(den.plt)
 
 ## Logscale N1-N2 Copies/L | Violin + Density plot
 
-```{r n12violin}
+```{r logn12violin}
 
 den.plt %>% format_logscale_y() %>% print()
 ```

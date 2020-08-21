@@ -9,15 +9,20 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 #                         'dd.WW24_810 Baylor extracts-2 + 812 SOH_N1/N2',
 #                         'WW55_Baylor 810_BCoV_Std38',
 #                         'WW56_Baylor 810-2_812 SOH_BCoV_Std39')
-read_these_sheets <- c('dd.WW21_810 Baylor eluate ext_N1N2',
-                       'dd.WW22_812 maxwell_810 Baylor-2_N1/N2',
-                       'WW51_810 Baylor el ex_BCoV_Std34',
-                       'WW52_812 Max-810 Baylor el 2_BCoV_Std35')
 
-title_name <- '810 Baylor eluate extract + 812 Maxwell'
+# read_these_sheets <- c('dd.WW21_810 Baylor eluate ext_N1N2',
+#                        'dd.WW22_812 maxwell_810 Baylor-2_N1/N2',
+#                        'WW51_810 Baylor el ex_BCoV_Std34',
+#                        'WW52_812 Max-810 Baylor el 2_BCoV_Std35')
+
+read_these_sheets <- c('dd.WW25_817_N1/N2',
+                       'dd.WW26_817-2_extra_N1/N2',
+                       'WW57_817_BCoV_Std40',
+                       'WW58_817-2_BCoV_Std41')
+title_name <- '817 Rice'
 
 # Biobot_id sheet
-bb_sheets <- c('Week 18 (8/10)')
+bb_sheets <- c('Week 19 (8/17)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|Control|e811|Acetone' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
