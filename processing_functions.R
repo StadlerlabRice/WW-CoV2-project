@@ -209,7 +209,7 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
 
 # ddPCR processing: Attach sample labels from template table, calculate copies/ul using template volume/reaction, make names similar to qPCR data 
 process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none')
-{ # Baylor wells : choose 1) none, 2) '.*' for all, 3) '[A-H][1-9]$|10' etc. for specific wells 
+{ # Baylor wells : choose 1) none, 2) '.*' for all, 3) '[A-H]([1-9]$|10)' etc. for specific wells 
   
   template_volume_dpcr <- 10 /22 * 20 # ul template volume per well of the ddPCR reaction
   
@@ -289,15 +289,15 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none')
 
 
 # check the filename and call the appropriate ddPCR, standard curve or qpcr processing functions
-process_all_pcr <- function(flname)
+process_all_pcr <- function(flname, baylor_wells = none)
 { # use only when there are no special features on plate : Like Baylor wells, or overriding standard curves
 
   # if it is a ddPCR file (dd.WWxx), call the ddPCR processor
-  if(str_detect(flname, 'dd.WW.*')) process_ddpcr(flname)
+  if(str_detect(flname, 'dd.WW.*')) process_ddpcr(flname, baylor_wells = baylor_wells)
   
   # if it is a standard curve holding file (Stdx), call standard curve processor
   if(str_detect(flname, 'Std[:digit:]*')) process_standard_curve(flname)
   
   # if it is a qPCR file (WWxx), call the qpcr processor
-  if(str_detect(flname, '(?<!dd\\.)WW[:digit:]*')) process_qpcr(flname)
+  if(str_detect(flname, '(?<!dd\\.)WW[:digit:]*')) process_qpcr(flname, baylor_wells = baylor_wells)
 }

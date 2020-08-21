@@ -5,10 +5,11 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW20_810_N1/N2',
-                        'WW49_810_BCoV_Std32',
-                        'WW50_810 extra- famhex test_BCoV_Std33')
-title_name <- '810 Rice'
+# read_these_sheets <- c( 'dd.WW23_810 Baylor extracts_N1/N2',
+#                         'dd.WW24_810 Baylor extracts-2 + 812 SOH_N1/N2',
+#                         'WW55_Baylor 810_BCoV_Std38',
+#                         'WW56_Baylor 810-2_812 SOH_BCoV_Std39')
+title_name <- '810 Baylor eluate extract + 812 Maxwell'
 
 # Biobot_id sheet
 bb_sheets <- c('Week 18 (8/10)')
@@ -220,8 +221,8 @@ presentable_data <- processed_quant_data %>%
   
   # Selecting column order
   select(Facility, WWTP, Date, Lab, `Target Name`, `Original Sample Volume`, `Volume Filtered`, Ct, `Copies/ul RNA`, `Copies/l WW`, Sample_ID, Detection_Limit, Sample_Type, `Spiked-in Copies/l WW`, `Recovery fraction`, WWTP_ID, Tube_ID, Comments) %>%
-  mutate_at('Target Name', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2')))
-
+  mutate_at('Target Name', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2'))) %>% 
+  mutate_at('Target_Name', ~str_remove(., '/Baylor'))
 
 
 # Output data - including controls
@@ -236,7 +237,6 @@ present_WW_data <- presentable_data %>%
          'Recovery_Rate' = `Recovery fraction`, 
          Target_Name = `Target Name`,
          Facility_ID = WWTP) %>% 
-  mutate_at('Target_Name', ~str_remove(., '/Baylor')) %>% 
   select(-contains('Volume'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID)
 
 present_only_WW <- present_WW_data %>% filter(!str_detect(Facility, special_samples))
