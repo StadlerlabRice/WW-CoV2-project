@@ -289,7 +289,7 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none')
 
 
 # check the filename and call the appropriate ddPCR, standard curve or qpcr processing functions
-process_all_pcr <- function(flname, baylor_wells = none)
+process_all_pcr <- function(flname, baylor_wells = 'none')
 { # use only when there are no special features on plate : Like Baylor wells, or overriding standard curves
 
   # if it is a ddPCR file (dd.WWxx), call the ddPCR processor
