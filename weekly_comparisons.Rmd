@@ -25,7 +25,7 @@ results_abs %>% ggplot(aes(x = Week, y = `Recovery fraction`)) + geom_jitter(wid
 
 ```{r}
 
-results_abs %>% ggplot(aes(x = Week, y = `Recovery fraction`)) + geom_violin() + geom_jitter(width = .1)
+results_abs %>% ggplot(aes(x = Week, y = `Recovery fraction`)) + geom_violin() + geom_jitter(width = .1, alpha = .2)
 ```
 
 ## Recovery | Dot plot
