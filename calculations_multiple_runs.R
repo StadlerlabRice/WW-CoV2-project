@@ -9,6 +9,11 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 #                         'dd.WW24_810 Baylor extracts-2 + 812 SOH_N1/N2',
 #                         'WW55_Baylor 810_BCoV_Std38',
 #                         'WW56_Baylor 810-2_812 SOH_BCoV_Std39')
+read_these_sheets <- c('dd.WW21_810 Baylor eluate ext_N1N2',
+                       'dd.WW22_812 maxwell_810 Baylor-2_N1/N2',
+                       'WW51_810 Baylor el ex_BCoV_Std34',
+                       'WW52_812 Max-810 Baylor el 2_BCoV_Std35')
+
 title_name <- '810 Baylor eluate extract + 812 Maxwell'
 
 # Biobot_id sheet
@@ -222,7 +227,7 @@ presentable_data <- processed_quant_data %>%
   # Selecting column order
   select(Facility, WWTP, Date, Lab, `Target Name`, `Original Sample Volume`, `Volume Filtered`, Ct, `Copies/ul RNA`, `Copies/l WW`, Sample_ID, Detection_Limit, Sample_Type, `Spiked-in Copies/l WW`, `Recovery fraction`, WWTP_ID, Tube_ID, Comments) %>%
   mutate_at('Target Name', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2'))) %>% 
-  mutate_at('Target_Name', ~str_remove(., '/Baylor'))
+  mutate_at('Target Name', ~str_remove(., '/Baylor'))
 
 
 # Output data - including controls
