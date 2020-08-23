@@ -1,6 +1,15 @@
-# Read in the qPCR file and do manual analysis and plotting
+# Read in the qPCR and ddPCR raw data, attach to sample names and process Cq to copy number (qPCR) 
 # Author: Prashant Kalvapalle;  June 16 2020.
 # Merged with other /R files Aug 4, 2020
+
+
+# Run-command ----
+# How to use this script - Copy and run the command below with the file names in variable: read_these_sheets (same as calculations_multiple_runs.R)
+  # Exceptions: When samples from Baylor are present on any plate, you need to process each plate individually with a regular expression (REGEX)
+  # indicating wells where Baylor data is present
+# map(read_these_sheets, process_all_pcr)
+  # For baylor wells, choose : none, '.*' for all, '[A-H][1-9]$|10' for columns 1 - 10; '.*(?!3).$' for everything except 3rd column etc.
+
 
 # Loading pre-reqisites ----
 
@@ -36,9 +45,13 @@ process_standard_curve <- function(flnm)
   # Bring sample names from template google sheet
   plate_template <- get_template_for(flnm, sheeturls$templates)
   
-  sample_order = columnwise_index(fl) # this gives a vector to order the samples columnwise in the PCR plate or strip (by default : data is shown row-wise) => This command will enable plotting column wise order
+  # this gives a vector to order the samples columnwise in the PCR plate or strip 
+  # (by default : data is shown row-wise) => This command will enable plotting column wise order
+  sample_order = columnwise_index(fl) 
   
-  bring_results <- fl$Results %>% select(`Well Position`, `Sample Name`, CT, starts_with('Tm'),`Target Name`, Task) %>% rename(Target = `Target Name`) %>%  .[sample_order,] %>%  # select only the results used for plotting, calculations etc. and arrange them according to sample order
+  bring_results <- fl$Results %>% select(`Well Position`, `Sample Name`, CT, starts_with('Tm'),`Target Name`, Task) %>% rename(Target = `Target Name`) %>%  .[sample_order,] %>%  
+    
+    # select only the results used for plotting, calculations etc. and arrange them according to sample order
     select(-`Sample Name`) %>% right_join(plate_template, by = 'Well Position') %>%  # Incorporate samples names from the google sheet by matching well position
     separate(Sample_name, c(NA, 'Category', 'Quantity'), sep = '-|_') %>% mutate_at('Quantity', ~ replace_na(as.numeric(.), 0)) %>% 
     filter(!is.na(Target))
@@ -93,7 +106,8 @@ process_standard_curve <- function(flnm)
 # qPCR processing: Calculate copy number from Cq and attach sample labels from template table 
 process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = 'none')
   # enter the file name, standard curve mentioned within filename is used unless override is provided
-{ # baylor_wells = # choose : none, '.*' for all, '[A-H][1-9]$|10' etc.  (will append /baylor to target name; Ad hoc - marking the samples from baylor)
+{ # baylor_wells = # choose : none, '.*' for all, '[A-H][1-9]$|10' for columns 1 - 10; '.*(?!3).$' for everything except 3rd column etc.  
+  #(will append /baylor to target name; Ad hoc - marking the samples from baylor)
   
   # Data input ----
   
@@ -118,7 +132,9 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
   sample_order = columnwise_index(fl) # this gives a vector to order the samples columnwise in the PCR plate or strip (by default : data is shown row-wise) => This command will enable plotting column wise order
   
   # Load desired qPCR result sheet and columns
-  bring_results <- fl$Results %>% select(`Well Position`, `Sample Name`, CT, starts_with('Tm'),`Target Name`) %>% rename(Target = `Target Name`) %>%  .[sample_order,] %>%  # select only the results used for plotting, calculations etc. and arrange them according to sample order
+  bring_results <- fl$Results %>% select(`Well Position`, `Sample Name`, CT, starts_with('Tm'),`Target Name`) %>% rename(Target = `Target Name`) %>%  .[sample_order,] %>%  
+    
+    # select only the results used for plotting, calculations etc. and arrange them according to sample order
     select(-`Sample Name`) %>% right_join(plate_template, by = 'Well Position') %>%  # Incorporate samples names from the google sheet by matching well position
     mutate_at('Target', ~str_replace(., 'BSRV', 'BRSV')) %>% 
     filter(!is.na(Target))
@@ -139,7 +155,9 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
     arrange(assay_variable, biological_replicates) %>% mutate_if(is.character,as_factor) # Factorise the sample name and rearrange in column order of appearance on the plate (for plotting)
   
   # select samples to plot (or to exclude write a similar command)
-  results_relevant <- polished_results %>% filter(str_detect(`Sample_name`, paste('^', plot_select_facet, sep = ''))) %>%  # Include only desired facets : str_detect will find for regular expression; ^x => starting with x
+  results_relevant <- polished_results %>% filter(str_detect(`Sample_name`, paste('^', plot_select_facet, sep = ''))) %>%  
+    
+    # Include only desired facets : str_detect will find for regular expression; ^x => starting with x
     filter(!str_detect(`Sample_name`, plot_exclude_facet)) %>%  # exclude unwanted facets (sample_name) 
     filter(!str_detect(assay_variable, plot_exclude_assay_variable)) %>%  # excluding unwanted x axis variables from assay_variable
     
