@@ -5,24 +5,15 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-# read_these_sheets <- c( 'dd.WW23_810 Baylor extracts_N1/N2',
-#                         'dd.WW24_810 Baylor extracts-2 + 812 SOH_N1/N2',
-#                         'WW55_Baylor 810_BCoV_Std38',
-#                         'WW56_Baylor 810-2_812 SOH_BCoV_Std39')
+read_these_sheets <- c( 'dd.WW23_810 Baylor extracts_N1/N2',
+                        'dd.WW24_810 Baylor extracts-2 + 812 SOH_N1/N2',
+                        'WW55_Baylor 810_BCoV_Std38',
+                        'WW56_Baylor 810-2_812 SOH_BCoV_Std39')
 
-# read_these_sheets <- c('dd.WW21_810 Baylor eluate ext_N1N2',
-#                        'dd.WW22_812 maxwell_810 Baylor-2_N1/N2',
-#                        'WW51_810 Baylor el ex_BCoV_Std34',
-#                        'WW52_812 Max-810 Baylor el 2_BCoV_Std35')
-
-read_these_sheets <- c('dd.WW25_817_N1/N2',
-                       'dd.WW26_817-2_extra_N1/N2',
-                       'WW57_817_BCoV_Std40',
-                       'WW58_817-2_BCoV_Std41')
-title_name <- '817 Rice'
+title_name <- '810 Baylor + 812 SOH'
 
 # Biobot_id sheet
-bb_sheets <- c('Week 19 (8/17)')
+bb_sheets <- c('Week 18.2 (8/12)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|Control|e811|Acetone' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
@@ -111,7 +102,8 @@ if (baylor_trigger) {
   
   baylor_volumes_and_biobots <- raw_quant_data %>% 
     filter(str_detect(Target, 'Baylor')) %>%  
-    pull(Sample_name) %>% unique() %>%  # get all Baylor sheets in data
+    pull(Sample_name) %>% unique() %>%  # get all Baylor sheet names present in data
+    .[!str_detect(., 'NTC|Std')] %>%  # Excluding NTC or Standards from being counted as Baylor data (data is still output)
     
     # read the sheets matching the names, while renaming columns
     map_dfr( ~ read_xlsx (str_c('excel files/Baylor/', 'Baylor_sample volumes', '.xlsx'), sheet = .x) %>%
@@ -154,9 +146,10 @@ if (baylor_trigger) {
     filter(str_detect(Target, 'Baylor')) %>% 
     # select(-`Biobot_id`) %>% 
     left_join(baylor_volumes_and_biobots, by = 'Label_tube') %>% 
-    fuzzyjoin::regex_right_join(spike_list %>% select(Sample_name, Vaccine_ID, Target, spike_virus_conc),
-                                ., by = c('Sample_name', 'Target')) %>% 
-    select(-`Sample_name.x`, -`Target.x`) %>% rename(Sample_name = `Sample_name.y`, Target = Target.y)
+    fuzzyjoin::regex_left_join(., 
+                                spike_list %>% select(Sample_name, Vaccine_ID, Target, spike_virus_conc),
+                                by = c('Sample_name', 'Target')) %>% 
+    select(-`Sample_name.y`, -`Target.y`) %>% rename(Sample_name = `Sample_name.x`, Target = Target.x)
   
   
 } else vol_B <- tibble(NULL)
@@ -240,13 +233,13 @@ check_ok_and_write(presentable_data %>% select(-Sample_ID), sheeturls$complete_d
 
 
 # presentable data for health department
-present_WW_data <- presentable_data %>% 
+present_WW_data <- presentable_data %>%
   filter(!str_detect(Facility, str_c(extra_categories, "|Vaccine|NTC|Blank"))) %>%  # retain only WWTP data
-  rename('Copies_per_uL' = `Copies/ul RNA`, 
-         'Copies_Per_Liter_WW' = `Copies/l WW`, 
-         'Recovery_Rate' = `Recovery fraction`, 
+  rename('Copies_per_uL' = `Copies/ul RNA`,
+         'Copies_Per_Liter_WW' = `Copies/l WW`,
+         'Recovery_Rate' = `Recovery fraction`,
          Target_Name = `Target Name`,
-         Facility_ID = WWTP) %>% 
+         Facility_ID = WWTP) %>%
   select(-contains('Volume'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID)
 
 present_only_WW <- present_WW_data %>% filter(!str_detect(Facility, special_samples))
@@ -267,4 +260,4 @@ if(present_special_samples %>% plyr::empty() %>% !.){
 
 
 # calling r markdown file
-rmarkdown::render('make_html_plots.rmd', output_file = str_c(title_name, '.html'))
+rmarkdown::render('make_html_plots.rmd', output_file = str_c('./qPCR analysis/', title_name, '.html'))
