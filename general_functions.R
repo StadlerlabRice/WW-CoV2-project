@@ -163,6 +163,25 @@ get_template_for <- function(bait, sheet_url = sheeturls$templates)
   
 }
 
+# Check for neighboring dates and merge them
+harmonize_week <- function(week_cols) 
+{
+  
+  # Pick numeric entries in column (the rest will be restored as is)
+  num_week <- as.numeric(week_cols) %>% unique() %>% .[!is.na(.)]
+  
+  # Check for consecutive dates
+  repl_week <- num_week %>% 
+    str_c() %>% 
+    str_replace('([:digit:])([:digit:]{2})', '\\1/\\2/20') %>% 
+    mdy() %>%  # convert to dates
+    map_dbl(., function(x) num_week[. %in% c(x, x-1)] %>% min()) %>% # make the min entry of consecutive dates
+    as.character() %>% 
+    set_names(nm = num_week)
+  
+  new_week_cols <- str_replace_all(week_cols, repl_week)
+  
+}
 
 # Data writing output ----
 
