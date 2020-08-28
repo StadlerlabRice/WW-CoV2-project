@@ -1,6 +1,15 @@
-# Read in the qPCR file and do manual analysis and plotting
+# Read in the qPCR and ddPCR raw data, attach to sample names and process Cq to copy number (qPCR) 
 # Author: Prashant Kalvapalle;  June 16 2020.
 # Merged with other /R files Aug 4, 2020
+
+
+# Run-command ----
+# How to use this script - Copy and run the command below with the file names in variable: read_these_sheets (same as calculations_multiple_runs.R)
+  # Exceptions: When samples from Baylor are present on any plate, you need to process each plate individually with a regular expression (REGEX)
+  # indicating wells where Baylor data is present
+# map(read_these_sheets, process_all_pcr)
+  # For baylor wells, choose : none, '.*' for all, '[A-H][1-9]$|10' for columns 1 - 10; '.*(?!3).$' for everything except 3rd column etc.
+
 
 # Loading pre-reqisites ----
 
@@ -14,7 +23,7 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 flnm.here <- 'WW36_720_BCoV_Std19'  # set the filename (if running through this file; uncomment the function call in the end)
 
 process_standard_curve <- function(flnm)
-{
+{ # note: Quantity of copies/well must be written in the template sheet for the standards
   
   # Preliminary naming ----
   
@@ -36,9 +45,13 @@ process_standard_curve <- function(flnm)
   # Bring sample names from template google sheet
   plate_template <- get_template_for(flnm, sheeturls$templates)
   
-  sample_order = columnwise_index(fl) # this gives a vector to order the samples columnwise in the PCR plate or strip (by default : data is shown row-wise) => This command will enable plotting column wise order
+  # this gives a vector to order the samples columnwise in the PCR plate or strip 
+  # (by default : data is shown row-wise) => This command will enable plotting column wise order
+  sample_order = columnwise_index(fl) 
   
-  bring_results <- fl$Results %>% select(`Well Position`, `Sample Name`, CT, starts_with('Tm'),`Target Name`, Task) %>% rename(Target = `Target Name`) %>%  .[sample_order,] %>%  # select only the results used for plotting, calculations etc. and arrange them according to sample order
+  bring_results <- fl$Results %>% select(`Well Position`, `Sample Name`, CT, starts_with('Tm'),`Target Name`, Task) %>% rename(Target = `Target Name`) %>%  .[sample_order,] %>%  
+    
+    # select only the results used for plotting, calculations etc. and arrange them according to sample order
     select(-`Sample Name`) %>% right_join(plate_template, by = 'Well Position') %>%  # Incorporate samples names from the google sheet by matching well position
     separate(Sample_name, c(NA, 'Category', 'Quantity'), sep = '-|_') %>% mutate_at('Quantity', ~ replace_na(as.numeric(.), 0)) %>% 
     filter(!is.na(Target))
@@ -91,9 +104,10 @@ process_standard_curve <- function(flnm)
 
 
 # qPCR processing: Calculate copy number from Cq and attach sample labels from template table 
-process_qpcr <- function(flnm = flnm.here, std_override = NULL)
+process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = 'none')
   # enter the file name, standard curve mentioned within filename is used unless override is provided
-{
+{ # baylor_wells = # choose : none, '.*' for all, '[A-H][1-9]$|10' for columns 1 - 10; '.*(?!3).$' for everything except 3rd column etc.  
+  #(will append /baylor to target name; Ad hoc - marking the samples from baylor)
   
   # Data input ----
   
@@ -118,13 +132,15 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL)
   sample_order = columnwise_index(fl) # this gives a vector to order the samples columnwise in the PCR plate or strip (by default : data is shown row-wise) => This command will enable plotting column wise order
   
   # Load desired qPCR result sheet and columns
-  bring_results <- fl$Results %>% select(`Well Position`, `Sample Name`, CT, starts_with('Tm'),`Target Name`) %>% rename(Target = `Target Name`) %>%  .[sample_order,] %>%  # select only the results used for plotting, calculations etc. and arrange them according to sample order
+  bring_results <- fl$Results %>% select(`Well Position`, `Sample Name`, CT, starts_with('Tm'),`Target Name`) %>% rename(Target = `Target Name`) %>%  .[sample_order,] %>%  
+    
+    # select only the results used for plotting, calculations etc. and arrange them according to sample order
     select(-`Sample Name`) %>% right_join(plate_template, by = 'Well Position') %>%  # Incorporate samples names from the google sheet by matching well position
     mutate_at('Target', ~str_replace(., 'BSRV', 'BRSV')) %>% 
     filter(!is.na(Target))
   
   # Remove unneccesary data
-  rm(fl, plate_template_raw)  # remove old data for sparsity
+  rm(fl)  # remove old data for sparsity
   
   # Data polishing ----
   
@@ -139,7 +155,9 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL)
     arrange(assay_variable, biological_replicates) %>% mutate_if(is.character,as_factor) # Factorise the sample name and rearrange in column order of appearance on the plate (for plotting)
   
   # select samples to plot (or to exclude write a similar command)
-  results_relevant <- polished_results %>% filter(str_detect(`Sample_name`, paste('^', plot_select_facet, sep = ''))) %>%  # Include only desired facets : str_detect will find for regular expression; ^x => starting with x
+  results_relevant <- polished_results %>% filter(str_detect(`Sample_name`, paste('^', plot_select_facet, sep = ''))) %>%  
+    
+    # Include only desired facets : str_detect will find for regular expression; ^x => starting with x
     filter(!str_detect(`Sample_name`, plot_exclude_facet)) %>%  # exclude unwanted facets (sample_name) 
     filter(!str_detect(assay_variable, plot_exclude_assay_variable)) %>%  # excluding unwanted x axis variables from assay_variable
     
@@ -149,16 +167,17 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL)
         mutate_cond(str_detect(`Well Position`, baylor_wells), Target = str_c(Target, '/Baylor'))
     } else .
     }
+  
   # Computation ----
   
   
   # Computing copy number from standard curve linear fit information
   results_abs <- results_relevant %>% group_by(Target) %>% do(., absolute_backcalc(., std_par)) %>%  # iteratively calculates copy #'s from standard curve parameters of each Target
-    mutate(`Copy #` = `Copy #`/template_volume) # Normalizing copy number per micro litre of template in the reaction
+    mutate(`Copy #` = `Copy #`/template_volume_qpcr) # Normalizing copy number per micro litre of template in the reaction
   
   # Finding mean and standard deviation within replicates (both technical and biological)
   
-  summary_results <- results_abs %>%  group_by(`Sample_name`, Target, assay_variable) %>% summarise_at(vars(`Copy #`), rlang::list2(mean, sd), na.rm = T) # find mean and SD of individual copy #s for each replicate
+  summary_results <- results_abs %>%  group_by(`Sample_name`, Target, assay_variable) %>% summarise_at(vars(`Copy #`), lst(mean, sd), na.rm = T) # find mean and SD of individual copy #s for each replicate
   results_abs$`Copy #` %<>% replace_na(0) # make unamplified values 0 for plotting
   
   plt <- results_abs %>% ggplot(aes(x = `Tube ID`, y = `Copy #`, color = Target)) + ylab('Copies/ul RNA extract') +    # Specify the plotting variables 
@@ -175,7 +194,32 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL)
   
   # write_sheet(results_abs, sheeturls$data_dump, sheet = flnm) # save results to a google sheet
   # ggsave('qPCR analysis/', WW1_Baylor-bovine_pilot.png', plot = plt.formatted, width = 8, height = 4)
+ 
+   
+  # Saving vaccine data into Vaccines sheet in data dump: For easy book keeping
+  vaccine_data <- results_abs %>% filter(str_detect(Sample_name, 'Vaccine')) %>%
+    mutate('Prepared on' = '',
+           Week = str_extract(flnm, '[:digit:]{3}') %>% unlist() %>% str_c(collapse = ', '),
+           Vaccine_ID = assay_variable, 
+           .before = 1) %>% 
+    mutate(Run_ID = str_extract(flnm, 'WW[:digit:]*'))
   
+  # Add to existing sheet
+  if(vaccine_data %>% plyr::empty() %>% {!.}) sheet_append(sheeturls$data_dump, vaccine_data, 'Vaccines')
+  
+  # Mean of vaccine data
+  vaccine_data.mean <- vaccine_data %>% ungroup() %>% 
+    select(1:3, Target, `Copy #`, Run_ID) %>% group_by(across(-`Copy #`)) %>% 
+    summarise(across(`Copy #`, list(Mean_qPCR = mean, SD_qPCR = sd), na.rm = T), .groups = 'keep') %>% 
+    mutate('[Stock conc.] copies/ul' = `Copy #_Mean_qPCR` * 50/20,
+           'Estimated factor' = '',
+           Comments = '',
+           'Conc normalized to estimated factor' = '') %>% 
+    relocate(Run_ID, .after = last_col()) %>% 
+    mutate('x' = '', .before = 1)
+  
+  # Add to existing sheet in Vaccine_summary
+  if(vaccine_data.mean %>% plyr::empty() %>% {!.}) sheet_append(sheeturls$data_dump, vaccine_data.mean, 'Vaccine_summary')
 }
 
 # ddPCR processing ----
@@ -183,9 +227,9 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL)
 
 # ddPCR processing: Attach sample labels from template table, calculate copies/ul using template volume/reaction, make names similar to qPCR data 
 process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none')
-{ # Baylor wells : choose 1) none, 2) '.*' for all, 3) '[A-H][1-9]$|10' etc. for specific wells 
+{ # Baylor wells : choose 1) none, 2) '.*' for all, 3) '[A-H]([1-9]$|10)' etc. for specific wells 
   
-  template_volume <- 10 /22 * 20 # ul template volume per well of the ddPCR reaction
+  template_volume_dpcr <- 10 /22 * 20 # ul template volume per well of the ddPCR reaction
   
   # Ad hoc - marking the samples from baylor (will append /baylor to target name)
   
@@ -215,7 +259,7 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none')
     right_join(plate_template, by = 'Well Position') %>%  # Incorporate samples names from the google sheet by matching well position
     mutate_at('Target', ~str_replace_all(., c('N1' = 'N1_multiplex' , 'N2' = 'N2_multiplex'))) %>% 
     filter(!is.na(Target)) %>% 
-    mutate('Copy #' = CopiesPer20uLWell/ template_volume) %>% 
+    mutate('Copy #' = CopiesPer20uLWell/ template_volume_dpcr) %>% 
     select(`Sample_name`, `Copy #`, Target, everything())
   
   
@@ -261,3 +305,17 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none')
 # if not then invoke process_qpcr
 #  (chekc for standard curve and process it)
 
+
+# check the filename and call the appropriate ddPCR, standard curve or qpcr processing functions
+process_all_pcr <- function(flname, baylor_wells = 'none')
+{ # use only when there are no special features on plate : Like Baylor wells, or overriding standard curves
+
+  # if it is a ddPCR file (dd.WWxx), call the ddPCR processor
+  if(str_detect(flname, 'dd.WW.*')) process_ddpcr(flname, baylor_wells = baylor_wells)
+  
+  # if it is a standard curve holding file (Stdx), call standard curve processor
+  if(str_detect(flname, 'Std[:digit:]*')) process_standard_curve(flname)
+  
+  # if it is a qPCR file (WWxx), call the qpcr processor
+  if(str_detect(flname, '(?<!dd\\.)WW[:digit:]*')) process_qpcr(flname, baylor_wells = baylor_wells)
+}

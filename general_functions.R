@@ -4,7 +4,7 @@
   # Make sure to include raw data as well
 
 # calling libraries ; make sure they are installed (install.packages)
-library(readxl); library(magrittr); library(tidyverse); library(ggrepel); library(googlesheets4); library(rlang) 
+library(readxl); library(magrittr); library(tidyverse); library(ggrepel); library(googlesheets4); library(rlang); library(lubridate) 
 
 sheeturls <- list(templates = 'https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=478762118',
                   biobot_id = 'https://docs.google.com/spreadsheets/d/1ghb_GjTS4yMFbzb65NskAlm-2Gb5M4SNYi4FHE4YVyI/edit#gid=233791008',
@@ -163,6 +163,25 @@ get_template_for <- function(bait, sheet_url = sheeturls$templates)
   
 }
 
+# Check for neighboring dates and merge them
+harmonize_week <- function(week_cols) 
+{
+  
+  # Pick numeric entries in column (the rest will be restored as is)
+  num_week <- as.numeric(week_cols) %>% unique() %>% .[!is.na(.)]
+  
+  # Check for consecutive dates
+  repl_week <- num_week %>% 
+    str_c() %>% 
+    str_replace('([:digit:])([:digit:]{2})', '\\1/\\2/20') %>% 
+    mdy() %>%  # convert to dates
+    map_dbl(., function(x) num_week[. %in% c(x, x-1)] %>% min()) %>% # make the min entry of consecutive dates
+    as.character() %>% 
+    set_names(nm = num_week)
+  
+  new_week_cols <- str_replace_all(week_cols, repl_week)
+  
+}
 
 # Data writing output ----
 
@@ -299,7 +318,12 @@ plot_mean_sd_jitter <- function(.data_list = long_processed_minimal, long_format
   } else
     
   {
-    .data_to_plot <- .dat_filtered
+    .data_to_plot <- .dat_filtered 
+    
+    if(ascending_order) .data_to_plot$summ.dat %<>% mutate_at('WWTP', as.character) %>% 
+      arrange(`mean`) %>% 
+      mutate_at('WWTP', as_factor)
+    
   }
   
   # Exit with a useful message if data is empty
@@ -462,7 +486,7 @@ check_ok_and_write <- function(data, sheet_URL, title_name)
     expr = {
       read_sheet(sheet_URL, sheet = title_name)
       message("Sheet already exists")
-      return(FALSE)
+      FALSE
     },
     error = function(e){
       message('Sheet does not exist')
@@ -474,13 +498,14 @@ check_ok_and_write <- function(data, sheet_URL, title_name)
   # if the sheet exists (sheet_dne is false), then ask the user if
   # they want to overwrite. If the user selects cancel, then abort
   if (!sheet_dne) {
-    write_ok <- askYesNo(paste("A sheet with the name", title_name, "already exists. Do you want to overwrite?", sep=" "))
-    if (is.na(write_ok)){
-      stop("Cancel selected, script aborted.")
+    write_ok <- menu(c('Yes', 'No'), title = paste("A sheet with the name", title_name, "already exists. Do you want to overwrite?", sep=" "))
+    if (write_ok == 2){
+      # stop("Cancel selected, script aborted.")
+      print(str_c("Not overwriting: ", title_name))
     }
   }
 
-  if (write_ok) {
+  if (write_ok == 1) {
     write_sheet(data, sheet_URL, sheet=title_name)
   }
 }
