@@ -135,7 +135,8 @@ vol_R <- raw_quant_data %>%
   left_join(spike_list %>% select(Vaccine_ID, Target, spike_virus_conc),  by = c('Vaccine_ID', 'Target') ) %>% 
   left_join(biobot_lookup, by = 'Biobot_id') %>% 
   
-  mutate_at(c('WWTP', 'FACILITY NAME'), ~if_else(str_detect(., '^X')|is.na(.), assay_variable, .)) 
+  mutate_at(c('WWTP', 'FACILITY NAME'), ~if_else(str_detect(., '^X')|is.na(.), assay_variable, .)) %>% 
+  mutate(original_sample_name = Sample_name , Sample_name = harmonize_week(Sample_name)) # retain min of consecutive dates
 
 # Join Baylor WWTP volumes
 if (baylor_trigger) {
@@ -171,8 +172,9 @@ processed_quant_data <- bind_rows(vol_R, vol_B) %>%
 # Adding a dummy CT column (if only ddPCR data is being loaded; which lacks the CT column) - for compatibility with qPCR code
 if(processed_quant_data %>%  {!'CT' %in% colnames(.)}) processed_quant_data$CT = NA
 
+
 # Summary and long_format ----
-# (under development)
+
 minimal_label_columns <- c('Target', 'Sample_name', 'WWTP')
 
 # Extract minimal columns from processed data (good for running averages and std deviations for plotting)
@@ -208,9 +210,9 @@ presentable_data <- processed_quant_data %>%
                                    if_else(str_detect(`Target Name`, 'Baylor'), 23500, 705) 
                                    ) ,
          Sample_Type = NA, Comments = NA) %>% 
-  mutate_at('Sample_name', ~as.character(.)) %>%
-  mutate_at('Facility', ~if_else(. == assay_variable, str_c(Sample_name, '/', assay_variable), .)) %>%
-  mutate(Tube_ID = if_else(biological_replicates == ''|is.na(biological_replicates), str_c(Sample_name, ' ', assay_variable), str_c(Sample_name, ' ', assay_variable, '', biological_replicates)) ,
+  mutate_at(c('Sample_name', 'original_sample_name'), ~as.character(.)) %>%
+  mutate_at('Facility', ~if_else(. == assay_variable, str_c(original_sample_name, '/', assay_variable), .)) %>%
+  mutate(Tube_ID = if_else(biological_replicates == ''|is.na(biological_replicates), str_c(original_sample_name, ' ', assay_variable), str_c(original_sample_name, ' ', assay_variable, '', biological_replicates)) ,
          WWTP_ID = if_else(biological_replicates == ''|is.na(biological_replicates), str_c(Sample_name, '.', WWTP) , str_c(Sample_name, '.', WWTP, '-', biological_replicates)),
          Sample_ID = WWTP_ID,
          'Limit of detection (copies/ul RNA)' = if_else(str_detect(`Target Name`, 'N1|N2'), 0.3, 0.5 )) %>% 
