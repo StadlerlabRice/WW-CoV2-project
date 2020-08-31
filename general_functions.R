@@ -4,7 +4,7 @@
   # Make sure to include raw data as well
 
 # calling libraries ; make sure they are installed (install.packages)
-library(readxl); library(magrittr); library(tidyverse); library(ggrepel); library(googlesheets4) 
+library(readxl); library(magrittr); library(tidyverse); library(ggrepel); library(googlesheets4); library(rlang); library(lubridate) 
 
 sheeturls <- list(templates = 'https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=478762118',
                   biobot_id = 'https://docs.google.com/spreadsheets/d/1ghb_GjTS4yMFbzb65NskAlm-2Gb5M4SNYi4FHE4YVyI/edit#gid=233791008',
@@ -163,6 +163,26 @@ get_template_for <- function(bait, sheet_url = sheeturls$templates)
   
 }
 
+# Check for neighboring dates and merge them
+harmonize_week <- function(week_cols) 
+{
+  
+  # Pick numeric entries in column (the rest will be restored as is)
+  num_week <- week_cols %>% str_extract('[:digit:]{3}') %>%  as.numeric() %>% unique() %>% .[!is.na(.)]
+  
+  # Check for consecutive dates
+  repl_week <- num_week %>% 
+    str_c() %>% 
+    str_replace('([:digit:])([:digit:]{2})', '\\1/\\2/20') %>% 
+    mdy() %>%  # convert to dates
+    map_dbl(., function(x) num_week[. %in% c(x, x-1)] %>% min()) %>% # make the min entry of consecutive dates
+    as.character() %>% 
+    set_names(nm = num_week)
+  
+  if(repl_week %>% is_empty() %>% {!.}) new_week_cols <- str_replace_all(week_cols, repl_week)
+  else week_cols
+  
+}
 
 # Data writing output ----
 
@@ -275,28 +295,47 @@ plottm1 <- function(results_relevant)
 
 
 # Plotting mean, sd and individual replicates jitter
-plot_mean_sd_jitter <- function(summary_data = summary_results, raw_data = results_abs, long_format = F, measure_var = 'Copy #', sample_var = '.*', exclude_sample = F, target_filter = '.*', colour_var = Target, x_var = assay_variable, y_var = `Copy #`, facet_var = `Sample_name`, title_text = title_name, ylabel = 'Genome copies/ul RNA', xlabel = plot_assay_variable, facet_style = 'grid')
+plot_mean_sd_jitter <- function(.data_list = long_processed_minimal, long_format = TRUE, measure_var = 'Copy #', sample_var = '.*', exclude_sample = F, target_filter = '.*', colour_var = Target, x_var = assay_variable, y_var = `Copy #`, ascending_order = FALSE, facet_var = `Sample_name`, title_text = title_name, ylabel = 'Genome copies/ul RNA', xlabel = plot_assay_variable, facet_style = 'grid')
 { # Convenient handle for repetitive plotting in the same format; Specify data format: long vs wide (specify in long_format = TRUE or FALSE)
   
-  # filtering variables by user inputs
+  .dat_filtered <- .data_list %>% map( filter, 
+                                  str_detect(`Sample_name`, sample_var, negate = exclude_sample), 
+                                  str_detect(Target, target_filter))
+  
+  # filtering data to be plotted by user inputs
   if(long_format) # use long format if not plotting Copy #s - ex. Recovery, % recovery etc.
   {
-    summ_relevant <- summary_data %>% filter(Measurement == measure_var, str_detect(`Sample_name`, sample_var, negate = exclude_sample), str_detect(Target, target_filter))
-    raw_relevant <- raw_data %>% filter(Measurement == measure_var, str_detect(`Sample_name`, sample_var, negate = exclude_sample), str_detect(Target, target_filter))
+    
+    .data_to_plot <- .dat_filtered %>% map(filter,
+                                           Measurement == measure_var)
+    if(ascending_order) .data_to_plot$summ.dat %<>% mutate_at('WWTP', as.character) %>% 
+      arrange(`mean`) %>% 
+      mutate_at('WWTP', as_factor)
+    
     y_var <- sym('value') # default y variable is value
     
-    summ_actual_spike_in <- filter(summary_data, str_detect(Measurement,'Actual'), str_detect(`Sample_name`, sample_var, negate = exclude_sample), str_detect(Target, target_filter))
-  } else 
-    {
-      summ_relevant <- summary_data %>% filter(str_detect(`Sample_name`, sample_var, negate = exclude_sample), str_detect(Target, target_filter))
-      raw_relevant <- raw_data %>% filter(str_detect(`Sample_name`, sample_var, negate = exclude_sample), str_detect(Target, target_filter))
-    }
+    summ_actual_spike_in <- .dat_filtered$summ.dat %>% filter(str_detect(Measurement,'Actual'))
+    
+  } else
+    
+  {
+    .data_to_plot <- .dat_filtered 
+    
+    if(ascending_order) .data_to_plot$summ.dat %<>% mutate_at('WWTP', as.character) %>% 
+      arrange(`mean`) %>% 
+      mutate_at('WWTP', as_factor)
+    
+  }
   
-  plt1 <- summ_relevant %>% ggplot(aes(x = {{x_var}}, y = mean, colour = {{colour_var}})) +
+  # Exit with a useful message if data is empty
+  if(.data_to_plot %>% map_lgl(plyr::empty) %>% any()) return('Data does not exist')  
+  
+  # plotting
+  plt1 <- .data_to_plot$summ.dat %>% ggplot(aes(x = {{x_var}}, y = mean, colour = {{colour_var}})) +
     geom_point(size = 2) + geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd), width = .1) +
     
     # Individual data points
-    geom_jitter(data = raw_relevant, aes(y = {{y_var}}, alpha = map_chr({{y_var}}, ~. == 0), size = map_chr({{y_var}}, ~. == 0)), width = .2, show.legend = F ) +
+    geom_jitter(data = .data_to_plot$raw.dat, aes(y = {{y_var}}, alpha = map_chr({{y_var}}, ~. == 0), size = map_chr({{y_var}}, ~. == 0)), width = .2, show.legend = F ) +
     scale_alpha_manual(values = c(.3, 1)) + scale_size_manual(values = c(1, 2)) + # manual scale for emphasizing unamplified samples
     
     # Plotting actual spike ins (only for Recovery plot'; only with long format data )
@@ -307,14 +346,14 @@ plot_mean_sd_jitter <- function(summary_data = summary_results, raw_data = resul
     # Facetting
     facet_grid(cols = vars({{facet_var}}), scales = 'free_x', space = 'free_x') +
     
-    # experimental - conditional facetting (doesn't work for unknown reasons)
+    # experimental - conditional facetting (doesn't work for unknown reasons) : Just facet_grid the output to remove facets or add new!
     # { if (facet_style == 'grid') list(facet_grid(cols = vars({{facet_var}}), scales = 'free_x', space = 'free_x'))
     #   if (facet_style == 'wrap free') list(facet_wrap(facets =  vars({{facet_var}}), scales = 'free')) 
     #   else NULL
     # } +
     
     # Labelling
-    ggtitle(title_text) + ylab(ylabel) + xlab(xlabel)
+    ggtitle(title_text) + ylab(ylabel) #+ xlab(xlabel)
 
   plt1.formatted <- plt1 %>% format_classic() # clean formatting
   
@@ -331,40 +370,60 @@ plot_biological_replicates <- function(results_abs, title_text = title_name, xla
 }
 
 # Scatter plot with a linear regression fit and equation
-plot_scatter <- function(plot_data = results_abs, long_format = F, measure_var = 'Copy #', sample_var = '.*', exclude_sample = F, colour_var = NULL, x_var = N1_multiplex, y_var = N2_multiplex, title_text = title_name)
-{ # Convenient handle for repetitive plotting in the same format; Reads data only in long format or wide (specify in long_format)
+plot_scatter <- function(.data = processed_quant_data, text_cols = minimal_label_columns, measure_var = 'Copy #', sample_var = str_c(extra_categories, '|NTC|Vaccine'), exclude_sample = T, colour_var = NULL, x_var = N1_multiplex, y_var = N2_multiplex, title_text = title_name)
+{ # Convenient handle for repetitive plotting in the same format; Reads data in wide format only
   
-  # filtering variables by user inputs
-  if(long_format) # use long format if not plotting Copy #s - ex. Recovery, % recovery etc.
-  {
-    plot_relevant <- plot_data %>% filter(Measurement == measure_var, str_detect(`Sample_name`, sample_var, negate = exclude_sample))
-    y_var <- sym('val') # default y variable is val
-  } else 
-  {
-    plot_relevant <- plot_data %>% filter(str_detect(`Sample_name`, sample_var, negate = exclude_sample)) %>% ungroup()
+  # convert column names (target names) into string
+  checkx <- strx <- paste(substitute(x_var)) 
+  checky <- stry <- paste(substitute(y_var))
+  
+  modx <- function(x) x
+  
+  # filtering data for plotting according to function inputs
+  .data_for_plot <- .data %>% 
+    select(all_of(text_cols), biological_replicates, all_of(measure_var)) %>% 
+    filter(str_detect(`Sample_name`, sample_var, negate = exclude_sample)) %>% 
+    pivot_wider(names_from = 'Target', values_from = 'Copy #') %>% 
+    ungroup()
+  
+  
+  # If plotting transformations of variables
+  if(enexpr(x_var) %>% is.call()) {checkx <-  enexpr(x_var)[2] %>% paste(); }# modx <- eval(enexpr(x_var)[1])}
+  if(enexpr(y_var) %>% is.call()) checky <-  enexpr(y_var)[2] %>% paste()
+  
+  # If targets are not present in the data, stop running and print a message
+  if(.data_for_plot %>% names() %>% 
+     {checkx %in% . & checky %in% . } %>% 
+     !.) return('Targets for this scatterplot are not present in the data')
+  
+  # If duplicates of data exist in the data, stop running and print a message
+  if((.data_for_plot %>% select(all_of(c(checkx, checky))) %>% 
+     map_lgl(~class(.) == 'numeric') %>% 
+     sum()) < 2) return('Repeated data instances for the same WWTP found in this scatterplot')
     
-  }
-  
   # Making linear regression formula (source: https://stackoverflow.com/a/50054285/9049673)
-  # fmla <- as.formula(paste(substitute(y_var), "~", substitute(x_var)))
+
   fmla <- substitute(y_var ~ x_var) %>% as.formula()
-  
+
   # Max and ranges for plotting
-  strx <- paste(substitute(x_var)); stry <- paste(substitute(y_var))
-  xyeq <- plot_relevant %>%  summarise_all(~ max(., na.rm = T)) %>% select(all_of(c(strx, stry))) %>% min() %>% {.*0.9}
+  xyeq <- .data_for_plot %>%  summarise(across(where(is.numeric), max, na.rm = T)) %>% select(all_of(c(checkx, checky))) %>% min() %>% {.*0.9} %>% modx()
     
   # linear regression equation
-  lin_reg_eqn <- plot_relevant %>% lm(fmla, data = .) %>% lm_eqn(.) # Need to vectorize this across groups by - facet and colour_var
-  
-  plt1 <- plot_relevant %>% ggplot(aes(x = {{x_var}}, y =  {{y_var}}, colour = {{colour_var}})) +
+  lin_reg_eqn <- .data_for_plot %>% mutate(across(all_of(c(checkx, checky)), ~if_else(.x == 0, NaN, .x))) %>% 
+    lm(fmla, data = ., na.action = na.exclude) %>% lm_eqn(.)
+
+  plt1 <- .data_for_plot %>% ggplot(aes(x = {{x_var}}, y =  {{y_var}}, colour = {{colour_var}})) +
     geom_point(size = 2) +
     
     # linear regression
     geom_smooth(method = 'lm') + 
-    geom_text(data = . %>% summarise_all(~ max(., na.rm = T)), label = lin_reg_eqn, parse = TRUE, show.legend = F, hjust = 'inward', nudge_x = -5) +
+    geom_text(data = . %>% summarise(across(where(is.numeric), max, na.rm = T)), label = lin_reg_eqn, parse = TRUE, show.legend = F, hjust = 'inward', nudge_x = -5) +
     
     # Dummy y = x line
-    geom_abline(slope = 1, intercept = 0, alpha = .4) + annotate(geom = 'text', x = xyeq, y = xyeq, label = 'y = x', alpha = .3)
+    geom_abline(slope = 1, intercept = 0, alpha = .4) + annotate(geom = 'text', x = xyeq, y = xyeq, label = 'y = x', alpha = .3) +
+    
+    # Labelling
+    ggtitle(title_text, subtitle = measure_var)
 }
 
 # plot formatting ---- 
@@ -416,3 +475,39 @@ format_logscale_x <- function(plt)
   
   # use as ggplot(df,aes(x,y)) + geom_point() + scale_y_log10(labels = fancy_scientific)
   
+
+# This function writes to the specified google sheet if the current sheet does
+# not exist. If the sheet does exist it will ask the user before writing.
+check_ok_and_write <- function(data, sheet_URL, title_name)
+{
+  write_ok <- TRUE
+  sheet_dne <- FALSE
+  
+  # this block sets sheet_dne to true if the sheet does not exist
+  sheet_dne <- tryCatch(
+    expr = {
+      read_sheet(sheet_URL, sheet = title_name)
+      message("Sheet already exists")
+      FALSE
+    },
+    error = function(e){
+      message('Sheet does not exist')
+      return(TRUE)
+      print(e)
+    }
+  )
+  
+  # if the sheet exists (sheet_dne is false), then ask the user if
+  # they want to overwrite. If the user selects cancel, then abort
+  if (!sheet_dne) {
+    write_ok <- menu(c('Yes', 'No'), title = paste("A sheet with the name", title_name, "already exists. Do you want to overwrite?", sep=" "))
+    if (write_ok == 2){
+      # stop("Cancel selected, script aborted.")
+      print(str_c("Not overwriting: ", title_name))
+    }
+  }
+
+  if (write_ok == 1) {
+    write_sheet(data, sheet_URL, sheet=title_name)
+  }
+}
