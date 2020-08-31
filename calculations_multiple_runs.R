@@ -6,8 +6,7 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 
 # sheets to read from qPCR data dump excel file
 read_these_sheets <- c( 'dd.WW29_824 maxwell_N1/N2',
-                        'WW60_Vaccine boil S13-30_BCoV',
-                        'WW61_824 maxwell-Vaccine boil repeat_BCoV')
+                        'WW61_824 maxwell_BCoV_Std43')
 
 title_name <- '824 Maxwell'
 
@@ -18,7 +17,7 @@ bb_sheets <- c('Week 20 (8/24)')
 extra_categories = 'Std|Control|e811|Acetone' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
 special_samples = 'HCJ|SOH|ODM' # putting special samples in a separate sheet
 
-regular_WWTP_run_output <- 'TRUE' # make TRUE of you want to output the WWTP only data and special samples sheets 
+regular_WWTP_run_output <- F # make TRUE of you want to output the WWTP only data and special samples sheets 
       # (make FALSE for controls, testing etc. where only "complete data" sheet is output)
 
 # rarely changed parameters
@@ -86,8 +85,8 @@ volumes_data_Rice <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrate
   mutate_at('Label_tube', ~str_remove_all(., " ")) %>% 
   mutate_at('Biobot_id', str_remove,  ' ') %>% 
   
-  # removing wrongly entered volumes for replicates, replacing with the max volume 
-  mutate(., unique_labels = str_remove(Label_tube,'[1-9]$')) %>%  # this will be changed to the 'Bottle' column soon
+  # Extrapolating volumes for same bottle - If weights are written out, we assume different bottles with different volumes
+  mutate(., unique_labels = str_remove_all(Label_tube,'^m|[1-9]$'))  %>%  # this will be changed to the 'Bottle' column soon
   group_by(unique_labels) %>% 
   mutate(across(WW_vol, ~ifelse(is.na(WW_weight), max(., na.rm = T), .))) %>% 
   ungroup() %>% 
