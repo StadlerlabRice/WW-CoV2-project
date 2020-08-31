@@ -5,10 +5,11 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW28_824_N1/N2',
-                        'WW59_824_BCoV_Std42')
+read_these_sheets <- c( 'dd.WW29_824 maxwell_N1/N2',
+                        'WW60_Vaccine boil S13-30_BCoV',
+                        'WW61_824 maxwell-Vaccine boil repeat_BCoV')
 
-title_name <- '824 Rice'
+title_name <- '824 Maxwell'
 
 # Biobot_id sheet
 bb_sheets <- c('Week 20 (8/24)')
@@ -17,6 +18,8 @@ bb_sheets <- c('Week 20 (8/24)')
 extra_categories = 'Std|Control|e811|Acetone' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
 special_samples = 'HCJ|SOH|ODM' # putting special samples in a separate sheet
 
+regular_WWTP_run_output <- 'TRUE' # make TRUE of you want to output the WWTP only data and special samples sheets 
+      # (make FALSE for controls, testing etc. where only "complete data" sheet is output)
 
 # rarely changed parameters
 
@@ -231,30 +234,34 @@ presentable_data <- processed_quant_data %>%
 # Output data - including controls
 check_ok_and_write(presentable_data %>% select(-Sample_ID), sheeturls$complete_data, title_name) # save results to a google sheet, ask for overwrite
 
-
-# presentable data for health department
-present_WW_data <- presentable_data %>%
-  filter(!str_detect(Facility, str_c(extra_categories, "|Vaccine|NTC|Blank"))) %>%  # retain only WWTP data
-  rename('Copies_per_uL' = `Copies/ul RNA`,
-         'Copies_Per_Liter_WW' = `Copies/l WW`,
-         'Recovery_Rate' = `Recovery fraction`,
-         Target_Name = `Target Name`,
-         Facility_ID = WWTP) %>%
-  select(-contains('Volume'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID)
-
-present_only_WW <- present_WW_data %>% filter(!str_detect(Facility, special_samples))
-
-# Write data if not empty
-if(present_only_WW %>% plyr::empty() %>% !.){
-  check_ok_and_write(present_only_WW, sheeturls$wwtp_only_data, title_name) # save results to a google sheet, ask for overwrite
+# switch for output to sheet sent to HHD
+if(regular_WWTP_run_output)
+{
+  # presentable data for health department
+  present_WW_data <- presentable_data %>%
+    filter(!str_detect(Facility, str_c(extra_categories, "|Vaccine|NTC|Blank"))) %>%  # retain only WWTP data
+    rename('Copies_per_uL' = `Copies/ul RNA`,
+           'Copies_Per_Liter_WW' = `Copies/l WW`,
+           'Recovery_Rate' = `Recovery fraction`,
+           Target_Name = `Target Name`,
+           Facility_ID = WWTP) %>%
+    select(-contains('Volume'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID)
+  
+  present_only_WW <- present_WW_data %>% filter(!str_detect(Facility, special_samples))
+  
+  # Write data if not empty
+  if(present_only_WW %>% plyr::empty() %>% !.){
+    check_ok_and_write(present_only_WW, sheeturls$wwtp_only_data, title_name) # save results to a google sheet, ask for overwrite
+  }
+  
+  present_special_samples <- present_WW_data %>% filter(str_detect(Facility, special_samples))
+  
+  # Write data if not empty
+  if(present_special_samples %>% plyr::empty() %>% !.){
+    check_ok_and_write(present_special_samples, sheeturls$wwtp_only_data, str_c(title_name, ' special samples')) # save results to a google sheet, ask for overwrite
+  }
 }
 
-present_special_samples <- present_WW_data %>% filter(str_detect(Facility, special_samples))
-
-# Write data if not empty
-if(present_special_samples %>% plyr::empty() %>% !.){
-  check_ok_and_write(present_special_samples, sheeturls$wwtp_only_data, str_c(title_name, ' special samples')) # save results to a google sheet, ask for overwrite
-}
 
 # Plotting into html -----------------------------------------------------------------------
 
