@@ -21,3 +21,6 @@ wider_data <- comb.data %>%
   group_by(WWTP, RNA_extraction, `Target Name`) %>%  mutate(index = row_number()) %>% 
   
   pivot_wider(names_from = 'RNA_extraction', values_from = c(`Copies/l WW`, `Recovery fraction`))
+
+# calling r markdown file
+rmarkdown::render('maxwell comparisions.Rmd', output_file = str_c('./qPCR analysis/', 'Maxwell comparisons', '.html'))

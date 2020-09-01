@@ -13,7 +13,7 @@ output:
 
 ```{r setup, include=FALSE}
 library(knitr); library(plotly)
-knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 12, fig.height = 4)
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 10, fig.height = 4)
 
 ```
 ## Purpose
@@ -23,7 +23,7 @@ Compare maxwell data to Qiagen for the same WWTP samples from 824 week
 ## Superimposed plots
 
 
-```{r OVERLAPS, echo=FALSE}
+```{r OVERLAPS, echo=FALSE, fig.height= 6}
 
 plt1 <- comb.data %>% ggplot(aes(WWTP, `Copies/l WW`, colour = RNA_extraction)) + 
   geom_point() + 
@@ -54,18 +54,36 @@ comb.data %>%
 Linear scale
 ```{r corr_copies}
 
+wider_lm <- wider_data %>% 
+  group_by(`Target Name`) %>% 
+  nest(data = -`Target Name`) %>% 
+  mutate(regression = map(data,
+                            ~lm(`Copies/l WW_Maxwell` ~ `Copies/l WW_Qiagen`, data = .x)),
+         reg_equation = map(regression,
+                            ~lm_eqn(.x))) %>% 
+  ungroup() %>% mutate(x_loc = c(3.5,3,5), y_loc = c(2,5,3), 
+                       x_pos = c(5.5, 2.5, 2.5), y_pos = c(5.5, 3.4, 3.55)) %>% 
+  select(-data, -regression)
+
+
 plt2 <- wider_data %>% 
   ggplot(aes(`Copies/l WW_Qiagen`, `Copies/l WW_Maxwell`, colour = `Target Name`, label = Facility)) +
   geom_point() + 
-  geom_smooth(method = 'lm', aes(fill = `Target Name`), alpha = .2)
+  geom_smooth(method = 'lm', aes(fill = `Target Name`), alpha = .2) 
+  # geom_text(data = wider_lm, aes(x = x_pos, y = y_pos, label = reg_equation, colour = `Target Name`), parse = T)
 
 plt2 %>% print()  
 ```
 Log-log scale plot
 
 ```{r corr_copies_log}
+{plt2 + geom_text(data = wider_lm, aes(x = 10^x_loc, y = 10^y_loc, label = reg_equation, colour = `Target Name`), parse = T, hjust = 'inwards' )} %>% 
+  format_logscale_x(.) %>% format_logscale_y() %>% 
+  print()
 
-plt2 %>% format_logscale_x() %>% format_logscale_y() %>% ggplotly(dynamicTicks = T, tooltip = 'label') #print()  
+
+plt2 %>% format_logscale_x() %>% format_logscale_y() %>% ggplotly(dynamicTicks = T, tooltip = 'label') #%>% 
+  # add_annotations(x = wider_lm$x_pos, y = wider_lm$y_pos, colour = wider_lm$`Target Name`, text = 1:3)
 ```
 
 ### Recovery fraction
