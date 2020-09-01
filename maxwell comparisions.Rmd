@@ -1,0 +1,85 @@
+Purpose: Adhoc script to compare maxwell data to Qiagen in all possible ways
+
+---
+title: "Maxwell comparisons"
+author: "Prashant Kalvapalle"
+date: "31 August 2020"
+output: 
+  html_document:
+    theme: flatly
+    toc: TRUE
+    toc_float: TRUE
+---
+
+```{r setup, include=FALSE}
+library(knitr); library(plotly)
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 12, fig.height = 4)
+
+```
+## Purpose
+
+Compare maxwell data to Qiagen for the same WWTP samples from 824 week
+
+## Superimposed plots
+
+
+```{r OVERLAPS, echo=FALSE}
+
+plt1 <- comb.data %>% ggplot(aes(WWTP, `Copies/l WW`, colour = RNA_extraction)) + 
+  geom_point() + 
+  # geom_line(alpha = .2, group = RNA_extraction) + 
+  facet_wrap(~`Target Name`, nrow = 2)
+
+plt1 %>% format_classic() %>% format_logscale_y() %>% print()
+
+```
+
+
+### Recovery rate
+```{r reco_plot_overlap}
+
+comb.data %>% 
+  {ggplot(., aes(WWTP, `Recovery fraction`, colour = RNA_extraction)) + 
+  geom_point()} %>% 
+  format_classic() %>% 
+  # format_logscale_y() %>% 
+  print()
+
+```
+
+## Correlation plots
+
+### Copies/l WW
+
+Linear scale
+```{r corr_copies}
+
+plt2 <- wider_data %>% 
+  ggplot(aes(`Copies/l WW_Qiagen`, `Copies/l WW_Maxwell`, colour = `Target Name`, label = Facility)) +
+  geom_point() + 
+  geom_smooth(method = 'lm', aes(fill = `Target Name`), alpha = .2)
+
+plt2 %>% print()  
+```
+Log-log scale plot
+
+```{r corr_copies_log}
+
+plt2 %>% format_logscale_x() %>% format_logscale_y() %>% ggplotly(dynamicTicks = T, tooltip = 'label') #print()  
+```
+
+### Recovery fraction
+
+```{r corr_reco}
+
+plt3 <- wider_data %>% 
+  ggplot(aes(`Recovery fraction_Qiagen`, `Recovery fraction_Maxwell`, label = Facility)) +
+  geom_point() + 
+  # geom_text_repel() + 
+  geom_smooth(method = 'lm', alpha = .2)
+
+# plt3
+plt3 %>% plotly::ggplotly(tooltip = 'label', dynamicTicks = T)
+```
+
+
