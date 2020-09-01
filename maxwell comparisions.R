@@ -3,20 +3,17 @@
 # addendum to maxwell comparisons.Rmd
 
 # Shredding guide
-shred_guide <- c('(?<!m)82.*' = 'Qiagen_good', 
-                 'm824.*' = 'minimal.shred', 
-                 'm825 [D-F].' = 'Zirconium_minimal', 
-                 'm825 [G-I].' = 'Biofilm kit_good', 
-                 'm825 [J-M].' = 'Isopropyl_medium')
+shred_guide <- c('.*824.*' = 'minimal.shred', 
+                 '.*825 [D-F].' = 'Zirconium_minimal', 
+                 '.*825 [G-I].' = 'Biofilm kit_good', 
+                 '.*825 [J-M].' = 'Isopropyl_medium')
 
 
 
 # Load data ----
 
 max.data <- read_sheet(sheeturls$complete_data, sheet = '824 Maxwell') %>% 
-  mutate(RNA_extraction = 'Maxwell') %>% 
-  mutate(Beads_shredding = str_replace_all(Tube_ID, shred_guide) %>% fct_relevel('Qiagen_good', 'Biofilm kit_good', 'Isopropyl_medium', 'Zirconium_minimal', 'minimal.shred'))
-
+  mutate(RNA_extraction = 'Maxwell')
 
 qia.data <- read_sheet(sheeturls$complete_data, sheet = '824 Rice') %>%
   filter(WWTP %in% max.data$WWTP) %>% 
@@ -35,5 +32,7 @@ wider_data <- comb.data %>%
   
   pivot_wider(names_from = 'RNA_extraction', values_from = c(`Copies/l WW`, `Recovery fraction`))
 
+# plotting ----
+
 # calling r markdown file
-rmarkdown::render('maxwell comparisions.Rmd', output_file = str_c('./qPCR analysis/', 'Maxwell comparisons', '.html'))
+rmarkdown::render('maxwell comparisions.Rmd', output_file = str_c('./qPCR analysis/', '824 maxwell comparisons', '.html'))
