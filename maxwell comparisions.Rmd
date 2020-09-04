@@ -118,35 +118,97 @@ plt4 %>% format_logscale_x() %>% format_logscale_y() %>% print
 plt4 %>% format_logscale_x() %>% format_logscale_y() %>% ggplotly(dynamicTicks = T, tooltip = 'label')
 ```
 
-## Separated by shred status  
+regression on Targets
 
-```{r shredo2}
+```{r shredo_2}
 
 plt5 <- wider_data %>% 
-  ggplot(aes(`Copies/l WW_Qiagen`, `Copies/l WW_Maxwell`, colour = `Target Name`, label = Facility)) +
+  ggplot(aes(`Copies/l WW_Qiagen`, `Copies/l WW_Maxwell`, colour = Beads_shredding, label = Facility)) +
   geom_point() + 
-  geom_smooth(method = 'lm', aes(fill = `Target Name`), alpha = .2) + 
+  geom_smooth(method = 'lm', aes(colour = NULL), alpha = .2) + 
+  scale_color_brewer(palette="YlOrRd") + scale_fill_brewer(palette="YlOrRd") + 
   
-  facet_wrap(~Beads_shredding, ncol = 3) + 
+  facet_wrap(~`Target Name`, ncol = 3, scales = 'free') + 
   theme(legend.position = 'top') +
   ggtitle('Maxwell vs Qiagen', subtitle = 'Colour indicates the kit used and the shearing status of the Maxwell prep, Qiagen assumed w Qiagen kit w good shearing')
 
-wider_lm_shred <- wider_data %>% 
-  group_by(`Target Name`, Beads_shredding) %>% 
-  nest(data = -c(`Target Name`, Beads_shredding)) %>% 
+plt5 %>% format_logscale_x() %>% format_logscale_y() %>% print
+
+plt5 %>% format_logscale_x() %>% format_logscale_y() %>% ggplotly(dynamicTicks = T, tooltip = 'label')
+
+```
+
+
+## Removing outliers
+
+Isopropanol samples removed
+
+```{r no_iso_corr_copies_log}
+
+# removing isopropanol
+wider_filtered <- wider_data %>% 
+  filter(!str_detect(Beads_shredding, 'Isopropyl'))
+
+wider_lm_filtered <- wider_filtered %>% 
+  group_by(`Target Name`) %>% 
+  nest(data = -`Target Name`) %>% 
   mutate(regression = map(data,
                             ~lm(`Copies/l WW_Maxwell` ~ `Copies/l WW_Qiagen`, data = .x)),
          reg_equation = map(regression,
                             ~lm_eqn(.x))) %>% 
-  ungroup(by = `Target Name`) %>% mutate(x_loc = -Inf, y_loc = Inf - 100 * 0:2) %>%
+  ungroup() %>% mutate(x_loc = c(3.5,3,5), y_loc = c(2,5,3), 
+                       x_pos = c(5.5, 2.5, 2.5), y_pos = c(5.5, 3.4, 3.55)) %>% 
   select(-data, -regression)
 
-plt5 %>% format_logscale_x() %>% format_logscale_y() %>% print
 
-{plt5 + geom_text(data = wider_lm_shred, aes(x = 10^x_loc, y = 10^y_loc, label = reg_equation, colour = `Target Name`), parse = T, hjust = 'inwards' )} %>% 
+plt6 <- wider_filtered %>% 
+  ggplot(aes(`Copies/l WW_Qiagen`, `Copies/l WW_Maxwell`, colour = `Target Name`, label = Facility)) +
+  geom_point() + 
+  geom_smooth(method = 'lm', aes(fill = `Target Name`), alpha = .2) 
+  # geom_text(data = wider_lm_filtered, aes(x = x_pos, y = y_pos, label = reg_equation, colour = `Target Name`), parse = T)
+
+
+{plt6 + geom_text(data = wider_lm_filtered, aes(x = 10^x_loc, y = 10^y_loc, label = reg_equation, colour = `Target Name`), parse = T, hjust = 'inwards' )} %>% 
   format_logscale_x(.) %>% format_logscale_y() %>% 
   print()
 
-plt5 %>% format_logscale_x() %>% format_logscale_y() %>% ggplotly(dynamicTicks = T, tooltip = 'label')
+
+plt6 %>% format_logscale_x() %>% format_logscale_y() %>% ggplotly(dynamicTicks = T, tooltip = 'label') #%>% 
+  # add_annotations(x = wider_lm_filtered$x_pos, y = wider_lm_filtered$y_pos, colour = wider_lm_filtered$`Target Name`, text = 1:3)
 ```
+
+
+
+<!-- # old code archived -->
+<!-- ```{r shredo_regression} -->
+
+
+<!-- plt6 <- wider_data %>% -->
+<!--   ggplot(aes(`Copies/l WW_Qiagen`, `Copies/l WW_Maxwell`, colour = `Target Name`, label = Facility)) + -->
+<!--   geom_point() + -->
+<!--   geom_smooth(method = 'lm', aes(fill = `Target Name`), alpha = .2) + -->
+
+<!--   facet_wrap(~Beads_shredding, ncol = 3) + -->
+<!--   theme(legend.position = 'top') + -->
+<!--   ggtitle('Maxwell vs Qiagen', subtitle = 'Colour indicates the kit used and the shearing status of the Maxwell prep, Qiagen assumed w Qiagen kit w good shearing') -->
+
+<!-- wider_lm_shred <- wider_data %>% -->
+<!--   group_by(`Target Name`, Beads_shredding) %>% -->
+<!--   nest(data = -c(`Target Name`, Beads_shredding)) %>% -->
+<!--   mutate(regression = map(data, -->
+<!--                             ~lm(`Copies/l WW_Maxwell` ~ `Copies/l WW_Qiagen`, data = .x)), -->
+<!--          reg_equation = map(regression, -->
+<!--                             ~lm_eqn(.x))) %>% -->
+<!--   ungroup(by = `Target Name`) %>% mutate(x_loc = -Inf, y_loc = Inf - 100 * 0:2) %>% -->
+<!--   select(-data, -regression) -->
+
+<!-- plt6 %>% format_logscale_x() %>% format_logscale_y() %>% print -->
+
+<!-- {plt6 + geom_text(data = wider_lm_shred, aes(x = 10^x_loc, y = 10^y_loc, label = reg_equation, colour = `Target Name`), parse = T, hjust = 'inwards' )} %>% -->
+<!--   format_logscale_x(.) %>% format_logscale_y() %>% -->
+<!--   print() -->
+
+<!-- plt6 %>% format_logscale_x() %>% format_logscale_y() %>% ggplotly(dynamicTicks = T, tooltip = 'label') -->
+<!-- ``` -->
+
 

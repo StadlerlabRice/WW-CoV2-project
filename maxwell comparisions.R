@@ -1,5 +1,8 @@
 # Purpose: Adhoc script to compare maxwell data to Qiagen in all possible ways
 
+# Source general functions
+# source('C:/Users/new/Box Sync/Stadler lab/Data/qPCR/general_functions.R')
+
 # addendum to maxwell comparisons.Rmd
 
 # Shredding guide
@@ -7,7 +10,6 @@ shred_guide <- c('.*824.*' = 'minimal.shred',
                  '.*825 [D-F].' = 'Zirconium_minimal', 
                  '.*825 [G-I].' = 'Biofilm kit_good', 
                  '.*825 [J-M].' = 'Isopropyl_medium')
-
 
 
 # Load data ----
@@ -31,6 +33,13 @@ wider_data <- comb.data %>%
   group_by(WWTP, RNA_extraction, `Target Name`) %>%  mutate(index = row_number()) %>% 
   
   pivot_wider(names_from = 'RNA_extraction', values_from = c(`Copies/l WW`, `Recovery fraction`))
+
+# Data output ----
+
+# write_csv(wider_filtered, 'excel files/Archive/824 maxwell vs qiagen correlation.csv', na = '')
+# comb_filtered <- comb.data %>% 
+#   filter(!str_detect(Beads_shredding, 'Isopropyl'))
+# write_csv(comb_filtered, 'excel files/Archive/824 maxwell vs qiagen correlation_raw.csv', na = '')
 
 # plotting ----
 
