@@ -5,8 +5,8 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'WW64_828 manhole repeat_N1N2_Std46',
-                        'WW63_Vaccine boil2 repeat-828 manhole_BCoV_Std45')
+read_these_sheets <- c( 'dd.WW31_831_N1N2',
+                        'WW66_831_BCoV_Std48')
 
 title_name <- '831 Rice'
 
