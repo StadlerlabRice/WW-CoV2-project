@@ -5,19 +5,19 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW29_824 maxwell_N1/N2',
-                        'WW61_824 maxwell_BCoV_Std43')
+read_these_sheets <- c( 'WW64_828 manhole repeat_N1N2_Std46',
+                        'WW63_Vaccine boil2 repeat-828 manhole_BCoV_Std45')
 
-title_name <- '824 Maxwell'
+title_name <- '831 Rice'
 
 # Biobot_id sheet
-bb_sheets <- c('Week 20 (8/24)')
+bb_sheets <- c('Week 21 (8/31)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|Control|e811|Acetone' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
-special_samples = 'HCJ|SOH|ODM' # putting special samples in a separate sheet
+special_samples = 'HCJ|SOH|ODM|AO' # putting special samples in a separate sheet
 
-regular_WWTP_run_output <- F # make TRUE of you want to output the WWTP only data and special samples sheets 
+regular_WWTP_run_output <- T # make TRUE of you want to output the WWTP only data and special samples sheets 
       # (make FALSE for controls, testing etc. where only "complete data" sheet is output)
 
 # rarely changed parameters
