@@ -8,40 +8,44 @@ Takes excel file output from qPCR and ddPCR and makes neat plots with appropriat
 ## Readme step by step guide
 ### Current workflow for qPCR data analysis
 
+#### Github (version control)
+	1. make sure you are on the master branch: `git checkout master`
+	2. Get master upto date to the remote branch : `git pull`
+	
 #### Sample naming in the 'calculations (lab notebook)' google sheet
-	1. Set sample names using the automatic labeller to the right side of the plate
-		a. Target_Sample category-tube name
+	1. Set sample names using the automatic labeller to the right side of the plate in this format
+		**Target_Sample category-tube name.replicate number**
 		
 #### Quantstudio
-	1. Open the .eds file in Quantstudio (applied biosystems)
+	1. Open the .eds file in Quantstudio (Applied Biosystems)
 	2. Check amplification curves if everything seems right
 		a. Check for systematic amplifications in non technical controls (NTC) - Or stochastic amplifications that seem problematic; by looking at raw data (multicomponent plots)
-	3. Check that the threshold is at the desired value for each target (by selecting each target): Setting thresholds to 0.04 right now  
-	4. Export excel (.xls) file from Quantstudio with the same name as the qPCR file (maybe exclude the date)
-
-#### Sourcetree (version control)
-	1. Navigate and doubleclick on the master branch
-	2. Click on BRANCH and make a new branch with the experiment name (shortened)
-	3. Now you automatically are on the new branch (in R and your actual folder on windows as well)
+	3. If using standard curves across runs - check that the threshold is at the desired value for each target (by selecting each target): Used to set thresholds to 0.04. Not doing it right now since each plate has its own standard  
+	4. Export excel (.xls) file from Quantstudio with the same name as the qPCR file and include the serial number for standard curve. Example **WW66_831 Rice_BCoV_Std45.xlsx** 
 
 <Make sure you mirror the directory structure for the excel files and qPCR analysis folders>
 
+#### ddPCR (Quantalife)
+  1. work in progress here
+  
+#### Sample registry
+  1. Check to make sure all the samples are entered in the *Sample registry/concentrated samples* sheet and they match the sample names entered in the template file in *calculations (lab notebook) Cov2/Plate layouts*
+    a. Check that the DI water sample has a unique name and doesn't match with previous weeks. Name it such as : 831Control Water1
+  2. Check that these columns are filled: **Biobot/other ID, Stock ID of Spike, Total WW volume calculated (ml), WW volume extracted (ml)**
+
 #### Rstudio
-	1. Open the Rproject file on Rstudio - this will load from the current directory 
-	2. If running a standard curve on the same plate, open the Standard_curve.R file; change the file name and title for the plot and run
-	3. Open the inputs_for_analysis script
-		a. Change the file name (flnm) to the excel file name
-		b. Verify and change the template_volume loaded in the qPCR well
-		c. Check the standard curve parameters (std_par) and update it from the equation on the plot produced by the standard_curve.R
-		d. Save file
-	4. Open analysis.R file
-		a. Source the file (click save with the check mark on source on save option
-		b. This produces a plot (not saved) and dumps the data with the appropriate sample labels in a google sheet 'qPCR data dump'
-	5. Open 'make_html_qPCR.Rmd' file
-		a. Change the read_these_sheets to the 1 or more sheets to plot together in the 'qPCR data dump' and change the title_name
-		b. Check the HA concentration factor, and spike virus conc variable to match what was used this week
-		- Spike virus conc should be manually taken from the qPCR run that measures it - from qPCR data dump file
-		c. Change bb_sheets to the appropriate week(s) from the biobot Sample IDs and check that the names of the last 3 columns match that of previous week (with a successful run)
-		d. If you want to exclude any particular categories in the plot enter at extra_categories (then you can make separate plots for those categories by changing the switch exclude_sample (control + F for this variable in the Rmd code)
-		e. Click Knit
+	1. Open the Rproject file **qPCR** in Rstudio - this will load from the current directory (all subpaths are relative to this) 
+	2. Run (source) the **processing_functions.R** file (clicking on the *save* button top left or *Run* - top right)
+	3. Make a variable with the names of the files to be processed: Ex- **read_these_sheets <- c('dd.WW31_831_N1N2', 'WW66_831_BCoV_Std48')**
+	4. Run this command: ** map(read_these_sheets, process_all_pcr): This will process Standard curve, qPCR data and ddPCR data for each file automatically (according to the name)
+		a. This dumps the data for each file with the appropriate sample labels in a google sheet 'qPCR data dump' google sheet
+	5. Open **calculations_multiple_runs** file
+		a. Change the read_these_sheets to the 1 or more sheets to plot together that are already in the 'qPCR data dump' and change the title_name to appropriate week :Ex- *713 Rice*
+	6. Source or run the script after saving the changes. This saves data in 3 different locations with the same name as **title_name**
+	  a. qPCR complete data - all data including controls
+	  b. WWTP data for HHD - only the 38 WWTPs
+	  c. WWTP data for HHD - Designated manhole samples - saved to a sheet with *Special samples* in the name
+	  d. Plots are saved to a html file in qPCR analysis folder
+	  
+	  
 In case you see any errors, follow the line number in the error and do extensive google searches - That's how I learn't it
