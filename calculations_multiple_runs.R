@@ -5,19 +5,19 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW31_831_N1N2',
-                        'WW66_831_BCoV_Std48')
+read_these_sheets <- c( 'dd.WW34_907_N1N2',
+                        'WW68_907_BCoV_Std50')
 
-title_name <- '831 Rice'
+title_name <- '907 Rice'
 
 # Biobot_id sheet
-bb_sheets <- c('Week 21 (8/31)')
+bb_sheets <- c('Week 22 (9/7)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|Control|e811|Acetone' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
 special_samples = 'HCJ|SOH|ODM|AO' # putting special samples in a separate sheet
 
-regular_WWTP_run_output <- T # make TRUE of you want to output the WWTP only data and special samples sheets 
+regular_WWTP_run_output <- TRUE # make TRUE of you want to output the WWTP only data and special samples sheets 
       # (make FALSE for controls, testing etc. where only "complete data" sheet is output)
 
 # rarely changed parameters
@@ -61,14 +61,17 @@ raw_quant_data <- bind_rows(list_raw_quant_data) %>%
 #      str_extract_all('[:digit:]{3}') %>% unlist()  
 
 
-# Bring WWTP names from google sheet: "Biobot Sample IDs"
+# Bring WWTP name to biobot_ID mapping from google sheet: "Biobot Sample IDs"
 biobot_lookup <- map_df(bb_sheets, 
                         ~ read_sheet(sheeturls$biobot_id , sheet = .x) %>% 
-                          rename('Biobot_id' = matches('Biobot|Comments', ignore.case = T), 'WWTP' = contains('SYMBOL', ignore.case = T), 'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T)) %>% 
+                          rename('Biobot_id' = matches('Biobot|Comments|Sample ID', ignore.case = T), 'WWTP' = contains('SYMBOL', ignore.case = T), 'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T)) %>% 
                           mutate('Biobot_id' = str_remove(`Biobot_id`,'\\.'), WWTP = as.character(WWTP)) %>% 
                           select(`Biobot_id`, `FACILITY NAME`, WWTP)
 )
 
+
+# List of all WWTPs
+all_WWTP_names <- biobot_lookup %>% pull(WWTP) %>% unique()
 
 # Get volumes data from google sheet : "Sample registry"
 volumes_data_Rice <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrated samples') %>% 
@@ -238,7 +241,7 @@ if(regular_WWTP_run_output)
 {
   # presentable data for health department
   present_WW_data <- presentable_data %>%
-    filter(!str_detect(Facility, str_c(extra_categories, "|Vaccine|NTC|Blank"))) %>%  # retain only WWTP data
+    filter(WWTP %in% all_WWTP_names) %>%  # retain only WWTP data
     rename('Copies_per_uL' = `Copies/ul RNA`,
            'Copies_Per_Liter_WW' = `Copies/l WW`,
            'Recovery_Rate' = `Recovery fraction`,
