@@ -35,6 +35,12 @@ process_standard_curve <- function(flnm)
     map_chr(~str_match(flnm, .)) %>% 
     str_c(collapse = '_')
   
+  if(is.na(fl_namer)) 
+  {
+    stop(str_c('Filename:', flnm,  ' - input to the standard curve function, is either missing the standard curve ID (ex: Std25), the WW ID (Ex: WW61) or the Target name (Ex: BCoV) \n
+         Check README for proper naming convention: https://github.com/ppreshant/WW-CoV2-project/'))
+  }
+  
   title_name <- str_c('Standard curve: ', fl_namer ,' - Fastvirus 4x') # title name for plots
   
   
@@ -106,7 +112,7 @@ process_standard_curve <- function(flnm)
 # qPCR processing: Calculate copy number from Cq and attach sample labels from template table 
 process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = 'none')
   # enter the file name, standard curve mentioned within filename is used unless override is provided
-{ # baylor_wells = # choose : none, '.*' for all, '[A-H][1-9]$|10' for columns 1 - 10; '.*(?!3).$' for everything except 3rd column etc.  
+{ # baylor_wells = # choose : none, '.*' for all, '[A-H]([1-9]$|10)' for columns 1 - 10; '.*(?!3).$' for everything except 3rd column etc.  
   #(will append /baylor to target name; Ad hoc - marking the samples from baylor)
   
   # Data input ----
@@ -120,10 +126,17 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
   std_par_update <- read_sheet(sheeturls$data_dump, sheet = 'Standard curves', range = 'A:G', col_types = 'ccnnnnn') %>% 
     filter(str_detect(ID, std_to_retrieve ))
   
-  # substitute the new std curve parameteters in the old matrix
+  # substitute the new std curve parameters in the old matrix
   std_par %<>% filter(!str_detect(Target,
                                   std_par_update$Target %>% str_c(collapse = "|"))) %>% 
     bind_rows(std_par_update)
+  
+  # error catching for repeated standard curve names for the same target
+  if(std_par_update %>% unique() %>% group_by(Target) %>% summarize(count = n()) %>% pull(count) %>% {. > 1} %>% any())
+  {
+    stop( str_c('Duplicate entries for the same Target found for standard curve: ', std_to_retrieve, '. \n
+  check the Standard curves sheet here : https://docs.google.com/spreadsheets/d/1ouk-kCJHERRhOMNP07lXfiC3aGB4wtWXpnYf5-b2CI4/edit#gid=1980064476'))
+  }
   
   # Read in qPCR data and labels from plate template
   fl <- readqpcr(flpath) # read excel file exported by Quantstudio
