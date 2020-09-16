@@ -36,8 +36,6 @@ Takes excel file output from qPCR and ddPCR, attaches the sample names and makes
 2. Identify the wells where automatic processing has not worked, by looking for the *NO CALL* in the quantity column
 3. Select all the wells with No CALL and set an appropriate threshold for both targets in the 2d view
 4. Check all the thresholds by selecting 1 column at a time and correct any thresholds that are set too low or two high (*aim for 1 cluster in each quadrant, without the thresholds cutting through any clusters*)
-
-	*Catch: If exporting data from Quantalife Pro - change the column name of Copies/20ul to CopiesPer20ul to be consistent with the regular csv output data*
 	
 #### Sample registry
 1. Check to make sure all the samples are entered in the *Sample registry/concentrated samples* sheet and they match the sample names entered in the template file in *calculations (lab notebook) Cov2/Plate layouts*

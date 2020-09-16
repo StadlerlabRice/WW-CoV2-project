@@ -266,8 +266,10 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none')
   
   
   # Load desired qPCR result sheet and columns
-  bring_results <- fl %>% # select only the results used for plotting, calculations etc. and arrange them according to sample order
-    select(-Sample) %>% 
+  bring_results <- fl %>% 
+    select(-Sample) %>% # Remove sample, it will be loaded from plate template sheet
+    rename(CopiesPer20uLWell = any_of('Copies/20µLWell')) %>% # rename the column name - if exported from Quantasoft analysis Pro
+    
     mutate_at('Well', ~ str_replace(., '(?<=[:alpha:])0(?=[:digit:])', '') ) %>% rename('Well Position' = Well) %>% 
     right_join(plate_template, by = 'Well Position') %>%  # Incorporate samples names from the google sheet by matching well position
     mutate_at('Target', ~str_replace_all(., c('N1' = 'N1_multiplex' , 'N2' = 'N2_multiplex'))) %>% 
