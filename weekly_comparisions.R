@@ -46,5 +46,5 @@ results_abs <- rawqpcr %>% filter(!str_detect(Facility, extra_categories)) %>%  
 # Plots to html ----
 
 # calling r markdown file
-rmarkdown::render('weekly_comparisons.rmd', output_file = str_c('./qPCR analysis/', title_name, '.html'))
+rmarkdown::render('weekly_comparisons.rmd', output_file = str_c('./qPCR analysis/Weekly ', title_name, '.html'))
 
