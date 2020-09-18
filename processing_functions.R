@@ -84,6 +84,11 @@ process_standard_curve <- function(flnm)
   
   # Add labels to plot - linear regression equation
   plt + geom_text(data = std_table$dat, label = std_table$equation, parse = TRUE, show.legend = F, hjust = 'inward', nudge_x = 0, force = 10)
+  
+  # Let the user approve the plot (in case some standards need to be excluded/ incorrect standards concentration order)
+  # work in progress
+  
+  # Save plot
   ggsave(str_c('qPCR analysis/Standards/', fl_namer , '.png'), width = 5, height = 4)
   
   # Data output ----

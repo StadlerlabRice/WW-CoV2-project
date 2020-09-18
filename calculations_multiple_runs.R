@@ -5,18 +5,20 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW37_Triplex with BCoV2')
+read_these_sheets <- c( 'dd.WW38_915_N1N2',
+                        'WW71_915_BCoV_Std52',
+                        'WW72_915, boilquant, WWboil_BCoV_Std53')
 
-title_name <- 'Triplex testing'
+title_name <- '915 Rice'
 
 # Biobot_id sheet
-bb_sheets <- c('Week 22 (9/7)')
+bb_sheets <- c('Week 23 (9/15)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|Control|e811|Acetone' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
 special_samples = 'HCJ|SOH|ODM|AO' # putting special samples in a separate sheet
 
-regular_WWTP_run_output <- F # make TRUE of you want to output the WWTP only data and special samples sheets 
+regular_WWTP_run_output <- TRUE # make TRUE of you want to output the WWTP only data and special samples sheets 
       # (make FALSE for controls, testing etc. where only "complete data" sheet is output)
 
 # rarely changed parameters
@@ -255,7 +257,7 @@ if(regular_WWTP_run_output)
     check_ok_and_write(present_only_WW, sheeturls$wwtp_only_data, title_name) # save results to a google sheet, ask for overwrite
   }
   
-  present_special_samples <- present_WW_data %>% filter(str_detect(Facility, special_samples))
+  present_special_samples <- presentable_data %>% filter(str_detect(Facility, special_samples))
   
   # Write data if not empty
   if(present_special_samples %>% plyr::empty() %>% !.){
