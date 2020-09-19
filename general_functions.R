@@ -6,6 +6,10 @@
 # calling libraries ; make sure they are installed (install.packages)
 library(readxl); library(magrittr); library(tidyverse); library(ggrepel); library(googlesheets4); library(rlang); library(lubridate) 
 
+# API key for calling google sheets (without the usual quota limits)
+API_KEY <- 'AIzaSyA92Y51GQFLBcN_ZBp5WgtGsuBmc3iSbcI'
+
+# Urls of all google sheets used
 sheeturls <- list(templates = 'https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=478762118',
                   biobot_id = 'https://docs.google.com/spreadsheets/d/1ghb_GjTS4yMFbzb65NskAlm-2Gb5M4SNYi4FHE4YVyI/edit#gid=233791008',
                   sample_registry = 'https://docs.google.com/spreadsheets/d/1mJcCt1wMiOuBic6sRlBZJf8KSNu2y-B5PjzCUu7jPM8/edit#gid=521099478',
