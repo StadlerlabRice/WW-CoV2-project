@@ -83,10 +83,19 @@ process_standard_curve <- function(flnm)
   std_table$dat$CT <- max(standard_curve_vars$CT, na.rm = T) - 2 * seq_along(std_table$Target) + 2 # manual numbering for neat labelling with geom_text
   
   # Add labels to plot - linear regression equation
-  plt + geom_text(data = std_table$dat, label = std_table$equation, parse = TRUE, show.legend = F, hjust = 'inward', nudge_x = 0, force = 10)
+  plt.with.eqn <- plt + geom_text(data = std_table$dat, label = std_table$equation, parse = TRUE, show.legend = F, hjust = 'inward', nudge_x = 0, force = 10)
+  print(plt.with.eqn)
   
   # Let the user approve the plot (in case some standards need to be excluded/ incorrect standards concentration order)
-  # work in progress
+  proceed_with_standards <- menu(c('Yes', 'No'), title = paste("Check the standard curve plot:", 
+                                                 fl_namer, 
+                                                 "on the right side in Rstudio. 
+   Do you wish to continue with saving the standard curve parameters? Select NO if you wish to change something and re-run the script", sep=" "))
+  
+  if (proceed_with_standards == 2){
+    stop("Cancel selected, script aborted.")
+  }
+  
   
   # Save plot
   ggsave(str_c('qPCR analysis/Standards/', fl_namer , '.png'), width = 5, height = 4)
