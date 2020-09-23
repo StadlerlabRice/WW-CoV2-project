@@ -5,18 +5,21 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW28_824_N1/N2',
-                        'WW59_824_BCoV_Std42')
+read_these_sheets <- c( 'dd.WW38_915_N1N2',
+                        'WW71_915_BCoV_Std52',
+                        'WW72_915, boilquant, WWboil_BCoV_Std53')
 
-title_name <- '824 Rice'
+title_name <- '915 Rice'
 
 # Biobot_id sheet
-bb_sheets <- c('Week 20 (8/24)')
+bb_sheets <- c('Week 23 (9/15)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|Control|e811|Acetone' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
-special_samples = 'HCJ|SOH|ODM' # putting special samples in a separate sheet
+special_samples = 'HCJ|SOH|ODM|AO' # putting special samples in a separate sheet
 
+regular_WWTP_run_output <- TRUE # make TRUE of you want to output the WWTP only data and special samples sheets 
+      # (make FALSE for controls, testing etc. where only "complete data" sheet is output)
 
 # rarely changed parameters
 
@@ -59,14 +62,17 @@ raw_quant_data <- bind_rows(list_raw_quant_data) %>%
 #      str_extract_all('[:digit:]{3}') %>% unlist()  
 
 
-# Bring WWTP names from google sheet: "Biobot Sample IDs"
+# Bring WWTP name to biobot_ID mapping from google sheet: "Biobot Sample IDs"
 biobot_lookup <- map_df(bb_sheets, 
                         ~ read_sheet(sheeturls$biobot_id , sheet = .x) %>% 
-                          rename('Biobot_id' = matches('Biobot|Comments', ignore.case = T), 'WWTP' = contains('SYMBOL', ignore.case = T), 'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T)) %>% 
+                          rename('Biobot_id' = matches('Biobot|Comments|Sample ID', ignore.case = T), 'WWTP' = contains('SYMBOL', ignore.case = T), 'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T)) %>% 
                           mutate('Biobot_id' = str_remove(`Biobot_id`,'\\.'), WWTP = as.character(WWTP)) %>% 
                           select(`Biobot_id`, `FACILITY NAME`, WWTP)
 )
 
+
+# List of all WWTPs
+all_WWTP_names <- biobot_lookup %>% pull(WWTP) %>% unique()
 
 # Get volumes data from google sheet : "Sample registry"
 volumes_data_Rice <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrated samples') %>% 
@@ -83,8 +89,8 @@ volumes_data_Rice <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrate
   mutate_at('Label_tube', ~str_remove_all(., " ")) %>% 
   mutate_at('Biobot_id', str_remove,  ' ') %>% 
   
-  # removing wrongly entered volumes for replicates, replacing with the max volume 
-  mutate(., unique_labels = str_remove(Label_tube,'[1-9]$')) %>%  # this will be changed to the 'Bottle' column soon
+  # Extrapolating volumes for same bottle - If weights are written out, we assume different bottles with different volumes
+  mutate(., unique_labels = str_remove_all(Label_tube,'^m|[1-9]$'))  %>%  # this will be changed to the 'Bottle' column soon
   group_by(unique_labels) %>% 
   mutate(across(WW_vol, ~ifelse(is.na(WW_weight), max(., na.rm = T), .))) %>% 
   ungroup() %>% 
@@ -231,30 +237,34 @@ presentable_data <- processed_quant_data %>%
 # Output data - including controls
 check_ok_and_write(presentable_data %>% select(-Sample_ID), sheeturls$complete_data, title_name) # save results to a google sheet, ask for overwrite
 
-
-# presentable data for health department
-present_WW_data <- presentable_data %>%
-  filter(!str_detect(Facility, str_c(extra_categories, "|Vaccine|NTC|Blank"))) %>%  # retain only WWTP data
-  rename('Copies_per_uL' = `Copies/ul RNA`,
-         'Copies_Per_Liter_WW' = `Copies/l WW`,
-         'Recovery_Rate' = `Recovery fraction`,
-         Target_Name = `Target Name`,
-         Facility_ID = WWTP) %>%
-  select(-contains('Volume'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID)
-
-present_only_WW <- present_WW_data %>% filter(!str_detect(Facility, special_samples))
-
-# Write data if not empty
-if(present_only_WW %>% plyr::empty() %>% !.){
-  check_ok_and_write(present_only_WW, sheeturls$wwtp_only_data, title_name) # save results to a google sheet, ask for overwrite
+# switch for output to sheet sent to HHD
+if(regular_WWTP_run_output)
+{
+  # presentable data for health department
+  present_WW_data <- presentable_data %>%
+    filter(WWTP %in% all_WWTP_names) %>%  # retain only WWTP data
+    rename('Copies_per_uL' = `Copies/ul RNA`,
+           'Copies_Per_Liter_WW' = `Copies/l WW`,
+           'Recovery_Rate' = `Recovery fraction`,
+           Target_Name = `Target Name`,
+           Facility_ID = WWTP) %>%
+    select(-contains('Volume'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID)
+  
+  present_only_WW <- present_WW_data %>% filter(!str_detect(Facility, special_samples))
+  
+  # Write data if not empty
+  if(present_only_WW %>% plyr::empty() %>% !.){
+    check_ok_and_write(present_only_WW, sheeturls$wwtp_only_data, title_name) # save results to a google sheet, ask for overwrite
+  }
+  
+  present_special_samples <- presentable_data %>% filter(str_detect(Facility, special_samples))
+  
+  # Write data if not empty
+  if(present_special_samples %>% plyr::empty() %>% !.){
+    check_ok_and_write(present_special_samples, sheeturls$wwtp_only_data, str_c(title_name, ' special samples')) # save results to a google sheet, ask for overwrite
+  }
 }
 
-present_special_samples <- present_WW_data %>% filter(str_detect(Facility, special_samples))
-
-# Write data if not empty
-if(present_special_samples %>% plyr::empty() %>% !.){
-  check_ok_and_write(present_special_samples, sheeturls$wwtp_only_data, str_c(title_name, ' special samples')) # save results to a google sheet, ask for overwrite
-}
 
 # Plotting into html -----------------------------------------------------------------------
 

@@ -35,6 +35,12 @@ process_standard_curve <- function(flnm)
     map_chr(~str_match(flnm, .)) %>% 
     str_c(collapse = '_')
   
+  if(is.na(fl_namer)) 
+  {
+    stop(str_c('Filename:', flnm,  ' - input to the standard curve function, is either missing the standard curve ID (ex: Std25), the WW ID (Ex: WW61) or the Target name (Ex: BCoV) \n
+         Check README for proper naming convention: https://github.com/ppreshant/WW-CoV2-project/'))
+  }
+  
   title_name <- str_c('Standard curve: ', fl_namer ,' - Fastvirus 4x') # title name for plots
   
   
@@ -77,7 +83,21 @@ process_standard_curve <- function(flnm)
   std_table$dat$CT <- max(standard_curve_vars$CT, na.rm = T) - 2 * seq_along(std_table$Target) + 2 # manual numbering for neat labelling with geom_text
   
   # Add labels to plot - linear regression equation
-  plt + geom_text(data = std_table$dat, label = std_table$equation, parse = TRUE, show.legend = F, hjust = 'inward', nudge_x = 0, force = 10)
+  plt.with.eqn <- plt + geom_text(data = std_table$dat, label = std_table$equation, parse = TRUE, show.legend = F, hjust = 'inward', nudge_x = 0, force = 10)
+  print(plt.with.eqn)
+  
+  # Let the user approve the plot (in case some standards need to be excluded/ incorrect standards concentration order)
+  proceed_with_standards <- menu(c('Yes', 'No'), title = paste("Check the standard curve plot:", 
+                                                 fl_namer, 
+                                                 "on the right side in Rstudio. 
+   Do you wish to continue with saving the standard curve parameters? Select NO if you wish to change something and re-run the script", sep=" "))
+  
+  if (proceed_with_standards == 2){
+    stop("Cancel selected, script aborted.")
+  }
+  
+  
+  # Save plot
   ggsave(str_c('qPCR analysis/Standards/', fl_namer , '.png'), width = 5, height = 4)
   
   # Data output ----
@@ -106,7 +126,7 @@ process_standard_curve <- function(flnm)
 # qPCR processing: Calculate copy number from Cq and attach sample labels from template table 
 process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = 'none')
   # enter the file name, standard curve mentioned within filename is used unless override is provided
-{ # baylor_wells = # choose : none, '.*' for all, '[A-H][1-9]$|10' for columns 1 - 10; '.*(?!3).$' for everything except 3rd column etc.  
+{ # baylor_wells = # choose : none, '.*' for all, '[A-H]([1-9]$|10)' for columns 1 - 10; '.*(?!3).$' for everything except 3rd column etc.  
   #(will append /baylor to target name; Ad hoc - marking the samples from baylor)
   
   # Data input ----
@@ -120,10 +140,17 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
   std_par_update <- read_sheet(sheeturls$data_dump, sheet = 'Standard curves', range = 'A:G', col_types = 'ccnnnnn') %>% 
     filter(str_detect(ID, std_to_retrieve ))
   
-  # substitute the new std curve parameteters in the old matrix
+  # substitute the new std curve parameters in the old matrix
   std_par %<>% filter(!str_detect(Target,
                                   std_par_update$Target %>% str_c(collapse = "|"))) %>% 
     bind_rows(std_par_update)
+  
+  # error catching for repeated standard curve names for the same target
+  if(std_par_update %>% unique() %>% group_by(Target) %>% summarize(count = n()) %>% pull(count) %>% {. > 1} %>% any())
+  {
+    stop( str_c('Duplicate entries for the same Target found for standard curve: ', std_to_retrieve, '. \n
+  check the Standard curves sheet here : https://docs.google.com/spreadsheets/d/1ouk-kCJHERRhOMNP07lXfiC3aGB4wtWXpnYf5-b2CI4/edit#gid=1980064476'))
+  }
   
   # Read in qPCR data and labels from plate template
   fl <- readqpcr(flpath) # read excel file exported by Quantstudio
@@ -253,8 +280,10 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none')
   
   
   # Load desired qPCR result sheet and columns
-  bring_results <- fl %>% # select only the results used for plotting, calculations etc. and arrange them according to sample order
-    select(-Sample) %>% 
+  bring_results <- fl %>% 
+    select(-Sample) %>% # Remove sample, it will be loaded from plate template sheet
+    rename(CopiesPer20uLWell = any_of('Copies/20µLWell')) %>% # rename the column name - if exported from Quantasoft analysis Pro
+    
     mutate_at('Well', ~ str_replace(., '(?<=[:alpha:])0(?=[:digit:])', '') ) %>% rename('Well Position' = Well) %>% 
     right_join(plate_template, by = 'Well Position') %>%  # Incorporate samples names from the google sheet by matching well position
     mutate_at('Target', ~str_replace_all(., c('N1' = 'N1_multiplex' , 'N2' = 'N2_multiplex'))) %>% 

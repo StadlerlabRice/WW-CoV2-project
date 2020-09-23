@@ -14,21 +14,23 @@ output:
 knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 10, fig.height = 4)
 ```
 
-## Recovery | Density plot
+## Percentage Recovery 
+
+### Recovery | Density plot
 
 ```{r}
 
 results_abs %>% ggplot(aes(x = Week, y = `Recovery fraction`)) + geom_jitter(width = .1)
 ```
 
-## Recovery | Violin + Density plot
+### Recovery | Violin + Density plot
 
 ```{r}
 
 results_abs %>% ggplot(aes(x = Week, y = `Recovery fraction`)) + geom_violin() + geom_jitter(width = .1, alpha = .2)
 ```
 
-## Recovery | Dot plot
+### Recovery | Dot plot
 
 ```{r dots}
 
@@ -37,7 +39,9 @@ nameless <- results_abs %>% select(Week, `Recovery fraction`) %>% drop_na() %>% 
 nameless %>% ggplot(aes(x = id, y = `Recovery fraction`, colour = Week)) + geom_point() + geom_line()
 ```
 
-## Copies/L | Violin + Density plot
+## Copies/L | Density plots
+
+### Copies/L | Violin + Density plot
 
 ```{r allviolin}
 
@@ -45,7 +49,7 @@ results_abs %>%
   ggplot(aes(x = Week, y = `Copies/l WW`, colour = Target)) + geom_jitter(width = .1) + geom_violin()
 ```
 
-## N1-N2 Copies/L | Violin + Density plot
+### N1-N2 Copies/L | Violin + Density plot
 
 ```{r n12violin}
 
@@ -55,12 +59,14 @@ den.plt <- results_abs %>% filter(str_detect(Target, 'N1|N2')) %>%
 print(den.plt)
 ```
 
-## Logscale N1-N2 Copies/L | Violin + Density plot
+### Logscale N1-N2 Copies/L | Violin + Density plot
 
 ```{r logn12violin}
 
 den.plt %>% format_logscale_y() %>% print()
 ```
+
+## Scatter plots (correlations)
 
 ## N comparisions | Scatter
 
@@ -68,12 +74,42 @@ den.plt %>% format_logscale_y() %>% print()
 
 results_wide <- results_abs %>% select(WWTP, Target, Week, `Copies/l WW`) %>% group_by(Week, Target, WWTP) %>% mutate(id = row_number()) %>% unite('WWTP', c('WWTP', id)) %>% pivot_wider(names_from = Target, values_from = `Copies/l WW`) 
 
-results_wide %>% ggplot(aes(x = `SARS CoV-2 N1`, y = `SARS CoV-2 N2`, colour = Week)) + geom_point() + geom_smooth(method = 'lm') 
+plt.sctrN <- results_wide %>% ggplot(aes(x = `SARS CoV-2 N1`, y = `SARS CoV-2 N2`, colour = Week)) + geom_point() + geom_smooth(method = 'lm') 
+
+print(plt.sctrN)
+
+```
+
+Interactive plot
+
+```{r}
+plt.sctrN %>% ggplotly(dynamicTicks = T)
+
+```
+
+## N1 vs BCoV | Scatter
+
+```{r}
+
+results_wide <- results_abs %>% select(WWTP, Target, Week, `Copies/l WW`) %>% group_by(Week, Target, WWTP) %>% mutate(id = row_number()) %>% unite('WWTP', c('WWTP', id)) %>% pivot_wider(names_from = Target, values_from = `Copies/l WW`) 
+
+plt.sctrNBCOV <- results_wide %>% ggplot(aes(x = `SARS CoV-2 N1`, y = `BCoV_M`, colour = Week)) + geom_point() + geom_smooth(method = 'lm') 
+
+print(plt.sctrNBCOV)
+
+```
+
+Interactive plot
+
+```{r}
+plt.sctrNBCOV %>% ggplotly(dynamicTicks = T)
 
 ```
 
 
-## Weekly timeseries - N1/N2/BcoV
+## Timeseries across weeks
+
+### Weekly timeseries - N1/N2/BcoV
 
 ```{r timeseries, fig.width= 16, fig.height= 12}
 
@@ -93,7 +129,7 @@ plt_week1 %>% print()
 ```
 
 
-## Weekly timeseries - N1/N2 
+### Weekly timeseries - N1/N2 
 
 ```{r timeseriesN, fig.width= 16, fig.height= 12}
 only_N12 <- results_abs.list %>% map(filter, str_detect(Target, 'N1|N2'))
@@ -104,14 +140,14 @@ plt_week2 <- plot_mean_sd_jitter(only_N12, long_format = F, sample_var = extra_c
 plt_week2 %>% print()
 ```
 
-## Logscale timeseries - N1/N2 
+### Logscale timeseries - N1/N2 
 
 ```{r logtimeseriesN, fig.width= 16, fig.height= 12}
 
 plt_week2 %>% format_logscale_y() %>% print()
 ```
 
-## Weekly timeseries - BCoV 
+### Weekly timeseries - BCoV 
 
 ```{r timeseriesbcov, fig.width= 16, fig.height= 12}
 only_bcov <- results_abs.list %>% map(filter, str_detect(Target, 'BCoV'))
@@ -122,7 +158,7 @@ plt_week3 <- plot_mean_sd_jitter(only_bcov, long_format = F, sample_var = extra_
 plt_week3 %>% print()
 ```
 
-## Weekly timeseries - Percentage recovery 
+### Weekly timeseries - Percentage recovery 
 
 ```{r timeseriespercentreco, fig.width= 16, fig.height= 12}
 
@@ -138,7 +174,7 @@ plt_week3 <- plot_mean_sd_jitter(recovery_data.list, long_format = F, sample_var
 plt_week3 %>% print()
 ```
 
-## Copies/person timeseries
+### Copies/person timeseries
 
 ```{r normalizedcopiesn, fig.width= 16, fig.height= 12}
 
