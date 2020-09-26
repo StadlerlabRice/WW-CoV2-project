@@ -155,6 +155,9 @@ get_template_for <- function(bait, sheet_url = sheeturls$templates)
     which() + 1
   range_to_get <- str_c('B', m_row + 1, ':N', m_row + 9)
   
+  # Eror message and terminate if plate ID is not unique
+  if(length(m_row) > 1) stop( str_c('Plate ID of :', bait, 'repeats in', paste0(m_row, collapse = ' & '), 'row numbers. Please fix and re-run the script', sep = ' '))
+  
   # read the template corresponding to the file name
   plate_template_raw <- read_sheet(sheet_url, sheet = 'Plate layouts', range = range_to_get)
   
