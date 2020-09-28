@@ -5,10 +5,10 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW29_824 maxwell_N1/N2',
-                        'WW61_824 maxwell_BCoV_Std43')
+read_these_sheets <- c( 'WW76_922 Rnase expt_916 manhole repeat 3_BCoVN1N2_Std56',
+                        'dd.WW44_Vaccine boil optimize_Repeat_BCoV2')
 
-title_name <- '824 Maxwell'
+title_name <- '922 RNAse + Vaccine boils'
 
 # Biobot_id sheet
 bb_sheets <- c('Week 20 (8/24)')
