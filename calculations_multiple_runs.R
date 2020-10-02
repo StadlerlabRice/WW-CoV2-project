@@ -5,14 +5,13 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW38_915_N1N2',
-                        'WW71_915_BCoV_Std52',
-                        'WW72_915, boilquant, WWboil_BCoV_Std53')
+read_these_sheets <- c( 'dd.WW47_928_N1N2',
+                        'dd.WW48_928_BCoV2')
 
-title_name <- '915 Rice'
+title_name <- '928 Rice'
 
 # Biobot_id sheet
-bb_sheets <- c('Week 23 (9/15)')
+bb_sheets <- c('Week 25 (9/28)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|Control|e811|Acetone' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
@@ -66,7 +65,7 @@ raw_quant_data <- bind_rows(list_raw_quant_data) %>%
 biobot_lookup <- map_df(bb_sheets, 
                         ~ read_sheet(sheeturls$biobot_id , sheet = .x) %>% 
                           rename('Biobot_id' = matches('Biobot|Comments|Sample ID', ignore.case = T), 'WWTP' = contains('SYMBOL', ignore.case = T), 'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T)) %>% 
-                          mutate('Biobot_id' = str_remove(`Biobot_id`,'\\.'), WWTP = as.character(WWTP)) %>% 
+                          mutate('Biobot_id' = str_remove(`Biobot_id`,'\\.| '), WWTP = as.character(WWTP)) %>% 
                           select(`Biobot_id`, `FACILITY NAME`, WWTP)
 )
 
@@ -215,7 +214,7 @@ presentable_data <- processed_quant_data %>%
          Detection_Limit = if_else(str_detect(`Target Name`, 'N1|N2'), 330, 
                                    if_else(str_detect(`Target Name`, 'Baylor'), 23500, 705) 
                                    ) ,
-         Sample_Type = NA, Comments = NA) %>% 
+         Sample_Type = 'Composite', Comments = NA) %>% 
   mutate_at(c('Sample_name', 'original_sample_name'), ~as.character(.)) %>%
   mutate_at('Facility', ~if_else(. == assay_variable, str_c(original_sample_name, '/', assay_variable), .)) %>%
   mutate(Tube_ID = if_else(biological_replicates == ''|is.na(biological_replicates), str_c(original_sample_name, ' ', assay_variable), str_c(original_sample_name, ' ', assay_variable, '', biological_replicates)) ,
@@ -246,8 +245,7 @@ if(regular_WWTP_run_output)
     rename('Copies_per_uL' = `Copies/ul RNA`,
            'Copies_Per_Liter_WW' = `Copies/l WW`,
            'Recovery_Rate' = `Recovery fraction`,
-           Target_Name = `Target Name`,
-           Facility_ID = WWTP) %>%
+           Target_Name = `Target Name`) %>%
     select(-contains('Volume'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID)
   
   present_only_WW <- present_WW_data %>% filter(!str_detect(Facility, special_samples))
@@ -255,6 +253,7 @@ if(regular_WWTP_run_output)
   # Write data if not empty
   if(present_only_WW %>% plyr::empty() %>% !.){
     check_ok_and_write(present_only_WW, sheeturls$wwtp_only_data, title_name) # save results to a google sheet, ask for overwrite
+    write_csv(present_only_WW, path = str_c('excel files/Weekly data to HHD/', title_name, '.csv'), na = '') # output csv file
   }
   
   present_special_samples <- presentable_data %>% filter(str_detect(Facility, special_samples))
@@ -262,6 +261,7 @@ if(regular_WWTP_run_output)
   # Write data if not empty
   if(present_special_samples %>% plyr::empty() %>% !.){
     check_ok_and_write(present_special_samples, sheeturls$wwtp_only_data, str_c(title_name, ' special samples')) # save results to a google sheet, ask for overwrite
+    write_csv(present_special_samples, path = str_c('excel files/Weekly data to HHD/', title_name, ' manhole samples.csv'), na = '') # output CSV file
   }
 }
 
