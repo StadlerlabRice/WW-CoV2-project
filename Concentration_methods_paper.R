@@ -3,7 +3,7 @@
 
 # Preliminaries ----
 # file name
-flnm <- 'Archive/Concentration Methods Data V2 New ddPCR data'
+flpath <- 'qPCR analysis/Methods paper/Concentration Methods Data V2 New ddPCR data'
 
 method_namer <- c('ha.*' = 'HA Filtration',
                   '^e.*' = 'Elution',
@@ -16,14 +16,14 @@ source('./general_functions.R') # Source the general_functions file
 
 # Input file ----
 
-flpath <- str_c('excel files/',flnm,'.xlsx') # this completes the file path
+flpath_extension <- str_c(flpath,'.xlsx') # this completes the file path
 read_these_sheets <- c('HA Filtration',
                        'Elution',
                        'Ultrafiltration',
                        'Direct Extraction'
                        )
 
-xldata <- map_df(read_these_sheets, ~ read_xlsx(path = flpath,
+xldata <- map_df(read_these_sheets, ~ read_xlsx(path = flpath_extension,
                                              sheet = .x,
                                              range = 'A2:N54') %>% 
                                     mutate(`Concentration method` = .x)
@@ -31,7 +31,7 @@ xldata <- map_df(read_these_sheets, ~ read_xlsx(path = flpath,
   select(Facility, WWTP, `Concentration method`, Target, `Copies/L WW`)
 
 # BCoV data
-bcov_data <- read_xlsx(path = flpath,
+bcov_data <- read_xlsx(path = flpath_extension,
                        sheet = 'EZ BCoV Data')
 
 
