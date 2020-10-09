@@ -233,6 +233,24 @@ presentable_data <- processed_quant_data %>%
   mutate_at('Target Name', ~str_remove(., '/Baylor'))
 
 
+# Missing value check - Brings user attention to missing values in the sample registry
+
+# work in progress - this is not where -Inf shoud be checked for since this has all data from begining of time
+if(map(presentable_data, ~ -Inf %in% .x) %>% any())
+  
+  {missing_values_sample_registry <- presentable_data %>% filter_if(is.numeric, any_vars( . < 0))
+  View(missing_values_sample_registry)
+  proceed_with_errors_key <- menu(c('Yes', 'No'), title = 'Missing values identified in the sample registry,
+check the data output in the console and choose if you wish to continue processing data')
+
+  if(proceed_with_errors_key == 2) stop("Cancel selected, script aborted.")
+  if(proceed_with_errors_key == 1) 
+    { print('Missing values are being converted to NaNs to avoid error in writing data')
+    presentable_data %<>% mutate(across(where(is.numeric),  ~ if_else(.x == -Inf, NaN, .x)))
+  }
+}
+
+
 # Output data - including controls
 check_ok_and_write(presentable_data %>% select(-Sample_ID), sheeturls$complete_data, title_name) # save results to a google sheet, ask for overwrite
 
