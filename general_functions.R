@@ -171,12 +171,12 @@ harmonize_week <- function(week_cols)
 {
   
   # Pick numeric entries in column (the rest will be restored as is)
-  num_week <- week_cols %>% str_extract('[:digit:]{3}') %>%  as.numeric() %>% unique() %>% .[!is.na(.)]
+  num_week <- week_cols %>% str_extract('[:digit:]{3,4}') %>%  as.numeric() %>% unique() %>% .[!is.na(.)]
   
   # Check for consecutive dates
   repl_week <- num_week %>% 
     str_c() %>% 
-    str_replace('([:digit:])([:digit:]{2})', '\\1/\\2/20') %>% 
+    str_replace('([:digit:]+)([:digit:]{2})', '\\1/\\2/20') %>% 
     mdy() %>%  # convert to dates
     map_dbl(., function(x) num_week[. %in% c(x, x-1)] %>% min()) %>% # make the min entry of consecutive dates
     as.character() %>% 
