@@ -40,6 +40,7 @@ bcov_data <- read_xlsx(path = flpath_extension,
 N_data_to_plot <- xldata %>% 
   filter(!str_detect(WWTP, 'PT|NE')) %>% 
   mutate(across(Facility, ~ if_else(is.na(.x), 'Water', Facility))) %>% 
+  mutate(across(WWTP, ~ fct_relevel(.x, 'DI', after = Inf))) %>% # bringing DI water control to the last position
   mutate(Sample_name = WWTP) # dummy column for the plotting function
          
 
@@ -107,7 +108,8 @@ shape_plt_N1 <- {N_data_to_plot %>%
   filter(str_detect(Target, 'N1')) %>% 
   ggplot(aes(`Concentration method`, `Copies/L WW`, colour = `Concentration method`,  shape = WWTP)) + 
   geom_jitter() + 
-  ylab('Genome copies/L wastewater') + ggtitle('SARS-CoV2 N1 across methods')} %>% 
+  ylab('Genome copies/L wastewater') + ggtitle('SARS-CoV2 N1 across methods') + 
+    scale_shape_manual(values = c(15,16,17,7,8,10,3))} %>% 
   format_logscale_y() %>%
   format_classic() %>% 
   print()
@@ -116,7 +118,8 @@ shape_plt_N2 <- {N_data_to_plot %>%
     filter(str_detect(Target, 'N2')) %>% 
     ggplot(aes(`Concentration method`, `Copies/L WW`, colour = `Concentration method`,  shape = WWTP)) + 
     geom_jitter() + 
-    ylab('Genome copies/L wastewater') + ggtitle('SARS-CoV2 N2 across methods')} %>% 
+    ylab('Genome copies/L wastewater') + ggtitle('SARS-CoV2 N2 across methods') + 
+    scale_shape_manual(values = c(15,16,17,7,8,10,3))} %>% 
   format_logscale_y() %>%
   format_classic() %>% 
   print()
