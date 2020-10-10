@@ -64,7 +64,7 @@ bcov_data_list <- list(raw.dat = BCoV_data_to_plot,
 
 
 
-# Plots1 ----
+# Plots w jitter ----
 
 plt.N1 <- {plot_mean_sd_jitter(.data_list = N_data_list,
                             long_format = F,
@@ -101,7 +101,7 @@ plt.recovery <- {plot_mean_sd_jitter(.data_list = bcov_data_list,
   format_logscale_y(.) %>%
   print()
 
-# Plots-kiara ----
+# Plots w shapes ----
 
 
 shape_plt_N1 <- {N_data_to_plot %>% 
@@ -132,6 +132,18 @@ shape_plt_recovery <- {BCoV_data_to_plot %>%
   format_classic(.) %>% 
   print()
 
+aligned_shape_plt_N1 <- {N_data_to_plot %>% 
+    filter(str_detect(Target, 'N1')) %>% 
+    ggplot(aes(WWTP, `Copies/L WW`, colour = `Concentration method`,  shape = WWTP)) + 
+    geom_jitter(width = .2) + 
+    facet_grid(~`Concentration method`) +
+    ylab('Genome copies/L wastewater') + ggtitle('SARS-CoV2 N1 across methods') + 
+    scale_shape_manual(values = c(15,16,17,7,8,10,3))} %>% 
+  format_logscale_y() %>%
+  format_classic() %>% 
+  print()
+
+
 # Data output ----
 # (optional)
 
@@ -144,3 +156,4 @@ shape_plt_recovery <- {BCoV_data_to_plot %>%
 ggsave('qPCR analysis/Methods paper/Methods_paper_N1.pdf', plot = shape_plt_N1, width = 8, height = 4)
 ggsave('qPCR analysis/Methods paper/Methods_paper_N2.pdf', plot = shape_plt_N2, width = 8, height = 4)
 ggsave('qPCR analysis/Methods paper/Methods_paper_Recovery.pdf', plot = shape_plt_recovery, width = 8, height = 4)
+ggsave('qPCR analysis/Methods paper/Methods_paper_Recovery.N1-aligned.pdf', plot = aligned_shape_plt_N1, width = 8, height = 4)
