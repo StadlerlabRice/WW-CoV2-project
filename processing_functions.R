@@ -256,9 +256,10 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
 process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none')
 { # Baylor wells : choose 1) none, 2) '.*' for all, 3) '[A-H]([1-9]$|10)' etc. for specific wells 
   
-  template_volume_dpcr <- 10 /22 * 20 # ul template volume per well of the ddPCR reaction
+  template_volume_dpcr <- tibble(Template = c('N1_multiplex', 'N2_multiplex', 'BCoV2'),
+                                 templ_vol = c(10, 10, 4) /22 * 20) # ul template volume per well of the ddPCR reaction
   
-  RNA_dilution_factor_BCoV <- 104/5 * 10/5 # 1/RNA dilution factor * 10/Template loaded per 22 ul reaction - for diluted BCoV samples
+  # incorporated in next step # RNA_dilution_factor_BCoV <- 104/5 * 10/5 # 1/RNA dilution factor * 10/Template loaded per 22 ul reaction - for diluted BCoV samples
   
   # Ad hoc - marking the samples from baylor (will append /baylor to target name)
   # Work in progress?
@@ -290,7 +291,10 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none')
     right_join(plate_template, by = 'Well Position') %>%  # Incorporate samples names from the google sheet by matching well position
     mutate_at('Target', ~str_replace_all(., c('N1' = 'N1_multiplex' , 'N2' = 'N2_multiplex'))) %>% 
     filter(!is.na(Target)) %>% 
-    mutate('Copy #' = CopiesPer20uLWell/ template_volume_dpcr) %>% 
+    
+    left_join(template_volume_dpcr) %>% # join array of template volume - different for N1,N2 and BCOV2
+    
+    mutate('Copy #' = CopiesPer20uLWell/ template_volume_dpcr) %>%
     select(`Sample_name`, `Copy #`, Target, everything())
   
   
@@ -305,7 +309,7 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none')
     mutate_at('assay_variable', as.character) %>% 
     mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
     
-    mutate(across(`Copy #`, ~ if_else(str_detect(Target, 'BCoV'), .x * RNA_dilution_factor_BCoV, .x))) %>% # Correcting for template dilution in case of BCoV ddPCRs
+    # mutate(across(`Copy #`, ~ if_else(str_detect(Target, 'BCoV'), .x * RNA_dilution_factor_BCoV, .x))) %>% # Correcting for template dilution in case of BCoV ddPCRs # adding this in next step for each sample
     
     # Adding tag to target for baylor smaples
     { if(!str_detect(baylor_wells, 'none|None')) { 

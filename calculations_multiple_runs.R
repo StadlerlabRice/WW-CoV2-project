@@ -10,7 +10,7 @@ read_these_sheets <- c( 'dd.WW52_Conc method 2b_N1N2 + BCoV2',
                         'dd.WW54_Conc Meth 2_BCoV2',
                         'dd.WW55_S38 boil_BCoV2')
 
-title_name <- '1005 Rice'
+title_name <- 'Methods Rice'
 
 # Biobot_id sheet
 bb_sheets <- c('Week 26 (10/5)')
@@ -19,7 +19,7 @@ bb_sheets <- c('Week 26 (10/5)')
 extra_categories = 'Std|Control|e811|Acetone' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
 special_samples = 'HCJ|SOH|ODM|AO' # putting special samples in a separate sheet
 
-regular_WWTP_run_output <- TRUE # make TRUE of you want to output the WWTP only data and special samples sheets 
+regular_WWTP_run_output <- F # make TRUE of you want to output the WWTP only data and special samples sheets 
       # (make FALSE for controls, testing etc. where only "complete data" sheet is output)
 
 # rarely changed parameters
@@ -30,11 +30,16 @@ elution_volume <- 50 # ul - RNA extraction final volume
 # copies/ul viral suspension spiked in : This is auto-matched from the list of vaccine data in data dump/Vaccine_summary
 spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 450 and varies for each sample)
 
+# Extra metadata locations for conc methods
+
+conc_factors_url <- 'https://docs.google.com/spreadsheets/d/1_32AE3IkBRD3oGSYcYqZwknHZEHiGKtoy1zK5VVTzsI/edit#gid=214903643'
+dilution_flname <- 'dilutions of template_BCoV2_dd.WW54, 52' %>% 
+  str_c('qPCR analysis/Methods paper/Archive/', ., '.xlsm')
 
 # Input data ----------------------------------------------------------------------
 
 # Acquire all the pieces of the data : read saved raw qPCR results from a google sheet
-list_raw_quant_data <- map(read_these_sheets, ~ read_sheet(sheeturls$data_dump, sheet = ., range = 'A:H')) 
+list_raw_quant_data <- map(read_these_sheets, ~ read_sheet(sheeturls$data_dump, sheet = ., range = 'A:G')) 
 
 # bind multiple reads and clean up names
 raw_quant_data <- bind_rows(list_raw_quant_data) %>% 
@@ -96,6 +101,29 @@ volumes_data_Rice <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrate
   mutate(across(WW_vol, ~ifelse(is.na(WW_weight), max(., na.rm = T), .))) %>% 
   ungroup() %>% 
   select(-unique_labels, -WW_weight)
+
+# conc.methods metadata ----
+
+concentration_factors <- read_sheet(conc_factors_url, sheet = 'Summary')
+
+dilution_vol1 <- read_xlsx(dilution_flname, sheet = 'volumes_plate 2A+', range = 'B2:P10') %>% read_plate_to_column('dil_vol')
+dilution_samples2 <- read_xlsx(dilution_flname, sheet = 'samples_plate 2A+', range = 'B2:P10') %>% read_plate_to_column('Sample_name')
+
+dilution_factors <- left_join(dilution_vol1, dilution_samples2) %>%  # join the dilution volumes to names
+  mutate(dilution_factor = (dil_vol + 196)/dil_vol * 200/4) %>% 
+  
+  # Processing the same as regular data for ease of column joining (will incorporate by condition BCoV or pMMoV)
+  separate(`Sample_name`,c(NA, 'Sample_name'),'-') %>% separate(`Sample_name`,c('Sample_name','Tube ID'),'_') %>% 
+  mutate(`Tube ID` = if_else(`Sample_name` == 'NTC', '0', `Tube ID`)) %>% 
+  separate(`Tube ID`, c('assay_variable', 'biological_replicates'), remove = F) %>%  # Separate out biological replicates 
+  unite('Tube ID', c(assay_variable, biological_replicates), sep = '.', remove = F, na.rm = T) %>% # remaking Tube ID - removes spaces after 'dot'
+  # unite('Biobot ID', c(`Sample_name`, assay_variable), sep = '', remove = F) %>%
+  
+  mutate_at('assay_variable', as.character) %>% 
+  mutate_at('biological_replicates', ~str_replace_na(., ''))
+  
+
+rm(dilution_vol1, dilution_samples2) # clear temporary data
 
 
 # baylor's ID, vols ----------------------------------------------------------------------   
