@@ -68,15 +68,15 @@ plot_mean_sd_jitter(measure_var = 'Recovered', sample_var = str_c(extra_categori
 
 ### % recovery
 
-```{r percentreco}
+```{r fractionreco}
 
 
-  percentreco_plt <- plot_mean_sd_jitter(measure_var = 'Recovery fraction', sample_var = str_c(extra_categories, '|Vaccine'), exclude_sample = T, target_filter = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Percentage recovery of surrogate virus') 
+  fractionreco_plt <- plot_mean_sd_jitter(measure_var = 'Recovery fraction', sample_var = str_c(extra_categories, '|Vaccine'), exclude_sample = T, target_filter = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Surrogate virus fraction recovered') 
   
- percentreco_plt %>% print()
+ fractionreco_plt %>% print()
 
  # same plot in logscale y axis  
- percentreco_plt %>% format_logscale_y() %>% print()
+ fractionreco_plt %>% format_logscale_y() %>% print()
   
   
 ```
@@ -100,7 +100,7 @@ plot_mean_sd_jitter(measure_var = 'Recovered', sample_var = extra_samples_to_plo
 #   format_logscale_y() %>% print()
 
 # % plot for extra samples
-plot_mean_sd_jitter(measure_var = 'Recovery fraction', sample_var = extra_samples_to_plot, target_filter = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Percentage recovery of surrogate virus') %>% print()
+plot_mean_sd_jitter(measure_var = 'Recovery fraction', sample_var = extra_samples_to_plot, target_filter = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Surrogate virus fraction recovered') %>% print()
 
 ```
 
@@ -159,9 +159,9 @@ ordered_plt1 %>% format_logscale_y() %>% print()
 
 ### % Recovery
 
-```{r percentRecoverystreamlined}
+```{r fractionRecoverystreamlined}
 
-  recostr_plot <- plot_mean_sd_jitter(measure_var = 'Recovery fraction', sample_var = str_c(extra_categories,'|NTC|Vaccine'), exclude_sample = T, x_var = WWTP, ascending_order = T, ylabel = 'Percentage recovery of surrogate')
+  recostr_plot <- plot_mean_sd_jitter(measure_var = 'Recovery fraction', sample_var = str_c(extra_categories,'|NTC|Vaccine'), exclude_sample = T, x_var = WWTP, ascending_order = T, ylabel = 'Surrogate virus fraction recovered')
   
   recostr_plot %>% print()
 
