@@ -66,7 +66,7 @@ plot_mean_sd_jitter(measure_var = 'Recovered', sample_var = str_c(extra_categori
 
 ```
 
-### % recovery
+### Recovery fraction
 
 ```{r fractionreco}
 
@@ -176,7 +176,7 @@ ordered_plt1 %>% format_logscale_y() %>% print()
 
 ```
 
-### % Recovery
+### Recovery fraction
 
 ```{r fractionRecoverystreamlined}
 
