@@ -37,6 +37,8 @@ spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 
 conc_factors_url <- 'https://docs.google.com/spreadsheets/d/1_32AE3IkBRD3oGSYcYqZwknHZEHiGKtoy1zK5VVTzsI/edit#gid=214903643'
 dilution_flname <- 'dilutions of template_BCoV2_dd.WW54, 52' %>% 
   str_c('qPCR analysis/Methods paper/Archive/', ., '.xlsm')
+ultrafiltration_flname <- 'Ultrafiltration Tube Weights' %>% 
+  str_c('qPCR analysis/Methods paper/Archive/', ., '.xlsx')
 
 # Input data ----------------------------------------------------------------------
 
@@ -113,6 +115,11 @@ volumes_data_Rice <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrate
 concentration_factors <- read_sheet(conc_factors_url, sheet = 'Summary') %>% 
   mutate(Sample_name = Method) %>%  # making it compatible for joining
   rename(concentration.factor = Concentration_factor)
+
+ultrafiltration_volume <- read_xlsx(ultrafiltration_flname, range = 'A1:D22') %>% 
+  mutate(across(Label_tube, ~ str_remove(.x, ' ') )) %>% 
+  rename(UF_vol_ul = Total_volume_ul) %>% 
+  select(Label_tube, UF_vol_ul)
 
 dilution_vol1 <- read_xlsx(dilution_flname, sheet = 'volumes_plate 2A+', range = 'B2:Q10') %>% read_plate_to_column('dil_vol')
 dilution_samples2 <- read_xlsx(dilution_flname, sheet = 'samples_plate 2A+', range = 'B2:Q10') %>% read_plate_to_column('Sample_name')
@@ -221,9 +228,14 @@ if (baylor_trigger) {
 # join the results with the WWTP identifiers and names
 processed_quant_data <- bind_rows(vol_R, vol_B) %>% 
   
+  # attach ultrafiltration volumes - to correct UF conc. factor
+  left_join(ultrafiltration_volume) %>% 
+  mutate(across(UF_vol_ul, ~ coalesce(.x, 1) )) %>% 
+  
   # attach concentration factors for various methods
   left_join(concentration_factors) %>% 
-  mutate(across(concentration.factor, ~ coalesce(.x, 1) )) %>% 
+  mutate(across(concentration.factor, ~ coalesce(.x, 1)), 
+         across(concentration.factor, ~ .x * 1500/UF_vol_ul )) %>% 
   
   # Calculations for spiked in and recovered copies of the virus
   mutate(`Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e6 / concentration.factor , `Recovery fraction` = Recovered/`Actual spike-in`) %>% 
