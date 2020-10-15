@@ -276,6 +276,7 @@ long_processed_minimal$summ.dat %<>% separate(Measurement, into = c('Measurement
 presentable_data <- processed_quant_data %>% 
   
   # renaming variables
+  rename(Concentration_method = Method_full_name) %>% 
   rename('Facility' = `FACILITY NAME`, 'Original Sample Volume' = WW_vol, Ct = CT, 'Target Name' = Target) %>%
   rename('Copies/ul RNA' = `Copy #`, 'Copies/l WW' = Recovered, 'Spiked-in Copies/l WW' = `Actual spike-in`) %>%
   rename('Volume Filtered' = vol_extracted) %>% 
@@ -300,7 +301,8 @@ presentable_data <- processed_quant_data %>%
   mutate_cond(str_detect(`Target Name`, '^N'), `Recovery fraction` = NA, `Spiked-in Copies/l WW` = NA) %>%
   
   # Selecting column order
-  select(Facility, WWTP, Date, Lab, `Target Name`, `Original Sample Volume`, `Volume Filtered`, Ct, `Copies/ul RNA`, `Copies/l WW`, Sample_ID, Detection_Limit, Sample_Type, `Spiked-in Copies/l WW`, `Recovery fraction`, WWTP_ID, Tube_ID, Comments, dilution.factor, concentration.factor) %>%
+  select(Facility, WWTP, Date, Lab, `Target Name`, `Original Sample Volume`, `Volume Filtered`, Ct, `Copies/ul RNA`, `Copies/l WW`, Sample_ID, Detection_Limit, Sample_Type, `Spiked-in Copies/l WW`, `Recovery fraction`,
+         WWTP_ID, Tube_ID, Comments, Method, Concentration_method, dilution.factor, concentration.factor) %>%
   mutate_at('Target Name', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2'))) %>% 
   mutate_at('Target Name', ~str_remove(., '/Baylor'))
 
