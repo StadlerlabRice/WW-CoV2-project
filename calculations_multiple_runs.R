@@ -8,9 +8,11 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 read_these_sheets <- c( 'dd.WW52_Conc method 2b_N1N2 + BCoV2',
                         'dd.WW53_Conc Meth 2_N1N2',
                         'dd.WW54_Conc Meth 2_BCoV2',
-                        'dd.WW55_S38 boil_BCoV2')
+                        'dd.WW55_S38 boil_BCoV2',
+                        'WW79_Conc Methods 2a_pMMoV_Std58',
+                        'WW80_Conc Methods 2b_pMMoV_Std59')
 
-title_name <- 'Methods Rice'
+title_name <- 'Concentration methods paper-2'
 
 # Biobot_id sheet
 bb_sheets <- c('Week 26 (10/5)')
@@ -39,7 +41,9 @@ dilution_flname <- 'dilutions of template_BCoV2_dd.WW54, 52' %>%
 # Input data ----------------------------------------------------------------------
 
 # Acquire all the pieces of the data : read saved raw qPCR results from a google sheet
-list_raw_quant_data <- map(read_these_sheets, ~ read_sheet(sheeturls$data_dump, sheet = ., range = 'A:G')) 
+list_raw_quant_data <- map(read_these_sheets, 
+                           ~ read_sheet(sheeturls$data_dump, sheet = ., range = 'A:H') %>% 
+                             select(-any_of('Conc(copies/µL)'))) 
 
 # bind multiple reads and clean up names
 raw_quant_data <- bind_rows(list_raw_quant_data) %>% 
@@ -102,15 +106,29 @@ volumes_data_Rice <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrate
   ungroup() %>% 
   select(-unique_labels, -WW_weight)
 
+
 # conc.methods metadata ----
 
-concentration_factors <- read_sheet(conc_factors_url, sheet = 'Summary')
 
-dilution_vol1 <- read_xlsx(dilution_flname, sheet = 'volumes_plate 2A+', range = 'B2:P10') %>% read_plate_to_column('dil_vol')
-dilution_samples2 <- read_xlsx(dilution_flname, sheet = 'samples_plate 2A+', range = 'B2:P10') %>% read_plate_to_column('Sample_name')
+concentration_factors <- read_sheet(conc_factors_url, sheet = 'Summary') %>% 
+  mutate(Sample_name = Method) %>%  # making it compatible for joining
+  rename(concentration.factor = Concentration_factor)
 
-dilution_factors <- left_join(dilution_vol1, dilution_samples2) %>%  # join the dilution volumes to names
-  mutate(dilution_factor = (dil_vol + 196)/dil_vol * 200/4) %>% 
+dilution_vol1 <- read_xlsx(dilution_flname, sheet = 'volumes_plate 2A+', range = 'B2:Q10') %>% read_plate_to_column('dil_vol')
+dilution_samples2 <- read_xlsx(dilution_flname, sheet = 'samples_plate 2A+', range = 'B2:Q10') %>% read_plate_to_column('Sample_name')
+
+dilution_factors_base <- left_join(dilution_vol1, dilution_samples2) %>%  # join the dilution volumes to names
+  select(-`Well Position`) %>% 
+  mutate(dilution.factor = 1) # dummy column - edited in next step
+
+# dilution factors for each target
+dilution_factors <- tibble(Target = c('N1_multiplex', 'N2_multiplex', 'BCoV2', 'pMMoV_Vgp1'), lsts = list(dilution_factors_base) ) %>% 
+  unnest(cols = c(lsts)) %>% 
+  
+  mutate_cond(str_detect(Target, 'BCoV2'), dilution.factor = (dil_vol + 196)/dil_vol * 200/4) %>% 
+  mutate_cond(str_detect(Target, 'pMMoV'), dilution.factor = (dil_vol + 196)/dil_vol) %>% 
+  mutate_cond(str_detect(Target, '^N') & str_detect(Sample_name, 'HA_H.1'), dilution.factor = 3) %>%
+  mutate_cond(str_detect(Sample_name, 'Vacboil'), dilution.factor = 20/dil_vol * 200/4 * 200/4) %>%
   
   # Processing the same as regular data for ease of column joining (will incorporate by condition BCoV or pMMoV)
   separate(`Sample_name`,c(NA, 'Sample_name'),'-') %>% separate(`Sample_name`,c('Sample_name','Tube ID'),'_') %>% 
@@ -120,10 +138,13 @@ dilution_factors <- left_join(dilution_vol1, dilution_samples2) %>%  # join the 
   # unite('Biobot ID', c(`Sample_name`, assay_variable), sep = '', remove = F) %>%
   
   mutate_at('assay_variable', as.character) %>% 
-  mutate_at('biological_replicates', ~str_replace_na(., ''))
+  mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
+  mutate_at('Tube ID', ~str_remove(., "\\.")) %>% 
+  unite('Label_tube', c('Sample_name', 'Tube ID'), sep = "", remove = F) # make a unique column for matching volumes 
+
   
 
-rm(dilution_vol1, dilution_samples2) # clear temporary data
+rm(dilution_vol1, dilution_samples2, dilution_factors_base) # clear temporary data
 
 
 # baylor's ID, vols ----------------------------------------------------------------------   
@@ -171,8 +192,11 @@ vol_R <- raw_quant_data %>%
   left_join(biobot_lookup, by = 'Biobot_id') %>% 
   
   mutate_at(c('WWTP', 'FACILITY NAME'), ~if_else(str_detect(., '^X')|is.na(.), assay_variable, .)) %>% 
-  mutate(original_sample_name = Sample_name , Sample_name = harmonize_week(Sample_name)) # retain min of consecutive dates
-
+  mutate(original_sample_name = Sample_name , Sample_name = harmonize_week(Sample_name)) %>%  # retain min of consecutive dates
+  
+  left_join(dilution_factors) %>%  # attach dilution factors
+  mutate(across(dilution.factor, ~ coalesce(.x, 1)), across(`Copy #`, ~ .x * dilution.factor)) # correcting for dilution of RNA template
+  
 # Join Baylor WWTP volumes
 if (baylor_trigger) {
   
@@ -194,10 +218,14 @@ if (baylor_trigger) {
 # join the results with the WWTP identifiers and names
 processed_quant_data <- bind_rows(vol_R, vol_B) %>% 
   
+  # attach concentration factors for various methods
+  left_join(concentration_factors) %>% 
+  mutate(across(concentration.factor, ~ coalesce(.x, 1) )) %>% 
+  
   # Calculations for spiked in and recovered copies of the virus
-  mutate(`Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e3 * elution_volume/vol_extracted, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
-  mutate_cond(str_detect(Sample_name, 'Vaccine'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (.050 * 1e-3), Recovered = `Copy #` * 1e6 * 50/20, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
-  mutate_cond(str_detect(Target, 'Baylor'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e6 /30, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
+  mutate(`Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e6 / concentration.factor , `Recovery fraction` = Recovered/`Actual spike-in`) %>% 
+  # mutate_cond(str_detect(Sample_name, 'Vaccine'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (.050 * 1e-3), Recovered = `Copy #` * 1e6 * 50/20, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
+  mutate_cond(str_detect(Target, 'Baylor'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e6 /30, `Recovery fraction` = Recovered/`Actual spike-in`) %>% 
   select(-spike_virus_conc) %>% 
   
   # arranging data by facility name alphabetical
