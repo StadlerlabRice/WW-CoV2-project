@@ -175,6 +175,9 @@ if (baylor_trigger) {
 
 # Vaccine spike concentrations
 spike_list <- read_sheet(sheeturls$data_dump, sheet = 'Vaccine_summary', range = 'B6:K', col_types = 'Dcccnnnccn') %>% 
+  
+  filter(str_detect(Vaccine_ID, 'Sb')) %>% # filter for boiled quants
+  mutate(across(Vaccine_ID, ~ str_remove(.x, 'b'))) %>%  # remove 'b' to make the regular vaccine ID for matching
   rename(spike_virus_conc = matches('Stock conc.'), Sample_name = Week)  
 
 
