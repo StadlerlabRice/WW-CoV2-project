@@ -32,7 +32,7 @@ only_wwtps <- all_data_input %>%
 
 # Summary and long_format ----
 
-scatter_data_N_reco <- 
+# scatter_data_N_reco <- 
 
 # 
 # minimal_label_columns <- c('Target', 'WWTP', 'Concentration method')
@@ -54,7 +54,9 @@ scatter_data_N_reco <-
 
 # Plots w shapes ----
 
-aligned_shape_plt_N1 <- {all_data_input %>% 
+data_to_plot <- only_wwtps
+
+aligned_shape_plt_N1 <- {data_to_plot %>% 
     filter(str_detect(Target, 'N1')) %>% 
     ggplot(aes(WWTP, `Copies/L WW`, colour = `Concentration method`,  shape = WWTP)) + 
     geom_point() + 
@@ -65,7 +67,7 @@ aligned_shape_plt_N1 <- {all_data_input %>%
   format_classic() %>% 
   print()
 
-aligned_shape_plt_N2 <- {all_data_input %>% 
+aligned_shape_plt_N2 <- {data_to_plot %>% 
     filter(str_detect(Target, 'N2')) %>% 
     ggplot(aes(WWTP, `Copies/L WW`, colour = `Concentration method`,  shape = WWTP)) + 
     geom_point() +
@@ -76,7 +78,7 @@ aligned_shape_plt_N2 <- {all_data_input %>%
   format_classic() %>% 
   print()
 
-aligned_shape_plt_recovery <- {all_data_input %>% 
+aligned_shape_plt_recovery <- {data_to_plot %>% 
     ggplot(aes(WWTP, Fraction.recovered, colour = `Concentration method`, shape = WWTP)) + 
     geom_point() + 
     facet_grid(~`Concentration method`) +
@@ -86,7 +88,7 @@ aligned_shape_plt_recovery <- {all_data_input %>%
   print()
 
 
-aligned_shape_plt_pmmov <- {all_data_input %>% 
+aligned_shape_plt_pmmov <- {data_to_plot %>% 
     filter(str_detect(Target, 'pMMoV')) %>% 
     ggplot(aes(WWTP, `Copies/L WW`, colour = `Concentration method`,  shape = WWTP)) + 
     geom_point() +
@@ -98,7 +100,7 @@ aligned_shape_plt_pmmov <- {all_data_input %>%
   print()
 
 
-scatter_N1_recovery <- only_wwtps %>% 
+# scatter_N1_recovery <- only_wwtps %>% 
   
 
 # Plot save ----
@@ -110,9 +112,9 @@ scatter_N1_recovery <- only_wwtps %>%
 # ggsave('qPCR analysis/Methods paper/Methods_paper_Recovery.pdf', plot = plt.recovery, width = 8, height = 4)
 
 # plots-w-shapes
-save_plot <- function(plt.id, plt.name, plt.format = 'pdf', plt.width = 8, plt.height = 4)
+save_plot <- function(plt.id, plt.name, plt.format = 'png', plt.width = 8, plt.height = 4)
 {
-  str_c('qPCR analysis/Methods paper/WWTP by shape/Methods_paper_', plt.id, '-aligned.', plt.format) %>% 
+  str_c('qPCR analysis/Methods paper/Lauren figs/Methods_only_WWTP_', plt.id, '-aligned.', plt.format) %>% 
     ggsave(plot = plt.name, width = plt.width, height = plt.height)
   
 }
