@@ -230,12 +230,11 @@ processed_quant_data <- bind_rows(vol_R, vol_B) %>%
   
   # attach ultrafiltration volumes - to correct UF conc. factor
   left_join(ultrafiltration_volume) %>% 
-  mutate(across(UF_vol_ul, ~ coalesce(.x, 1) )) %>% 
+  mutate(across(UF_vol_ul, ~ coalesce(.x, 1500) )) %>% 
   
   # attach concentration factors for various methods
   left_join(concentration_factors) %>% 
-  mutate(across(concentration.factor, ~ coalesce(.x, 1)), 
-         across(concentration.factor, ~ .x * 1500/UF_vol_ul )) %>% 
+  mutate(across(concentration.factor, ~ .x * 1500/UF_vol_ul )) %>% 
   
   # Calculations for spiked in and recovered copies of the virus
   mutate(`Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e6 / concentration.factor , `Recovery fraction` = Recovered/`Actual spike-in`) %>% 
@@ -301,7 +300,7 @@ presentable_data <- processed_quant_data %>%
   mutate_cond(str_detect(`Target Name`, '^N'), `Recovery fraction` = NA, `Spiked-in Copies/l WW` = NA) %>%
   
   # Selecting column order
-  select(Facility, WWTP, Date, Lab, `Target Name`, `Original Sample Volume`, `Volume Filtered`, Ct, `Copies/ul RNA`, `Copies/l WW`, Sample_ID, Detection_Limit, Sample_Type, `Spiked-in Copies/l WW`, `Recovery fraction`, WWTP_ID, Tube_ID, Comments) %>%
+  select(Facility, WWTP, Date, Lab, `Target Name`, `Original Sample Volume`, `Volume Filtered`, Ct, `Copies/ul RNA`, `Copies/l WW`, Sample_ID, Detection_Limit, Sample_Type, `Spiked-in Copies/l WW`, `Recovery fraction`, WWTP_ID, Tube_ID, Comments, dilution.factor, concentration.factor) %>%
   mutate_at('Target Name', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2'))) %>% 
   mutate_at('Target Name', ~str_remove(., '/Baylor'))
 
