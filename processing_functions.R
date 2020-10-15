@@ -256,8 +256,8 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
 process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none')
 { # Baylor wells : choose 1) none, 2) '.*' for all, 3) '[A-H]([1-9]$|10)' etc. for specific wells 
   
-  template_volume_dpcr <- tibble(Template = c('N1_multiplex', 'N2_multiplex', 'BCoV2'),
-                                 templ_vol = c(10, 10, 4) /22 * 20) # ul template volume per well of the ddPCR reaction
+  template_volume_ddpcr <- tibble(Target = c('N1_multiplex', 'N2_multiplex', 'BCoV2'),
+                                 template_vol = c(10, 10, 4) /22 * 20) # ul template volume per well of the ddPCR reaction
   
   # incorporated in next step # RNA_dilution_factor_BCoV <- 104/5 * 10/5 # 1/RNA dilution factor * 10/Template loaded per 22 ul reaction - for diluted BCoV samples
   
@@ -292,9 +292,9 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none')
     mutate_at('Target', ~str_replace_all(., c('N1' = 'N1_multiplex' , 'N2' = 'N2_multiplex'))) %>% 
     filter(!is.na(Target)) %>% 
     
-    left_join(template_volume_dpcr) %>% # join array of template volume - different for N1,N2 and BCOV2
+    left_join(template_volume_ddpcr) %>% # join array of template volume - different for N1,N2 and BCOV2
     
-    mutate('Copy #' = CopiesPer20uLWell/ template_volume_dpcr) %>%
+    mutate('Copy #' = CopiesPer20uLWell/ template_vol) %>%
     select(`Sample_name`, `Copy #`, Target, everything())
   
   
@@ -326,7 +326,7 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none')
   
   
   # Saving vaccine data into Vaccines sheet in data dump: For easy book keeping
-  vaccine_data <- polished_results %>% filter(str_detect(Sample_name, 'Vaccine')) %>%
+  vaccine_data <- polished_results %>% filter(str_detect(Sample_name, 'Vaccine|Vacboil')) %>%
     mutate('Prepared on' = '',
            Week = str_extract(flnm, '[:digit:]{3,4}') %>% unlist() %>% str_c(collapse = ', '),
            Vaccine_ID = assay_variable, 
