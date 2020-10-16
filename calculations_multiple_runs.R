@@ -260,14 +260,15 @@ if(regular_WWTP_run_output)
 {
   # presentable data for health department
   present_WW_data <- presentable_data %>%
-    filter(WWTP %in% all_WWTP_names) %>%  # retain only WWTP data
+    
     rename('Copies_per_uL' = `Copies/ul RNA`,
            'Copies_Per_Liter_WW' = `Copies/l WW`,
            'Recovery_Rate' = `Recovery fraction`,
            Target_Name = `Target Name`) %>%
     select(-contains('Volume'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID)
   
-  present_only_WW <- present_WW_data %>% filter(!str_detect(Facility, special_samples))
+  present_only_WW <- present_WW_data %>% 
+    filter(WWTP %in% all_WWTP_names) # retain only WWTP data
   
   # Write data if not empty
   if(present_only_WW %>% plyr::empty() %>% !.){
@@ -275,7 +276,7 @@ if(regular_WWTP_run_output)
     write_csv(present_only_WW, path = str_c('excel files/Weekly data to HHD/', title_name, '.csv'), na = '') # output csv file
   }
   
-  present_special_samples <- presentable_data %>% filter(str_detect(Facility, special_samples))
+  present_special_samples <- present_WW_data %>% filter(str_detect(Facility, special_samples))
   
   # Write data if not empty
   if(present_special_samples %>% plyr::empty() %>% !.){
