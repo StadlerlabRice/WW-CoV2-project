@@ -21,7 +21,7 @@ all_data_input <- read_sheet(sheeturls$complete_data, sheet = input_sheet) %>%
          Target = `Target Name`,
          Fraction.recovered = `Recovery fraction`,
          Detection.limit = Detection_Limit,
-         `Copies/L WW` = 'Copies/l WW') %>% # for compatibility with old plotting functions
+         `Copies/L WW` = 'Copies/l WW', `Copies/uL RNA` = 'Copies/ul RNA') %>% # for compatibility with old plotting functions
   mutate(across(WWTP, ~ fct_relevel(.x, 'DI', after = Inf))) %>%  # bringing DI water control to the last position
   filter(!str_detect(Facility, 'Std|0|Vac'))
 
@@ -30,13 +30,24 @@ all_data_input <- read_sheet(sheeturls$complete_data, sheet = input_sheet) %>%
 only_wwtps <- all_data_input %>% 
   filter(!str_detect(WWTP, 'DI|NTC')) # remove negative controls
 
+# Removing direct extraction
+no_direct_only_wwtps <- only_wwtps %>% 
+  filter()
+
+data_to_plot <- only_wwtps
+
 # Summary and long_format ----
 
-# scatter_data_N_reco <- 
+minimal_label_columns <- c('Target', 'WWTP', 'Concentration method')
 
-# 
-# minimal_label_columns <- c('Target', 'WWTP', 'Concentration method')
-# 
+# convert data to wide cormat - for plotting correlation/scatter plot
+scatter_data_N_reco <- only_wwtps %>% 
+  select(all_of(minimal_label_columns), Tube_ID, `Copies/L WW`, Fraction.recovered) %>% 
+  pivot_wider(names_from = Target, values_from = c('Copies/L WW', Fraction.recovered))
+
+wider_copies_data <- data_to_plot %>% 
+  pivot_longer(cols = c(`Copies/uL RNA`, `Copies/L WW`), names_to = 'Copy data', values_to = 'Copies')
+ 
 # # Extract minimal columns from processed data (good for running averages and std deviations for plotting)
 # processed_minimal = list( raw.dat = all_data_input %>% 
 #                             select(all_of(minimal_label_columns), where(is.numeric), -matches('vol')))
@@ -53,8 +64,6 @@ only_wwtps <- all_data_input %>%
 
 
 # Plots w shapes ----
-
-data_to_plot <- only_wwtps
 
 aligned_shape_plt_N1 <- {data_to_plot %>% 
     filter(str_detect(Target, 'N1')) %>% 
@@ -78,6 +87,8 @@ aligned_shape_plt_N2 <- {data_to_plot %>%
   format_classic() %>% 
   print()
 
+
+
 aligned_shape_plt_recovery <- {data_to_plot %>% 
     ggplot(aes(WWTP, Fraction.recovered, colour = `Concentration method`, shape = WWTP)) + 
     geom_point() + 
@@ -100,6 +111,23 @@ aligned_shape_plt_pmmov <- {data_to_plot %>%
   print()
 
 
+plt.scatter_N1_recovery <- {scatter_data_N_reco %>% 
+    # filter(str_detect(Target, 'N2')) %>% 
+    ggplot(aes(`Copies/L WW_SARS CoV-2 N1`, Fraction.recovered_BCoV2, colour = `Concentration method`,  shape = WWTP)) + 
+    geom_point() +
+    ggtitle('SARS-CoV2 N1 vs surrogate recovery fraction across methods') + 
+    scale_shape_manual(values = c(15,16,17,7,8,10,3))} %>% 
+  # format_logscale_y() %>%
+  format_classic() %>% 
+  print()
+
+# correlation plot by method
+plt.method.correlation_scatter_N1_recovery <- plt.scatter_N1_recovery + geom_smooth(method = 'lm', mapping = aes(group = `Concentration method`))
+# correlation plot single
+plt.correlation_scatter_N1_recovery <- plt.scatter_N1_recovery + geom_smooth(method = 'lm', mapping = aes(group = NA))
+
+
+ggplotly(plt.correlation_scatter_N1_recovery, dynamicTicks = T)
 # scatter_N1_recovery <- only_wwtps %>% 
   
 
