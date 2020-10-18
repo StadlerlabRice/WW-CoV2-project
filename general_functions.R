@@ -428,6 +428,46 @@ plot_scatter <- function(.data = processed_quant_data, text_cols = minimal_label
     ggtitle(title_text, subtitle = measure_var)
 }
 
+
+# plotting regression with R square
+
+# use as 
+# facetRegression(mpg, "displ", "hwy", "class")
+
+facetRegression <- function(dat, xvar, yvar, group) {
+  
+  fml <- paste(yvar, "~", xvar)
+  
+  group <- rlang::sym(group)
+  wrap_fml <- rlang::new_formula(rhs = group, lhs = NULL)
+  dot <- rlang::quo(-!!group)
+  
+  dat %>%
+    nest(!!dot) %>%
+    mutate(model = map(data, ~ lm(fml, data = .x)),
+           adj.r.squared = map_dbl(model, ~ signif(summary(.x)$adj.r.squared, 5)),
+           intercept = map_dbl(model, ~ signif(.x$coef[[1]],5)),
+           slope = map_dbl(model, ~ signif(.x$coef[[2]], 5)),
+           pvalue = map_dbl(model, ~ signif(summary(.x)$coef[2,4], 5))
+    ) %>%
+    
+    select(-data, -model) %>%
+    left_join(dat) %>%
+    
+    ggplot(aes_string(xvar, yvar)) +
+    geom_point() +
+    geom_smooth(se = FALSE, method = "lm") +
+    facet_wrap(wrap_fml) +
+    geom_text(aes(3, 40, label = paste("Adj R2 = ", adj.r.squared, "\n",   # position can be automated?
+                                       "Intercept =",intercept, "\n",
+                                       "Slope =", slope, "\n",
+                                       "P =", pvalue)))
+  
+}
+
+
+
+
 # plot formatting ---- 
  
  
