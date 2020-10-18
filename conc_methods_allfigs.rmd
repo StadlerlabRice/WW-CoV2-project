@@ -1,0 +1,140 @@
+---
+title: "Allfigs_without DI,NTC"
+author: "Prashant Kalvapalle"
+date: '`r format(Sys.time(), "%d %B, %Y; %H:%M")`'
+output: 
+  html_document:
+    theme: flatly
+    toc: TRUE
+    toc_float: TRUE
+---
+
+
+```{r setup, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 12, fig.height = 4)
+
+```
+
+## Individual plots by method 
+
+### Copies/L WW 
+
+#### Copies ww/N1 by method
+```{r indn1}
+plt_N1 <- individual_plots(target_string = 'N1')
+save_plot('N1', plt_N1)
+```
+### Copies ww/N2 by method
+```{r indn2}
+plt_N2 <- individual_plots(target_string = 'N2')
+save_plot('N2', plt_N2)
+```
+
+#### Copies ww/pMMoV by method
+```{r indpMMoV}
+plt_pMMoV <- individual_plots(target_string = 'pMMoV')
+save_plot('pMMoV', plt_pMMoV)
+```
+
+#### Copies ww/BCoV by method
+```{r indBCoV}
+plt_BCoV <- individual_plots(target_string = 'BCoV')
+save_plot('BCoV', plt_BCoV)
+```
+
+--------------------------------------------------------------------------------------
+### Copies/uL RNA
+
+#### Copies RNA/N1 by method
+```{r indN1_rna}
+plt_N1_RNA <- individual_plots(target_string = 'N1', y_var = `Copies/uL RNA`)
+save_plot('N1', plt_N1_RNA, 'Copies RNA')
+```
+
+#### Copies RNA/N2 by method
+```{r indN2_rna}
+plt_N2_RNA <- individual_plots(target_string = 'N2', y_var = `Copies/uL RNA`)
+save_plot('N2', plt_N2_RNA, 'Copies RNA')
+```
+
+
+#### Copies RNA/pMMoV by method
+```{r indpmmov_rna}
+plt_pMMoV_RNA <- individual_plots(target_string = 'pMMoV', y_var = `Copies/uL RNA`)
+save_plot('pMMoV', plt_pMMoV_RNA, 'Copies RNA')
+```
+
+
+#### Copies RNA/BCoV by method
+```{r indBCoV_rna}
+plt_BCoV_RNA <- individual_plots(target_string = 'BCoV', y_var = `Copies/uL RNA`)
+save_plot('BCoV', plt_BCoV_RNA, 'Copies RNA')
+```
+
+## Correlation plots
+
+```{r scatter1, echo=FALSE}
+
+plt.scatter_N1_recovery <- {scatter_data_N_reco %>% 
+    # filter(str_detect(Target, 'N2')) %>% 
+    ggplot(aes(`Copies/L WW_SARS CoV-2 N1`, Fraction.recovered_BCoV2, colour = `Concentration method`,  shape = WWTP)) + 
+    geom_point() +
+    ggtitle('SARS-CoV2 N1 vs surrogate recovery fraction across methods') + 
+    scale_shape_manual(values = c(15,16,17,7,8,10,3))} %>% 
+  # format_logscale_y() %>%
+  format_classic() %>% 
+  print()
+
+# correlation plot by method
+plt.method.correlation_scatter_N1_recovery <- {plt.scatter_N1_recovery + geom_smooth(method = 'lm', mapping = aes(group = `Concentration method`))} %>% 
+  print()
+
+# correlation plot single
+plt.correlation_scatter_N1_recovery <-{ plt.scatter_N1_recovery + geom_smooth(method = 'lm', mapping = aes(group = NA))} %>% 
+  print()
+
+# correlation plot by WWTP
+plt.bywwtp_N1_recovery <- {scatter_data_N_reco %>% 
+    # filter(str_detect(Target, 'N2')) %>% 
+    ggplot(aes(`Copies/L WW_SARS CoV-2 N1`, Fraction.recovered_BCoV2, shape = `Concentration method`,  colour = WWTP)) + 
+    geom_point() +
+    geom_smooth(method = 'lm', mapping = aes(group = WWTP)) +
+    ggtitle('SARS-CoV2 N1 vs surrogate recovery fraction across methods') #+ 
+    # scale_shape_manual(values = c(15,16,17,7,8,10,3))
+  } %>%
+  # format_logscale_y() %>%
+  format_classic() %>% 
+  print()
+
+
+save_plot('cor_all', plt.correlation_scatter_N1_recovery, 'Correlation')
+save_plot('cor_method', plt.method.correlation_scatter_N1_recovery, 'Correlation')
+save_plot('cor_wwtp', plt.bywwtp_N1_recovery, 'Correlation')
+
+```
+
+#### Interactive plot
+
+Correlation across all data
+```{r interactcor} 
+ggplotly(plt.correlation_scatter_N1_recovery, dynamicTicks = T)
+# scatter_N1_recovery <- only_wwtps %>% 
+
+ggplotly(plt.method.correlation_scatter_N1_recovery, dynamicTicks = T)
+
+
+```
+
+Correlation across methods
+```{r interactcor2} 
+ggplotly(plt.method.correlation_scatter_N1_recovery, dynamicTicks = T)
+
+```
+
+Correlation across wwtp
+```{r interactcor3} 
+ggplotly(plt.bywwtp_N1_recovery, dynamicTicks = T)
+
+```
+

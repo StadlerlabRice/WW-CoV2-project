@@ -9,7 +9,18 @@ input_sheet <- 'Concentration methods paper-2'
 #                   '^e.*' = 'Elution',
 #                   'uf.*' = 'Ultrafiltration',
 #                   'de.*' = 'Direct Extraction') 
-  
+
+# Naming scheme for plot titles
+title_namer <- c('N1' = 'SARS-CoV2 N1 across methods',
+                 'N2' = 'SARS-CoV2 N2 across methods',
+                 'BCoV' = 'Surrogate recovery across methods',
+                 'pMMoV' = 'Internal control: Pepper-mild-mottle virus across methods')  
+
+# naming scheme for plot y axis labels
+y_axis_namer <- c('Copies/L WW' = 'Genome copies/L wastewater',
+                  'Copies/uL RNA' = 'Genome copies/uL RNA extract',
+                  'Fraction.recovered' = 'Fraction of surrogate virus recovered')
+
 # Loading libraries, functions and user inputs
 source('./general_functions.R') # Source the general_functions file
 
@@ -62,76 +73,95 @@ wider_copies_data <- data_to_plot %>%
 # long_processed_minimal$summ.dat %<>% separate(Measurement, into = c('Measurement','val'),"_") %>% 
 #   pivot_wider(names_from = val, values_from = value) # Seperate mean and variance and group by variable of measurement
 
+# Plotting functions ----
+
+individual_plots <- function(.data_to_plot = data_to_plot, target_string = 'N1', y_var = `Copies/L WW`, plt.log = 'Y')
+{ 
+  plt.title <- str_replace_all(target_string, title_namer)
+  plt.y_label <- substitute(y_var) %>% paste() %>% 
+    str_replace_all(y_axis_namer)
+  
+  {.data_to_plot %>% 
+      filter(str_detect(Target, target_string)) %>% 
+      ggplot(aes(WWTP, {{y_var}}, colour = `Concentration method`,  shape = WWTP)) + 
+      geom_point() + 
+      facet_grid(~`Concentration method`) +
+      ylab(plt.y_label) + ggtitle(plt.title) + 
+      scale_shape_manual(values = c(15,16,17,7,8,10,3))} %>% 
+    
+    {if(plt.log == 'Y') format_logscale_y(.)} %>%
+    
+    format_classic() %>% 
+    print()
+}
+
+
+# Plot save function ----
+
+save_plot <- function(plt.id, plt.name, sv.folder = 'Copies ww', plt.format = 'pdf', plt.width = 8, plt.height = 4)
+{
+  str_c('qPCR analysis/Methods paper/', sv.folder,  '/', plt.id, '.', plt.format) %>% 
+    ggsave(plot = plt.name, width = plt.width, height = plt.height)
+  
+}
+
+# quick function for vectorization of making plots and saving
+# leave it alone for now
 
 # Plots w shapes ----
 
-aligned_shape_plt_N1 <- {data_to_plot %>% 
-    filter(str_detect(Target, 'N1')) %>% 
-    ggplot(aes(WWTP, `Copies/L WW`, colour = `Concentration method`,  shape = WWTP)) + 
-    geom_point() + 
-    facet_grid(~`Concentration method`) +
-    ylab('Genome copies/L wastewater') + ggtitle('SARS-CoV2 N1 across methods') + 
-    scale_shape_manual(values = c(15,16,17,7,8,10,3))} %>% 
-  format_logscale_y() %>%
-  format_classic() %>% 
-  print()
-
-aligned_shape_plt_N2 <- {data_to_plot %>% 
-    filter(str_detect(Target, 'N2')) %>% 
-    ggplot(aes(WWTP, `Copies/L WW`, colour = `Concentration method`,  shape = WWTP)) + 
-    geom_point() +
-    facet_grid(~`Concentration method`) +
-    ylab('Genome copies/L wastewater') + ggtitle('SARS-CoV2 N2 across methods') + 
-    scale_shape_manual(values = c(15,16,17,7,8,10,3))} %>% 
-  format_logscale_y() %>%
-  format_classic() %>% 
-  print()
+rmarkdown::render('conc_methods_allfigs.rmd', 
+                  output_file = str_c('./qPCR analysis/Methods paper/', 'all_figs_without DI,NTC' , '.html'))
 
 
+# plt_N1 <- {data_to_plot %>% 
+#     filter(str_detect(Target, 'N1')) %>% 
+#     ggplot(aes(WWTP, `Copies/L WW`, colour = `Concentration method`,  shape = WWTP)) + 
+#     geom_point() + 
+#     facet_grid(~`Concentration method`) +
+#     ylab('Genome copies/L wastewater') + ggtitle('SARS-CoV2 N1 across methods') + 
+#     scale_shape_manual(values = c(15,16,17,7,8,10,3))} %>% 
+#   format_logscale_y() %>%
+#   format_classic() %>% 
+#   print()
+# 
+# plt_N2 <- {data_to_plot %>% 
+#     filter(str_detect(Target, 'N2')) %>% 
+#     ggplot(aes(WWTP, `Copies/L WW`, colour = `Concentration method`,  shape = WWTP)) + 
+#     geom_point() +
+#     facet_grid(~`Concentration method`) +
+#     ylab('Genome copies/L wastewater') + ggtitle('SARS-CoV2 N2 across methods') + 
+#     scale_shape_manual(values = c(15,16,17,7,8,10,3))} %>% 
+#   format_logscale_y() %>%
+#   format_classic() %>% 
+#   print()
+# 
+# 
+# 
+# plt_recovery <- {data_to_plot %>% 
+#     ggplot(aes(WWTP, Fraction.recovered, colour = `Concentration method`, shape = WWTP)) + 
+#     geom_point() + 
+#     facet_grid(~`Concentration method`) +
+#     ylab('Fraction of surrogate virus recovered') + ggtitle('Surrogate recovery across methods') +
+#   scale_shape_manual(values = c(15,16,17,7,8,10,3))} %>% 
+#   format_classic(.) %>% 
+#   print()
+# 
+# 
+# plt_pmmov <- {data_to_plot %>% 
+#     filter(str_detect(Target, 'pMMoV')) %>% 
+#     ggplot(aes(WWTP, `Copies/L WW`, colour = `Concentration method`,  shape = WWTP)) + 
+#     geom_point() +
+#     facet_grid(~`Concentration method`) +
+#     ylab('Genome copies/L wastewater') + ggtitle('Internal control: Pepper-mild-mottle virus across methods') + 
+#     scale_shape_manual(values = c(15,16,17,7,8,10,3))} %>% 
+#   format_logscale_y() %>%
+#   format_classic() %>% 
+#   print()
 
-aligned_shape_plt_recovery <- {data_to_plot %>% 
-    ggplot(aes(WWTP, Fraction.recovered, colour = `Concentration method`, shape = WWTP)) + 
-    geom_point() + 
-    facet_grid(~`Concentration method`) +
-    ylab('Fraction of surrogate virus recovered') + ggtitle('Surrogate recovery across methods') +
-  scale_shape_manual(values = c(15,16,17,7,8,10,3))} %>% 
-  format_classic(.) %>% 
-  print()
 
 
-aligned_shape_plt_pmmov <- {data_to_plot %>% 
-    filter(str_detect(Target, 'pMMoV')) %>% 
-    ggplot(aes(WWTP, `Copies/L WW`, colour = `Concentration method`,  shape = WWTP)) + 
-    geom_point() +
-    facet_grid(~`Concentration method`) +
-    ylab('Genome copies/L wastewater') + ggtitle('Internal control: Pepper-mild-mottle virus across methods') + 
-    scale_shape_manual(values = c(15,16,17,7,8,10,3))} %>% 
-  format_logscale_y() %>%
-  format_classic() %>% 
-  print()
 
-
-plt.scatter_N1_recovery <- {scatter_data_N_reco %>% 
-    # filter(str_detect(Target, 'N2')) %>% 
-    ggplot(aes(`Copies/L WW_SARS CoV-2 N1`, Fraction.recovered_BCoV2, colour = `Concentration method`,  shape = WWTP)) + 
-    geom_point() +
-    ggtitle('SARS-CoV2 N1 vs surrogate recovery fraction across methods') + 
-    scale_shape_manual(values = c(15,16,17,7,8,10,3))} %>% 
-  # format_logscale_y() %>%
-  format_classic() %>% 
-  print()
-
-# correlation plot by method
-plt.method.correlation_scatter_N1_recovery <- plt.scatter_N1_recovery + geom_smooth(method = 'lm', mapping = aes(group = `Concentration method`))
-# correlation plot single
-plt.correlation_scatter_N1_recovery <- plt.scatter_N1_recovery + geom_smooth(method = 'lm', mapping = aes(group = NA))
-
-
-ggplotly(plt.correlation_scatter_N1_recovery, dynamicTicks = T)
-# scatter_N1_recovery <- only_wwtps %>% 
-  
-
-# Plot save ----
 # (optional)
 
 # plots-w-jitter
@@ -140,18 +170,11 @@ ggplotly(plt.correlation_scatter_N1_recovery, dynamicTicks = T)
 # ggsave('qPCR analysis/Methods paper/Methods_paper_Recovery.pdf', plot = plt.recovery, width = 8, height = 4)
 
 # plots-w-shapes
-save_plot <- function(plt.id, plt.name, plt.format = 'png', plt.width = 8, plt.height = 4)
-{
-  str_c('qPCR analysis/Methods paper/Lauren figs/Methods_only_WWTP_', plt.id, '-aligned.', plt.format) %>% 
-    ggsave(plot = plt.name, width = plt.width, height = plt.height)
-  
-}
+# save_plot('N1', plt_N1)
+# save_plot('N2', plt_N2)
+# save_plot('Recovery', plt_recovery)
+# save_plot('pepper virus', plt_pmmov)
 
-save_plot('N1', aligned_shape_plt_N1)
-save_plot('N2', aligned_shape_plt_N2)
-save_plot('Recovery', aligned_shape_plt_recovery)
-save_plot('pepper virus', aligned_shape_plt_pmmov)
-
-# ggsave('qPCR analysis/Methods paper/WWTP by shape/Methods_paper_Recovery.N1-aligned.pdf', plot = aligned_shape_plt_N1, width = 8, height = 4)
-# ggsave('qPCR analysis/Methods paper/WWTP by shape/Methods_paper_Recovery.N2-aligned.pdf', plot = aligned_shape_plt_N2, width = 8, height = 4)
-# ggsave('qPCR analysis/Methods paper/WWTP by shape/Methods_paper_Recovery.Recovery-aligned.pdf', plot = aligned_shape_plt_recovery, width = 8, height = 4)
+# ggsave('qPCR analysis/Methods paper/WWTP by shape/Methods_paper_Recovery.N1-aligned.pdf', plot = plt_N1, width = 8, height = 4)
+# ggsave('qPCR analysis/Methods paper/WWTP by shape/Methods_paper_Recovery.N2-aligned.pdf', plot = plt_N2, width = 8, height = 4)
+# ggsave('qPCR analysis/Methods paper/WWTP by shape/Methods_paper_Recovery.Recovery-aligned.pdf', plot = plt_recovery, width = 8, height = 4)
