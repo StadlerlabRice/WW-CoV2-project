@@ -81,13 +81,26 @@ individual_plots <- function(.data_to_plot = data_to_plot, target_string = 'N1',
   plt.y_label <- substitute(y_var) %>% paste() %>% 
     str_replace_all(y_axis_namer)
   
+  LOD <- 0.735 # place holder LOD for ddPCR in copies/ul RNA
+  if(str_detect(plt.y_label, 'Recovery') | str_detect(target_string, 'pMMoV')) plt.LOD <- 'no' 
+  else plt.LOD <- 'yes'
+  
   {.data_to_plot %>% 
       filter(str_detect(Target, target_string)) %>% 
       ggplot(aes(WWTP, {{y_var}}, colour = `Concentration method`,  shape = WWTP)) + 
       geom_point() + 
       facet_grid(~`Concentration method`) +
       ylab(plt.y_label) + ggtitle(plt.title) + 
-      scale_shape_manual(values = c(15,16,17,7,8,10,3))} %>% 
+      scale_shape_manual(values = c(15,16,17,7,8,10,3)) +
+      
+      {if(plt.LOD == 'yes') 
+        {annotate(geom = 'rect', xmin = -Inf, xmax = +Inf, ymin = -Inf, ymax = LOD) + 
+            geom_hline(yintercept = LOD) + 
+            annotate(geom = 'text', x = Inf, y = LOD)
+        }
+      } 
+    
+  } %>% 
     
     {if(plt.log == 'Y') format_logscale_y(.)} %>%
     
