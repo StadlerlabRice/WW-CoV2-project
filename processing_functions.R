@@ -144,7 +144,7 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
   
   # Data polishing ----
   
-  
+
   # Separate the sample name into columns and make factors in the right order for plotting (same order as the plate setup)
   
   # isolate the primer pair and assay_variable into 3 columns : Sample name, assay variable and primer pair 
@@ -179,7 +179,17 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
   
   summary_results <- results_abs %>%  group_by(`Sample_name`, Target, assay_variable) %>% summarise_at(vars(`Copy #`), lst(mean, sd), na.rm = T) # find mean and SD of individual copy #s for each replicate
   results_abs$`Copy #` %<>% replace_na(0) # make unamplified values 0 for plotting
+
+  # Ad-hoc data manipulation ----
+  # - for RNA sample dilution etc.
   
+  # results_abs %<>% 
+  #   mutate_cond(str_detect(`Well Position`, 
+  #                          '[A-H][1-5]'), # Regex of wells to manipulate
+  #               across(`Copy #`, ~ . * 100) # dilution factor
+  #   )
+  
+    
   plt <- results_abs %>% ggplot(aes(x = `Tube ID`, y = `Copy #`, color = Target)) + ylab('Copies/ul RNA extract') +    # Specify the plotting variables 
     geom_point(size = 2) + facet_grid(~`Sample_name`, scales = 'free_x', space = 'free_x') + # plot points and facetting
     ggtitle(flnm) + xlab(plot_assay_variable)
