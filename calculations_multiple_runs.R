@@ -237,7 +237,10 @@ processed_quant_data <- bind_rows(vol_R, vol_B) %>%
   mutate(across(concentration.factor, ~ .x * 1500/UF_vol_ul )) %>% 
   
   # Calculations for spiked in and recovered copies of the virus
-  mutate(`Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e6 / concentration.factor , `Recovery fraction` = Recovered/`Actual spike-in`) %>% 
+  mutate(`Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), 
+         Recovered = `Copy #` * 1e6 / concentration.factor , 
+         `Recovery fraction` = Recovered/`Actual spike-in`) %>% 
+  
   # mutate_cond(str_detect(Sample_name, 'Vaccine'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (.050 * 1e-3), Recovered = `Copy #` * 1e6 * 50/20, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
   mutate_cond(str_detect(Target, 'Baylor'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e6 /30, `Recovery fraction` = Recovered/`Actual spike-in`) %>% 
   select(-spike_virus_conc) %>% 

@@ -58,6 +58,7 @@ scatter_data_N_reco <- only_wwtps %>%
 
 wider_copies_data <- data_to_plot %>% 
   pivot_longer(cols = c(`Copies/uL RNA`, `Copies/L WW`), names_to = 'Copy data', values_to = 'Copies')
+
  
 # # Extract minimal columns from processed data (good for running averages and std deviations for plotting)
 # processed_minimal = list( raw.dat = all_data_input %>% 
@@ -75,29 +76,29 @@ wider_copies_data <- data_to_plot %>%
 
 # Plotting functions ----
 
-individual_plots <- function(.data_to_plot = data_to_plot, target_string = 'N1', y_var = `Copies/L WW`, plt.log = 'Y')
+individual_plots <- function(.data_to_plot = data_to_plot, target_string = 'N1', y_var = `Copies/L WW`, plt.log = 'Y', facet.formula = as.formula(~`Concentration method`), plt.LOD = 'no')
 { 
   plt.title <- str_replace_all(target_string, title_namer)
   plt.y_label <- substitute(y_var) %>% paste() %>% 
     str_replace_all(y_axis_namer)
   
   LOD <- 0.735 # place holder LOD for ddPCR in copies/ul RNA
-  if(str_detect(plt.y_label, 'Recovery') | str_detect(target_string, 'pMMoV')) plt.LOD <- 'no' 
-  else plt.LOD <- 'yes'
-  
+  # if(str_detect(plt.y_label, 'Recovery') | str_detect(target_string, 'pMMoV')) plt.LOD <- 'no' 
+  # else plt.LOD <- 'yes' # LOD is hardcoded in function call for now
+ 
   {.data_to_plot %>% 
       filter(str_detect(Target, target_string)) %>% 
       ggplot(aes(WWTP, {{y_var}}, colour = `Concentration method`,  shape = WWTP)) + 
       geom_point() + 
-      facet_grid(~`Concentration method`) +
+      facet_grid(facet.formula) +
       ylab(plt.y_label) + ggtitle(plt.title) + 
       scale_shape_manual(values = c(15,16,17,7,8,10,3)) +
       
       {if(plt.LOD == 'yes') 
-        {annotate(geom = 'rect', xmin = -Inf, xmax = +Inf, ymin = -Inf, ymax = LOD) + 
-            geom_hline(yintercept = LOD) + 
-            annotate(geom = 'text', x = Inf, y = LOD)
-        }
+        list(annotate(geom = 'rect', xmin = -Inf, xmax = +Inf, ymin = -Inf, ymax = LOD, alpha = .3),
+            geom_hline(yintercept = LOD)#,
+            # annotate(geom = 'text', x = Inf, y = LOD, label = 'Limit of detection')
+            )
       } 
     
   } %>% 
@@ -127,67 +128,28 @@ rmarkdown::render('conc_methods_allfigs.rmd',
                   output_file = str_c('./qPCR analysis/Methods paper/', 'all_figs_without DI,NTC' , '.html'))
 
 
-# plt_N1 <- {data_to_plot %>% 
-#     filter(str_detect(Target, 'N1')) %>% 
-#     ggplot(aes(WWTP, `Copies/L WW`, colour = `Concentration method`,  shape = WWTP)) + 
-#     geom_point() + 
-#     facet_grid(~`Concentration method`) +
-#     ylab('Genome copies/L wastewater') + ggtitle('SARS-CoV2 N1 across methods') + 
-#     scale_shape_manual(values = c(15,16,17,7,8,10,3))} %>% 
-#   format_logscale_y() %>%
-#   format_classic() %>% 
-#   print()
-# 
-# plt_N2 <- {data_to_plot %>% 
-#     filter(str_detect(Target, 'N2')) %>% 
-#     ggplot(aes(WWTP, `Copies/L WW`, colour = `Concentration method`,  shape = WWTP)) + 
-#     geom_point() +
-#     facet_grid(~`Concentration method`) +
-#     ylab('Genome copies/L wastewater') + ggtitle('SARS-CoV2 N2 across methods') + 
-#     scale_shape_manual(values = c(15,16,17,7,8,10,3))} %>% 
-#   format_logscale_y() %>%
-#   format_classic() %>% 
-#   print()
-# 
-# 
-# 
-# plt_recovery <- {data_to_plot %>% 
-#     ggplot(aes(WWTP, Fraction.recovered, colour = `Concentration method`, shape = WWTP)) + 
-#     geom_point() + 
-#     facet_grid(~`Concentration method`) +
-#     ylab('Fraction of surrogate virus recovered') + ggtitle('Surrogate recovery across methods') +
-#   scale_shape_manual(values = c(15,16,17,7,8,10,3))} %>% 
-#   format_classic(.) %>% 
-#   print()
-# 
-# 
-# plt_pmmov <- {data_to_plot %>% 
-#     filter(str_detect(Target, 'pMMoV')) %>% 
-#     ggplot(aes(WWTP, `Copies/L WW`, colour = `Concentration method`,  shape = WWTP)) + 
-#     geom_point() +
-#     facet_grid(~`Concentration method`) +
-#     ylab('Genome copies/L wastewater') + ggtitle('Internal control: Pepper-mild-mottle virus across methods') + 
-#     scale_shape_manual(values = c(15,16,17,7,8,10,3))} %>% 
-#   format_logscale_y() %>%
-#   format_classic() %>% 
-#   print()
+# Faceted plots with LOD ----
 
+individual_plots(wider_copies_data %>% 
+                   filter(str_detect(Target, 'SARS'), str_detect(`Copy data`, 'RNA')),
+                 target_string = '.*', y_var = Copies, facet.formula = as.formula(Target ~ `Concentration method`), plt.LOD = 'yes')  
+  # facet_grid(`Copy data` ~ Target, scales = 'free')
 
+plt.LOD = 'yes'
 
-
-# (optional)
-
-# plots-w-jitter
-# ggsave('qPCR analysis/Methods paper/Methods_paper_N1.pdf', plot = plt.N1, width = 8, height = 4)
-# ggsave('qPCR analysis/Methods paper/Methods_paper_N2.pdf', plot = plt.N2, width = 8, height = 4)
-# ggsave('qPCR analysis/Methods paper/Methods_paper_Recovery.pdf', plot = plt.recovery, width = 8, height = 4)
-
-# plots-w-shapes
-# save_plot('N1', plt_N1)
-# save_plot('N2', plt_N2)
-# save_plot('Recovery', plt_recovery)
-# save_plot('pepper virus', plt_pmmov)
-
-# ggsave('qPCR analysis/Methods paper/WWTP by shape/Methods_paper_Recovery.N1-aligned.pdf', plot = plt_N1, width = 8, height = 4)
-# ggsave('qPCR analysis/Methods paper/WWTP by shape/Methods_paper_Recovery.N2-aligned.pdf', plot = plt_N2, width = 8, height = 4)
-# ggsave('qPCR analysis/Methods paper/WWTP by shape/Methods_paper_Recovery.Recovery-aligned.pdf', plot = plt_recovery, width = 8, height = 4)
+data_to_plot %>% 
+  filter(str_detect(Target, 'SARS')) %>% 
+  
+{ggplot(., aes(WWTP, `Copies/uL RNA`, colour = `Concentration method`, shape = WWTP)) + 
+  geom_point() + 
+  facet_grid(Target ~ `Concentration method`, scale = 'free_x') + 
+    ylab(plt.y_label) + ggtitle(plt.title) + 
+    scale_shape_manual(values = c(15,16,17,7,8,10,3)) +
+    
+    {if(plt.LOD == 'yes') 
+     {annotate(geom = 'rect', xmin = -Inf, xmax = +Inf, ymin = -Inf, ymax = LOD) + 
+        geom_hline(yintercept = LOD) + 
+        annotate(geom = 'text', x = Inf, y = LOD)
+      }
+    } 
+}
