@@ -5,20 +5,21 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW38_915_N1N2',
-                        'WW71_915_BCoV_Std52',
-                        'WW72_915, boilquant, WWboil_BCoV_Std53')
+read_these_sheets <- c( 'dd.WW46_Bellaire daily part1-N1N2',
+                        'dd.WW56_Bellaire daily part2, Zachs old_N1N2',
+                        'WW83_Bellaire daily part2, Zach old samples repeat_BCoV_Std62',
+                        'WW87_Bellaire daily samples-1_BCoV_Std66')
 
-title_name <- '915 Rice'
+title_name <- 'Bellaire daily and others'
 
 # Biobot_id sheet
-bb_sheets <- c('Week 23 (9/15)')
+bb_sheets <- c('Week 27 (10/12)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|Control|e811|Acetone' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
 special_samples = 'HCJ|SOH|ODM|AO' # putting special samples in a separate sheet
 
-regular_WWTP_run_output <- TRUE # make TRUE of you want to output the WWTP only data and special samples sheets 
+regular_WWTP_run_output <- FALSE # make TRUE of you want to output the WWTP only data and special samples sheets 
       # (make FALSE for controls, testing etc. where only "complete data" sheet is output)
 
 # rarely changed parameters
@@ -66,7 +67,7 @@ raw_quant_data <- bind_rows(list_raw_quant_data) %>%
 biobot_lookup <- map_df(bb_sheets, 
                         ~ read_sheet(sheeturls$biobot_id , sheet = .x) %>% 
                           rename('Biobot_id' = matches('Biobot|Comments|Sample ID', ignore.case = T), 'WWTP' = contains('SYMBOL', ignore.case = T), 'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T)) %>% 
-                          mutate('Biobot_id' = str_remove(`Biobot_id`,'\\.'), WWTP = as.character(WWTP)) %>% 
+                          mutate('Biobot_id' = str_remove(`Biobot_id`,'\\.| '), WWTP = as.character(WWTP)) %>% 
                           select(`Biobot_id`, `FACILITY NAME`, WWTP)
 )
 
@@ -210,12 +211,12 @@ presentable_data <- processed_quant_data %>%
   rename('Volume Filtered' = vol_extracted) %>% 
   
   # Adding new variables, modifying existing variables
-  mutate(Date = title_name %>% str_extract('[:digit:]{3}') %>% str_replace('([:digit:])([:digit:]{2})', '\\1/\\2/20') , 
+  mutate(Date = title_name %>% str_extract('[:digit:]{3,4}') %>% str_replace('([:digit:]+)([:digit:]{2})', '\\1/\\2/20') , 
          Lab = if_else(str_detect(`Target Name`, 'Baylor'), 'B', 'R'),
          Detection_Limit = if_else(str_detect(`Target Name`, 'N1|N2'), 330, 
                                    if_else(str_detect(`Target Name`, 'Baylor'), 23500, 705) 
                                    ) ,
-         Sample_Type = NA, Comments = NA) %>% 
+         Sample_Type = 'Composite', Comments = NA) %>% 
   mutate_at(c('Sample_name', 'original_sample_name'), ~as.character(.)) %>%
   mutate_at('Facility', ~if_else(. == assay_variable, str_c(original_sample_name, '/', assay_variable), .)) %>%
   mutate(Tube_ID = if_else(biological_replicates == ''|is.na(biological_replicates), str_c(original_sample_name, ' ', assay_variable), str_c(original_sample_name, ' ', assay_variable, '', biological_replicates)) ,
@@ -234,6 +235,24 @@ presentable_data <- processed_quant_data %>%
   mutate_at('Target Name', ~str_remove(., '/Baylor'))
 
 
+# Missing value check - Brings user attention to missing values in the sample registry
+
+# work in progress - this is not where -Inf shoud be checked for since this has all data from begining of time
+if(map(presentable_data, ~ -Inf %in% .x) %>% any())
+  
+  {missing_values_sample_registry <- presentable_data %>% filter_if(is.numeric, any_vars( . < 0))
+  View(missing_values_sample_registry)
+  proceed_with_errors_key <- menu(c('Yes', 'No'), title = 'Missing values identified in the sample registry,
+check the data output in the console and choose if you wish to continue processing data')
+
+  if(proceed_with_errors_key == 2) stop("Cancel selected, script aborted.")
+  if(proceed_with_errors_key == 1) 
+    { print('Missing values are being converted to NaNs to avoid error in writing data')
+    presentable_data %<>% mutate(across(where(is.numeric),  ~ if_else(.x == -Inf, NaN, .x)))
+  }
+}
+
+
 # Output data - including controls
 check_ok_and_write(presentable_data %>% select(-Sample_ID), sheeturls$complete_data, title_name) # save results to a google sheet, ask for overwrite
 
@@ -242,26 +261,28 @@ if(regular_WWTP_run_output)
 {
   # presentable data for health department
   present_WW_data <- presentable_data %>%
-    filter(WWTP %in% all_WWTP_names) %>%  # retain only WWTP data
+    
     rename('Copies_per_uL' = `Copies/ul RNA`,
            'Copies_Per_Liter_WW' = `Copies/l WW`,
            'Recovery_Rate' = `Recovery fraction`,
-           Target_Name = `Target Name`,
-           Facility_ID = WWTP) %>%
+           Target_Name = `Target Name`) %>%
     select(-contains('Volume'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID)
   
-  present_only_WW <- present_WW_data %>% filter(!str_detect(Facility, special_samples))
+  present_only_WW <- present_WW_data %>% 
+    filter(WWTP %in% all_WWTP_names) # retain only WWTP data
   
   # Write data if not empty
   if(present_only_WW %>% plyr::empty() %>% !.){
     check_ok_and_write(present_only_WW, sheeturls$wwtp_only_data, title_name) # save results to a google sheet, ask for overwrite
+    write_csv(present_only_WW, path = str_c('excel files/Weekly data to HHD/', title_name, '.csv'), na = '') # output csv file
   }
   
-  present_special_samples <- presentable_data %>% filter(str_detect(Facility, special_samples))
+  present_special_samples <- present_WW_data %>% filter(str_detect(Facility, special_samples))
   
   # Write data if not empty
   if(present_special_samples %>% plyr::empty() %>% !.){
     check_ok_and_write(present_special_samples, sheeturls$wwtp_only_data, str_c(title_name, ' special samples')) # save results to a google sheet, ask for overwrite
+    write_csv(present_special_samples, path = str_c('excel files/Weekly data to HHD/', title_name, ' manhole samples.csv'), na = '') # output CSV file
   }
 }
 

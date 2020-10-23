@@ -155,6 +155,9 @@ get_template_for <- function(bait, sheet_url = sheeturls$templates)
     which() + 1
   range_to_get <- str_c('B', m_row + 1, ':N', m_row + 9)
   
+  # Eror message and terminate if plate ID is not unique
+  if(length(m_row) > 1) stop( str_c('Plate ID of :', bait, 'repeats in', paste0(m_row, collapse = ' & '), 'row numbers. Please fix and re-run the script', sep = ' '))
+  
   # read the template corresponding to the file name
   plate_template_raw <- read_sheet(sheet_url, sheet = 'Plate layouts', range = range_to_get)
   
@@ -168,12 +171,12 @@ harmonize_week <- function(week_cols)
 {
   
   # Pick numeric entries in column (the rest will be restored as is)
-  num_week <- week_cols %>% str_extract('[:digit:]{3}') %>%  as.numeric() %>% unique() %>% .[!is.na(.)]
+  num_week <- week_cols %>% str_extract('[:digit:]{3,4}') %>%  as.numeric() %>% unique() %>% .[!is.na(.)]
   
   # Check for consecutive dates
   repl_week <- num_week %>% 
     str_c() %>% 
-    str_replace('([:digit:])([:digit:]{2})', '\\1/\\2/20') %>% 
+    str_replace('([:digit:]+)([:digit:]{2})', '\\1/\\2/20') %>% 
     mdy() %>%  # convert to dates
     map_dbl(., function(x) num_week[. %in% c(x, x-1)] %>% min()) %>% # make the min entry of consecutive dates
     as.character() %>% 

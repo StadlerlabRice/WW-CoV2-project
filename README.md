@@ -19,7 +19,7 @@ Takes excel file output from qPCR and ddPCR, attaches the sample names and makes
 3. Sample naming in the '*calculations (lab notebook)/Plate layouts*' google sheet
     a. Make sure the WWx or dd.WWx ID matches the ID in the name of the data file
     b. Set sample names using the automatic labeller to the right side of the plate in this format
-	**Target_Sample category-tube name.replicate number**
+	**Target-Sample category_tube name.replicate number**
 	Example: *BCoV-Vaccine_S32.2* or *N1N2-908_W.1*
 	
 #### Quantstudio
@@ -44,7 +44,6 @@ a. Check that the DI water sample has a unique name and doesn't match with previ
 
 #### Other metadata sheets
 1. Biobot_ID should be updated with the biobot id vs the WWTP name table for each week's samples
-2. 
 
 #### Rstudio
 1. Open the Rproject file **qPCR** in Rstudio - this will load from the current directory (all subpaths are relative to this) 

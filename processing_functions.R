@@ -226,7 +226,7 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
   # Saving vaccine data into Vaccines sheet in data dump: For easy book keeping
   vaccine_data <- results_abs %>% filter(str_detect(Sample_name, 'Vaccine')) %>%
     mutate('Prepared on' = '',
-           Week = str_extract(flnm, '[:digit:]{3}') %>% unlist() %>% str_c(collapse = ', '),
+           Week = str_extract(flnm, '[:digit:]{3,4}') %>% unlist() %>% str_c(collapse = ', '),
            Vaccine_ID = assay_variable, 
            .before = 1) %>% 
     mutate(Run_ID = str_extract(flnm, 'WW[:digit:]*'))
@@ -253,13 +253,15 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
 
 
 # ddPCR processing: Attach sample labels from template table, calculate copies/ul using template volume/reaction, make names similar to qPCR data 
-process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none')
+process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilution_wells = 'none')
 { # Baylor wells : choose 1) none, 2) '.*' for all, 3) '[A-H]([1-9]$|10)' etc. for specific wells 
   
-  template_volume_dpcr <- 10 /22 * 20 # ul template volume per well of the ddPCR reaction
+  template_volume_dpcr <- 10 /22 * 20 # ul template volume per well of the ddPCR reaction - for N1/N2
+  
+  RNA_dilution_factor_BCoV <- 50 * 4/10 # RNA dilution factor * Template loaded per 22 ul reaction / 10 (assumed above) - for diluted BCoV samples
   
   # Ad hoc - marking the samples from baylor (will append /baylor to target name)
-  
+  # Work in progress?
   
   
   # Loading pre-reqisites ----
@@ -303,6 +305,16 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none')
     mutate_at('assay_variable', as.character) %>% 
     mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
     
+    mutate(across(`Copy #`, ~ if_else(str_detect(Target, 'BCoV'), .x * RNA_dilution_factor_BCoV, .x))) %>% # Correcting for template dilution in case of BCoV ddPCRs
+    
+    
+    # Ad-hoc corrections for errors in making plate - sample dilutions etc.
+    mutate_cond(str_detect(`Well Position`, adhoc_dilution_wells), # Regex of wells to manipulate
+                across(`Copy #`, ~ . / 50) # dilution corrections or other changes
+    )
+
+  
+    
     # Adding tag to target for baylor smaples
     { if(!str_detect(baylor_wells, 'none|None')) { 
       mutate_at(., 'Target', as.character) %>% 
@@ -311,9 +323,37 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none')
     }
   
   # Data output ----
-  # this is usually commented out to prevent overwriting existing data; turn on only when needed for a single run
   
   check_ok_and_write(polished_results, sheeturls$data_dump, flnm) # save results to a google sheet
+  
+  # Vaccine processing ----
+  
+  
+  # Saving vaccine data into Vaccines sheet in data dump: For easy book keeping
+  vaccine_data <- polished_results %>% filter(str_detect(Sample_name, 'Vaccine')) %>%
+    mutate('Prepared on' = '',
+           Week = str_extract(flnm, '[:digit:]{3,4}') %>% unlist() %>% str_c(collapse = ', '),
+           Vaccine_ID = assay_variable, 
+           .before = 1) %>% 
+    mutate(Run_ID = str_extract(flnm, 'dd.WW[:digit:]*'), CT = NA) %>% 
+    select(`Prepared on`,	Week,	Vaccine_ID,	`Well Position`,	CT,	Target,	Sample_name,	assay_variable,	`Tube ID`,	biological_replicates,	`Copy #`,	Run_ID)
+  
+  # Add to existing sheet
+  if(vaccine_data %>% plyr::empty() %>% {!.}) sheet_append(sheeturls$data_dump, vaccine_data, 'Vaccines')
+  
+  # Mean of vaccine data
+  vaccine_data.mean <- vaccine_data %>% ungroup() %>% 
+    select(1:3, Target, `Copy #`, Run_ID) %>% group_by(across(-`Copy #`)) %>% 
+    summarise(across(`Copy #`, list(Mean_qPCR = mean, SD_qPCR = sd), na.rm = T), .groups = 'keep') %>% 
+    mutate('[Stock conc.] copies/ul' = `Copy #_Mean_qPCR` * 50/20,
+           'Estimated factor' = '',
+           Comments = '',
+           'Conc normalized to estimated factor' = '') %>% 
+    relocate(Run_ID, .after = last_col()) %>% 
+    mutate('x' = '', .before = 1)
+  
+  # Add to existing sheet in Vaccine_summary
+  if(vaccine_data.mean %>% plyr::empty() %>% {!.}) sheet_append(sheeturls$data_dump, vaccine_data.mean, 'Vaccine_summary')
   
 }
 
