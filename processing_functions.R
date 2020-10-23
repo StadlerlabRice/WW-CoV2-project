@@ -253,12 +253,12 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
 
 
 # ddPCR processing: Attach sample labels from template table, calculate copies/ul using template volume/reaction, make names similar to qPCR data 
-process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none')
+process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilution_wells = 'none')
 { # Baylor wells : choose 1) none, 2) '.*' for all, 3) '[A-H]([1-9]$|10)' etc. for specific wells 
   
-  template_volume_dpcr <- 10 /22 * 20 # ul template volume per well of the ddPCR reaction
+  template_volume_dpcr <- 10 /22 * 20 # ul template volume per well of the ddPCR reaction - for N1/N2
   
-  RNA_dilution_factor_BCoV <- 104/5 * 10/5 # 1/RNA dilution factor * 10/Template loaded per 22 ul reaction - for diluted BCoV samples
+  RNA_dilution_factor_BCoV <- 50 * 4/10 # RNA dilution factor * Template loaded per 22 ul reaction / 10 (assumed above) - for diluted BCoV samples
   
   # Ad hoc - marking the samples from baylor (will append /baylor to target name)
   # Work in progress?
@@ -306,6 +306,14 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none')
     mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
     
     mutate(across(`Copy #`, ~ if_else(str_detect(Target, 'BCoV'), .x * RNA_dilution_factor_BCoV, .x))) %>% # Correcting for template dilution in case of BCoV ddPCRs
+    
+    
+    # Ad-hoc corrections for errors in making plate - sample dilutions etc.
+    mutate_cond(str_detect(`Well Position`, adhoc_dilution_wells), # Regex of wells to manipulate
+                across(`Copy #`, ~ . / 50) # dilution corrections or other changes
+    )
+
+  
     
     # Adding tag to target for baylor smaples
     { if(!str_detect(baylor_wells, 'none|None')) { 
