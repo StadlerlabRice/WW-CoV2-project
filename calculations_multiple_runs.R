@@ -7,7 +7,8 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # sheets to read from qPCR data dump excel file
 read_these_sheets <- c( 'dd.WW46_Bellaire daily part1-N1N2',
                         'dd.WW56_Bellaire daily part2, Zachs old_N1N2',
-                        'WW83_Bellaire daily part2, Zach old samples repeat_BCoV_Std62')
+                        'WW83_Bellaire daily part2, Zach old samples repeat_BCoV_Std62',
+                        'WW87_Bellaire daily samples-1_BCoV_Std66')
 
 title_name <- 'Bellaire daily and others'
 
