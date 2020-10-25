@@ -256,9 +256,11 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
 process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilution_wells = 'none')
 { # Baylor wells : choose 1) none, 2) '.*' for all, 3) '[A-H]([1-9]$|10)' etc. for specific wells 
   
-  template_volume_dpcr <- 10 /22 * 20 # ul template volume per well of the ddPCR reaction - for N1/N2
+  template_volume_dpcr <- 10 /22 * 20 # ul template volume per well of the 20 ul ddPCR reaction - for N1/N2
   
-  RNA_dilution_factor_BCoV <- 50 * 4/10 # RNA dilution factor * Template loaded per 22 ul reaction / 10 (assumed above) - for diluted BCoV samples
+  template_volume_correction_BCoV <- 4 / 22 * 20 / template_volume_dpcr # BCoV reaction has only 4 ul instead of 10 ul in a 22 ul reaction
+  RNA_dilution_factor_BCoV <- 50  # RNA dilution factor for diluted BCoV samples
+  total_correction_factor_BCoV <- RNA_dilution_factor_BCoV * template_volume_correction_BCoV # total correction factor to implement for BCoV samples 
   
   # Ad hoc - marking the samples from baylor (will append /baylor to target name)
   # Work in progress?
@@ -305,15 +307,13 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
     mutate_at('assay_variable', as.character) %>% 
     mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
     
-    mutate(across(`Copy #`, ~ if_else(str_detect(Target, 'BCoV'), .x * RNA_dilution_factor_BCoV, .x))) %>% # Correcting for template dilution in case of BCoV ddPCRs
+    mutate(across(`Copy #`, ~ if_else(str_detect(Target, 'BCoV'), .x * total_correction_factor_BCoV, .x))) %>% # Correcting for template dilution in case of BCoV ddPCRs
     
     
     # Ad-hoc corrections for errors in making plate - sample dilutions etc.
     mutate_cond(str_detect(`Well Position`, adhoc_dilution_wells), # Regex of wells to manipulate
                 across(`Copy #`, ~ . / 50) # dilution corrections or other changes
-    )
-
-  
+    ) %>% 
     
     # Adding tag to target for baylor smaples
     { if(!str_detect(baylor_wells, 'none|None')) { 
