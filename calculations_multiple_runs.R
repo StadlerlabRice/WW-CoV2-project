@@ -5,14 +5,20 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW52_Conc method 2b_N1N2 + BCoV2',
-                        'dd.WW53_Conc Meth 2_N1N2',
-                        'dd.WW54_Conc Meth 2_BCoV2',
-                        'dd.WW55_S38 boil_BCoV2',
-                        'WW79_Conc Methods 2a_pMMoV_Std58',
-                        'WW80_Conc Methods 2b_pMMoV_Std59')
+# read_these_sheets <- c( 'dd.WW52_Conc method 2b_N1N2 + BCoV2',
+#                         'dd.WW53_Conc Meth 2_N1N2',
+#                         'dd.WW54_Conc Meth 2_BCoV2',
+#                         'dd.WW55_S38 boil_BCoV2',
+#                         'WW79_Conc Methods 2a_pMMoV_Std58',
+#                         'WW80_Conc Methods 2b_pMMoV_Std59')
 
-title_name <- 'Concentration methods paper-2'
+read_these_sheets <- c( 'dd.WW60_Conc Method 3-1 (Baylor)_N1N2',
+                        'dd.WW61_Conc Method 3-2 Baylor_BCoV',
+                        'dd.WW62_Conc Method 3-3 Baylor_N1N2_BCoV',
+                        'WW85_Conc Method 3-1 Baylor_pMMoV_Std64',
+                        'WW86_Conc Method 3-2 Baylor_pMMoV_Std65')
+
+title_name <- 'Concentration methods paper-3'
 
 # Biobot_id sheet
 bb_sheets <- c('Week 26 (10/5)')
@@ -27,16 +33,14 @@ regular_WWTP_run_output <- F # make TRUE of you want to output the WWTP only dat
 # rarely changed parameters
 
 # Spike in and concentration details
-elution_volume <- 50 # ul - RNA extraction final volume
-
 # copies/ul viral suspension spiked in : This is auto-matched from the list of vaccine data in data dump/Vaccine_summary
 spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 450 and varies for each sample)
 
 # Extra metadata locations for conc methods
 
 conc_factors_url <- 'https://docs.google.com/spreadsheets/d/1_32AE3IkBRD3oGSYcYqZwknHZEHiGKtoy1zK5VVTzsI/edit#gid=214903643'
-dilution_flname <- 'dilutions of template_BCoV2_dd.WW54, 52' %>% 
-  str_c('qPCR analysis/Methods paper/Archive/', ., '.xlsm')
+# dilution_flname <- 'dilutions of template_BCoV2_dd.WW54, 52' %>% 
+#   str_c('qPCR analysis/Methods paper/Archive/', ., '.xlsm')
 ultrafiltration_flname <- 'Ultrafiltration Tube Weights' %>% 
   str_c('qPCR analysis/Methods paper/Archive/', ., '.xlsx')
 
@@ -121,38 +125,15 @@ ultrafiltration_volume <- read_xlsx(ultrafiltration_flname, range = 'A1:D22') %>
   rename(UF_vol_ul = Total_volume_ul) %>% 
   select(Label_tube, UF_vol_ul)
 
-dilution_vol1 <- read_xlsx(dilution_flname, sheet = 'volumes_plate 2A+', range = 'B2:Q10') %>% read_plate_to_column('dil_vol')
-dilution_samples2 <- read_xlsx(dilution_flname, sheet = 'samples_plate 2A+', range = 'B2:Q10') %>% read_plate_to_column('Sample_name')
+# dilution_vol1 <- read_xlsx(dilution_flname, sheet = 'volumes_plate 2A+', range = 'B2:Q10') %>% read_plate_to_column('dil_vol')
+# dilution_samples2 <- read_xlsx(dilution_flname, sheet = 'samples_plate 2A+', range = 'B2:Q10') %>% read_plate_to_column('Sample_name')
 
-dilution_factors_base <- left_join(dilution_vol1, dilution_samples2) %>%  # join the dilution volumes to names
-  select(-`Well Position`) %>% 
-  mutate(dilution.factor = 1) # dummy column - edited in next step
+# dilution_factors_base <- left_join(dilution_vol1, dilution_samples2) %>%  # join the dilution volumes to names
+#   select(-`Well Position`) %>%
+#   mutate(dilution.factor = 1) # dummy column - edited in next step
 
 # dilution factors for each target
-dilution_factors <- tibble(Target = c('N1_multiplex', 'N2_multiplex', 'BCoV2', 'pMMoV_Vgp1'), lsts = list(dilution_factors_base) ) %>% 
-  unnest(cols = c(lsts)) %>% 
-  
-  mutate_cond(str_detect(Target, 'BCoV2'), dilution.factor = (dil_vol + 196)/dil_vol * 200/4) %>% 
-  mutate_cond(str_detect(Target, 'pMMoV'), dilution.factor = (dil_vol + 196)/dil_vol) %>% 
-  mutate_cond(str_detect(Target, '^N') & str_detect(Sample_name, 'HA_H.1'), dilution.factor = 3) %>%
-  mutate_cond(str_detect(Sample_name, 'Vacboil'), dilution.factor = 20/dil_vol * 200/4 * 200/4) %>%
-  
-  # Processing the same as regular data for ease of column joining (will incorporate by condition BCoV or pMMoV)
-  separate(`Sample_name`,c(NA, 'Sample_name'),'-') %>% separate(`Sample_name`,c('Sample_name','Tube ID'),'_') %>% 
-  mutate(`Tube ID` = if_else(`Sample_name` == 'NTC', '0', `Tube ID`)) %>% 
-  separate(`Tube ID`, c('assay_variable', 'biological_replicates'), remove = F) %>%  # Separate out biological replicates 
-  unite('Tube ID', c(assay_variable, biological_replicates), sep = '.', remove = F, na.rm = T) %>% # remaking Tube ID - removes spaces after 'dot'
-  # unite('Biobot ID', c(`Sample_name`, assay_variable), sep = '', remove = F) %>%
-  
-  mutate_at('assay_variable', as.character) %>% 
-  mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
-  mutate_at('Tube ID', ~str_remove(., "\\.")) %>% 
-  unite('Label_tube', c('Sample_name', 'Tube ID'), sep = "", remove = F) # make a unique column for matching volumes 
-
-  
-
-rm(dilution_vol1, dilution_samples2, dilution_factors_base) # clear temporary data
-
+dilution_factors <- tibble(Target = c('N1_multiplex', 'N2_multiplex', 'BCoV2', 'pMMoV_Vgp1'), dilution.factor = c(1,1,50,50))
 
 # baylor's ID, vols ----------------------------------------------------------------------   
 
@@ -312,7 +293,6 @@ presentable_data <- processed_quant_data %>%
 
 # Missing value check - Brings user attention to missing values in the sample registry
 
-# work in progress - this is not where -Inf shoud be checked for since this has all data from begining of time
 if(map(presentable_data, ~ -Inf %in% .x) %>% any())
   
   {missing_values_sample_registry <- presentable_data %>% filter_if(is.numeric, any_vars( . < 0))
