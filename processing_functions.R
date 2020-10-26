@@ -257,6 +257,8 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
 { # Baylor wells : choose 1) none, 2) '.*' for all, 3) '[A-H]([1-9]$|10)' etc. for specific wells 
   
   template_volume_dpcr <- 10 /22 * 20 # ul template volume per well of the 20 ul ddPCR reaction - for N1/N2
+  # template_volume_ddpcr <- tibble(Target = c('N1_multiplex', 'N2_multiplex', 'BCoV2'),
+  #                                 template_vol = c(10, 10, 4) /22 * 20) # ul template volume per well of the 20 ul ddPCR reaction for each target
   
   template_volume_correction_BCoV <- 4 / 22 * 20 / template_volume_dpcr # BCoV reaction has only 4 ul instead of 10 ul in a 22 ul reaction
   RNA_dilution_factor_BCoV <- 50  # RNA dilution factor for diluted BCoV samples
