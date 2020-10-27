@@ -16,7 +16,7 @@ bb_sheets <- c('Week 28 (10/19)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|Control|e811|Acetone' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
-special_samples = 'HCJ|SOH|ODM|AO' # putting special samples in a separate sheet
+manhole_samples = 'HCJ|SOH|ODM|AO' # putting special samples in a separate sheet
 
 regular_WWTP_run_output <- TRUE # make TRUE of you want to output the WWTP only data and special samples sheets 
       # (make FALSE for controls, testing etc. where only "complete data" sheet is output)
@@ -276,12 +276,12 @@ if(regular_WWTP_run_output)
     write_csv(present_only_WW, path = str_c('excel files/Weekly data to HHD/', title_name, '.csv'), na = '') # output csv file
   }
   
-  present_special_samples <- present_WW_data %>% filter(str_detect(Facility, special_samples))
+  present_manhole_samples <- present_WW_data %>% filter(str_detect(Facility, manhole_samples))
   
   # Write data if not empty
-  if(present_special_samples %>% plyr::empty() %>% !.){
-    check_ok_and_write(present_special_samples, sheeturls$wwtp_only_data, str_c(title_name, ' special samples')) # save results to a google sheet, ask for overwrite
-    write_csv(present_special_samples, path = str_c('excel files/Weekly data to HHD/', title_name, ' manhole samples.csv'), na = '') # output CSV file
+  if(present_manhole_samples %>% plyr::empty() %>% !.){
+    check_ok_and_write(present_manhole_samples, sheeturls$wwtp_only_data, str_c(title_name, ' special samples')) # save results to a google sheet, ask for overwrite
+    write_csv(present_manhole_samples, path = str_c('excel files/Weekly data to HHD/', title_name, ' manhole samples.csv'), na = '') # output CSV file
   }
 }
 
