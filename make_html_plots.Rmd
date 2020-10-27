@@ -24,6 +24,9 @@ Quantifying CoV2-N1,N2 (multiplexed) and BCoV surrogate spiked into wastewater s
 
 ```{r scripts, fig.width = 12}
 
+# Make a string to filter out all regular WWTP and manhole samples to plot separately
+wwtp_manhole_names <- all_WWTP_names %>% str_c(collapse = '|') %>% str_c(manhole_samples, sep = '|')
+
 # plot individual biological replicates (for quality control)
 # map2(list_rawqpcr, read_these_sheets, ~(plot_biological_replicates(.x, title_text = .y)))
 
@@ -37,7 +40,7 @@ Quantifying CoV2-N1,N2 (multiplexed) and BCoV surrogate spiked into wastewater s
 ```{r all_plot}
 # all the plotting functions plot data: "long_processed_minimal" by default
 
-  concWW_plot <- plot_mean_sd_jitter(measure_var = 'Recovered', sample_var = extra_categories, exclude_sample = T, x_var = WWTP, ylabel = 'Genome copies/l Wastewater') 
+  concWW_plot <- plot_mean_sd_jitter(measure_var = 'Recovered', WWTP_var = wwtp_manhole_names, x_var = WWTP, ylabel = 'Genome copies/l Wastewater') 
   
   concWW_plot %>% format_logscale_y() %>% print()
   
