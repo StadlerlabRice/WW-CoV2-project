@@ -298,12 +298,14 @@ plottm1 <- function(results_relevant)
 
 
 # Plotting mean, sd and individual replicates jitter
-plot_mean_sd_jitter <- function(.data_list = long_processed_minimal, long_format = TRUE, measure_var = 'Copy #', sample_var = '.*', exclude_sample = F, target_filter = '.*', colour_var = Target, x_var = assay_variable, y_var = `Copy #`, ascending_order = FALSE, facet_var = `Sample_name`, title_text = title_name, ylabel = 'Genome copies/ul RNA', xlabel = plot_assay_variable, facet_style = 'grid')
+plot_mean_sd_jitter <- function(.data_list = long_processed_minimal, long_format = TRUE, measure_var = 'Copy #', sample_var = '.*', exclude_sample = F, WWTP_var = '.*', exclude_WWTP = F, target_filter = '.*', colour_var = Target, x_var = assay_variable, y_var = `Copy #`, ascending_order = FALSE, facet_var = `Sample_name`, title_text = title_name, ylabel = 'Genome copies/ul RNA', xlabel = plot_assay_variable, facet_style = 'grid')
 { # Convenient handle for repetitive plotting in the same format; Specify data format: long vs wide (specify in long_format = TRUE or FALSE)
   
-  .dat_filtered <- .data_list %>% map( filter, 
-                                  str_detect(`Sample_name`, sample_var, negate = exclude_sample), 
-                                  str_detect(Target, target_filter))
+  .dat_filtered <- .data_list %>% map( ~ filter(.x, 
+                                                if('Sample_name' %in% colnames(.x)) str_detect(`Sample_name`, sample_var, negate = exclude_sample) else TRUE, 
+                                                if('WWTP' %in% colnames(.x)) str_detect(WWTP, WWTP_var, negate = exclude_WWTP) else TRUE, 
+                                                str_detect(Target, target_filter))
+  )
   
   # filtering data to be plotted by user inputs
   if(long_format) # use long format if not plotting Copy #s - ex. Recovery, % recovery etc.
