@@ -1,4 +1,4 @@
-# Ad hoc plots for concentration methods paper
+# Publication and Ad hoc plots for concentration methods paper
 # Data distributed across sheets in an excel file
 
 # Preliminaries ----
@@ -24,6 +24,10 @@ y_axis_namer <- c('Copies/L WW' = 'Genome copies/L wastewater',
 # Loading libraries, functions and user inputs
 source('./general_functions.R') # Source the general_functions file
 
+# Metadata ----
+
+loq_data <- read_sheet('https://docs.google.com/spreadsheets/d/1_32AE3IkBRD3oGSYcYqZwknHZEHiGKtoy1zK5VVTzsI/edit#gid=463904425',
+                       sheet = 'LOQ')
 
 # Input file ----
 
@@ -34,7 +38,10 @@ all_data_input <- read_sheet(sheeturls$complete_data, sheet = input_sheet) %>%
          Detection.limit = Detection_Limit,
          `Copies/L WW` = 'Copies/l WW', `Copies/uL RNA` = 'Copies/ul RNA') %>% # for compatibility with old plotting functions
   mutate(across(WWTP, ~ fct_relevel(.x, 'DI', after = Inf))) %>%  # bringing DI water control to the last position
-  filter(!str_detect(Facility, 'Std|0|Vac'))
+  filter(!str_detect(Facility, 'Std|0|Vac')) %>% 
+  
+  # atach LOQs
+  left_join(loq_data)
 
 # filtering data ----
 
