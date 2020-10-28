@@ -13,13 +13,19 @@ input_sheet <- 'Concentration methods paper-2'
 # Naming scheme for plot titles
 title_namer <- c('N1' = 'SARS-CoV2 N1 across methods',
                  'N2' = 'SARS-CoV2 N2 across methods',
-                 'BCoV' = 'Surrogate recovery across methods',
+                 'BCoV' = 'Surrogate virus (BCoV) across methods',
                  'pMMoV' = 'Internal control: Pepper-mild-mottle virus across methods')  
 
 # naming scheme for plot y axis labels
 y_axis_namer <- c('Copies/L WW' = 'Genome copies/L wastewater',
                   'Copies/uL RNA' = 'Genome copies/uL RNA extract',
                   'Fraction.recovered' = 'Fraction of surrogate virus recovered')
+
+# folder to save
+sv.folder_namer <- c('Copies/L WW' = 'Copies ww',
+                  'Copies/uL RNA' = 'Copies RNA',
+                  'Fraction.recovered' = 'Recovery')
+
 
 # Loading libraries, functions and user inputs
 source('./general_functions.R') # Source the general_functions file
@@ -89,28 +95,31 @@ individual_plots <- function(.data_to_plot = data_to_plot,
                              plt.log = 'Y', 
                              facet.formula = as.formula(~`Concentration method`), 
                              plt.LOQ = 'no', 
-                             plt.save = 'no')
+                             plt.save = 'no',
+                             plt.format = 'pdf', plt.width = 8, plt.height = 4)
 { 
   
   # preliminary conversions
-  plt.title <- str_replace_all(target_string, title_namer)
-  plt.y_label <- substitute(y_var) %>% paste() %>% 
-    str_replace_all(y_axis_namer)
+  plt.title <- str_replace_all(target_string, title_namer) # title of plot
+  plt.y_label <- substitute(y_var) %>% paste() %>%  # y axis label
+    str_replace_all(y_axis_namer) 
+  sv.folder <- substitute(y_var) %>% paste() %>%  # save folder
+    str_replace_all(sv.folder_namer) 
   
   # Remove LOQ for recovery fraction and pMMoV
-  if(str_detect(plt.y_label, 'Recovery') | str_detect(target_string, 'pMMoV')) plt.LOQ <- 'no'
+  if(str_detect(plt.y_label, 'Recovery') | str_detect(target_string, 'pMMoV|BCoV')) plt.LOQ <- 'no'
   # LOQ for copies/ul RNA
   if(str_detect(plt.y_label, 'RNA')) LOQ_var <- expr(LOQ_RNA) # place holder LOQ for ddPCR in copies/ul RNA
   else LOQ_var <- expr(LOQ)
  
-  if(plt.LOQ == 'yes') .dat_above_LOD <- .data_to_plot
+  plt.alpha <- if_else(plt.LOQ == 'yes', 0.5, 1) 
     
   # Plotting
   {.data_to_plot %>% 
       filter(str_detect(Target, target_string)) %>% 
       
       ggplot(aes(WWTP, {{y_var}}, colour = `Concentration method`,  shape = WWTP)) + 
-      geom_point(alpha = .5) + 
+      geom_point(alpha = plt.alpha) + 
       facet_grid(facet.formula) +
       ylab(plt.y_label) + ggtitle(plt.title) + 
       scale_shape_manual(values = c(15,16,17,7,8,10,3)) +
@@ -132,10 +141,12 @@ individual_plots <- function(.data_to_plot = data_to_plot,
   
   
   # Saving plot
+  
+  
   # work in progress, need to make sv.folder and plt.format as function inputs
-  # if(plt.save == 'yes') str_c('qPCR analysis/Methods paper/', sv.folder,  '/', '.', plt.format) %>% 
-  #     ggsave(plot = plt.name, width = plt.width, height = plt.height)
-  # 
+  if(plt.save == 'yes') str_c('qPCR analysis/Methods paper/', sv.folder,  '/', target_string, '.', plt.format) %>%
+      ggsave(width = plt.width, height = plt.height)
+
 }
 
 
