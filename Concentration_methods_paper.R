@@ -83,16 +83,27 @@ wider_copies_data <- data_to_plot %>%
 
 # Plotting functions ----
 
-individual_plots <- function(.data_to_plot = data_to_plot, target_string = 'N1', y_var = `Copies/L WW`, plt.log = 'Y', facet.formula = as.formula(~`Concentration method`), plt.LOD = 'no')
+individual_plots <- function(.data_to_plot = data_to_plot, 
+                             target_string = 'N1', 
+                             y_var = `Copies/L WW`, 
+                             plt.log = 'Y', 
+                             facet.formula = as.formula(~`Concentration method`), 
+                             plt.LOQ = 'no', 
+                             plt.save = 'no')
 { 
+  
+  # preliminary conversions
   plt.title <- str_replace_all(target_string, title_namer)
   plt.y_label <- substitute(y_var) %>% paste() %>% 
     str_replace_all(y_axis_namer)
   
-  LOD <- 0.735 # place holder LOD for ddPCR in copies/ul RNA
-  # if(str_detect(plt.y_label, 'Recovery') | str_detect(target_string, 'pMMoV')) plt.LOD <- 'no' 
-  # else plt.LOD <- 'yes' # LOD is hardcoded in function call for now
+  # Remove LOQ for recovery fraction and pMMoV
+  if(str_detect(plt.y_label, 'Recovery') | str_detect(target_string, 'pMMoV')) plt.LOQ <- 'no'
+  # LOQ for copies/ul RNA
+  if(str_detect(plt.y_label, 'RNA')) LOQ_var <- expr(LOQ_RNA) # place holder LOQ for ddPCR in copies/ul RNA
+  else LOQ_var <- expr(LOQ)
  
+  # Plotting
   {.data_to_plot %>% 
       filter(str_detect(Target, target_string)) %>% 
       ggplot(aes(WWTP, {{y_var}}, colour = `Concentration method`,  shape = WWTP)) + 
@@ -101,11 +112,11 @@ individual_plots <- function(.data_to_plot = data_to_plot, target_string = 'N1',
       ylab(plt.y_label) + ggtitle(plt.title) + 
       scale_shape_manual(values = c(15,16,17,7,8,10,3)) +
       
-      {if(plt.LOD == 'yes') 
-        list(annotate(geom = 'rect', xmin = -Inf, xmax = +Inf, ymin = -Inf, ymax = LOD, alpha = .3),
-            geom_hline(yintercept = LOD)#,
-            # annotate(geom = 'text', x = Inf, y = LOD, label = 'Limit of detection')
-            )
+      {if(plt.LOQ == 'yes') 
+        # list(annotate(data = loq_data, geom = 'rect', xmin = -Inf, xmax = +Inf, ymin = -Inf, ymax = {{LOQ_var}}, alpha = .3),
+            geom_hline(aes(yintercept = {{LOQ_var}}))#,
+            # annotate(data = loq_data, geom = 'text', x = Inf, y = {{LOQ_var}}, hjust = 'inside', label = 'Limit of Quantification')
+            # )
       } 
     
   } %>% 
@@ -114,6 +125,13 @@ individual_plots <- function(.data_to_plot = data_to_plot, target_string = 'N1',
     
     format_classic() %>% 
     print()
+  
+  
+  # Saving plot
+  # work in progress, need to make sv.folder and plt.format as function inputs
+  # if(plt.save == 'yes') str_c('qPCR analysis/Methods paper/', sv.folder,  '/', '.', plt.format) %>% 
+  #     ggsave(plot = plt.name, width = plt.width, height = plt.height)
+  # 
 }
 
 
@@ -135,28 +153,7 @@ rmarkdown::render('conc_methods_allfigs.rmd',
                   output_file = str_c('./qPCR analysis/Methods paper/', 'all_figs_without DI,NTC' , '.html'))
 
 
-# Faceted plots with LOD ----
+# Plots with LOQ ----
 
-individual_plots(wider_copies_data %>% 
-                   filter(str_detect(Target, 'SARS'), str_detect(`Copy data`, 'RNA')),
-                 target_string = '.*', y_var = Copies, facet.formula = as.formula(Target ~ `Concentration method`), plt.LOD = 'yes')  
-  # facet_grid(`Copy data` ~ Target, scales = 'free')
+plt_N1 <- individual_plots(target_string = 'N1', plt.LOQ = 'yes')
 
-plt.LOD = 'yes'
-
-data_to_plot %>% 
-  filter(str_detect(Target, 'SARS')) %>% 
-  
-{ggplot(., aes(WWTP, `Copies/uL RNA`, colour = `Concentration method`, shape = WWTP)) + 
-  geom_point() + 
-  facet_grid(Target ~ `Concentration method`, scale = 'free_x') + 
-    ylab(plt.y_label) + ggtitle(plt.title) + 
-    scale_shape_manual(values = c(15,16,17,7,8,10,3)) +
-    
-    {if(plt.LOD == 'yes') 
-     {annotate(geom = 'rect', xmin = -Inf, xmax = +Inf, ymin = -Inf, ymax = LOD) + 
-        geom_hline(yintercept = LOD) + 
-        annotate(geom = 'text', x = Inf, y = LOD)
-      }
-    } 
-}
