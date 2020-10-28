@@ -103,20 +103,24 @@ individual_plots <- function(.data_to_plot = data_to_plot,
   if(str_detect(plt.y_label, 'RNA')) LOQ_var <- expr(LOQ_RNA) # place holder LOQ for ddPCR in copies/ul RNA
   else LOQ_var <- expr(LOQ)
  
+  if(plt.LOQ == 'yes') .dat_above_LOD <- .data_to_plot
+    
   # Plotting
   {.data_to_plot %>% 
       filter(str_detect(Target, target_string)) %>% 
+      
       ggplot(aes(WWTP, {{y_var}}, colour = `Concentration method`,  shape = WWTP)) + 
-      geom_point() + 
+      geom_point(alpha = .5) + 
       facet_grid(facet.formula) +
       ylab(plt.y_label) + ggtitle(plt.title) + 
       scale_shape_manual(values = c(15,16,17,7,8,10,3)) +
       
       {if(plt.LOQ == 'yes') 
-        # list(annotate(data = loq_data, geom = 'rect', xmin = -Inf, xmax = +Inf, ymin = -Inf, ymax = {{LOQ_var}}, alpha = .3),
-            geom_hline(aes(yintercept = {{LOQ_var}}))#,
+        list(geom_hline(aes(yintercept = {{LOQ_var}})),
+             geom_point(data = . %>% filter({{y_var}} > {{LOQ_var}}) )
+             # annotate(data = loq_data, geom = 'rect', xmin = -Inf, xmax = +Inf, ymin = -Inf, ymax = {{LOQ_var}}, alpha = .3),
             # annotate(data = loq_data, geom = 'text', x = Inf, y = {{LOQ_var}}, hjust = 'inside', label = 'Limit of Quantification')
-            # )
+            )
       } 
     
   } %>% 
