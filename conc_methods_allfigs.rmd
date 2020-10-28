@@ -72,6 +72,14 @@ plt_BCoV_RNA <- individual_plots(target_string = 'BCoV', y_var = `Copies/uL RNA`
 save_plot('BCoV', plt_BCoV_RNA, 'Copies RNA')
 ```
 
+--------------------------------------------------------------------------------------
+### Recovery fraction
+```{r reco}
+plt_BCoV_recovery <- individual_plots(target_string = 'BCoV', y_var = Fraction.recovered)
+
+```
+
+
 ## Correlation plots
 
 ```{r scatter1, echo=FALSE}
