@@ -157,7 +157,19 @@ rmarkdown::render('conc_methods_allfigs.rmd',
                   output_file = str_c('./qPCR analysis/Methods paper/', 'all_figs_without DI,NTC' , '.html'))
 
 
-# Plots with LOQ ----
+# Plots with LOQ same scale ----
 
-plt_N1 <- individual_plots(target_string = 'N1', plt.LOQ = 'yes')
+# Identify min and max per target: manually
+data_to_plot %>% filter(str_detect(Target, 'N1|N2')) %>% 
+  pull(`Copies/L WW`) %>% max()
 
+# summarize mode: Does not work
+# data_to_plot %>% group_by(Target) %>% 
+#   filter(`Copies/L WW` > 0) %>% 
+#   summarize(across('Copies/L WW', .funs = lst(min, max), na.rm = T)) %>% 
+#   view()
+
+plt_N1 <- individual_plots(target_string = 'N1|N2', plt.LOQ = 'yes', plt.save = 'no')
+
+N_ww <- c('low' = 500, 'high' = 4e5)
+N_RNA <- c('low' = .1, 'high' = 20)
