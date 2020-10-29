@@ -59,8 +59,9 @@ raw_quant_data <- bind_rows(list_raw_quant_data) %>%
   mutate_at('assay_variable', as.character) %>% 
   mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
   mutate_at('Tube ID', ~str_remove(., "\\.")) %>% 
-  unite('Label_tube', c('Sample_name', 'Tube ID'), sep = "", remove = F) # make a unique column for matching volumes 
+  unite('Label_tube', c('Sample_name', 'Tube ID'), sep = "", remove = F) %>%  # make a unique column for matching volumes 
 
+  mutate(across(Label_tube, ~ str_replace(.x, 'HA', 'BHA'))) # Replace HA samples with BHA (for HA filters sent to Baylor)
 
 # Load metadata ----------------------------------------------------------------------
 
@@ -116,7 +117,7 @@ volumes_data_Rice <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrate
 # conc.methods metadata ----
 
 
-concentration_factors <- read_sheet(conc_factors_url, sheet = 'Summary') %>% 
+concentration_factors <- read_sheet(conc_factors_url, sheet = 'Concentration factors-3') %>% 
   mutate(Sample_name = Method) %>%  # making it compatible for joining
   rename(concentration.factor = Concentration_factor)
 
