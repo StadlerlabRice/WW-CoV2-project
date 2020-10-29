@@ -22,25 +22,24 @@ knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 12, fig.he
 
 #### Copies ww/N1 by method
 ```{r indn1}
-plt_N1 <- individual_plots(target_string = 'N1')
-save_plot('N1', plt_N1)
+plt_N1 <- individual_plots(target_string = 'N1') %>% 
+  scale_y_log10(labels = fancy_scientific, limits = N_ww)
 ```
+
 ### Copies ww/N2 by method
 ```{r indn2}
-plt_N2 <- individual_plots(target_string = 'N2')
-save_plot('N2', plt_N2)
+plt_N2 <- individual_plots(target_string = 'N2') %>% 
+  scale_y_log10(labels = fancy_scientific, limits = N_ww)
 ```
 
 #### Copies ww/pMMoV by method
 ```{r indpMMoV}
 plt_pMMoV <- individual_plots(target_string = 'pMMoV')
-save_plot('pMMoV', plt_pMMoV)
 ```
 
 #### Copies ww/BCoV by method
 ```{r indBCoV}
 plt_BCoV <- individual_plots(target_string = 'BCoV')
-save_plot('BCoV', plt_BCoV)
 ```
 
 --------------------------------------------------------------------------------------
@@ -48,35 +47,32 @@ save_plot('BCoV', plt_BCoV)
 
 #### Copies RNA/N1 by method
 ```{r indN1_rna}
-plt_N1_RNA <- individual_plots(target_string = 'N1', y_var = `Copies/uL RNA`)
-save_plot('N1', plt_N1_RNA, 'Copies RNA')
+plt_N1_RNA <- individual_plots(target_string = 'N1', y_var = `Copies/uL RNA`) %>% 
+  scale_y_log10(labels = fancy_scientific, limits = N_RNA)
 ```
 
 #### Copies RNA/N2 by method
 ```{r indN2_rna}
-plt_N2_RNA <- individual_plots(target_string = 'N2', y_var = `Copies/uL RNA`)
-save_plot('N2', plt_N2_RNA, 'Copies RNA')
+plt_N2_RNA <- individual_plots(target_string = 'N2', y_var = `Copies/uL RNA`) %>% 
+  scale_y_log10(labels = fancy_scientific, limits = N_RNA)
 ```
 
 
 #### Copies RNA/pMMoV by method
 ```{r indpmmov_rna}
 plt_pMMoV_RNA <- individual_plots(target_string = 'pMMoV', y_var = `Copies/uL RNA`)
-save_plot('pMMoV', plt_pMMoV_RNA, 'Copies RNA')
 ```
 
 
 #### Copies RNA/BCoV by method
 ```{r indBCoV_rna}
 plt_BCoV_RNA <- individual_plots(target_string = 'BCoV', y_var = `Copies/uL RNA`)
-save_plot('BCoV', plt_BCoV_RNA, 'Copies RNA')
 ```
 
 --------------------------------------------------------------------------------------
 ### Recovery fraction
 ```{r reco}
 plt_BCoV_recovery <- individual_plots(target_string = 'BCoV', y_var = Fraction.recovered)
-
 ```
 
 
@@ -84,8 +80,19 @@ plt_BCoV_recovery <- individual_plots(target_string = 'BCoV', y_var = Fraction.r
 
 ```{r scatter1, echo=FALSE}
 
+# testing scatter with R2 and equation function : Does not work
+# Error:  no non-missing arguments to max; returning -Infno non-missing arguments to max; returning -Infno non-missing arguments to max; returning -Inf
+# plt.test <- plot_scatter(.data = scatter_data_N_reco,
+#              x_var = `Copies/L WW_SARS CoV-2 N1`, y_var = Fraction.recovered_BCoV2,
+#              colour_var = `Concentration method`,  shape_var = WWTP, grouping_var = `Concentration method`,
+#              already_pivoted_data = 'yes',
+#              title_text = 'SARS-CoV2 N1 vs surrogate recovery fraction across methods') 
+# 
+# print(plt.test)
+
+# plot N1 vs recovery
 plt.scatter_N1_recovery <- {scatter_data_N_reco %>% 
-    # filter(str_detect(Target, 'N2')) %>% 
+
     ggplot(aes(`Copies/L WW_SARS CoV-2 N1`, Fraction.recovered_BCoV2, colour = `Concentration method`,  shape = WWTP)) + 
     geom_point() +
     ggtitle('SARS-CoV2 N1 vs surrogate recovery fraction across methods') + 
