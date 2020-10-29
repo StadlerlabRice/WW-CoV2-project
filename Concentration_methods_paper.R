@@ -64,7 +64,7 @@ data_to_plot <- only_wwtps
 
 minimal_label_columns <- c('Target', 'WWTP', 'Concentration method')
 
-# convert data to wide cormat - for plotting correlation/scatter plot
+# convert data to wide format - for plotting correlation/scatter plot
 scatter_data_N_reco <- only_wwtps %>% 
   select(all_of(minimal_label_columns), Tube_ID, `Copies/L WW`, Fraction.recovered) %>% 
   pivot_wider(names_from = Target, values_from = c('Copies/L WW', Fraction.recovered))
@@ -94,8 +94,8 @@ individual_plots <- function(.data_to_plot = data_to_plot,
                              y_var = `Copies/L WW`, 
                              plt.log = 'Y', 
                              facet.formula = as.formula(~`Concentration method`), 
-                             plt.LOQ = 'no', 
-                             plt.save = 'no',
+                             plt.LOQ = 'yes', 
+                             plt.save = 'yes',
                              plt.format = 'pdf', plt.width = 8, plt.height = 4)
 { 
   
@@ -115,7 +115,7 @@ individual_plots <- function(.data_to_plot = data_to_plot,
   plt.alpha <- if_else(plt.LOQ == 'yes', 0.5, 1) 
     
   # Plotting
-  {.data_to_plot %>% 
+  plt <- {.data_to_plot %>% 
       filter(str_detect(Target, target_string)) %>% 
       
       ggplot(aes(WWTP, {{y_var}}, colour = `Concentration method`,  shape = WWTP)) + 
@@ -128,8 +128,8 @@ individual_plots <- function(.data_to_plot = data_to_plot,
         list(geom_hline(aes(yintercept = {{LOQ_var}})),
              geom_point(data = . %>% filter({{y_var}} > {{LOQ_var}}) )
              # annotate(data = loq_data, geom = 'rect', xmin = -Inf, xmax = +Inf, ymin = -Inf, ymax = {{LOQ_var}}, alpha = .3),
-            # annotate(data = loq_data, geom = 'text', x = Inf, y = {{LOQ_var}}, hjust = 'inside', label = 'Limit of Quantification')
-            )
+             # annotate(data = loq_data, geom = 'text', x = Inf, y = {{LOQ_var}}, hjust = 'inside', label = 'Limit of Quantification')
+        )
       } 
     
   } %>% 
@@ -146,6 +146,8 @@ individual_plots <- function(.data_to_plot = data_to_plot,
   # work in progress, need to make sv.folder and plt.format as function inputs
   if(plt.save == 'yes') str_c('qPCR analysis/Methods paper/', sv.folder,  '/', target_string, '.', plt.format) %>%
       ggsave(width = plt.width, height = plt.height)
+  
+  return(plt)
 
 }
 
@@ -162,7 +164,10 @@ save_plot <- function(plt.id, plt.name, sv.folder = 'Copies ww', plt.format = 'p
 # quick function for vectorization of making plots and saving
 # leave it alone for now
 
-# Plots w shapes ----
+# Plots ----
+
+N_ww <- c('low' = 500, 'high' = 4e5)
+N_RNA <- c('low' = .1, 'high' = 20)
 
 rmarkdown::render('conc_methods_allfigs.rmd', 
                   output_file = str_c('./qPCR analysis/Methods paper/', 'all_figs_without DI,NTC' , '.html'))
@@ -173,14 +178,3 @@ rmarkdown::render('conc_methods_allfigs.rmd',
 # Identify min and max per target: manually
 data_to_plot %>% filter(str_detect(Target, 'N1|N2')) %>% 
   pull(`Copies/L WW`) %>% max()
-
-# summarize mode: Does not work
-# data_to_plot %>% group_by(Target) %>% 
-#   filter(`Copies/L WW` > 0) %>% 
-#   summarize(across('Copies/L WW', .funs = lst(min, max), na.rm = T)) %>% 
-#   view()
-
-plt_N1 <- individual_plots(target_string = 'N1|N2', plt.LOQ = 'yes', plt.save = 'no')
-
-N_ww <- c('low' = 500, 'high' = 4e5)
-N_RNA <- c('low' = .1, 'high' = 20)
