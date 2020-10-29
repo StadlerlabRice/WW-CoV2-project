@@ -80,16 +80,6 @@ plt_BCoV_recovery <- individual_plots(target_string = 'BCoV', y_var = Fraction.r
 
 ```{r scatter1, echo=FALSE}
 
-# testing scatter with R2 and equation function : Does not work
-# Error:  no non-missing arguments to max; returning -Infno non-missing arguments to max; returning -Infno non-missing arguments to max; returning -Inf
-# plt.test <- plot_scatter(.data = scatter_data_N_reco,
-#              x_var = `Copies/L WW_SARS CoV-2 N1`, y_var = Fraction.recovered_BCoV2,
-#              colour_var = `Concentration method`,  shape_var = WWTP, grouping_var = `Concentration method`,
-#              already_pivoted_data = 'yes',
-#              title_text = 'SARS-CoV2 N1 vs surrogate recovery fraction across methods') 
-# 
-# print(plt.test)
-
 # plot N1 vs recovery
 plt.scatter_N1_recovery <- {scatter_data_N_reco %>% 
 
@@ -101,13 +91,38 @@ plt.scatter_N1_recovery <- {scatter_data_N_reco %>%
   format_classic() %>% 
   print()
 
+```
+
+### Correlation across all data
+```{r corall}
+
+# correlation plot single
+
+# plt.correlation_scatter_N1_recovery <-{ plt.scatter_N1_recovery + geom_smooth(method = 'lm', mapping = aes(group = NA))} %>% 
+#   print()
+
+  # with R2 and equation
+plt.correlation_scatter_N1_recovery <-  plot_scatter(.data = scatter_data_N_reco,
+             x_var = `Copies/L WW_SARS CoV-2 N1`, y_var = Fraction.recovered_BCoV2,
+             colour_var = `Concentration method`,  shape_var = WWTP,
+             already_pivoted_data = 'yes',
+             title_text = 'SARS-CoV2 N1 vs surrogate recovery fraction across methods') %>% 
+  print()
+
+```
+
+### Correlation across methods
+```{r corrmeth}
+
 # correlation plot by method
 plt.method.correlation_scatter_N1_recovery <- {plt.scatter_N1_recovery + geom_smooth(method = 'lm', mapping = aes(group = `Concentration method`))} %>% 
   print()
 
-# correlation plot single
-plt.correlation_scatter_N1_recovery <-{ plt.scatter_N1_recovery + geom_smooth(method = 'lm', mapping = aes(group = NA))} %>% 
-  print()
+
+```
+
+### Correlation across WWTP
+```{r corrWWTP}
 
 # correlation plot by WWTP
 plt.bywwtp_N1_recovery <- {scatter_data_N_reco %>% 
@@ -122,35 +137,69 @@ plt.bywwtp_N1_recovery <- {scatter_data_N_reco %>%
   format_classic() %>% 
   print()
 
+
+```
+
+### Correlation across all categories (removing direct extraction)
+```{r corallminusdirect}
+
 # (without direct extraction) correlation plot by WWTP
-plt.nodirect_corr_all <- {scatter_data_N_reco %>% 
-    filter(!str_detect(`Concentration method`, 'Direct')) %>% 
-    
-    ggplot(aes(`Copies/L WW_SARS CoV-2 N1`, Fraction.recovered_BCoV2, colour = `Concentration method`,  shape = WWTP)) + 
-    geom_point() +
-    ggtitle('SARS-CoV2 N1 vs surrogate recovery fraction across methods') + 
-    scale_shape_manual(values = c(15,16,17,7,8,10,3))  +
-    geom_smooth(method = 'lm', mapping = aes(group = NA))} %>% 
-  # format_logscale_y() %>%
-  format_classic() %>% 
+
+# plt.nodirect_corr_all <- {scatter_data_N_reco %>% 
+#     filter(!str_detect(`Concentration method`, 'Direct')) %>% 
+#     
+#     ggplot(aes(`Copies/L WW_SARS CoV-2 N1`, Fraction.recovered_BCoV2, colour = `Concentration method`,  shape = WWTP)) + 
+#     geom_point() +
+#     ggtitle('SARS-CoV2 N1 vs surrogate recovery fraction across methods') + 
+#     scale_shape_manual(values = c(15,16,17,7,8,10,3))  +
+#     geom_smooth(method = 'lm', mapping = aes(group = NA))} %>% 
+#   # format_logscale_y() %>%
+#   format_classic() %>% 
+#   print()
+
+  # with R2 and equation
+plt.nodirect_corr_all <-  plot_scatter(.data = scatter_data_N_reco %>% 
+                                         filter(!str_detect(`Concentration method`, 'Direct')),
+             x_var = `Copies/L WW_SARS CoV-2 N1`, y_var = Fraction.recovered_BCoV2,
+             colour_var = `Concentration method`,  shape_var = WWTP,
+             already_pivoted_data = 'yes',
+             title_text = 'SARS-CoV2 N1 vs surrogate recovery fraction across methods') %>% 
   print()
+
+```
+
+
+### Correlation across all categories (removing direct extraction and elution)
+```{r corallminusdirectandel}
+
+# (without direct extraction and elution methods)   # with R2 and equation
+plt.nodirectelution_corr_all <-  plot_scatter(.data = scatter_data_N_reco %>% 
+                                         filter(!str_detect(`Concentration method`, 'Direct|Elution')),
+             x_var = `Copies/L WW_SARS CoV-2 N1`, y_var = Fraction.recovered_BCoV2,
+             colour_var = `Concentration method`,  shape_var = WWTP,
+             already_pivoted_data = 'yes',
+             title_text = 'SARS-CoV2 N1 vs surrogate recovery fraction across methods') %>% 
+  print()
+
+```
+
+```{r savecorrplts}
 
 save_plot('cor_all', plt.correlation_scatter_N1_recovery, 'Correlation')
 save_plot('cor_method', plt.method.correlation_scatter_N1_recovery, 'Correlation')
 save_plot('cor_wwtp', plt.bywwtp_N1_recovery, 'Correlation')
 save_plot('nodirect_cor_all', plt.nodirect_corr_all, 'Correlation')
+save_plot('nodirect-noelution_cor_all', plt.nodirectelution_corr_all, 'Correlation')
 
 ```
+
+
 
 #### Interactive plot
 
 Correlation across all data
 ```{r interactcor} 
 ggplotly(plt.correlation_scatter_N1_recovery, dynamicTicks = T)
-# scatter_N1_recovery <- only_wwtps %>% 
-
-ggplotly(plt.method.correlation_scatter_N1_recovery, dynamicTicks = T)
-
 
 ```
 
@@ -166,3 +215,14 @@ ggplotly(plt.bywwtp_N1_recovery, dynamicTicks = T)
 
 ```
 
+Correlation across all categories (removing direct extraction)
+```{r interactcor4}
+ggplotly(plt.nodirect_corr_all, dynamicTicks = T)
+
+```
+
+Correlation across all categories (removing direct extraction and elution)
+```{r interactcor5}
+ggplotly(plt.nodirectelution_corr_all, dynamicTicks = T)
+
+```
