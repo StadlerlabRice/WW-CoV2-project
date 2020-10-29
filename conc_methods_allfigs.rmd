@@ -122,10 +122,23 @@ plt.bywwtp_N1_recovery <- {scatter_data_N_reco %>%
   format_classic() %>% 
   print()
 
+# (without direct extraction) correlation plot by WWTP
+plt.nodirect_corr_all <- {scatter_data_N_reco %>% 
+    filter(!str_detect(`Concentration method`, 'Direct')) %>% 
+    
+    ggplot(aes(`Copies/L WW_SARS CoV-2 N1`, Fraction.recovered_BCoV2, colour = `Concentration method`,  shape = WWTP)) + 
+    geom_point() +
+    ggtitle('SARS-CoV2 N1 vs surrogate recovery fraction across methods') + 
+    scale_shape_manual(values = c(15,16,17,7,8,10,3))  +
+    geom_smooth(method = 'lm', mapping = aes(group = NA))} %>% 
+  # format_logscale_y() %>%
+  format_classic() %>% 
+  print()
 
 save_plot('cor_all', plt.correlation_scatter_N1_recovery, 'Correlation')
 save_plot('cor_method', plt.method.correlation_scatter_N1_recovery, 'Correlation')
 save_plot('cor_wwtp', plt.bywwtp_N1_recovery, 'Correlation')
+save_plot('nodirect_cor_all', plt.nodirect_corr_all, 'Correlation')
 
 ```
 
