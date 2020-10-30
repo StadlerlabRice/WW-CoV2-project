@@ -5,20 +5,20 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW65_1019_N1N2',
-                        'dd.WW64_1019_BCoV',
-                        'dd.WW66_1019_Manhole_N1N2_BCoV')
+read_these_sheets <- c( 'dd.WW68_1026_N1N2',
+                        'dd.WW69_1026_BCoV')
+                        # 'dd.WW66_1019_Manhole_N1N2_BCoV')
 
-title_name <- '1019 Rice'
+title_name <- '1026 Rice'
 
 # Biobot_id sheet
-bb_sheets <- c('Week 28 (10/19)')
+bb_sheets <- c('Week 29 (10/26)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
-extra_categories = 'Std|Control|e811|Acetone' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
-manhole_samples = 'HCJ|SOH|ODM|AO' # putting special samples in a separate sheet
+# extra_categories = 'Std|Control|e811|Acetone' # Depreciated: for excluding this category from a plot, make the switch (exclude_sample = TRUE)
+manhole_samples = 'HCJ|SOH|ODM|AO' # putting manhole samples in a separate sheet
 
-regular_WWTP_run_output <- TRUE # make TRUE of you want to output the WWTP only data and special samples sheets 
+regular_WWTP_run_output <- TRUE # make TRUE of you want to output the WWTP only data and manhole samples sheets 
       # (make FALSE for controls, testing etc. where only "complete data" sheet is output)
 
 # rarely changed parameters
@@ -280,7 +280,7 @@ if(regular_WWTP_run_output)
   
   # Write data if not empty
   if(present_manhole_samples %>% plyr::empty() %>% !.){
-    check_ok_and_write(present_manhole_samples, sheeturls$wwtp_only_data, str_c(title_name, ' special samples')) # save results to a google sheet, ask for overwrite
+    check_ok_and_write(present_manhole_samples, sheeturls$wwtp_only_data, str_c(title_name, ' manhole samples')) # save results to a google sheet, ask for overwrite
     write_csv(present_manhole_samples, path = str_c('excel files/Weekly data to HHD/', title_name, ' manhole samples.csv'), na = '') # output CSV file
   }
 }
