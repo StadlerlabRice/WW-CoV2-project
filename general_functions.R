@@ -423,9 +423,14 @@ Check if x_var and y_var are present in .data')
   
   # If duplicates of data exist in the data, stop running and print a message
   if((.data_for_plot %>% select(all_of(c(checkx, checky))) %>% 
-     map_lgl(~class(.) == 'numeric') %>% 
-     sum()) < 2) return('Repeated data instances for the same WWTP found in this scatterplot')
-  
+      map_lgl(~class(.) == 'numeric') %>% 
+      sum()) < 2) 
+  { duplicated_data_points <- .data_for_plot %>% 
+    filter(map({{x_var}}, length) > 1)
+  print(duplicated_data_points)
+    
+    return('Repeated data instances for the same WWTP found in this scatterplot')
+  }
   
   
   
