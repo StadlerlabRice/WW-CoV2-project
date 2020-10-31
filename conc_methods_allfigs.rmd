@@ -1,5 +1,5 @@
 ---
-title: "Allfigs_without DI,NTC"
+title: "Allfigs"
 author: "Prashant Kalvapalle"
 date: '`r format(Sys.time(), "%d %B, %Y; %H:%M")`'
 output: 
@@ -26,7 +26,7 @@ plt_N1 <- individual_plots(target_string = 'N1') %>%
   scale_y_log10(labels = fancy_scientific, limits = N_ww)
 ```
 
-### Copies ww/N2 by method
+#### Copies ww/N2 by method
 ```{r indn2}
 plt_N2 <- individual_plots(target_string = 'N2') %>% 
   scale_y_log10(labels = fancy_scientific, limits = N_ww)
@@ -43,6 +43,7 @@ plt_BCoV <- individual_plots(target_string = 'BCoV')
 ```
 
 --------------------------------------------------------------------------------------
+
 ### Copies/uL RNA
 
 #### Copies RNA/N1 by method
@@ -102,12 +103,16 @@ plt.scatter_N1_recovery <- {scatter_data_N_reco %>%
 #   print()
 
   # with R2 and equation
-plt.correlation_scatter_N1_recovery <-  plot_scatter(.data = scatter_data_N_reco,
+plt.correlation_scatter_N1_recovery <-  {plot_scatter(.data = scatter_data_N_reco,
              x_var = `Copies/L WW_SARS CoV-2 N1`, y_var = Fraction.recovered_BCoV2,
              colour_var = `Concentration method`,  shape_var = WWTP,
              already_pivoted_data = 'yes',
-             title_text = 'SARS-CoV2 N1 vs surrogate recovery fraction across methods') %>% 
+             title_text = 'SARS-CoV2 N1 vs surrogate recovery fraction across methods') + 
+    scale_shape_manual(values = c(15,16,17,7,8,10,3)) } %>% 
+  format_classic() %>% 
   print()
+
+save_plot('cor_all', sv.folder = 'Correlation')
 
 ```
 
@@ -118,6 +123,7 @@ plt.correlation_scatter_N1_recovery <-  plot_scatter(.data = scatter_data_N_reco
 plt.method.correlation_scatter_N1_recovery <- {plt.scatter_N1_recovery + geom_smooth(method = 'lm', mapping = aes(group = `Concentration method`))} %>% 
   print()
 
+save_plot('cor_method', sv.folder = 'Correlation')
 
 ```
 
@@ -137,6 +143,7 @@ plt.bywwtp_N1_recovery <- {scatter_data_N_reco %>%
   format_classic() %>% 
   print()
 
+save_plot('cor_wwtp', sv.folder = 'Correlation')
 
 ```
 
@@ -158,13 +165,17 @@ plt.bywwtp_N1_recovery <- {scatter_data_N_reco %>%
 #   print()
 
   # with R2 and equation
-plt.nodirect_corr_all <-  plot_scatter(.data = scatter_data_N_reco %>% 
+plt.nodirect_corr_all <-  {plot_scatter(.data = scatter_data_N_reco %>% 
                                          filter(!str_detect(`Concentration method`, 'Direct')),
              x_var = `Copies/L WW_SARS CoV-2 N1`, y_var = Fraction.recovered_BCoV2,
              colour_var = `Concentration method`,  shape_var = WWTP,
              already_pivoted_data = 'yes',
-             title_text = 'SARS-CoV2 N1 vs surrogate recovery fraction across methods') %>% 
+             title_text = 'SARS-CoV2 N1 vs surrogate recovery fraction across methods') + 
+    scale_shape_manual(values = c(15,16,17,7,8,10,3)) }  %>% 
+  format_classic() %>% 
   print()
+
+save_plot('nodirect_cor_all', sv.folder = 'Correlation')
 
 ```
 
@@ -173,27 +184,19 @@ plt.nodirect_corr_all <-  plot_scatter(.data = scatter_data_N_reco %>%
 ```{r corallminusdirectandel}
 
 # (without direct extraction and elution methods)   # with R2 and equation
-plt.nodirectelution_corr_all <-  plot_scatter(.data = scatter_data_N_reco %>% 
+plt.nodirectelution_corr_all <-  {plot_scatter(.data = scatter_data_N_reco %>% 
                                          filter(!str_detect(`Concentration method`, 'Direct|Elution')),
              x_var = `Copies/L WW_SARS CoV-2 N1`, y_var = Fraction.recovered_BCoV2,
              colour_var = `Concentration method`,  shape_var = WWTP,
              already_pivoted_data = 'yes',
-             title_text = 'SARS-CoV2 N1 vs surrogate recovery fraction across methods') %>% 
+             title_text = 'SARS-CoV2 N1 vs surrogate recovery fraction across methods') + 
+    scale_shape_manual(values = c(15,16,17,7,8,10,3)) }  %>% 
+  format_classic() %>% 
   print()
 
-```
-
-```{r savecorrplts}
-
-save_plot('cor_all', plt.correlation_scatter_N1_recovery, 'Correlation')
-save_plot('cor_method', plt.method.correlation_scatter_N1_recovery, 'Correlation')
-save_plot('cor_wwtp', plt.bywwtp_N1_recovery, 'Correlation')
-save_plot('nodirect_cor_all', plt.nodirect_corr_all, 'Correlation')
-save_plot('nodirect-noelution_cor_all', plt.nodirectelution_corr_all, 'Correlation')
+save_plot('nodirect-noelution_cor_all', sv.folder = 'Correlation')
 
 ```
-
-
 
 #### Interactive plot
 

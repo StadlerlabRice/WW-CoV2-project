@@ -54,18 +54,15 @@ all_data_input <- read_sheet(sheeturls$complete_data, sheet = input_sheet) %>%
 only_wwtps <- all_data_input %>% 
   filter(!str_detect(WWTP, 'DI|NTC')) # remove negative controls
 
-# Removing direct extraction
-no_direct_only_wwtps <- only_wwtps %>% 
-  filter()
-
-data_to_plot <- only_wwtps
+# Choose the data to plot
+data_to_plot <- all_data_input
 
 # Summary and long_format ----
 
 minimal_label_columns <- c('Target', 'WWTP', 'Concentration method')
 
 # convert data to wide format - for plotting correlation/scatter plot
-scatter_data_N_reco <- only_wwtps %>% 
+scatter_data_N_reco <- data_to_plot %>% 
   select(all_of(minimal_label_columns), Tube_ID, `Copies/L WW`, Fraction.recovered) %>% 
   pivot_wider(names_from = Target, values_from = c('Copies/L WW', Fraction.recovered))
 
@@ -95,7 +92,7 @@ individual_plots <- function(.data_to_plot = data_to_plot,
                              plt.log = 'Y', 
                              facet.formula = as.formula(~`Concentration method`), 
                              plt.LOQ = 'yes', 
-                             plt.save = 'no',
+                             plt.save = 'yes',
                              plt.format = 'pdf', plt.width = 8, plt.height = 4)
 { 
   
@@ -141,11 +138,11 @@ individual_plots <- function(.data_to_plot = data_to_plot,
   
   
   # Saving plot
-  
-  
-  # work in progress, need to make sv.folder and plt.format as function inputs
-  if(plt.save == 'yes') str_c('qPCR analysis/Methods paper/', sv.folder,  '/', target_string, '.', plt.format) %>%
-      ggsave(width = plt.width, height = plt.height)
+  if(plt.save == 'yes') save_plot(plt.id = target_string, sv.folder = sv.folder, plt.format = plt.format)
+    
+# 
+#   if(plt.save == 'yes') str_c('qPCR analysis/Methods paper/concentration methods-3/png plots/', sv.folder,  '/', target_string, '.', plt.format) %>%
+#       ggsave(width = plt.width, height = plt.height)
   
   return(plt)
 
@@ -154,10 +151,10 @@ individual_plots <- function(.data_to_plot = data_to_plot,
 
 # Plot save function ----
 
-save_plot <- function(plt.id, plt.name, sv.folder = 'Copies ww', plt.format = 'pdf', plt.width = 8, plt.height = 4)
+save_plot <- function(plt.id, sv.folder = 'Copies ww', plt.format = 'pdf', plt.width = 8, plt.height = 4)
 {
-  str_c('qPCR analysis/Methods paper/', sv.folder,  '/', plt.id, '.', plt.format) %>% 
-    ggsave(plot = plt.name, width = plt.width, height = plt.height)
+  str_c('qPCR analysis/Methods paper/concentration methods-3/', sv.folder,  '/', plt.id, '.', plt.format) %>% 
+    ggsave(width = plt.width, height = plt.height)
   
 }
 
@@ -166,11 +163,12 @@ save_plot <- function(plt.id, plt.name, sv.folder = 'Copies ww', plt.format = 'p
 
 # Plots ----
 
+# manual limits for methods-2
 N_ww <- c('low' = 500, 'high' = 4e5)
 N_RNA <- c('low' = .1, 'high' = 20)
 
 rmarkdown::render('conc_methods_allfigs.rmd', 
-                  output_file = str_c('./qPCR analysis/Methods paper/', 'all_figs_without DI,NTC' , '.html'))
+                  output_file = str_c('./qPCR analysis/Methods paper/concentration methods-3/', 'all_figs' , '.html'))
 
 
 # Plots with LOQ same scale ----
