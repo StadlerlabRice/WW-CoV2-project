@@ -97,3 +97,67 @@ ggsave('qPCR analysis/Methods paper/Archive/positive_droplets.png', plot = plt.p
 
 # output data ----
 write_csv(negative_points, 'qPCR analysis/Methods paper/Archive/negative_points_conc methods2.csv', na = '')
+
+# Debugger codes ----
+
+
+# for data run from other scripts 
+
+# Duplicates in scatter data
+scatter_data_N_reco$`Copies/L WW_SARS CoV-2 N2` %>% map_int(length)
+
+scatter_duplicates <- scatter_data_N_reco %>% 
+  filter(map(`Copies/L WW_SARS CoV-2 N2`, length) > 1) %>% 
+  view()
+
+# function for finding duplicated elements in long data (before widening it)
+reg_duplicates <- only_wwtps %>% 
+  group_by(across(all_of(minimal_label_columns)), Tube_ID) %>% 
+  filter(n() > 1) %>% 
+  view()
+
+# from raw data 
+raw_quant_data %>% 
+  filter(!str_detect(Sample_name, 'NTC|Std')) %>% 
+  group_by(Label_tube, Target) %>% 
+  filter(n() > 1) %>% 
+  view()
+
+# from intermediate data
+vol_R %>% 
+  filter(!str_detect(Sample_name, 'NTC|Std')) %>% 
+  group_by(Label_tube, Target) %>% 
+  filter(n() > 1) %>% 
+  view()
+
+# get sample registry properly
+
+raw_registry <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrated samples') %>% 
+  rename('WW_vol' = `Total WW vol measured (ml)`, 
+         'Label_tube' = `Label on tube`, 
+         vol_extracted = `WW volume extracted (ml)`,
+         Vaccine_ID = `Stock ID of Spike`,
+         'Biobot_id' = `Biobot/other ID`,
+         WW_weight = `Total WW weight measured (kg)`) %>% 
+  mutate('WW_vol' = coalesce(WW_vol, `Total WW volume calculated (ml)`) ) %>% 
+  
+  select(WW_vol, Label_tube, vol_extracted, Vaccine_ID, `Biobot_id`, WW_weight) # select only the useful columns
+
+
+# from metadata - sample registry: A whole view for weeding out the probelmatic cells in registry
+raw_dups <- raw_registry %>% 
+  mutate(ronum = row_number()) %>% 
+  # filter(!str_detect(Sample_name, 'NTC|Std')) %>% 
+  group_by(Label_tube) %>% 
+  mutate(dupl = n()) 
+
+view(raw_dups)
+
+
+# from metadata - sample registry: A whole view for weeding out the probelmatic cells in registry
+volumes_data_Rice %>% 
+  mutate(ronum = row_number()) %>% 
+  # filter(!str_detect(Sample_name, 'NTC|Std')) %>% 
+  group_by(Label_tube) %>% 
+  filter(n() > 1) %>% 
+  view()
