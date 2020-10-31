@@ -257,8 +257,13 @@ lm_eqn <- function(m, trig = 0){
                    list(a = format(unname(coef(m)[1]), digits = 4), 
                         b = format(unname(coef(m)[2]), digits = 3), 
                         r2 = format(summary(m)$r.squared, digits = 3)))
+  
+  rsq <- substitute(~~italic(r)^2~"="~r2, 
+                   list(r2 = format(summary(m)$r.squared, digits = 3)))
+  
   # if(trig == 'coeff') c(round(coef(m)[2], 2), round(summary(m)$r.squared, 2))
   if(trig == 'coeff') tibble(slope = round(coef(m)[2], 2), y_intercept = round(coef(m)[1], 2), r_square = round(summary(m)$r.squared, 3))
+  else if(trig == 'Rsquare') as.character(as.expression(rsq))
   else as.character(as.expression(eq)); 
 }
 
@@ -380,6 +385,7 @@ plot_scatter <- function(.data = processed_quant_data,
                          already_pivoted_data = 'yes',
                          title_text = title_name,
                          
+                         text_for_equation = 'Rsquare', # choice: Rsquare or full equation
                          measure_var = 'Copy #',
                          text_cols = minimal_label_columns,
                          sample_var = str_c(extra_categories, '|NTC|Vaccine'), 
@@ -444,7 +450,7 @@ Check if x_var and y_var are present in .data')
   
   # linear regression equation
   lin_reg_eqn <- .data_for_plot %>% mutate(across(all_of(c(checkx, checky)), ~if_else(.x == 0, NaN, .x))) %>% 
-    lm(fmla, data = ., na.action = na.exclude) %>% lm_eqn(.)
+    lm(fmla, data = ., na.action = na.exclude) %>% lm_eqn(., trig = text_for_equation)
   
   
   
