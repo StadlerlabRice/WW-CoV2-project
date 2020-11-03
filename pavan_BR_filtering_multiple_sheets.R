@@ -1,4 +1,7 @@
 
+# get data from the complete data (1019 Rice) into presentable_data
+
+#                                                 Pavan's special runs   | The original processing for the same samples
 d.pavan <- presentable_data %>% filter(str_detect(Facility, '102./.R.*') | str_detect(Tube_ID, '1020 (B|D|E|F)'))
   
 
