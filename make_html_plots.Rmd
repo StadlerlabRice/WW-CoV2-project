@@ -51,7 +51,7 @@ wwtp_manhole_names <- all_WWTP_names %>% str_c(collapse = '|') %>% str_c(manhole
 
 ```{r copiesrna}
 
-  concWW_plot <- plot_mean_sd_jitter(sample_var = extra_categories, exclude_sample = T, x_var = WWTP, ylabel = 'Genome copies/ul RNA') 
+  concWW_plot <- plot_mean_sd_jitter(x_var = WWTP, ylabel = 'Genome copies/ul RNA') 
   
   concWW_plot %>% format_logscale_y() %>% print()
   
@@ -65,7 +65,7 @@ filled circles : Copies of surrogate virus recovered
 
 ```{r summarizing_plot}
 
-plot_mean_sd_jitter(measure_var = 'Recovered', sample_var = str_c(extra_categories), exclude_sample = T, target_filter = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Genome copies/l Wastewater') %>%  format_logscale_y() %>% print()
+plot_mean_sd_jitter(measure_var = 'Recovered', target_filter = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Genome copies/l Wastewater') %>%  format_logscale_y() %>% print()
 
 ```
 
@@ -74,7 +74,7 @@ plot_mean_sd_jitter(measure_var = 'Recovered', sample_var = str_c(extra_categori
 ```{r percentreco}
 
 
-  percentreco_plt <- plot_mean_sd_jitter(measure_var = 'Recovery fraction', sample_var = str_c(extra_categories, '|Vaccine'), exclude_sample = T, target_filter = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Percentage recovery of surrogate virus') 
+  percentreco_plt <- plot_mean_sd_jitter(measure_var = 'Recovery fraction', target_filter = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Percentage recovery of surrogate virus') 
   
  percentreco_plt %>% print()
 
@@ -91,11 +91,11 @@ plot_mean_sd_jitter(measure_var = 'Recovered', sample_var = str_c(extra_categori
 extra_samples_to_plot <- str_c(extra_categories, '|Vaccine|NTC') %>% str_remove('\\|Std|Std\\|')
 
 # N1/N2 and BCoV plots : Copies/ul RNA
-plot_mean_sd_jitter(sample_var = extra_samples_to_plot, exclude_sample = F, x_var = WWTP) %>% format_logscale_y() %>% print()
+plot_mean_sd_jitter(WWTP_var = wwtp_manhole_names, exclude_WWTP = T, x_var = WWTP) %>% format_logscale_y() %>% print()
 
 
 # Copies/l WW: N1/N2 and BCoV plots
-plot_mean_sd_jitter(measure_var = 'Recovered', sample_var = extra_samples_to_plot, x_var = WWTP, ylabel = 'Genome copies/l Wastewater') %>% 
+plot_mean_sd_jitter(measure_var = 'Recovered', WWTP_var = wwtp_manhole_names, exclude_WWTP = T, x_var = WWTP, ylabel = 'Genome copies/l Wastewater') %>% 
   format_logscale_y() %>% print()
 
 # # recovered vs spiked in plot for extra samples
@@ -103,7 +103,7 @@ plot_mean_sd_jitter(measure_var = 'Recovered', sample_var = extra_samples_to_plo
 #   format_logscale_y() %>% print()
 
 # % plot for extra samples
-plot_mean_sd_jitter(measure_var = 'Recovery fraction', sample_var = extra_samples_to_plot, target_filter = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Percentage recovery of surrogate virus') %>% print()
+plot_mean_sd_jitter(measure_var = 'Recovery fraction', WWTP_var = wwtp_manhole_names, exclude_WWTP = T, target_filter = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Percentage recovery of surrogate virus') %>% print()
 
 ```
 
@@ -145,7 +145,7 @@ plot_scatter(processed_quant_data, x_var = N1_multiplex, y_var = N2_multiplex) %
 
 ```{r n1n2streamlined}
 
-ordered_plt1 <- plot_mean_sd_jitter(measure_var = 'Recovered', sample_var = str_c(extra_categories, '|NTC|Vaccine'), exclude_sample = T, x_var = WWTP, ascending_order = T, ylabel = 'Genome copies/l Wastewater')
+ordered_plt1 <- plot_mean_sd_jitter(measure_var = 'Recovered', x_var = WWTP, ascending_order = T, ylabel = 'Genome copies/l Wastewater')
 
 ordered_plt1 %>% print()
 ordered_plt1 %>% format_logscale_y() %>% print()
@@ -156,7 +156,7 @@ ordered_plt1 %>% format_logscale_y() %>% print()
 
 ```{r orderedrna}
 
-ordered_plt1 <- plot_mean_sd_jitter(sample_var = str_c(extra_categories, '|NTC|Vaccine'), exclude_sample = T, x_var = WWTP, ascending_order = T, ylabel = 'Genome copies/ul RNA')
+ordered_plt1 <- plot_mean_sd_jitter(x_var = WWTP, ascending_order = T, ylabel = 'Genome copies/ul RNA')
 
 ordered_plt1 %>% print()
 ordered_plt1 %>% format_logscale_y() %>% print()
@@ -167,7 +167,7 @@ ordered_plt1 %>% format_logscale_y() %>% print()
 
 ```{r percentRecoverystreamlined}
 
-  recostr_plot <- plot_mean_sd_jitter(measure_var = 'Recovery fraction', sample_var = str_c(extra_categories,'|NTC|Vaccine'), exclude_sample = T, x_var = WWTP, ascending_order = T, ylabel = 'Percentage recovery of surrogate')
+  recostr_plot <- plot_mean_sd_jitter(measure_var = 'Recovery fraction', x_var = WWTP, ascending_order = T, ylabel = 'Percentage recovery of surrogate')
   
   recostr_plot %>% print()
 

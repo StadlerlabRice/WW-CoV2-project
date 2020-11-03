@@ -298,7 +298,7 @@ plottm1 <- function(results_relevant)
 
 
 # Plotting mean, sd and individual replicates jitter
-plot_mean_sd_jitter <- function(.data_list = long_processed_minimal, long_format = TRUE, measure_var = 'Copy #', sample_var = '.*', exclude_sample = F, WWTP_var = '.*', exclude_WWTP = F, target_filter = '.*', colour_var = Target, x_var = assay_variable, y_var = `Copy #`, ascending_order = FALSE, facet_var = `Sample_name`, title_text = title_name, ylabel = 'Genome copies/ul RNA', xlabel = plot_assay_variable, facet_style = 'grid')
+plot_mean_sd_jitter <- function(.data_list = long_processed_minimal, long_format = TRUE, measure_var = 'Copy #', sample_var = '.*', exclude_sample = F, WWTP_var = wwtp_manhole_names, exclude_WWTP = F, target_filter = '.*', colour_var = Target, x_var = assay_variable, y_var = `Copy #`, ascending_order = FALSE, facet_var = `Sample_name`, title_text = title_name, ylabel = 'Genome copies/ul RNA', xlabel = plot_assay_variable, facet_style = 'grid')
 { # Convenient handle for repetitive plotting in the same format; Specify data format: long vs wide (specify in long_format = TRUE or FALSE)
   
   .dat_filtered <- .data_list %>% map( ~ filter(.x, 
