@@ -1,5 +1,6 @@
 
 # get data from the complete data (1019 Rice) into presentable_data
+presentable_data <- read_sheet(sheeturls$complete_data, sheet = '1019 Rice')
 
 #                                                 Pavan's special runs   | The original processing for the same samples
 d.pavan <- presentable_data %>% filter(str_detect(Facility, '102./.R.*') | str_detect(Tube_ID, '1020 (B|D|E|F)'))
@@ -18,5 +19,11 @@ map2(d.interim$data, d.interim$catcol,
      ~ write_sheet(.x, sheet = .y, 
                    ss = 'https://docs.google.com/spreadsheets/d/1g6-Z0kpItuffidKEzjv-jvcTHzZPUQp9LxyTeKLngV4/edit#gid=0')
 )
+
+  
+d.interim %>% unnest(cols = data) %>% 
+  filter(str_detect(`Target Name`, 'BCoV')) %>% 
+  write_sheet(sheet = 'Analysis',
+              ss = 'https://docs.google.com/spreadsheets/d/1g6-Z0kpItuffidKEzjv-jvcTHzZPUQp9LxyTeKLngV4/edit#gid=0')
 
   
