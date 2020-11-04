@@ -5,14 +5,14 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW64_1019_BCoV',
-                        'dd.WW65_1019_N1N2',
-                        'dd.WW66_1019_Manhole_N1N2_BCoV')
+read_these_sheets <- c( 'dd.WW68_1026_N1N2',
+                        'dd.WW69_1026_BCoV',
+                        'dd.WW70_1027 Manhole_others_N1N2_BCoV')
 
-title_name <- '1019 Rice'
+title_name <- '1026 Rice'
 
 # Biobot_id sheet
-bb_sheets <- c('Week 28 (10/19)')
+bb_sheets <- c('Week 29 (10/26)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|Control|e811|Acetone' # Depreciated: for excluding this category from a plot, make the switch (exclude_sample = TRUE)
