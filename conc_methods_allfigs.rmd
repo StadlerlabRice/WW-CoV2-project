@@ -39,7 +39,7 @@ plt_pMMoV <- individual_plots(target_string = 'pMMoV')
 
 #### Copies ww/BCoV by method
 ```{r indBCoV}
-plt_BCoV <- individual_plots(target_string = 'BCoV')
+plt_BCoV <- individual_plots(.data_to_plot = all_data_input, target_string = 'BCoV')
 ```
 
 --------------------------------------------------------------------------------------
@@ -67,13 +67,13 @@ plt_pMMoV_RNA <- individual_plots(target_string = 'pMMoV', y_var = `Copies/uL RN
 
 #### Copies RNA/BCoV by method
 ```{r indBCoV_rna}
-plt_BCoV_RNA <- individual_plots(target_string = 'BCoV', y_var = `Copies/uL RNA`)
+plt_BCoV_RNA <- individual_plots(.data_to_plot = all_data_input, target_string = 'BCoV', y_var = `Copies/uL RNA`)
 ```
 
 --------------------------------------------------------------------------------------
 ### Recovery fraction
 ```{r reco}
-plt_BCoV_recovery <- individual_plots(target_string = 'BCoV', y_var = Fraction.recovered)
+plt_BCoV_recovery <- individual_plots(.data_to_plot = all_data_input, target_string = 'BCoV', y_var = Fraction.recovered)
 ```
 
 
@@ -197,6 +197,24 @@ plt.nodirectelution_corr_all <-  {plot_scatter(.data = scatter_data_N_reco %>%
 save_plot('nodirect-noelution_cor_all', sv.folder = 'Correlation')
 
 ```
+
+### Correlation BCoV vs pMMoV
+```{r corallbcovpmmov}
+
+# with R2 and equation
+plt.correlation_scatter_bcov_pmmov <-  {plot_scatter(.data = scatter_data_N_reco,
+             x_var = `Copies/L WW_BCoV2`, y_var = `Copies/L WW_pMMoV_Vgp1`,
+             colour_var = `Concentration method`,  shape_var = WWTP,
+             already_pivoted_data = 'yes',
+             title_text = 'SARS-CoV2 N1 vs surrogate recovery fraction across methods') + 
+    scale_shape_manual(values = c(15,16,17,7,8,10,3)) } %>% 
+  format_classic() %>% 
+  print()
+
+save_plot('BCoV vs pMMoV cor_all', sv.folder = 'Correlation')
+
+```
+
 
 #### Interactive plot
 

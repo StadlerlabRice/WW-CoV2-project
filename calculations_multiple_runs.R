@@ -61,7 +61,7 @@ raw_quant_data <- bind_rows(list_raw_quant_data) %>%
   mutate_at('Tube ID', ~str_remove(., "\\.")) %>% 
   unite('Label_tube', c('Sample_name', 'Tube ID'), sep = "", remove = F) %>%  # make a unique column for matching volumes 
 
-  mutate(across(Label_tube, ~ str_replace(.x, 'HA', 'BHA'))) # Replace HA samples with BHA (for HA filters sent to Baylor)
+  mutate(across(Label_tube, ~ str_replace(.x, 'HA', 'BHA'))) # Replace HA samples with BHA (for HA filters sent to Baylor): Only for the methods-3 dataset
 
 # Load metadata ----------------------------------------------------------------------
 

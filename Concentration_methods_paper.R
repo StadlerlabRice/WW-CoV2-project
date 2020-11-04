@@ -4,6 +4,7 @@
 # Preliminaries ----
 # file name
 input_sheet <- 'Concentration methods paper-3'
+limit_of_quant_sheet <- 'LOQ-3'
 
 # method_namer <- c('ha.*' = 'HA Filtration',
 #                   '^e.*' = 'Elution',
@@ -33,7 +34,7 @@ source('./general_functions.R') # Source the general_functions file
 # Metadata ----
 
 loq_data <- read_sheet('https://docs.google.com/spreadsheets/d/1_32AE3IkBRD3oGSYcYqZwknHZEHiGKtoy1zK5VVTzsI/edit#gid=463904425',
-                       sheet = 'LOQ')
+                       sheet = limit_of_quant_sheet)
 
 # Input file ----
 
@@ -55,7 +56,7 @@ only_wwtps <- all_data_input %>%
   filter(!str_detect(WWTP, 'DI|NTC')) # remove negative controls
 
 # Choose the data to plot
-data_to_plot <- all_data_input
+data_to_plot <- only_wwtps # all data or a filtered data with only WWTPs (removing DI)
 
 # Summary and long_format ----
 
@@ -66,23 +67,8 @@ scatter_data_N_reco <- data_to_plot %>%
   select(all_of(minimal_label_columns), Tube_ID, `Copies/L WW`, Fraction.recovered) %>% 
   pivot_wider(names_from = Target, values_from = c('Copies/L WW', Fraction.recovered))
 
-wider_copies_data <- data_to_plot %>% 
-  pivot_longer(cols = c(`Copies/uL RNA`, `Copies/L WW`), names_to = 'Copy data', values_to = 'Copies')
-
- 
-# # Extract minimal columns from processed data (good for running averages and std deviations for plotting)
-# processed_minimal = list( raw.dat = all_data_input %>% 
-#                             select(all_of(minimal_label_columns), where(is.numeric), -matches('vol')))
-# # Group by all the text columns and calculate mean and standard deviation for biological replicates
-# processed_minimal$summ.dat <- processed_minimal$raw.dat %>% 
-#   group_by_at(all_of(minimal_label_columns)) %>% 
-#   summarize_all(.funs = lst(mean, sd), na.rm = T)
-# 
-# # Convert the above minimal data into long format (convenient for plotting multiple data types on the same plot)
-# long_processed_minimal <- processed_minimal %>% map(pivot_longer, cols = where(is.numeric),
-#                                                     names_to = 'Measurement', values_to = 'value')                                                   
-# long_processed_minimal$summ.dat %<>% separate(Measurement, into = c('Measurement','val'),"_") %>% 
-#   pivot_wider(names_from = val, values_from = value) # Seperate mean and variance and group by variable of measurement
+# wider_copies_data <- data_to_plot %>% 
+#   pivot_longer(cols = c(`Copies/uL RNA`, `Copies/L WW`), names_to = 'Copy data', values_to = 'Copies')
 
 # Plotting functions ----
 
@@ -119,7 +105,7 @@ individual_plots <- function(.data_to_plot = data_to_plot,
       geom_point(alpha = plt.alpha) + 
       facet_grid(facet.formula) +
       ylab(plt.y_label) + ggtitle(plt.title) + 
-      scale_shape_manual(values = c(15,16,17,7,8,10,3)) +
+      scale_shape_manual(values = c(15,16,17,7,8,10,3,4)) +  # c(15,16,17,7,8,10,3)
       
       {if(plt.LOQ == 'yes') 
         list(geom_hline(aes(yintercept = {{LOQ_var}})),
@@ -163,7 +149,7 @@ save_plot <- function(plt.id, sv.folder = 'Copies ww', plt.format = 'pdf', plt.w
 
 # Plots ----
 
-# manual limits for methods-2
+# manual limits for methods-2 - also applicable for methods-3 (tested)
 N_ww <- c('low' = 500, 'high' = 4e5)
 N_RNA <- c('low' = .1, 'high' = 20)
 
@@ -176,3 +162,6 @@ rmarkdown::render('conc_methods_allfigs.rmd',
 # Identify min and max per target: manually
 data_to_plot %>% filter(str_detect(Target, 'N1|N2')) %>% 
   pull(`Copies/L WW`) %>% max()
+
+data_to_plot %>% filter(str_detect(Target, 'N1|N2')) %>% 
+  pull(`Copies/uL RNA`) %>% {.[. > 0]} %>% min()
