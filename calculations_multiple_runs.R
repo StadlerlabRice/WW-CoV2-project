@@ -16,7 +16,8 @@ bb_sheets <- c('Week 29 (10/26)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|Control|e811|Acetone' # Depreciated: for excluding this category from a plot, make the switch (exclude_sample = TRUE)
-manhole_samples = 'HCJ|SOH|ODM|AO' # putting manhole samples in a separate sheet
+manhole_samples = 'HCJ|SOH|ODM|AO|PM|MCHR|AW' # putting manhole samples in a separate sheet 
+# ideally put all manhole names into a sheet and read it when we have more
 
 regular_WWTP_run_output <- TRUE # make TRUE of you want to output the WWTP only data and manhole samples sheets 
       # (make FALSE for controls, testing etc. where only "complete data" sheet is output)
