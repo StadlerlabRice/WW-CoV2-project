@@ -161,3 +161,46 @@ volumes_data_Rice %>%
   group_by(Label_tube) %>% 
   filter(n() > 1) %>% 
   view()
+
+# Comparison plots ----
+
+# MEthods-2 vs Methods-3
+
+# Input sheets
+input_sheets <- c('Concentration methods paper-2', 'Concentration methods paper-3')
+extraction_method_lookup = c('Maxwell/Rice', 'Chemagic/Baylor')
+
+all_data_input <- map2_dfr(input_sheets, extraction_method_lookup,
+                          ~ read_sheet(sheeturls$complete_data, sheet = .x) %>% 
+                            rename(`Concentration method` = Concentration_method, 
+                                   Target = `Target Name`,
+                                   Fraction.recovered = `Recovery fraction`,
+                                   Detection.limit = Detection_Limit,
+                                   `Copies/L WW` = 'Copies/l WW', `Copies/uL RNA` = 'Copies/ul RNA') %>% # for compatibility with old plotting functions
+                            mutate(across(WWTP, ~ fct_relevel(.x, 'DI', after = Inf))) %>%  # bringing DI water control to the last position
+                            filter(!str_detect(Facility, 'Std|0|Vac')) %>% 
+                            # mutate(across(WWTP, ~ str_replace_all(., c('0' = 'NTC')))) %>% 
+                            mutate(extraction_method = .y, .before = 1)
+)
+
+# plot and save N1
+individual_plots(all_data_input, target_string = 'N1', shape_var = extraction_method, plt.save = 'no', plt.LOQ = 'no') + 
+    scale_shape_manual(values = c(19,1))
+
+ggsave('qPCR analysis/Methods paper/Chemagic vs Maxwell_N1.png', width = 8, height = 4)
+
+# plot and save N2
+individual_plots(all_data_input, target_string = 'N2', shape_var = extraction_method, plt.save = 'no', plt.LOQ = 'no') + 
+  scale_shape_manual(values = c(19,1))
+ggsave('qPCR analysis/Methods paper/Chemagic vs Maxwell_N2.png', width = 8, height = 4)
+
+
+# correction conc factor ----
+
+m2.dat <- read_sheet(sheeturls$complete_data, sheet = 'conc methods-2 (archive)') 
+
+m2.dat %<>% mutate(across(concentration.factor, ~ if_else(str_detect(Concentration_method, 'Elution'), 60, .))) %>% 
+  mutate(`Copies/l WW` = `Copies/ul RNA` * 1e6/ concentration.factor,
+         `Recovery fraction` = `Copies/l WW` / `Spiked-in Copies/l WW`)
+
+write_sheet(m2.dat, sheeturls$complete_data, sheet = 'Concentration methods paper-2')

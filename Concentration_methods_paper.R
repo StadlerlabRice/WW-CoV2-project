@@ -75,6 +75,7 @@ scatter_data_N_reco <- data_to_plot %>%
 individual_plots <- function(.data_to_plot = data_to_plot, 
                              target_string = 'N1', 
                              y_var = `Copies/L WW`, 
+                             shape_var = WWTP,
                              plt.log = 'Y', 
                              facet.formula = as.formula(~`Concentration method`), 
                              plt.LOQ = 'yes', 
@@ -101,7 +102,7 @@ individual_plots <- function(.data_to_plot = data_to_plot,
   plt <- {.data_to_plot %>% 
       filter(str_detect(Target, target_string)) %>% 
       
-      ggplot(aes(WWTP, {{y_var}}, colour = `Concentration method`,  shape = WWTP)) + 
+      ggplot(aes(WWTP, {{y_var}}, colour = `Concentration method`,  shape = {{shape_var}})) + 
       geom_point(alpha = plt.alpha) + 
       facet_grid(facet.formula) +
       ylab(plt.y_label) + ggtitle(plt.title) + 
