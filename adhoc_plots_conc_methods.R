@@ -195,6 +195,23 @@ individual_plots(all_data_input, target_string = 'N2', shape_var = extraction_me
 ggsave('qPCR analysis/Methods paper/Chemagic vs Maxwell_N2.png', width = 8, height = 4)
 
 
+
+# plot all things into html for combined plots
+data_to_plot <- all_data_input
+
+minimal_label_columns <- c('Target', 'WWTP', 'Concentration method', 'extraction_method')
+
+# convert data to wide format - for plotting correlation/scatter plot
+scatter_data_N_reco <- data_to_plot %>% 
+  select(all_of(minimal_label_columns), Tube_ID, `Copies/L WW`, Fraction.recovered) %>% 
+  pivot_wider(names_from = Target, values_from = c('Copies/L WW', Fraction.recovered))
+
+
+rmarkdown::render('conc_methods_allfigs.rmd', 
+                  output_file = str_c('./qPCR analysis/Methods paper/', 'Maxwell vs Chemagic' , '.html'))
+
+
+
 # correction conc factor ----
 
 m2.dat <- read_sheet(sheeturls$complete_data, sheet = 'conc methods-2 (archive)') 
@@ -204,3 +221,4 @@ m2.dat %<>% mutate(across(concentration.factor, ~ if_else(str_detect(Concentrati
          `Recovery fraction` = `Copies/l WW` / `Spiked-in Copies/l WW`)
 
 write_sheet(m2.dat, sheeturls$complete_data, sheet = 'Concentration methods paper-2')
+
