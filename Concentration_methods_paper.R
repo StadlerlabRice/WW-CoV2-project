@@ -23,7 +23,7 @@ y_axis_namer <- c('Copies/L WW' = 'Genome copies/L wastewater',
                   'Fraction.recovered' = 'Fraction of surrogate virus recovered')
 
 # folder to save
-sv.folder_namer <- c('Copies/L WW' = 'Copies ww',
+sv.category_namer <- c('Copies/L WW' = 'Copies ww',
                   'Copies/uL RNA' = 'Copies RNA',
                   'Fraction.recovered' = 'Recovery')
 
@@ -87,8 +87,8 @@ individual_plots <- function(.data_to_plot = data_to_plot,
   plt.title <- str_replace_all(target_string, title_namer) # title of plot
   plt.y_label <- substitute(y_var) %>% paste() %>%  # y axis label
     str_replace_all(y_axis_namer) 
-  sv.folder <- substitute(y_var) %>% paste() %>%  # save folder
-    str_replace_all(sv.folder_namer) 
+  sv.category <- substitute(y_var) %>% paste() %>%  # save folder
+    str_replace_all(sv.category_namer) 
   
   # Remove LOQ for recovery fraction and pMMoV
   if(str_detect(plt.y_label, 'Recovery') | str_detect(target_string, 'pMMoV|BCoV')) plt.LOQ <- 'no'
@@ -125,10 +125,10 @@ individual_plots <- function(.data_to_plot = data_to_plot,
   
   
   # Saving plot
-  if(plt.save == 'yes') save_plot(plt.id = target_string, sv.folder = sv.folder, plt.format = plt.format)
+  if(plt.save == 'yes') save_plot(plt.sv.name = target_string, sv.category = sv.category, plt.format = plt.format)
     
 # 
-#   if(plt.save == 'yes') str_c('qPCR analysis/Methods paper/concentration methods-3/png plots/', sv.folder,  '/', target_string, '.', plt.format) %>%
+#   if(plt.save == 'yes') str_c('qPCR analysis/Methods paper/concentration methods-3/png plots/', sv.category,  '-', target_string, '.', plt.format) %>%
 #       ggsave(width = plt.width, height = plt.height)
   
   return(plt)
@@ -138,9 +138,9 @@ individual_plots <- function(.data_to_plot = data_to_plot,
 
 # Plot save function ----
 
-save_plot <- function(plt.id, sv.folder = 'Copies ww', plt.format = 'pdf', plt.width = 8, plt.height = 4)
+save_plot <- function(plt.sv.name, sv.category = 'Copies ww', plt.format = 'pdf', plt.width = 8, plt.height = 4)
 {
-  str_c('qPCR analysis/Methods paper/concentration methods-3/', sv.folder,  '/', plt.id, '.', plt.format) %>% 
+  str_c('qPCR analysis/Methods paper/concentration methods-3/', sv.category,  '-', plt.sv.name, '.', plt.format) %>% 
     ggsave(width = plt.width, height = plt.height)
   
 }
