@@ -183,6 +183,9 @@ all_data_input <- map2_dfr(input_sheets, extraction_method_lookup,
                             mutate(extraction_method = .y, .before = 1)
 )
 
+# make newline after "+" in the concentraiton method (for nice display of facets)
+all_data_input %<>% mutate(across(`Concentration method`, ~ str_replace(., '\\+', '+\n')))
+
 # plot and save N1
 individual_plots(all_data_input, target_string = 'N1', shape_var = extraction_method, plt.save = 'no', plt.LOQ = 'no') + 
     scale_shape_manual(values = c(19,1))
