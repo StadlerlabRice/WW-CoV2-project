@@ -222,3 +222,9 @@ m2.dat %<>% mutate(across(concentration.factor, ~ if_else(str_detect(Concentrati
 
 write_sheet(m2.dat, sheeturls$complete_data, sheet = 'Concentration methods paper-2')
 
+# only NTC plots
+
+data_to_plot <- all_data_input %>% filter(str_detect(WWTP, '0')) %>% mutate(WWTP = 'NTC')
+
+data_to_plot %>% ggplot(aes(Target, `Copies/uL RNA`)) + geom_point() + ggtitle('No Template Controls for various targets')
+ggsave('qPCR analysis/Methods paper/Concentration methods-3/NTC_all_targets.pdf', height = 4, width = 6)
