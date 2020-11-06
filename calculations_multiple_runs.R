@@ -5,21 +5,21 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW46_Bellaire daily part1-N1N2',
-                        'dd.WW56_Bellaire daily part2, Zachs old_N1N2',
-                        'WW83_Bellaire daily part2, Zach old samples repeat_BCoV_Std62',
-                        'WW87_Bellaire daily samples-1_BCoV_Std66')
+read_these_sheets <- c( 'dd.WW68_1026_N1N2',
+                        'dd.WW69_1026_BCoV',
+                        'dd.WW70_1027 Manhole_others_N1N2_BCoV')
 
-title_name <- 'Bellaire daily and others'
+title_name <- '1026 Rice'
 
 # Biobot_id sheet
-bb_sheets <- c('Week 27 (10/12)')
+bb_sheets <- c('Week 29 (10/26)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
-extra_categories = 'Std|Control|e811|Acetone' # for excluding this category from a plot, make the switch (exclude_sample = TRUE)
-special_samples = 'HCJ|SOH|ODM|AO' # putting special samples in a separate sheet
+extra_categories = 'Std|Control|e811|Acetone' # Depreciated: for excluding this category from a plot, make the switch (exclude_sample = TRUE)
+manhole_samples = 'HCJ|SOH|ODM|AO|PM|MCHR|AW' # putting manhole samples in a separate sheet 
+# ideally put all manhole names into a sheet and read it when we have more
 
-regular_WWTP_run_output <- FALSE # make TRUE of you want to output the WWTP only data and special samples sheets 
+regular_WWTP_run_output <- TRUE # make TRUE of you want to output the WWTP only data and manhole samples sheets 
       # (make FALSE for controls, testing etc. where only "complete data" sheet is output)
 
 # rarely changed parameters
@@ -277,12 +277,12 @@ if(regular_WWTP_run_output)
     write_csv(present_only_WW, path = str_c('excel files/Weekly data to HHD/', title_name, '.csv'), na = '') # output csv file
   }
   
-  present_special_samples <- present_WW_data %>% filter(str_detect(Facility, special_samples))
+  present_manhole_samples <- present_WW_data %>% filter(str_detect(Facility, manhole_samples))
   
   # Write data if not empty
-  if(present_special_samples %>% plyr::empty() %>% !.){
-    check_ok_and_write(present_special_samples, sheeturls$wwtp_only_data, str_c(title_name, ' special samples')) # save results to a google sheet, ask for overwrite
-    write_csv(present_special_samples, path = str_c('excel files/Weekly data to HHD/', title_name, ' manhole samples.csv'), na = '') # output CSV file
+  if(present_manhole_samples %>% plyr::empty() %>% !.){
+    check_ok_and_write(present_manhole_samples, sheeturls$wwtp_only_data, str_c(title_name, ' manhole samples')) # save results to a google sheet, ask for overwrite
+    write_csv(present_manhole_samples, path = str_c('excel files/Weekly data to HHD/', title_name, ' manhole samples.csv'), na = '') # output CSV file
   }
 }
 

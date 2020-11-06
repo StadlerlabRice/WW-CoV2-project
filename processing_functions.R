@@ -256,9 +256,10 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
 process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilution_wells = 'none')
 { # Baylor wells : choose 1) none, 2) '.*' for all, 3) '[A-H]([1-9]$|10)' etc. for specific wells 
   
-  template_volume_dpcr <- 10 /22 * 20 # ul template volume per well of the ddPCR reaction - for N1/N2
+  template_volume_ddpcr <- tibble(Target = c('N1_multiplex', 'N2_multiplex', 'BCoV', 'pMMoV'),
+                                  template_vol = c(10, 10, 4, 4) /22 * 20) # ul template volume per well of the 20 ul ddPCR reaction for each target
   
-  RNA_dilution_factor_BCoV <- 50 * 4/10 # RNA dilution factor * Template loaded per 22 ul reaction / 10 (assumed above) - for diluted BCoV samples
+  RNA_dilution_factor_BCoV <- 50  # RNA dilution factor for diluted BCoV samples
   
   # Ad hoc - marking the samples from baylor (will append /baylor to target name)
   # Work in progress?
@@ -290,7 +291,11 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
     right_join(plate_template, by = 'Well Position') %>%  # Incorporate samples names from the google sheet by matching well position
     mutate_at('Target', ~str_replace_all(., c('N1' = 'N1_multiplex' , 'N2' = 'N2_multiplex'))) %>% 
     filter(!is.na(Target)) %>% 
-    mutate('Copy #' = CopiesPer20uLWell/ template_volume_dpcr) %>% 
+    
+    # Adding different template volumes for each target for division
+    left_join(template_volume_ddpcr) %>% # join array of template volume - different for N1,N2 and BCOV2
+    mutate('Copy #' = CopiesPer20uLWell/ template_vol) %>%  
+    
     select(`Sample_name`, `Copy #`, Target, everything())
   
   
@@ -311,9 +316,7 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
     # Ad-hoc corrections for errors in making plate - sample dilutions etc.
     mutate_cond(str_detect(`Well Position`, adhoc_dilution_wells), # Regex of wells to manipulate
                 across(`Copy #`, ~ . / 50) # dilution corrections or other changes
-    )
-
-  
+    ) %>% 
     
     # Adding tag to target for baylor smaples
     { if(!str_detect(baylor_wells, 'none|None')) { 
@@ -330,7 +333,7 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   
   
   # Saving vaccine data into Vaccines sheet in data dump: For easy book keeping
-  vaccine_data <- polished_results %>% filter(str_detect(Sample_name, 'Vaccine')) %>%
+  vaccine_data <- polished_results %>% filter(str_detect(Sample_name, 'Vaccine') & !str_detect(Target, 'N._multiplex')) %>%
     mutate('Prepared on' = '',
            Week = str_extract(flnm, '[:digit:]{3,4}') %>% unlist() %>% str_c(collapse = ', '),
            Vaccine_ID = assay_variable, 
