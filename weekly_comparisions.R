@@ -32,12 +32,19 @@ metadata <- read_csv(meta_file, col_types = 'cccccicciid') %>% select(WWTP, Date
 # Acquire all the pieces of the data : read saved raw qPCR results from a google sheet
 list_rawqpcr <- map(read_these_sheets, ~ read_sheet(sheeturls$complete_data , sheet = .x) %>%  
                       mutate('Week' = str_match(.x, '[:digit:]*(?= Rice)')) %>%
-                      rename('Target' = matches('Target'), 'Original Sample Volume' = matches('WW_vol|Original Sample Volume'), 'Ct' = matches('^CT', ignore.case = T)) %>% 
+                      
+                      # backward compatibility (accounting for column name changes)
+                      rename('Target' = matches('Target'), 
+                             'Received_WW_vol' = matches('WW_vol|Original Sample Volume'), # if both old and new names are present, it will throw error
+                             'Percentage_recovery_BCoV' = matches('Recovery fraction')
+                             'Ct' = matches('^CT', ignore.case = T)) %>% 
+                      
                       mutate_at('Target', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2')))
                     
 ) 
 
-rawqpcr <- bind_rows(list_rawqpcr)
+rawqpcr <- bind_rows(list_rawqpcr) # bind all the sheets' results into 1 data frame/tibble
+
 results_abs <- rawqpcr %>% filter(!str_detect(Facility, extra_categories)) %>%  # remove unnecessary data
   filter(!str_detect(Target, 'BRSV')) %>% 
   left_join(metadata) %>% 

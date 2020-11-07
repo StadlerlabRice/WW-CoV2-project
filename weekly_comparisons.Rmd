@@ -20,23 +20,23 @@ knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 10, fig.he
 
 ```{r}
 
-results_abs %>% ggplot(aes(x = Week, y = `Recovery fraction`)) + geom_jitter(width = .1)
+results_abs %>% ggplot(aes(x = Week, y = `Percentage_recovery_BCoV`)) + geom_jitter(width = .1)
 ```
 
 ### Recovery | Violin + Density plot
 
 ```{r}
 
-results_abs %>% ggplot(aes(x = Week, y = `Recovery fraction`)) + geom_violin() + geom_jitter(width = .1, alpha = .2)
+results_abs %>% ggplot(aes(x = Week, y = `Percentage_recovery_BCoV`)) + geom_violin() + geom_jitter(width = .1, alpha = .2)
 ```
 
 ### Recovery | Dot plot
 
 ```{r dots}
 
-nameless <- results_abs %>% select(Week, `Recovery fraction`) %>% drop_na() %>% group_by(Week) %>% arrange(`Recovery fraction`) %>%  mutate(id = row_number()) 
+nameless <- results_abs %>% select(Week, `Percentage_recovery_BCoV`) %>% drop_na() %>% group_by(Week) %>% arrange(`Percentage_recovery_BCoV`) %>%  mutate(id = row_number()) 
 
-nameless %>% ggplot(aes(x = id, y = `Recovery fraction`, colour = Week)) + geom_point() + geom_line()
+nameless %>% ggplot(aes(x = id, y = `Percentage_recovery_BCoV`, colour = Week)) + geom_point() + geom_line()
 ```
 
 ## Copies/L | Density plots
@@ -119,7 +119,7 @@ plt.sctrNBCOV %>% ggplotly(dynamicTicks = T)
 results_abs.list <- list(
   raw.dat = results_abs %>% mutate('Sample_name' = Week), # dummy column - for compatibility with plot_mean_sd_jitter() function
 
-  summ.dat = results_abs %>% select(Facility, WWTP, Target, `Copies/ul RNA`: `Recovery fraction`, Week, -any_of('Bottle')) %>%
+  summ.dat = results_abs %>% select(Facility, WWTP, Target, `Copies/ul RNA`: `Percentage_recovery_BCoV`, Week, -any_of('Bottle')) %>%
   group_by(Target, Facility, WWTP, Week) %>% summarise_at(c('Copies/l WW'), lst(mean, sd), na.rm = T) %>% 
     mutate('Sample_name' = Week)
 )
@@ -164,14 +164,14 @@ plt_week3 %>% print()
 
 ```{r timeseriespercentreco, fig.width= 16, fig.height= 12}
 
-summary_reco <- results_abs %>% select(Facility, WWTP, Target, `Copies/ul RNA`: `Recovery fraction`, Week, -any_of('Bottle')) %>%
+summary_reco <- results_abs %>% select(Facility, WWTP, Target, `Copies/ul RNA`: `Percentage_recovery_BCoV`, Week, -any_of('Bottle')) %>%
   mutate('Sample_name' = Week) %>% 
   group_by(`Sample_name`, Target, Facility, WWTP, Week) %>% 
-  summarise_at(c('Recovery fraction'), lst(mean, sd), na.rm = T)
+  summarise_at(c('Percentage_recovery_BCoV'), lst(mean, sd), na.rm = T)
 
 recovery_data.list <- list(summary_reco, results_abs.list$raw.dat) %>% map(filter, str_detect(Target, 'BCoV')) %>% setNames(c('summ.dat', 'raw.dat'))
 
-plt_week3 <- plot_mean_sd_jitter(recovery_data.list, long_format = F, sample_var = extra_categories, exclude_sample = T, x_var = Week, y_var = `Recovery fraction`, colour_var = Target, ylabel = 'Percentage of BCoV copies recovered') + geom_line(aes(group = Target)) + facet_wrap(facets = ~WWTP, scales = 'free_x')
+plt_week3 <- plot_mean_sd_jitter(recovery_data.list, long_format = F, sample_var = extra_categories, exclude_sample = T, x_var = Week, y_var = `Percentage_recovery_BCoV`, colour_var = Target, ylabel = 'Percentage of BCoV copies recovered') + geom_line(aes(group = Target)) + facet_wrap(facets = ~WWTP, scales = 'free_x')
 
 plt_week3 %>% print()
 ```
@@ -180,7 +180,7 @@ plt_week3 %>% print()
 
 ```{r normalizedcopiesn, fig.width= 16, fig.height= 12}
 
-summary_normalized <- results_abs %>% select(Facility, WWTP, Target, `Copies/ul RNA`: `Recovery fraction`, Week, `Viral load per capita per day`, -any_of('Bottle')) %>%
+summary_normalized <- results_abs %>% select(Facility, WWTP, Target, `Copies/ul RNA`: `Percentage_recovery_BCoV`, Week, `Viral load per capita per day`, -any_of('Bottle')) %>%
   mutate('Sample_name' = Week) %>% 
   group_by(`Sample_name`, Target, Facility, WWTP, Week) %>% 
   summarise_at(c('Viral load per capita per day'), lst(mean, sd), na.rm = T)

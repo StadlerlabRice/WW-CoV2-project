@@ -166,9 +166,13 @@ if (baylor_trigger) {
 processed_quant_data <- bind_rows(vol_R, vol_B) %>% 
   
   # Calculations for spiked in and recovered copies of the virus
-  mutate(`Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e3 * elution_volume/vol_extracted, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
-  mutate_cond(str_detect(Sample_name, 'Vaccine'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (.050 * 1e-3), Recovered = `Copy #` * 1e6 * 50/20, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
-  mutate_cond(str_detect(Target, 'Baylor'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e6 /30, `Recovery fraction` = 100 * Recovered/`Actual spike-in`) %>% 
+  mutate(`Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), 
+         Recovered = `Copy #` * 1e3 * elution_volume/vol_extracted, 
+         `Percentage_recovery_BCoV` = 100 * Recovered/`Actual spike-in`) %>% 
+  
+  mutate_cond(str_detect(Sample_name, 'Vaccine'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (.050 * 1e-3), Recovered = `Copy #` * 1e6 * 50/20, `Percentage_recovery_BCoV` = 100 * Recovered/`Actual spike-in`) %>% 
+  mutate_cond(str_detect(Target, 'Baylor'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e6 /30, `Percentage_recovery_BCoV` = 100 * Recovered/`Actual spike-in`) %>% 
+  
   select(-spike_virus_conc) %>% 
   
   # arranging data by facility name alphabetical
@@ -205,7 +209,7 @@ long_processed_minimal$summ.dat %<>% separate(Measurement, into = c('Measurement
 presentable_data <- processed_quant_data %>% 
   
   # renaming variables
-  rename('Facility' = `FACILITY NAME`, 'Original Sample Volume' = WW_vol, Ct = CT, 'Target Name' = Target) %>%
+  rename('Facility' = `FACILITY NAME`, 'Received_WW_vol' = WW_vol, Ct = CT, 'Target Name' = Target) %>%
   rename('Copies/ul RNA' = `Copy #`, 'Copies/l WW' = Recovered, 'Spiked-in Copies/l WW' = `Actual spike-in`) %>%
   rename('Volume Filtered' = vol_extracted) %>% 
   
@@ -226,10 +230,10 @@ presentable_data <- processed_quant_data %>%
   # Arrange rows by WWTP facility 
   arrange(Facility, biological_replicates) %>%
   # unite('Facility', c(Facility, biological_replicates), sep = "-", na.rm = T) %>%
-  mutate_cond(str_detect(`Target Name`, '^N'), `Recovery fraction` = NA, `Spiked-in Copies/l WW` = NA) %>%
+  mutate_cond(str_detect(`Target Name`, '^N'), `Percentage_recovery_BCoV` = NA, `Spiked-in Copies/l WW` = NA) %>%
   
   # Selecting column order
-  select(Facility, WWTP, Date, Lab, `Target Name`, `Original Sample Volume`, `Volume Filtered`, Ct, `Copies/ul RNA`, `Copies/l WW`, Sample_ID, Detection_Limit, Sample_Type, `Spiked-in Copies/l WW`, `Recovery fraction`, WWTP_ID, Tube_ID, Comments) %>%
+  select(Facility, WWTP, Date, Lab, `Target Name`, `Received_WW_vol`, `Volume Filtered`, Ct, `Copies/ul RNA`, `Copies/l WW`, Sample_ID, Detection_Limit, Sample_Type, `Spiked-in Copies/l WW`, `Percentage_recovery_BCoV`, WWTP_ID, Tube_ID, Comments) %>%
   mutate_at('Target Name', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2'))) %>% 
   mutate_at('Target Name', ~str_remove(., '/Baylor'))
 
@@ -263,7 +267,7 @@ if(regular_WWTP_run_output)
     
     rename('Copies_per_uL' = `Copies/ul RNA`,
            'Copies_Per_Liter_WW' = `Copies/l WW`,
-           'Recovery_Rate' = `Recovery fraction`,
+           'Recovery_Rate' = `Percentage_recovery_BCoV`,
            Target_Name = `Target Name`) %>%
     select(-contains('Volume'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID)
   
