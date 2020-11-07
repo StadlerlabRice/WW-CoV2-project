@@ -199,6 +199,15 @@ ggsave('qPCR analysis/Methods paper/Chemagic vs Maxwell_N2.png', width = 8, heig
 
 
 
+# correlation maxwell vs chemagic plots
+minimal_label_columns <- c('Target', 'WWTP', 'Concentration method', 'extraction_method')
+
+scatter_max_chemagic_dat <- all_data_input %>% 
+  select(all_of(minimal_label_columns), Tube_ID, `Copies/L WW`, Fraction.recovered) %>% 
+  pivot_wider(names_from = extraction_method, values_from = c('Copies/L WW', Fraction.recovered))
+
+
+
 # plot all things into html for combined plots
 data_to_plot <- all_data_input
 
