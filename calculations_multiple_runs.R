@@ -269,7 +269,7 @@ if(regular_WWTP_run_output)
            'Copies_Per_Liter_WW' = `Copies/l WW`,
            'Recovery_Rate' = `Percentage_recovery_BCoV`,
            Target_Name = `Target Name`) %>%
-    select(-contains('Volume'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID)
+    select(-contains('Vol'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID)
   
   present_only_WW <- present_WW_data %>% 
     filter(WWTP %in% all_WWTP_names) # retain only WWTP data
