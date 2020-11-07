@@ -19,8 +19,6 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 
 
 # Standard curve ----
-# choose file name, in the same directory as Rproject
-flnm.here <- 'WW36_720_BCoV_Std19'  # set the filename (if running through this file; uncomment the function call in the end)
 
 process_standard_curve <- function(flnm)
 { # note: Quantity of copies/well must be written in the template sheet for the standards
