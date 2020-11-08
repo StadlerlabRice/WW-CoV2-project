@@ -206,6 +206,15 @@ scatter_max_chemagic_dat <- all_data_input %>%
   select(all_of(minimal_label_columns), Tube_ID, `Copies/L WW`, Fraction.recovered) %>% 
   pivot_wider(names_from = extraction_method, values_from = c('Copies/L WW', Fraction.recovered))
 
+plt.max_chemagic <-  {plot_scatter(.data = scatter_max_chemagic_dat,
+                                                      x_var = `Copies/L WW_Maxwell/Rice`, y_var = `Copies/L WW_Chemagic/Baylor`,
+                                                      colour_var = `Concentration method`,  shape_var = WWTP, grouping_var = Target,
+                                                      already_pivoted_data = 'yes',
+                                                      title_text = 'SARS-CoV2 N1 vs surrogate recovery fraction across methods') + 
+    scale_shape_manual(values = c(15,16,17,7,8,10,3))  + 
+    facet_wrap( ~ Target, scales = 'free')} %>% 
+  format_classic() %>% 
+  print()
 
 
 # plot all things into html for combined plots
