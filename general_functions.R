@@ -410,8 +410,8 @@ plot_scatter <- function(.data = processed_quant_data,
       filter(str_detect(`Sample_name`, sample_var, negate = exclude_sample)) %>% # account for missing var
       pivot_wider(names_from = 'Target', values_from = all_of(measure_var)) %>% # Target can be generalized?
       ungroup() # why did you ungroup - for the lm ..?
-  } else .data_for_plot <- .data #%>%  # direct carrying of data to next steps
-   # {if(!is.null(grouping_var)) group_by(., {{grouping_var}}) else . } # DISABLED FOR CHECKING IF PLOTLY RUNS (GROUPS NOT WORKING RIGHT NOW
+  } else .data_for_plot <- .data %>%  # direct carrying of data to next steps
+   {if(!is.null(enexpr(grouping_var))) group_by(., {{grouping_var}}) else . } # DISABLED FOR CHECKING IF PLOTLY RUNS (GROUPS NOT WORKING RIGHT NOW
   
   
   
@@ -462,9 +462,9 @@ Check if x_var and y_var are present in .data')
     geom_point(size = 2, mapping = aes(colour = {{colour_var}}, shape = {{shape_var}})) +
     
     # linear regression
-    geom_smooth(method = 'lm') + # .. , mapping = aes(group = {{grouping_var}})  # DISABLED GROUPS 
+    geom_smooth(method = 'lm', mapping = aes(group = {{grouping_var}})) +  # DISABLED GROUPS 
     geom_text(data = . %>% summarise(across(where(is.numeric), max, na.rm = T) ),
-              # mapping = aes(group = {{grouping_var}}), # DISABLED FOR CHECKING IF PLOTLY RUNS (GROUPS NOT WORKING RIGHT NOW)
+              mapping = aes(group = {{grouping_var}}), # DISABLED FOR CHECKING IF PLOTLY RUNS (GROUPS NOT WORKING RIGHT NOW)
               label = lin_reg_eqn, parse = TRUE, show.legend = F, hjust = 'inward', nudge_x = -5) +
     
     # Dummy y = x line
