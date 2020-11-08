@@ -381,7 +381,7 @@ plot_biological_replicates <- function(results_abs, title_text = title_name, xla
 
 plot_scatter <- function(.data = processed_quant_data, 
                          x_var = N1_multiplex, y_var = N2_multiplex, colour_var = NULL, shape_var = NULL,
-                         grouping_var = NULL, # CURRENTLY ONLY WORKS FOR NULL GROUP
+                         grouping_var = NULL, # Works for any variable!
                          already_pivoted_data = 'yes',
                          title_text = title_name,
                          
@@ -411,7 +411,7 @@ plot_scatter <- function(.data = processed_quant_data,
       pivot_wider(names_from = 'Target', values_from = all_of(measure_var)) %>% # Target can be generalized?
       ungroup() # why did you ungroup - for the lm ..?
   } else .data_for_plot <- .data %>%  # direct carrying of data to next steps
-   {if(!is.null(enexpr(grouping_var))) group_by(., {{grouping_var}}) else . } # DISABLED FOR CHECKING IF PLOTLY RUNS (GROUPS NOT WORKING RIGHT NOW
+   {if(!is.null(enexpr(grouping_var))) group_by(., {{grouping_var}}) else . } # Groups are working now
   
   
   
@@ -458,13 +458,21 @@ Check if x_var and y_var are present in .data')
   # plotting part
   
   plt1 <- .data_for_plot %>% 
-    ggplot(aes(x = {{x_var}}, y =  {{y_var}} )) +
+    ggplot(aes(x = {{x_var}}, y =  {{y_var}})) +
     geom_point(size = 2, mapping = aes(colour = {{colour_var}}, shape = {{shape_var}})) +
     
     # linear regression
-    geom_smooth(method = 'lm', mapping = aes(group = {{grouping_var}})) +  # DISABLED GROUPS 
+    geom_smooth(method = 'lm', mapping = aes(group = {{grouping_var}},
+                                             colour = {if(identical(enexpr(colour_var),
+                                                                    enexpr(grouping_var)))  {{colour_var}}
+                                             })
+                ) +  # GROUPS enabled
+    
     geom_text(data = . %>% summarise(across(where(is.numeric), max, na.rm = T) ),
-              mapping = aes(group = {{grouping_var}}), # DISABLED FOR CHECKING IF PLOTLY RUNS (GROUPS NOT WORKING RIGHT NOW)
+              mapping = aes( colour = {if(!identical(enexpr(colour_var),
+                                            enexpr(grouping_var)))  NULL},
+                             shape = NULL, group = {{grouping_var}}
+                            ), # Groups working
               label = lin_reg_eqn, parse = TRUE, show.legend = F, hjust = 'inward', nudge_x = -5) +
     
     # Dummy y = x line
