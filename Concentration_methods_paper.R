@@ -79,7 +79,7 @@ individual_plots <- function(.data_to_plot = data_to_plot,
                              plt.log = 'Y', 
                              facet.formula = as.formula(~`Concentration method`), 
                              plt.LOQ = 'yes', 
-                             plt.save = 'yes',
+                             plt.save = 'no',
                              plt.format = 'pdf', plt.width = 8, plt.height = 4)
 { 
   

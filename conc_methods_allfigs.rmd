@@ -22,14 +22,20 @@ knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 12, fig.he
 
 #### Copies ww/N1 by method
 ```{r indn1}
-plt_N1 <- individual_plots(target_string = 'N1') %>% 
-  scale_y_log10(labels = fancy_scientific, limits = N_ww)
+plt_N1 <- {individual_plots(target_string = 'N1', plt.save = 'no') + 
+    # ylim(N_ww) +
+    scale_y_log10(labels = fancy_scientific, limits = N_ww)} %>% 
+  print()
 ```
 
 #### Copies ww/N2 by method
 ```{r indn2}
-plt_N2 <- individual_plots(target_string = 'N2') %>% 
-  scale_y_log10(labels = fancy_scientific, limits = N_ww)
+plt_N2 <- individual_plots(target_string = 'N2', plt.save = 'no') + 
+    # ylim(N_ww) +
+    scale_y_log10(labels = fancy_scientific, limits = N_ww)
+
+# patch1 <- plt_N1 + plt_N2
+# patch1
 ```
 
 #### Copies ww/pMMoV by method
@@ -48,14 +54,21 @@ plt_BCoV <- individual_plots(.data_to_plot = all_data_input, target_string = 'BC
 
 #### Copies RNA/N1 by method
 ```{r indN1_rna}
-plt_N1_RNA <- individual_plots(target_string = 'N1', y_var = `Copies/uL RNA`) %>% 
+plt_N1_RNA <- individual_plots(target_string = 'N1', y_var = `Copies/uL RNA`, plt.save = 'no') +
   scale_y_log10(labels = fancy_scientific, limits = N_RNA)
 ```
 
 #### Copies RNA/N2 by method
 ```{r indN2_rna}
-plt_N2_RNA <- individual_plots(target_string = 'N2', y_var = `Copies/uL RNA`) %>% 
+plt_N2_RNA <- individual_plots(target_string = 'N2', y_var = `Copies/uL RNA`, plt.save = 'no') +
   scale_y_log10(labels = fancy_scientific, limits = N_RNA)
+
+plt_N1 + plt_N2 + plt_N1_RNA + plt_N2_RNA + 
+  plot_layout(guides = 'collect') + 
+  plot_annotation(tag_levels = 'A') #& 
+  # theme(legend.position = 'bottom')
+
+save_plot('N12_4 panel', sv.category = 'patched', plt.width = 14, plt.height = 7)
 ```
 
 
@@ -68,6 +81,12 @@ plt_pMMoV_RNA <- individual_plots(target_string = 'pMMoV', y_var = `Copies/uL RN
 #### Copies RNA/BCoV by method
 ```{r indBCoV_rna}
 plt_BCoV_RNA <- individual_plots(.data_to_plot = all_data_input, target_string = 'BCoV', y_var = `Copies/uL RNA`)
+
+plt_BCoV + plt_pMMoV + plt_BCoV_RNA + plt_pMMoV_RNA + 
+  plot_layout(guides = 'collect') + 
+  plot_annotation(tag_levels = 'A')
+
+save_plot('BCoV_pMMoV_4 panel', sv.category = 'patched', plt.width = 14, plt.height = 7)
 ```
 
 --------------------------------------------------------------------------------------
