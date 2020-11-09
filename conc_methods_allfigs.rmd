@@ -22,7 +22,7 @@ knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 12, fig.he
 
 #### Copies ww/N1 by method
 ```{r indn1}
-plt_N1 <- {individual_plots(target_string = 'N1', plt.save = 'no') + 
+plt_N1 <- {individual_plots(.data_to_plot = without_ntc, target_string = 'N1', plt.save = 'no') + 
     # ylim(N_ww) +
     scale_y_log10(labels = fancy_scientific, limits = N_ww)} %>% 
   print()
@@ -30,7 +30,7 @@ plt_N1 <- {individual_plots(target_string = 'N1', plt.save = 'no') +
 
 #### Copies ww/N2 by method
 ```{r indn2}
-plt_N2 <- individual_plots(target_string = 'N2', plt.save = 'no') + 
+plt_N2 <- individual_plots(.data_to_plot = without_ntc, target_string = 'N2', plt.save = 'no') + 
     # ylim(N_ww) +
     scale_y_log10(labels = fancy_scientific, limits = N_ww)
 
@@ -40,12 +40,12 @@ plt_N2 <- individual_plots(target_string = 'N2', plt.save = 'no') +
 
 #### Copies ww/pMMoV by method
 ```{r indpMMoV}
-plt_pMMoV <- individual_plots(target_string = 'pMMoV')
+plt_pMMoV <- individual_plots(.data_to_plot = without_ntc, target_string = 'pMMoV')
 ```
 
 #### Copies ww/BCoV by method
 ```{r indBCoV}
-plt_BCoV <- individual_plots(.data_to_plot = all_data_input, target_string = 'BCoV')
+plt_BCoV <- individual_plots(.data_to_plot = without_ntc, target_string = 'BCoV')
 ```
 
 --------------------------------------------------------------------------------------

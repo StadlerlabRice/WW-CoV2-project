@@ -44,19 +44,30 @@ all_data_input <- read_sheet(sheeturls$complete_data, sheet = input_sheet) %>%
          Fraction.recovered = `Recovery fraction`,
          Detection.limit = Detection_Limit,
          `Copies/L WW` = 'Copies/l WW', `Copies/uL RNA` = 'Copies/ul RNA') %>% # for compatibility with old plotting functions
-  mutate(across(WWTP, ~ fct_relevel(.x, 'DI', after = Inf))) %>%  # bringing DI water control to the last position
-  filter(!str_detect(Facility, 'Std|0|Vac')) %>% 
+  filter(!str_detect(Facility, 'Std|Vac')) %>% 
+  mutate(across(WWTP, ~ str_replace(., '0', 'NTC'))) %>% 
   
   # atach LOQs
-  left_join(loq_data)
+  left_join(loq_data) %>% 
+  
+  # make newline after "+" in the concentraiton method (for nice display of facets)
+  mutate(across(`Concentration method`, ~ str_replace(., '\\+', '+\n')), 
+         across(`Concentration method`, ~ if_else(WWTP == 'NTC', 'NTC', .)), # adding NTC in the panels
+         across(`Concentration method`, ~ fct_relevel(.x, 'NTC', after = Inf)) # Bringing NTC to the last facet
+  ) %>% 
+  
+  mutate(across(WWTP, ~ fct_relevel(.x, 'DI', after = Inf)))  # bringing DI water control to the last position
+  
 
 # filtering data ----
+without_ntc <- all_data_input %>% 
+  filter(!str_detect(WWTP, 'NTC')) # remove negative controls
 
 only_wwtps <- all_data_input %>% 
   filter(!str_detect(WWTP, 'DI|NTC')) # remove negative controls
 
 # Choose the data to plot
-data_to_plot <- only_wwtps # all data or a filtered data with only WWTPs (removing DI)
+data_to_plot <- all_data_input # all data or a filtered data with only WWTPs (removing DI)
 
 # Summary and long_format ----
 
@@ -104,7 +115,7 @@ individual_plots <- function(.data_to_plot = data_to_plot,
       
       ggplot(aes(WWTP, {{y_var}}, colour = `Concentration method`,  shape = {{shape_var}})) + 
       geom_point(alpha = plt.alpha) + 
-      facet_grid(facet.formula) +
+      facet_grid(facet.formula, scale = 'free_x', space = 'free_x') +
       ylab(plt.y_label) + ggtitle(plt.title) + 
       scale_shape_manual(values = c(15,16,17,7,8,10,3,4)) +  # c(15,16,17,7,8,10,3)
       
