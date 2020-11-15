@@ -466,9 +466,13 @@ Check if x_var and y_var are present in .data')
   facet_max_values <- .data_for_plot %>% 
     summarise(across(where(is.numeric), max, na.rm = T) )
   
+  # combining the max values for position and label into 1 data set
   lin_reg_text_data <- lin_reg_eqn %>%  
-    select(-data) %>% 
-    left_join(facet_max_values) 
+      select(-data) %>%
+    {if(!is.null(enexpr(grouping_var))) 
+      {left_join(., facet_max_values)
+      } else bind_cols(., facet_max_values)}
+  
   
   # plotting part
   
@@ -625,9 +629,9 @@ check_ok_and_write <- function(data, sheet_URL, title_name)
 }
 
 
-# dummy test tibble
+# dummy test tibble ----
 a <- tibble(a1 = 1:6, a2 = 6:1, a3 = rep(c('a', 'b'),3), a4 = a2 ^2)
 y_namr_test <- list( 'a2' = expression(paste('this is a ', mu, 'L')),
                  'a4' = expression(paste('super large ', sigma, 'L')))
 
-ggplot(a, aes(a1, a2, colour = a3)) + geom_point() + geom_line() + ylab(y_namr_test[['a4']])
+aplt <- ggplot(a, aes(a1, a2, colour = a3)) + geom_point() + geom_line() + ylab(y_namr_test[['a4']])
