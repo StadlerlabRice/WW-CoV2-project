@@ -386,7 +386,9 @@ plot_scatter <- function(.data = processed_quant_data,
                          already_pivoted_data = 'yes',
                          title_text = title_name,
                          
-                         text_for_equation = 'Rsquare', # choice: Rsquare or full equation
+                         plt.regression.stats = 'yes', text_for_equation = 'Rsquare', # choice: Rsquare or full equation
+                         remove.zeros.before.correlating = 'yes',
+                         
                          measure_var = 'Copy #',
                          text_cols = minimal_label_columns,
                          sample_var = str_c(extra_categories, '|NTC|Vaccine'), 
@@ -450,11 +452,23 @@ Check if x_var and y_var are present in .data')
   xyeq <- .data_for_plot %>% summarise(across(where(is.numeric), max, na.rm = T)) %>% select(all_of(c(checkx, checky))) %>% min() %>% {.*0.9} %>% modx()
   
   # linear regression equation
-  lin_reg_eqn <- .data_for_plot %>% mutate(across(all_of(c(checkx, checky)), ~if_else(.x == 0, NaN, .x))) %>% 
-    lm(fmla, data = ., na.action = na.exclude) %>% lm_eqn(., trig = text_for_equation)
+  lin_reg_eqn <- .data_for_plot %>% 
+    {if(remove.zeros.before.correlating == 'yes') mutate(., across(all_of(c(checkx, checky)), ~if_else(.x == 0, NaN, .x))) else .} %>%  # removed zero values (why?)
+    nest(data = -{{grouping_var}}) %>% 
+    mutate( lin_reg_eqn = map_chr(data, 
+                                  ~ lm(fmla, data = .x, na.action = na.exclude) %>% 
+                                    lm_eqn(trig = text_for_equation) 
+                                  )
+
+            ) #%>% 
+    # pull(lin_reg_eqn_colm) # if needed as a simple vector (legacy, problem with matching taret names)
   
+  facet_max_values <- .data_for_plot %>% 
+    summarise(across(where(is.numeric), max, na.rm = T) )
   
-  
+  lin_reg_text_data <- lin_reg_eqn %>%  
+    select(-data) %>% 
+    left_join(facet_max_values) 
   
   # plotting part
   
@@ -463,18 +477,19 @@ Check if x_var and y_var are present in .data')
     geom_point(size = 2, mapping = aes(colour = {{colour_var}}, shape = {{shape_var}})) +
     
     # linear regression
-    geom_smooth(method = 'lm', mapping = aes(group = {{grouping_var}},
+    geom_smooth(data = . %>% {if(remove.zeros.before.correlating == 'yes') mutate(., across(all_of(c(checkx, checky)), ~if_else(.x == 0, NaN, .x))) else .},
+                method = 'lm', mapping = aes(group = {{grouping_var}},
                                              colour = {if(identical(enexpr(colour_var),
                                                                     enexpr(grouping_var)))  {{colour_var}}
                                              })
                 ) +  # GROUPS enabled
     
-    geom_text(data = . %>% summarise(across(where(is.numeric), max, na.rm = T) ),
-              mapping = aes( colour = {if(!identical(enexpr(colour_var),
-                                            enexpr(grouping_var)))  NULL},
-                             shape = NULL, group = {{grouping_var}}
-                            ), # Groups working
-              label = lin_reg_eqn, parse = TRUE, show.legend = F, hjust = 'inward', nudge_x = -5) +
+    {if(plt.regression.stats == 'yes') geom_text(data = lin_reg_text_data,
+                                                 mapping = aes( colour = {if(!identical(enexpr(colour_var),
+                                                                                        enexpr(grouping_var)))  NULL},
+                                                                shape = NULL, group = {{grouping_var}}, # Groups working
+                                                                label = lin_reg_eqn),
+                                                 parse = TRUE, show.legend = F, hjust = 'inward', nudge_x = -5)} +
     
     # Dummy y = x line
     # geom_abline(slope = 1, intercept = 0, alpha = .4) + annotate(geom = 'text', x = xyeq, y = xyeq, label = 'y = x', alpha = .3) +
@@ -485,7 +500,7 @@ Check if x_var and y_var are present in .data')
 
 
 # plotting regression with R square
-# from github somewhere?
+# SOURCE: https://community.rstudio.com/t/annotate-ggplot2-with-regression-equation-and-r-squared/6112/6
 # use as 
 # facetRegression(mpg, "displ", "hwy", "class")
 
@@ -608,3 +623,11 @@ check_ok_and_write <- function(data, sheet_URL, title_name)
     write_sheet(data, sheet_URL, sheet=title_name)
   }
 }
+
+
+# dummy test tibble
+a <- tibble(a1 = 1:6, a2 = 6:1, a3 = rep(c('a', 'b'),3), a4 = a2 ^2)
+y_namr_test <- list( 'a2' = expression(paste('this is a ', mu, 'L')),
+                 'a4' = expression(paste('super large ', sigma, 'L')))
+
+ggplot(a, aes(a1, a2, colour = a3)) + geom_point() + geom_line() + ylab(y_namr_test[['a4']])
