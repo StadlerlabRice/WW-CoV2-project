@@ -180,13 +180,13 @@ all_data_input <- map2_dfr(input_sheets, extraction_method_lookup,
                             mutate(across(WWTP, ~ fct_relevel(.x, 'DI', after = Inf))) %>%  # bringing DI water control to the last position
                             filter(!str_detect(Facility, 'Std|0|Vac')) %>% 
                             # mutate(across(WWTP, ~ str_replace_all(., c('0' = 'NTC')))) %>% 
-                            mutate(extraction_method = .y, .before = 1)
+                            mutate(extraction_method = .y, .before = 1) %>% 
+                            
+                            # make newline after "+" in the concentraiton method (for nice display of facets)
+                            mutate(across(`Concentration method`, ~ str_replace(., '\\+', '+\n')))
 )
 
-# make newline after "+" in the concentraiton method (for nice display of facets)
-all_data_input %<>% mutate(across(`Concentration method`, ~ str_replace(., '\\+', '+\n')))
-
-# plot and save N1
+# plot N1
 individual_plots(all_data_input, target_string = 'N1', shape_var = extraction_method, plt.save = 'no', plt.LOQ = 'no') + 
     scale_shape_manual(values = c(19,1))
 
@@ -203,18 +203,29 @@ ggsave('qPCR analysis/Methods paper/Chemagic vs Maxwell_N2.png', width = 8, heig
 minimal_label_columns <- c('Target', 'WWTP', 'Concentration method', 'extraction_method')
 
 scatter_max_chemagic_dat <- all_data_input %>% 
-  select(all_of(minimal_label_columns), Tube_ID, `Copies/L WW`, Fraction.recovered) %>% 
-  pivot_wider(names_from = extraction_method, values_from = c('Copies/L WW', Fraction.recovered))
+  select(all_of(minimal_label_columns), Tube_ID, `Copies/L WW`, Fraction.recovered, `Copies/uL RNA`) %>% 
+  pivot_wider(names_from = extraction_method, values_from = c('Copies/L WW', Fraction.recovered, 'Copies/uL RNA'))
 
 plt.max_chemagic <-  {plot_scatter(.data = scatter_max_chemagic_dat,
-                                                      x_var = `Copies/L WW_Maxwell/Rice`, y_var = `Copies/L WW_Chemagic/Baylor`,
-                                                      colour_var = `Concentration method`,  shape_var = WWTP, grouping_var = Target,
-                                                      already_pivoted_data = 'yes',
-                                                      title_text = 'SARS-CoV2 N1 vs surrogate recovery fraction across methods') + 
+                                   x_var = `Copies/L WW_Maxwell/Rice`, y_var = `Copies/L WW_Chemagic/Baylor`,
+                                   colour_var = `Concentration method`,  shape_var = WWTP, grouping_var = Target,
+                                   remove.zeros.before.correlating = 'no',
+                                   already_pivoted_data = 'yes',  
+                                   measure_var = 'Copies per L WW',
+                                   title_text = 'Maxwell vs Chemagic extraction comparison') + 
     scale_shape_manual(values = c(15,16,17,7,8,10,3))  + 
-    facet_wrap( ~ Target, scales = 'free')} %>% 
+    facet_wrap( ~ Target, scales = 'free')
+  } %>% 
   format_classic() %>% 
+  # format_logscale_x() %>%
+  # format_logscale_y() %>%
   print()
+
+# save plot
+ggsave('qPCR analysis/Methods paper/Maxwell vs Chemagic/(with non detects) Maxwell vs chemagic-scatter.png', width = 12, height = 7)
+
+# plot maxwell vs chemagic copies/ul RNA
+# later if needed
 
 
 # plot all things into html for combined plots
