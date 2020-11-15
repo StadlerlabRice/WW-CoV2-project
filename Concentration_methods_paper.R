@@ -2,6 +2,10 @@
 # Data distributed across sheets in an excel file
 
 # Preliminaries ----
+
+# Loading libraries, functions and user inputs
+source('./general_functions.R') # Source the general_functions file
+
 # file name
 input_sheet <- 'Concentration methods paper-3'
 limit_of_quant_sheet <- 'LOQ-3'
@@ -12,14 +16,14 @@ limit_of_quant_sheet <- 'LOQ-3'
 #                   'de.*' = 'Direct Extraction') 
 
 # Naming scheme for plot titles
-title_namer <- c('N1' = 'SARS-CoV2 N1 across methods',
-                 'N2' = 'SARS-CoV2 N2 across methods',
-                 'BCoV' = 'Surrogate virus (BCoV) across methods',
-                 'pMMoV' = 'Internal control: Pepper-mild-mottle virus across methods')  
+title_namer <- c('N1' = 'SARS-CoV2 N1',
+                 'N2' = 'SARS-CoV2 N2',
+                 'BCoV' = 'Surrogate virus (BCoV)',
+                 'pMMoV' = 'Internal control: Pepper-mild-mottle virus')  
 
 # naming scheme for plot y axis labels
-y_axis_namer <- c('Copies/L WW' = 'Genome copies/L wastewater',
-                  'Copies/uL RNA' = 'Genome copies/uL RNA extract',
+y_axis_namer <- list('Copies/L WW' = 'Genome copies/L wastewater',
+                  'Copies/uL RNA' = expression(paste('Genome copies/', mu, 'L RNA extract')),
                   'Fraction.recovered' = 'Fraction of surrogate virus recovered')
 
 # folder to save
@@ -27,9 +31,8 @@ sv.category_namer <- c('Copies/L WW' = 'Copies ww',
                   'Copies/uL RNA' = 'Copies RNA',
                   'Fraction.recovered' = 'Recovery')
 
-
-# Loading libraries, functions and user inputs
-source('./general_functions.R') # Source the general_functions file
+# WWTP renaming with nice order
+wwtp_renamer <- LETTERS[1:6] %>% setNames(c('H','^I','J','L','M','P')) # renaming in alphabetical order
 
 # Metadata ----
 
@@ -56,11 +59,12 @@ all_data_input <- read_sheet(sheeturls$complete_data, sheet = input_sheet) %>%
          across(`Concentration method`, ~ fct_relevel(.x, 'NTC', after = Inf)) # Bringing NTC to the last facet
   ) %>% 
   
-  mutate(across(WWTP, ~ fct_relevel(.x, 'DI', after = Inf)))  # bringing DI water control to the last position
-  
+  mutate(across(WWTP, ~ str_replace_all(., wwtp_renamer))) %>% 
+  mutate(across(WWTP, ~ fct_relevel(.x, 'DI', after = Inf))) # bringing DI water control to the last position
+
 
 # filtering data ----
-without_ntc <- all_data_input %>% 
+without_ntc <- all_data_input %>%
   filter(!str_detect(WWTP, 'NTC')) # remove negative controls
 
 only_wwtps <- all_data_input %>% 
@@ -74,7 +78,7 @@ data_to_plot <- all_data_input # all data or a filtered data with only WWTPs (re
 minimal_label_columns <- c('Target', 'WWTP', 'Concentration method')
 
 # convert data to wide format - for plotting correlation/scatter plot
-scatter_data_N_reco <- data_to_plot %>% 
+scatter_data_N_reco <- without_ntc %>%  # change to data_to_plot if needed
   select(all_of(minimal_label_columns), Tube_ID, `Copies/L WW`, Fraction.recovered) %>% 
   pivot_wider(names_from = Target, values_from = c('Copies/L WW', Fraction.recovered))
 
@@ -96,13 +100,18 @@ individual_plots <- function(.data_to_plot = data_to_plot,
   
   # preliminary conversions
   plt.title <- str_replace_all(target_string, title_namer) # title of plot
-  plt.y_label <- substitute(y_var) %>% paste() %>%  # y axis label
-    str_replace_all(y_axis_namer) 
+  
+  plt.y_label <- if(is.call(substitute(y_var))) {as_label(enquo(y_var))
+    } else substitute(y_var) %>% paste() %>%  # y axis label
+    y_axis_namer[[.]]
+  
+  # if(is.null(plt.y_label)) plt.y_label <- substitute(y_var) %>% paste() # if name is not found in the y_axis_namer
+  
   sv.category <- substitute(y_var) %>% paste() %>%  # save folder
     str_replace_all(sv.category_namer) 
   
   # Remove LOQ for recovery fraction and pMMoV
-  if(str_detect(plt.y_label, 'Recovery') | str_detect(target_string, 'pMMoV|BCoV')) plt.LOQ <- 'no'
+  if(str_detect(plt.y_label, 'Recover') | str_detect(target_string, 'pMMoV|BCoV')) plt.LOQ <- 'no'
   # LOQ for copies/ul RNA
   if(str_detect(plt.y_label, 'RNA')) LOQ_var <- expr(LOQ_RNA) # place holder LOQ for ddPCR in copies/ul RNA
   else LOQ_var <- expr(LOQ)
@@ -129,7 +138,7 @@ individual_plots <- function(.data_to_plot = data_to_plot,
     
   } %>% 
     
-    {if(plt.log == 'Y') format_logscale_y(.)} %>%
+    {if(plt.log == 'Y') format_logscale_y(.) else .} %>%
     
     format_classic() %>% 
     print()
@@ -151,7 +160,7 @@ individual_plots <- function(.data_to_plot = data_to_plot,
 
 save_plot <- function(plt.sv.name, sv.category = 'Copies ww', plt.format = 'pdf', plt.width = 8, plt.height = 4)
 {
-  str_c('qPCR analysis/Methods paper/concentration methods-3/', sv.category,  '-', plt.sv.name, '.', plt.format) %>% 
+  str_c('qPCR analysis/Methods paper/concentration methods-3/', sv.category,  '-', plt.sv.name, '.', plt.format) %>%
     ggsave(width = plt.width, height = plt.height)
   
 }
@@ -164,9 +173,11 @@ save_plot <- function(plt.sv.name, sv.category = 'Copies ww', plt.format = 'pdf'
 # manual limits for methods-2 - also applicable for methods-3 (tested)
 N_ww <- c('low' = 500, 'high' = 4e5)
 N_RNA <- c('low' = .1, 'high' = 20)
+bcov_ww <- c(3.8e5, 8.7e8)
+bcov_RNA <- c(20, 4.3e4)
 
 rmarkdown::render('conc_methods_allfigs.rmd', 
-                  output_file = str_c('./qPCR analysis/Methods paper/concentration methods-3/', 'all_figs' , '.html'))
+                  output_file = str_c('./qPCR analysis/Methods paper/concentration methods-3/', 'all_figs  (update)' , '.html'))
 
 
 # Plots with LOQ same scale ----
@@ -177,3 +188,9 @@ data_to_plot %>% filter(str_detect(Target, 'N1|N2')) %>%
 
 data_to_plot %>% filter(str_detect(Target, 'N1|N2')) %>% 
   pull(`Copies/uL RNA`) %>% {.[. > 0]} %>% min()
+
+data_to_plot %>% filter(str_detect(Target, 'BCoV|pMMoV'), `Copies/L WW` > 0 ) %>% 
+  summarise_at('Copies/L WW', lst(min, max), na.rm = T) %>% as.numeric() %>%  format(scientific = T, digits = 2)
+
+data_to_plot %>% filter(str_detect(Target, 'BCoV|pMMoV'), `Copies/uL RNA` > 0 ) %>% 
+  summarise_at('Copies/uL RNA', lst(min, max), na.rm = T) #%>% as.numeric() %>%  format(scientific = T, digits = 2)
