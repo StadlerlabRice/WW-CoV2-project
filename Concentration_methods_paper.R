@@ -180,7 +180,7 @@ rmarkdown::render('conc_methods_allfigs.rmd',
                   output_file = str_c('./qPCR analysis/Methods paper/concentration methods-3/', 'all_figs  (update)' , '.html'))
 
 
-# Plots with LOQ same scale ----
+# Scale of plots ----
 
 # Identify min and max per target: manually
 data_to_plot %>% filter(str_detect(Target, 'N1|N2')) %>% 
@@ -194,3 +194,17 @@ data_to_plot %>% filter(str_detect(Target, 'BCoV|pMMoV'), `Copies/L WW` > 0 ) %>
 
 data_to_plot %>% filter(str_detect(Target, 'BCoV|pMMoV'), `Copies/uL RNA` > 0 ) %>% 
   summarise_at('Copies/uL RNA', lst(min, max), na.rm = T) #%>% as.numeric() %>%  format(scientific = T, digits = 2)
+
+
+# Effective LOD calculation ----
+.dat_by_method <- all_data_input %>% 
+  group_by(Method, `Concentration method`) %>% 
+  select(Fraction.recovered, LOQ, LoQ_units) %>% 
+  drop_na() %>% 
+  summarise(across(is.numeric, mean),
+            across(LoQ_units, unique)) %>% 
+  mutate(Effective_LOQ = LOQ * Fraction.recovered,
+         Effective_LOQ_formula = 'LOQ * Fraction.recovered')
+
+write_sheet(.dat_by_method, sheet = 'Effective LOQ-3', 
+            ss = 'https://docs.google.com/spreadsheets/d/1_32AE3IkBRD3oGSYcYqZwknHZEHiGKtoy1zK5VVTzsI/edit#gid=463904425')
