@@ -5,10 +5,10 @@ source('./general_functions.R') # Source the general_functions file
 source('./inputs_for_analysis.R') # Source the file with user inputs
 
 # sheets to read from "qPCR data to present + recoveries"" google sheet
-read_these_sheets <- c('622 Rice', '629 Rice', '706 Rice', '713 Rice', '720 Rice', '727 Rice', '803 Rice', '810 Rice', '817 Rice', '824 Rice', '831 Rice', '907 Rice', '914 Rice', '928 Rice', '1005 Rice', '1012 Rice', '1019 Rice') # sheet name(s) in the raw data file (qPCR data dump) - Separate by comma (,)
+read_these_sheets <- c('622 Rice', '629 Rice', '706 Rice', '713 Rice', '720 Rice', '727 Rice', '803 Rice', '810 Rice', '817 Rice', '824 Rice', '831 Rice', '907 Rice', '914 Rice', '928 Rice', '1005 Rice', '1012 Rice', '1019 Rice', '1026 Rice', '1102 Rice', '1109 Rice', '1116 Rice') # sheet name(s) in the raw data file (qPCR data dump) - Separate by comma (,)
 
 # read_these_sheets <- c('810 Rice', '817 Rice', '824 Rice', '831 Rice', '907 Rice', '915 Rice') # sheet name(s) in the raw data file (qPCR data dump) - Separate by comma (,)
-title_name <- 'Weekly till 1019' # name of the filename for writing presentable data and plot title
+title_name <- 'Weekly till 1116' # name of the filename for writing presentable data and plot title
 
 # file for metadata - flow rate litres/day; population by WWTP area
 meta_file <- 'WWTP_All_Results' %>% str_c('../../../Covid Tracking Project/Rice and Baylor Combined Data/', ., '.csv')
@@ -36,7 +36,7 @@ list_rawqpcr <- map(read_these_sheets, ~ read_sheet(sheeturls$complete_data , sh
                       # backward compatibility (accounting for column name changes)
                       rename('Target' = matches('Target'), 
                              'Received_WW_vol' = matches('WW_vol|Original Sample Volume'), # if both old and new names are present, it will throw error
-                             'Percentage_recovery_BCoV' = matches('Recovery fraction')
+                             'Percentage_recovery_BCoV' = matches('Recovery fraction'),
                              'Ct' = matches('^CT', ignore.case = T)) %>% 
                       
                       mutate_at('Target', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2')))
