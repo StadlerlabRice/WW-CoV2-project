@@ -12,7 +12,7 @@ output:
 
 ```{r setup, include=FALSE}
 library(knitr)
-knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 12, fig.height = 4)
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 8, fig.height = 4)
 
 ```
 
@@ -58,7 +58,7 @@ plt_BCoV <- {individual_plots(target_string = 'BCoV') +
 
 #### Copies RNA/N1 by method
 ```{r indN1_rna}
-plt_N1_RNA <- individual_plots(target_string = 'N1', y_var = `Copies/uL RNA`, plt.save = 'no') +
+plt_N1_RNA <- individual_plots(target_string = 'N1', y_var = `Copies/uL RNA`, plt.save = 'yes', plt.format = 'png') +
   scale_y_log10(labels = fancy_scientific, limits = N_RNA)
 ```
 
@@ -122,7 +122,7 @@ plt_N1byreco <- {individual_plots(.data_to_plot = longer_for_reco_fraction,
     } %>% 
   print()
 
-plt_N1byreco %>% format_logscale_y()
+plt_N1byreco %>% format_logscale_y() %>% print()
 ```
 
 ### pMMoV by recovery fraction
@@ -137,7 +137,7 @@ plt_pmmovbyreco <- {individual_plots(.data_to_plot = longer_for_reco_fraction,
     } %>% 
   print()
 
-plt_pmmovbyreco %>% format_logscale_y()
+plt_pmmovbyreco %>% format_logscale_y() %>% print()
 
 ```
 
@@ -299,34 +299,34 @@ plt.correlation_scatter_bcov_pmmov <-  {plot_scatter(.data = scatter_data_N_reco
 ```
 
 
-#### Interactive plot
+<!-- #### Interactive plot -->
 
-Correlation across all data
-```{r interactcor} 
-ggplotly(plt.correlation_scatter_N1_recovery, dynamicTicks = T)
+<!-- Correlation across all data -->
+<!-- ```{r interactcor}  -->
+<!-- ggplotly(plt.correlation_scatter_N1_recovery, dynamicTicks = T) -->
 
-```
+<!-- ``` -->
 
-Correlation across methods
-```{r interactcor2} 
-ggplotly(plt.method.correlation_scatter_N1_recovery, dynamicTicks = T)
+<!-- Correlation across methods -->
+<!-- ```{r interactcor2}  -->
+<!-- ggplotly(plt.method.correlation_scatter_N1_recovery, dynamicTicks = T) -->
 
-```
+<!-- ``` -->
 
-Correlation across wwtp
-```{r interactcor3} 
-ggplotly(plt.bywwtp_N1_recovery, dynamicTicks = T)
+<!-- Correlation across wwtp -->
+<!-- ```{r interactcor3}  -->
+<!-- ggplotly(plt.bywwtp_N1_recovery, dynamicTicks = T) -->
 
-```
+<!-- ``` -->
 
-Correlation across all categories (removing direct extraction)
-```{r interactcor4}
-ggplotly(plt.nodirect_corr_all, dynamicTicks = T)
+<!-- Correlation across all categories (removing direct extraction) -->
+<!-- ```{r interactcor4} -->
+<!-- ggplotly(plt.nodirect_corr_all, dynamicTicks = T) -->
 
-```
+<!-- ``` -->
 
-Correlation across all categories (removing direct extraction and elution)
-```{r interactcor5}
-ggplotly(plt.nodirectelution_corr_all, dynamicTicks = T)
+<!-- Correlation across all categories (removing direct extraction and elution) -->
+<!-- ```{r interactcor5} -->
+<!-- ggplotly(plt.nodirectelution_corr_all, dynamicTicks = T) -->
 
-```
+<!-- ``` -->
