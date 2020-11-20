@@ -47,7 +47,7 @@ a. Check that the DI water sample has a unique name and doesn't match with previ
 
 #### Rstudio
 1. Open the Rproject file **qPCR** in Rstudio - this will load from the current directory (all subpaths are relative to this) 
-2. Run (source) the **processing_functions.R** file (clicking on the *save* button top left or *Run* - top right)
+2. Run (source) the **1-processing_functions.R** file (clicking on the *save* button top left or *Run* - top right)
 3. Make a variable with the names of the files to be processed: Ex- **read_these_sheets <- c('dd.WW31_831_N1N2', 'WW66_831_BCoV_Std48')**
 4. Run this command: ** map(read_these_sheets, process_all_pcr): This will process Standard curve, qPCR data and ddPCR data for each file automatically (according to the name)
     a. This dumps the data for each file with the appropriate sample labels in a google sheet 'qPCR data dump' google sheet
@@ -56,7 +56,7 @@ a. Check that the DI water sample has a unique name and doesn't match with previ
     c. If the qPCR plate does not have a standard curve in it and you want to use an older standard curve, run something like this: `process_qpcr('WW66_831_BCoV_Std48', std_override = 'Std21')`
     d. If you are processing baylor data *(whose name/volume information is emailed to us and saved in a local excel sheet)* give a regular expression indicating the baylor_samples location to the baylor_wells input to the functions. Example: Baylor samples present in wells A1 to D11, then run: `process_all_pcr('WW66_831_BCoV_Std48', baylor_wells = '[A-D]([1-9]$|10|11)')` 
     
-5. Open **calculations_multiple_runs** file
+5. Open **2-calculations_multiple_runs** file
     a. Change the read_these_sheets to the 1 or more sheets to plot together that are already in the 'qPCR data dump' and change the title_name to appropriate week :Ex- *713 Rice*
 6. Source or run the script after saving the changes. This saves data in 3 different locations with the same name as **title_name**
     a. qPCR complete data - all data including controls
@@ -73,5 +73,5 @@ In case you see any errors,
 
 ### Meta-analysis across weeks
 
-1. Run Weekly_comparisons.R with the names of all weeks to include in the analysis
+1. Run **3-Weekly_comparisons.R** with the names of all weeks to include in the analysis
       - Ensure that the week's samples have already been processed and saved in the *complete qPCR data* sheet
