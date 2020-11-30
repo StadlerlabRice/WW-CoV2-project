@@ -26,7 +26,8 @@ all_dd.data <- map(all_dd.data_list, ~ select(.x, Run_ID, Sample_name, Target, P
 # filter NTC
 ntc_dd.data <- all_dd.data %>% 
   select(Run_ID, Sample_name, Target, Positives, AcceptedDroplets, `Copy #`) %>% 
-  filter(str_detect(Sample_name, 'NTC'))
+  filter(str_detect(Sample_name, 'NTC')) %>% 
+  mutate(across(Target, ~ str_replace_all(., c('BCoV.*' = 'BCoV', '/Baylor' = '')) ) )
 
 # Plotting ----
 
