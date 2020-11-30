@@ -188,6 +188,18 @@ harmonize_week <- function(week_cols)
   
 }
 
+
+# column type comparison between two data sheets : Useful for troubleshooting errors while combining data
+col_compare <- function(names_of_sheets, data_spreadsheet = sheeturls$data_dump)
+{ # work in progress - trying to name the columns in the data frame with the names of the sheets, and filter ones that differ
+  dlist <- map(names_of_sheets, ~ read_sheet(data_spreadsheet, sheet = .x))
+  
+  dtype_table <- map2(dlist, names_of_sheets, 
+                     ~ map_chr(.x, class))
+  
+}
+
+
 # Data writing output ----
 
 # This function writes to the specified google sheet if the current sheet does
@@ -520,3 +532,4 @@ check_ok_and_write <- function(data, sheet_URL, title_name)
 # Dummy data ----
 
 a <- tibble(a1 = 1:5, a2 = 5:1, a3 = letters[1:5])
+
