@@ -83,28 +83,111 @@ ntc_dd.data %>%
 
 ```
 
+# Scatter plot
+
+By target
+```{r scatterntc}
+
+pltsctr <- ntc_dd.data %>%
+  # filter(Positives > 3) %>% 
+  # group_by(Run_ID) %>% 
+  # mutate(mean_positive = mean(Positives)) %>% 
+
+  {ggplot(., aes(Target, Positives, colour = Target)) +
+      geom_jitter(width = .5)
+    } %>% 
+  format_classic() %>% 
+  # ggplotly(dynamicTicks = T)
+  print()
+
+ntc_dd.data %>%
+  {ggplot(., aes(1, Positives, colour = Target, label = Run_ID)) +
+      geom_violin() + geom_jitter(width = .5)
+    } %>% 
+  format_classic() %>% 
+  ggplotly(dynamicTicks = T, tooltip = 'label')
+  # print()
+
+# ggplotly(pltsctr, dynamicTicks = T)
+
+```
+
+ordered density plots for visualization
+
+```{r beeswarm}
+
+ntc_dd.data %>%
+  {ggplot(., aes(1, Positives, colour = Target, label = Run_ID)) +
+      geom_beeswarm(priority = 'descending')
+    } %>% 
+  format_classic() %>% 
+  ggplotly(dynamicTicks = T, tooltip = 'label')
+  # print()
+
+```
+
+All targets
+```{r scatterntcall}
+
+ntc_dd.data %>%
+  # filter(Positives > 3) %>% 
+  # group_by(Run_ID) %>% 
+  # mutate(mean_positive = mean(Positives)) %>% 
+
+  {ggplot(., aes(1, Positives)) +
+      geom_violin() + geom_jitter()
+    } %>% 
+  format_classic() %>% 
+  ggplotly(dynamicTicks = T)
+  # print()
+
+```
+
+
 # Summary statistics
 
 ```{r summary}
 
 ntc_dd.data %>% 
+  ungroup() %>% 
   summarise(across(Positives, lst(mean, median, sd)))
 ```
 Statistics for Runs with > 3 droplets (assumed LOD)
 
-```{r summary2}
+```{r summary3}
 
 ntc_more_than_3 <- ntc_dd.data %>% 
   filter(Positives > 3) %>% 
   mutate(mean_positive = mean(Positives)) 
 
 ntc_more_than_3 %>% 
+  ungroup() %>% 
+  summarise(across(Positives, lst(mean, median, sd)))
+```
+Statistics for Runs with > 0 droplets (assumed LOD)
+
+```{r summary0}
+
+ntc_dd.data %>% 
+  filter(Positives > 0) %>% 
+  ungroup() %>% 
   summarise(across(Positives, lst(mean, median, sd)))
 ```
 
-Fraction of runs with > 3 droplets (assumed LOD)
+Total number of runs
 
-```{r summary3}
+```{r total}
+
+ntc_dd.data %>% 
+  pull(Run_ID) %>% 
+  unique() %>% 
+  length() 
+
+```
+
+Number of runs with > 3 droplets (assumed LOD)
+
+```{r number3}
 
 ntc_more_than_3 %>% 
   pull(Run_ID) %>% 
@@ -112,9 +195,9 @@ ntc_more_than_3 %>%
   length() 
 
 ```
-Fraction of runs with > 0 droplets
+Number of runs with > 0 droplets
 
-```{r summary0}
+```{r number0}
 
 ntc_dd.data %>% 
   filter(Positives > 0) %>% 

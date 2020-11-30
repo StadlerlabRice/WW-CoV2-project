@@ -5,7 +5,7 @@
 
 # calling libraries ; make sure they are installed (install.packages)
 library(readxl); library(magrittr); library(tidyverse); library(ggrepel); library(googlesheets4); library(rlang); library(lubridate)
-library(plotly)
+library(plotly); library(ggbeeswarm)
 
 # API key for calling google sheets (without the usual quota limits)
 API_KEY <- 'AIzaSyA92Y51GQFLBcN_ZBp5WgtGsuBmc3iSbcI'

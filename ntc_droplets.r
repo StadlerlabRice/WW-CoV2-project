@@ -33,7 +33,7 @@ all_dd.data <- read_csv( 'excel files/Archive/ddpcr_rawdata_across-weeks.csv')
 
 # filter NTC
 ntc_dd.data <- all_dd.data %>% 
-  select(Run_ID, Sample_name, Target, Positives, AcceptedDroplets, `Copy #`) %>% 
+  # select(Run_ID, Sample_name, Target, Positives, AcceptedDroplets, `Copy #`) %>% 
   filter(str_detect(Sample_name, 'NTC')) %>% 
   mutate(across(Target, ~ str_replace_all(., c('BCoV.*' = 'BCoV', '/Baylor' = '')) ) ) %>% 
   group_by(Run_ID, Target) %>% 
