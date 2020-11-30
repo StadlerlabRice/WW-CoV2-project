@@ -4,7 +4,8 @@
   # Make sure to include raw data as well
 
 # calling libraries ; make sure they are installed (install.packages)
-library(readxl); library(magrittr); library(tidyverse); library(ggrepel); library(googlesheets4); library(rlang); library(lubridate) 
+library(readxl); library(magrittr); library(tidyverse); library(ggrepel); library(googlesheets4); library(rlang); library(lubridate)
+library(plotly)
 
 # API key for calling google sheets (without the usual quota limits)
 API_KEY <- 'AIzaSyA92Y51GQFLBcN_ZBp5WgtGsuBmc3iSbcI'

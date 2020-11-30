@@ -11,14 +11,16 @@ output:
 
 ```{r setup, include=FALSE}
 library(knitr)
-knitr::opts_chunk$set(echo = F, message = F, warning = F)
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 12, fig.height = 4)
 ```
 
-## NTC Positive droplets
+# NTC Positive droplets
 
+## Static plot
 ```{r ntc}
 plt_NTC <- {ggplot(ntc_dd.data, aes(Run_ID, Positives, colour = Target)) +
-    geom_point()} %>% 
+    geom_point() + 
+    geom_line(aes(y = mean_positive))} %>% 
   format_classic() %>% 
   print()
 
@@ -32,6 +34,55 @@ plotly::ggplotly(plt_NTC, dynamicTicks = T)
 
 ```
 
+## NTC Positive droplets above LOD of 3
+
+```{r ntc3}
+
+ntc_dd.data %>%
+  filter(Positives > 3) %>% 
+  mutate(mean_positive = mean(Positives)) %>% 
+
+  {ggplot(., aes(Run_ID, Positives, colour = Target)) +
+    geom_point() + 
+    geom_line(aes(y = mean_positive))} %>% 
+  format_classic() %>% 
+  ggplotly(dynamicTicks = T)
+
+```
+
+## NTC Positive droplets: merging all targets
+
+```{r ntcalltgt}
+
+ntc_dd.data %>%
+  # filter(Positives > 3) %>% 
+  group_by(Run_ID) %>% 
+  mutate(mean_positive = mean(Positives)) %>% 
+
+  {ggplot(., aes(Run_ID, Positives)) +
+    geom_point() + 
+    geom_line(aes(y = mean_positive))} %>% 
+  format_classic() %>% 
+  ggplotly(dynamicTicks = T)
+
+```
+## NTC: merging all targets, > 3
+
+```{r ntcalltgt0}
+
+ntc_dd.data %>%
+  filter(Positives > 3) %>%
+  group_by(Run_ID) %>% 
+  mutate(mean_positive = mean(Positives)) %>% 
+
+  {ggplot(., aes(Run_ID, Positives)) +
+    geom_point() + 
+    geom_line(aes(y = mean_positive))} %>% 
+  format_classic() %>% 
+  ggplotly(dynamicTicks = T)
+
+```
+
 # Summary statistics
 
 ```{r summary}
@@ -39,5 +90,36 @@ plotly::ggplotly(plt_NTC, dynamicTicks = T)
 ntc_dd.data %>% 
   summarise(across(Positives, lst(mean, median, sd)))
 ```
+Statistics for Runs with > 3 droplets (assumed LOD)
 
+```{r summary2}
 
+ntc_more_than_3 <- ntc_dd.data %>% 
+  filter(Positives > 3) %>% 
+  mutate(mean_positive = mean(Positives)) 
+
+ntc_more_than_3 %>% 
+  summarise(across(Positives, lst(mean, median, sd)))
+```
+
+Fraction of runs with > 3 droplets (assumed LOD)
+
+```{r summary3}
+
+ntc_more_than_3 %>% 
+  pull(Run_ID) %>% 
+  unique() %>% 
+  length() 
+
+```
+Fraction of runs with > 0 droplets
+
+```{r summary0}
+
+ntc_dd.data %>% 
+  filter(Positives > 0) %>% 
+  pull(Run_ID) %>% 
+  unique() %>% 
+  length() 
+
+```
