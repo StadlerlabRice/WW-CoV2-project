@@ -32,3 +32,12 @@ plotly::ggplotly(plt_NTC, dynamicTicks = T)
 
 ```
 
+# Summary statistics
+
+```{r summary}
+
+ntc_dd.data %>% 
+  summarise(across(Positives, lst(mean, median, sd)))
+```
+
+
