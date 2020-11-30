@@ -12,7 +12,8 @@ dd_sheet_names <- sheets_in_dump %>% .[str_detect(., 'dd.')]
 # get all ddPCR sheets
 all_dd.data <- map_dfr(dd_sheet_names, ~ read_sheet(sheeturls$data_dump, sheet = .x) %>% 
                          rename(Sample_name = any_of('Sample Name')) %>% # if name is according to old convension, this will rename it 
-                         select(-Concentration) %>% 
+                         select(-matches('Conc')) %>% 
+                         mutate(across('Sample_name', as.character)) %>% 
                          mutate('Run_ID' = str_extract(.x, '(?<=dd\\.WW)[:digit:]+'), .before = 1)
 )
 
@@ -28,3 +29,9 @@ ntc_dd.data <- all_dd.data %>%
 
 # calling r markdown file
 rmarkdown::render('ntc_droplets.Rmd', output_file = str_c('./qPCR analysis/', 'NTC droplets', '.html'))
+
+
+# testing 
+tst <- read_sheet(sheeturls$data_dump, sheet = 'dd.WW73_1109_N1N2')
+map_chr(tst, class) %>% view()
+view(tst)
