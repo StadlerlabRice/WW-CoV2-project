@@ -515,3 +515,8 @@ check_ok_and_write <- function(data, sheet_URL, title_name)
     write_sheet(data, sheet_URL, sheet=title_name)
   }
 }
+
+
+# Dummy data ----
+
+a <- tibble(a1 = 1:5, a2 = 5:1, a3 = letters[1:5])
