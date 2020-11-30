@@ -1,0 +1,34 @@
+---
+title: "NTC_droplets"
+author: "Prashant Kalvapalle"
+date: '`r format(Sys.time(), "%d %B, %Y; %H:%M")`'
+output: 
+  html_document:
+    theme: flatly
+    toc: TRUE
+    toc_float: TRUE
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(echo = F, message = F, warning = F)
+```
+
+## NTC Positive droplets
+
+```{r ntc}
+plt_NTC <- {ggplot(ntc_dd.data, aes(Run_ID, Positives, colour = Target)) +
+    geom_point()} %>% 
+  format_classic() %>% 
+  print()
+
+```
+
+## Interactive: NTC
+
+```{r ntc.interactive}
+
+plotly::ggplotly(plt_NTC, dynamicTicks = T)
+
+```
+
