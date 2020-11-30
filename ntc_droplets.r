@@ -2,24 +2,32 @@
 # Date: 30/11/20
 
 # Import data ----
+# This chunk is run only the first time
 
-# get sheet names in data dump
-sheets_in_dump <- sheet_names(ss = sheeturls$data_dump)
+# # get sheet names in data dump
+# sheets_in_dump <- sheet_names(ss = sheeturls$data_dump)
+# 
+# # filter ddPCR sheets
+# dd_sheet_names <- sheets_in_dump %>% .[str_detect(., 'dd.')] 
+# 
+# # get all ddPCR sheets
+# all_dd.data_list <- map(dd_sheet_names, ~ read_sheet(sheeturls$data_dump, sheet = .x) %>% 
+#                          rename(Sample_name = any_of('Sample Name')) %>% # if name is according to old convension, this will rename it 
+#                          select(-matches('Conc'), -biological_replicates) %>% 
+#                          mutate(across(where(is.list), as.character)) %>% 
+#                          mutate('Run_ID' = str_extract(.x, '(?<=dd\\.WW)[:digit:]+'), .before = 1)
+# )
+# 
+# all_dd.data <- map(all_dd.data_list, ~ select(.x, Run_ID, Sample_name, Target, Positives, any_of('AcceptedDroplets'), `Copy #`)) %>% 
+#   bind_rows() %>% 
+#   mutate(across('Run_ID', as.numeric))
+# 
+# write_csv(all_dd.data, path = 'excel files/Archive/ddpcr_rawdata_across-weeks.csv',  na = '')
 
-# filter ddPCR sheets
-dd_sheet_names <- sheets_in_dump %>% .[str_detect(., 'dd.')] 
 
-# get all ddPCR sheets
-all_dd.data_list <- map(dd_sheet_names, ~ read_sheet(sheeturls$data_dump, sheet = .x) %>% 
-                         rename(Sample_name = any_of('Sample Name')) %>% # if name is according to old convension, this will rename it 
-                         select(-matches('Conc'), -biological_replicates) %>% 
-                         mutate(across(where(is.list), as.character)) %>% 
-                         mutate('Run_ID' = str_extract(.x, '(?<=dd\\.WW)[:digit:]+'), .before = 1)
-)
+# shortcut data input ----
 
-all_dd.data <- map(all_dd.data_list, ~ select(.x, Run_ID, Sample_name, Target, Positives, any_of('AcceptedDroplets'), `Copy #`)) %>% 
-  bind_rows()
-
+all_dd.data <- read_csv( 'excel files/Archive/ddpcr_rawdata_across-weeks.csv')
 
 # Data filtering ----
 
@@ -27,7 +35,9 @@ all_dd.data <- map(all_dd.data_list, ~ select(.x, Run_ID, Sample_name, Target, P
 ntc_dd.data <- all_dd.data %>% 
   select(Run_ID, Sample_name, Target, Positives, AcceptedDroplets, `Copy #`) %>% 
   filter(str_detect(Sample_name, 'NTC')) %>% 
-  mutate(across(Target, ~ str_replace_all(., c('BCoV.*' = 'BCoV', '/Baylor' = '')) ) )
+  mutate(across(Target, ~ str_replace_all(., c('BCoV.*' = 'BCoV', '/Baylor' = '')) ) ) %>% 
+  group_by(Run_ID, Target) %>% 
+  mutate(mean_positive = mean(Positives))
 
 # Plotting ----
 
