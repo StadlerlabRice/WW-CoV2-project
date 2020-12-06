@@ -61,12 +61,13 @@ URLs for all the spreadsheets are in the *general functions.R/sheeturls* variabl
 1. Open the Rproject file **qPCR** in Rstudio - this will load from the current directory (all subpaths are relative to this) 
 2. Run (source) the **1-processing_functions.R** file (clicking on the *save* button top left or *Run* - top right)
 3. Make a variable with the names of the files to be processed: Ex- **read_these_sheets <- c('dd.WW31_831_N1N2', 'WW66_831_BCoV_Std48')**
-4. Run this command: ** map(read_these_sheets, process_all_pcr): This will process Standard curve, qPCR data and ddPCR data for each file automatically (according to the name)
-    a. This dumps the data for each file with the appropriate sample labels in a google sheet 'qPCR data dump' google sheet
+4. Run this command: **map(read_these_sheets, process_all_pcr)**: This will process Standard curve, qPCR data and ddPCR data for each file automatically (according to the name)
+    - This dumps the data for each file with the appropriate sample labels in a google sheet 'qPCR data dump' google sheet.
     - If you have a single file to run, you can call the function directly, instead of using `map` **process_all_qpcr('WW66_831_BCoV_Std48')**
-    b. If you already ran standard curve, and only need to process the qPCR. use `process_qpcr('WW66_831_BCoV_Std48')` instead
-    c. If the qPCR plate does not have a standard curve in it and you want to use an older standard curve, run something like this: `process_qpcr('WW66_831_BCoV_Std48', std_override = 'Std21')`
-    d. If you are processing baylor data *(whose name/volume information is emailed to us and saved in a local excel sheet)* give a regular expression indicating the baylor_samples location to the baylor_wells input to the functions. Example: Baylor samples present in wells A1 to D11, then run: `process_all_pcr('WW66_831_BCoV_Std48', baylor_wells = '[A-D]([1-9]$|10|11)')` 
+	 
+    - If you already ran standard curve, and only need to process the qPCR. use `process_qpcr('WW66_831_BCoV_Std48')` instead
+    - If the qPCR plate does not have a standard curve in it and you want to use an older standard curve, run something like this: `process_qpcr('WW66_831_BCoV_Std48', std_override = 'Std21')`
+    - If you are processing baylor data *(whose name/volume information is emailed to us and saved in a local excel sheet)* give a regular expression indicating the baylor_samples location to the baylor_wells input to the functions. Example: Baylor samples present in wells A1 to D11, then run: `process_all_pcr('WW66_831_BCoV_Std48', baylor_wells = '[A-D]([1-9]$|10|11)')` 
     
 5. Open **2-calculations_multiple_runs** file
     a. Change the read_these_sheets to the 1 or more sheets to plot together that are already in the 'qPCR data dump' and change the title_name to appropriate week :Ex- *713 Rice*
