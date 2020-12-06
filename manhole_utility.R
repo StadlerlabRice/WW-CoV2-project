@@ -14,8 +14,8 @@ filtered <- data %>% filter(assay_variable%in%manhole_codes | Sample_name == 'NT
   mutate(Full_name = paste(Sample_name,assay_variable, sep="/")) %>%
   mutate(Negativeresult = Positives == 0, Positiveresult = Positives > 3, Unclearresult = Positives > 0 & Positives<=3) %>%
   mutate(Resultsymbol = case_when(Positives == 0 ~ "-",
-                                  Positives > 3 ~ "+",
-                                  Positives > 0 & Positives<=3 ~ "?")) %>%
+                                  Positives >= 3 ~ "+",
+                                  Positives > 0 & Positives < 3 ~ "?")) %>%
   group_by(Full_name) %>%
   mutate(Report_symbol = paste0(Resultsymbol, collapse=""))
 
