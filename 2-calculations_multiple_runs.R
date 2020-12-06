@@ -183,26 +183,6 @@ processed_quant_data <- bind_rows(vol_R, vol_B) %>%
 if(processed_quant_data %>%  {!'CT' %in% colnames(.)}) processed_quant_data$CT = NA
 
 
-# Summary and long_format ----
-
-minimal_label_columns <- c('Target', 'Sample_name', 'WWTP')
-
-# Extract minimal columns from processed data (good for running averages and std deviations for plotting)
-processed_minimal = list( raw.dat = processed_quant_data %>% 
-                            select(all_of(minimal_label_columns), where(is.numeric), -matches('vol')))
-# Group by all the text columns and calculate mean and standard deviation for biological replicates
-processed_minimal$summ.dat <- processed_minimal$raw.dat %>% 
-  group_by_at(all_of(minimal_label_columns)) %>% 
-  summarize_all(.funs = lst(mean, sd), na.rm = T)
-
-# Convert the above minimal data into long format (convenient for plotting multiple data types on the same plot)
-long_processed_minimal <- processed_minimal %>% map(pivot_longer, cols = where(is.numeric),
-                                                    names_to = 'Measurement', values_to = 'value')                                                   
-long_processed_minimal$summ.dat %<>% separate(Measurement, into = c('Measurement','val'),"_") %>% 
-  pivot_wider(names_from = val, values_from = value) # Seperate mean and variance and group by variable of measurement
-
-
-
 # Data output ----------------------------------------------------------------------
 
 
@@ -288,6 +268,37 @@ if(regular_WWTP_run_output)
     write_csv(present_manhole_samples, path = str_c('excel files/Weekly data to HHD/', title_name, ' manhole samples.csv'), na = '') # output CSV file
   }
 }
+
+
+
+# Summary and long_format ------------------------------------
+# For ease of plotting data with mean and standard deviations
+
+minimal_label_columns <- c('Target', 'Sample_name', 'WWTP')
+
+# Extract minimal columns from processed data (good for running averages and std deviations for plotting)
+processed_minimal = list( raw.dat = processed_quant_data %>% 
+                            select(all_of(minimal_label_columns), where(is.numeric), -matches('vol')) %>% 
+                            rename(Percentage.recovery.BCoV = 'Percentage_recovery_BCoV')) # removing underscores to enable adding mean, sd prefixes in summarize
+# Group by all the text columns and calculate mean and standard deviation for biological replicates
+processed_minimal$summ.dat <- processed_minimal$raw.dat %>% 
+  group_by_at(all_of(minimal_label_columns)) %>% 
+  summarize_all(.funs = lst(mean, sd), na.rm = T)
+
+# Convert the above minimal data into long format (convenient for plotting multiple data types on the same plot)
+long_processed_minimal <- processed_minimal %>% map(pivot_longer, cols = where(is.numeric),
+                                                    names_to = 'Measurement', values_to = 'value')                                                   
+long_processed_minimal$summ.dat %<>% separate(Measurement, into = c('Measurement','val'),"_") %>% 
+  pivot_wider(names_from = val, values_from = value) # Seperate mean and variance and group by variable of measurement
+
+# Adding back the underscore in columns (ex: Percentage_recovery_BCoV)
+processed_minimal %>% map( ~ rename(.x, Percentage_recovery_BCoV = 'Percentage.recovery.BCoV'))
+long_processed_minimal %<>% map( 
+  ~ mutate(.x, across (Measurement, 
+                       ~ str_replace(.x, 'Percentage.recovery.BCoV', 'Percentage_recovery_BCoV') 
+  )
+  )
+)
 
 
 # Plotting into html -----------------------------------------------------------------------
