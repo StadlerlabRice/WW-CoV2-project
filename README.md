@@ -10,7 +10,7 @@ Takes excel file output from qPCR and ddPCR, attaches the sample names and makes
 ### Current workflow for qPCR data analysis
 
 #### Github (version control)
-1. Make sure you are on the master branch by typing: `git checkout master` in *git bash* (black window)
+1. Make sure you are on the main branch by typing: `git checkout WW_master` in *git bash* (black window)
 2. Get the branch upto date to the remote branch *(in case others made any changes)*: `git pull`
 	
 #### File and sample name convention
@@ -22,30 +22,42 @@ Takes excel file output from qPCR and ddPCR, attaches the sample names and makes
 	**Target-Sample category_tube name.replicate number**
 	Example: *BCoV-Vaccine_S32.2* or *N1N2-908_W.1*
 	
-#### Quantstudio
+#### qPCR (//obsolete) (Quantstudio software)
 1. Open the .eds file in Quantstudio (Applied Biosystems)
 2. Check amplification curves if everything seems right
     a. Check for systematic amplifications in non technical controls (NTC) - Or stochastic amplifications that seem problematic; by looking at raw data (multicomponent plots)
 3. If using standard curves across runs - check that the threshold is at the desired value for each target (by selecting each target): Used to set thresholds to 0.04. Not doing it right now since each plate has its own standard  
 4. Export excel (.xls) file from Quantstudio with the same name as the qPCR file and include the serial number for standard curve. Example **WW66_831 Rice_BCoV_Std45.xlsx** 
 	
-	*<Make sure you mirror the directory structure for the excel files and qPCR analysis folders>*
 	
-#### ddPCR (Quantalife)
+#### ddPCR (Quantalife software)
 1. Once the droplets reader run is done, the samples are auto processed (each well has a different threshold). Open the data file in Quantalife or Quantalife Pro
 2. Identify the wells where automatic processing has not worked, by looking for the *NO CALL* in the quantity column
 3. Select all the wells with No CALL and set an appropriate threshold for both targets in the 2d view
 4. Check all the thresholds by selecting 1 column at a time and correct any thresholds that are set too low or two high (*aim for 1 cluster in each quadrant, without the thresholds cutting through any clusters*)
 	
-#### Sample registry
+#### Metadata 
+
+##### Sample registry
 1. Check to make sure all the samples are entered in the *Sample registry/concentrated samples* sheet and they match the sample names entered in the template file in *calculations (lab notebook) Cov2/Plate layouts*
 a. Check that the DI water sample has a unique name and doesn't match with previous weeks. Name it such as : 831Control Water1
 2. Check that these columns are filled: **Biobot/other ID, Stock ID of Spike, Total WW volume calculated (ml), WW volume extracted (ml)**
 
-#### Other metadata sheets
+##### Other metadata sheets
 1. Biobot_ID should be updated with the biobot id vs the WWTP name table for each week's samples
 
-#### Rstudio
+#### Directory map
+If you are running this set of scripts for the first time, make sure that you mimic the directory structure in the folder in which the Rprojct file + all the scripts exist
+- qPCR analysis (this is where the html file with all the plots are stored)
+- qPCR analysis/Standards *only if running qPCR files with standards on them* (saving plot with standard curves)
+- Excel files/Weekly data to HHD (saving csv files given to Kathy's team and HHD)
+- require *WWTP_All_Results.csv* file (only if running 3-weekly_comparisions.R)
+
+#### Source data files
+Source data and metada is in google sheets, ask Prashant/David Zong for access
+URLs for all the spreadsheets are in the *general functions.R/sheeturls* variable
+
+#### Rstudio (scripts)
 1. Open the Rproject file **qPCR** in Rstudio - this will load from the current directory (all subpaths are relative to this) 
 2. Run (source) the **1-processing_functions.R** file (clicking on the *save* button top left or *Run* - top right)
 3. Make a variable with the names of the files to be processed: Ex- **read_these_sheets <- c('dd.WW31_831_N1N2', 'WW66_831_BCoV_Std48')**
