@@ -74,7 +74,7 @@ plot_mean_sd_jitter(measure_var = 'Recovered', target_filter = 'BCoV|BRSV', x_va
 ```{r percentreco}
 
 
-  percentreco_plt <- plot_mean_sd_jitter(measure_var = 'Recovery fraction', target_filter = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Percentage recovery of surrogate virus') 
+  percentreco_plt <- plot_mean_sd_jitter(measure_var = 'Percentage_recovery_BCoV', target_filter = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Percentage recovery of surrogate virus') 
   
  percentreco_plt %>% print()
 
@@ -103,7 +103,7 @@ plot_mean_sd_jitter(measure_var = 'Recovered', WWTP_var = wwtp_manhole_names, ex
 #   format_logscale_y() %>% print()
 
 # % plot for extra samples
-plot_mean_sd_jitter(measure_var = 'Recovery fraction', WWTP_var = wwtp_manhole_names, exclude_WWTP = T, target_filter = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Percentage recovery of surrogate virus') %>% print()
+plot_mean_sd_jitter(measure_var = 'Percentage_recovery_BCoV', WWTP_var = wwtp_manhole_names, exclude_WWTP = T, target_filter = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Percentage recovery of surrogate virus') %>% print()
 
 ```
 
@@ -135,7 +135,7 @@ plot_scatter(processed_quant_data, x_var = N1_multiplex, y_var = N2_multiplex) %
 
 ```{r n2bcov}
 
- plot_scatter(processed_quant_data, x_var = BCoV_M) %>% print()
+ plot_scatter(processed_quant_data, x_var = BCoV) %>% print()
 
 ```
 
@@ -167,7 +167,7 @@ ordered_plt1 %>% format_logscale_y() %>% print()
 
 ```{r percentRecoverystreamlined}
 
-  recostr_plot <- plot_mean_sd_jitter(measure_var = 'Recovery fraction', x_var = WWTP, ascending_order = T, ylabel = 'Percentage recovery of surrogate')
+  recostr_plot <- plot_mean_sd_jitter(measure_var = 'Percentage_recovery_BCoV', x_var = WWTP, ascending_order = T, ylabel = 'Percentage recovery of surrogate')
   
   recostr_plot %>% print()
 

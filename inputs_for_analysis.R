@@ -8,7 +8,8 @@
 # BCoV-608_A.2; ignore-facet_(x axis variable).biological replicate (BCoV is ignored, only for pipetting reference, actual target is taken from the qPCR results)
 # If code fails, first thing: check the number of lines to skip before the data begins and tally with the code (including the headings)
 
-flnm.here <- 'WW41_727_BCoV_Std24'  # set the filename (if sourcing analysis.R to run)
+# choose file name, in the same directory as Rproject; ignore this if running the function by providing filename as it's input
+flnm.here <- 'WW36_720_BCoV_Std19'  # set the filename (if running through this file; uncomment the function call in the end)
 
 std_par <- tibble(                       # Input the slope and intercept from standard curve of various primer pairs/targets here - Target should match Target field (provided in excel sheet - Sample input reference.csv) 
   Target = c('BRSV_N', 'BCoV_M', 'N1_CoV2', 'N2_CoV2', 'N1_multiplex',  'N2_multiplex', 'pMMoV_Vgp1'),
@@ -21,9 +22,12 @@ template_volume_qpcr <- 4 # ul template volume in qPCR reaction
 # Other parameters ----
 
 # Additional parameters (changed rarely)
-plot_assay_variable <- 'Sample' # printed on the x axis of the graph
+# plot_assay_variable <- 'Sample' # printed on the x axis of the graph
 
 # inclusion exclusion variables
 plot_select_facet <- '' # Options ('' or 'something') ; filters a particular template name to plot 
-plot_exclude_facet <- '^none' # Regex pattern: 'Controls2', '^MHT*', '^none; exclude categories for plotting; ex: Controls etc.: filters based on `Sample Name`: works only in assay mode
+# plot_exclude_facet <- '^none' # Regex pattern: 'Controls2', '^MHT*', '^none; exclude categories for plotting; ex: Controls etc.: filters based on `Sample Name`: works only in assay mode
 plot_exclude_assay_variable <- '^none' # Regex pattern: '^N', '^none' or ''; exclude assay_variables for plotting; ex: no template control etc.: filters based on assay_variable: works only in assay mode
+
+# dummy tibble for troubleshooting
+a <- tibble(a1 = 1:4, a2 = 5:2, a3 = c('s', 's', 'n', 'n'), a4 = 1:4 * 10)
