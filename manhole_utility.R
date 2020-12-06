@@ -19,6 +19,6 @@ filtered <- data %>% filter(assay_variable%in%manhole_codes | Sample_name == 'NT
   group_by(Full_name) %>%
   mutate(Report_symbol = paste0(Resultsymbol, collapse=""))
 
-quick_report <- filtered %>% select(Full_name, Report_symbol) %>% distinct()
+quick_report <- filtered %>% select(Full_name, Report_symbol) %>% distinct() %>% arrange(Full_name)
 
 write_csv(quick_report, path = str_c('excel files/Weekly data to HHD/', output, '.csv'), na = '') # output CSV file
