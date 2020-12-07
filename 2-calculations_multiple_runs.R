@@ -5,10 +5,10 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW71_1102_N1N2',
-                        'dd.WW72_1102_BCoV')
+read_these_sheets <- c( 'dd.WW82_Pavans 1123-1_N1N2_BCoV',
+                        'dd.WW83_Pavans 1123-2+Ceres_Nano_RNA_N1N2_BCoV')
 
-title_name <- '1102 Rice'
+title_name <- '1123 Pavan residue expts'
 
 # Biobot_id sheet
 bb_sheets <- c('Week 30 (11/02)')
@@ -18,7 +18,7 @@ extra_categories = 'Std|Control|e811|Acetone' # Depreciated: for excluding this 
 manhole_samples = 'HCJ|SOH|ODM|AO|PM|MCHR|AW' # putting manhole samples in a separate sheet 
 # ideally put all manhole names into a sheet and read it when we have more
 
-regular_WWTP_run_output <- TRUE # make TRUE of you want to output the WWTP only data and manhole samples sheets 
+regular_WWTP_run_output <- F # make TRUE of you want to output the WWTP only data and manhole samples sheets 
       # (make FALSE for controls, testing etc. where only "complete data" sheet is output)
 
 # rarely changed parameters
@@ -182,6 +182,7 @@ processed_quant_data <- bind_rows(vol_R, vol_B) %>%
 # Adding a dummy CT column (if only ddPCR data is being loaded; which lacks the CT column) - for compatibility with qPCR code
 if(processed_quant_data %>%  {!'CT' %in% colnames(.)}) processed_quant_data$CT = NA
 
+
 # Vaccine ID duplication value check - Brings user attention to duplicate values in the Vaccine_summary in data dump
 processed_quant_data$Vaccine_ID %>% 
   unique() %>%  # find all the Vaccine IDs in use for the current week data
@@ -310,7 +311,7 @@ long_processed_minimal$summ.dat %<>% separate(Measurement, into = c('Measurement
   pivot_wider(names_from = val, values_from = value) # Seperate mean and variance and group by variable of measurement
 
 # Adding back the underscore in columns (ex: Percentage_recovery_BCoV)
-processed_minimal %>% map( ~ rename(.x, Percentage_recovery_BCoV = 'Percentage.recovery.BCoV'))
+processed_minimal %<>% map( ~ rename(.x, Percentage_recovery_BCoV = contains('Percentage.recovery.BCoV')))
 long_processed_minimal %<>% map( 
   ~ mutate(.x, across (Measurement, 
                        ~ str_replace(.x, 'Percentage.recovery.BCoV', 'Percentage_recovery_BCoV') 
