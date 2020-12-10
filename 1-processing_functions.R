@@ -284,6 +284,8 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   bring_results <- fl %>% 
     select(-Sample) %>% # Remove sample, it will be loaded from plate template sheet
     rename(CopiesPer20uLWell = any_of('Copies/20µLWell')) %>% # rename the column name - if exported from Quantasoft analysis Pro
+    rename(Concentration = any_of('Conc(copies/µL)')) %>%  # rename the column name - if exported from Quantasoft analysis Pro
+    mutate(across(any_of('Concentration'), as.numeric)) %>%  # Remove the NO CALLS and make it numeric column  
     
     mutate_at('Well', ~ str_replace(., '(?<=[:alpha:])0(?=[:digit:])', '') ) %>% rename('Well Position' = Well) %>% 
     right_join(plate_template, by = 'Well Position') %>%  # Incorporate samples names from the google sheet by matching well position
