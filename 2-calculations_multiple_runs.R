@@ -195,12 +195,13 @@ processed_quant_data$Vaccine_ID %>%
     view(duplicate_vaccine_values)
     stop("Duplicate vaccine IDs found in the data dump, 
          please check the table: *duplicate_vaccine_values* for more information")
-  }
-    if(.$spike_virus_conc == 0)
-      zero_vaccine_values <- . 
-    view(zero_vaccine_values)
-    stop("Zeros found in vaccine quants in the data dump, please fix") 
     }
+    if(.$spike_virus_conc == 0) {
+      zero_vaccine_values <- . 
+      view(zero_vaccine_values)
+      stop("Zeros found in vaccine quants in the data dump, please fix") 
+    }
+  }
 
 # Data output ----------------------------------------------------------------------
 
