@@ -5,17 +5,16 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW71_1102_N1N2',
-                        'dd.WW72_1102_BCoV')
+read_these_sheets <- c( 'dd.WW90_1214_Manehole')
 
-title_name <- '1102 Rice'
+title_name <- '1214 Rice School'
 
 # Biobot_id sheet
 bb_sheets <- c('Week 30 (11/02)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|Control|e811|Acetone' # Depreciated: for excluding this category from a plot, make the switch (exclude_sample = TRUE)
-manhole_samples = 'HCJ|SOH|ODM|AO|PM|MCHR|AW' # putting manhole samples in a separate sheet 
+manhole_samples = scrub_spaces # putting manhole samples in a separate sheet 
 # ideally put all manhole names into a sheet and read it when we have more
 
 regular_WWTP_run_output <- TRUE # make TRUE of you want to output the WWTP only data and manhole samples sheets 
@@ -292,13 +291,13 @@ long_processed_minimal$summ.dat %<>% separate(Measurement, into = c('Measurement
   pivot_wider(names_from = val, values_from = value) # Seperate mean and variance and group by variable of measurement
 
 # Adding back the underscore in columns (ex: Percentage_recovery_BCoV)
-processed_minimal %>% map( ~ rename(.x, Percentage_recovery_BCoV = 'Percentage.recovery.BCoV'))
-long_processed_minimal %<>% map( 
-  ~ mutate(.x, across (Measurement, 
-                       ~ str_replace(.x, 'Percentage.recovery.BCoV', 'Percentage_recovery_BCoV') 
-  )
-  )
-)
+# processed_minimal %>% map( ~ rename(.x, Percentage_recovery_BCoV = 'Percentage.recovery.BCoV'))
+# long_processed_minimal %<>% map(
+#   ~ mutate(.x, across (Measurement,
+#                        ~ str_replace(.x, 'Percentage.recovery.BCoV', 'Percentage_recovery_BCoV')
+#   )
+#   )
+# )
 
 
 # Plotting into html -----------------------------------------------------------------------
