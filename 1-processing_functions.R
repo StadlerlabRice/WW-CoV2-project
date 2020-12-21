@@ -323,6 +323,10 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
     } else .
     }
   
+  # Append LOD information ----
+  
+  polished_results <- complete_LOD_table(polished_results)
+  
   # Data output ----
   
   check_ok_and_write(polished_results, sheeturls$data_dump, flnm) # save results to a google sheet
