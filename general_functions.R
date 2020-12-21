@@ -575,3 +575,19 @@ check_ok_and_write <- function(data, sheet_URL, title_name)
     write_sheet(data, sheet_URL, sheet=title_name)
   }
 }
+
+
+# Utilities ----
+get_manhole_names <- function() {
+  lookup_table <- read_sheet(sheeturls$biobot_id, 'All manhole')
+  manhole_codes <- lookup_table %>% pull('Facility SYMBOL') %>% str_replace_all(" ", "")
+  scrub_spaces <- manhole_codes %>% str_replace_all(" ", "") %>% paste(collapse = "|")
+  return(scrub_spaces)
+}
+
+get_bayou_names <- function() {
+  lookup_table <- read_sheet(sheeturls$biobot_id, 'All Bayou')
+  manhole_codes <- lookup_table %>% pull('Facility SYMBOL') %>% str_replace_all(" ", "")
+  scrub_spaces <- manhole_codes %>% str_replace_all(" ", "") %>% paste(collapse = "|")
+  return(scrub_spaces)
+}
