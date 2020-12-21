@@ -630,18 +630,18 @@ append_LOD_info <- function(fl, targ) {
   # If no rows has 3 droplets then the concentration is hard coded to 6
   # Otherwise, take the mean of 3 droplet concentrations
   if(dim(threes)[1] == 0) {
-    three_copies <- 6.5
+    three_copies <- 0.7
   } else {
-    three_copies <- mean(threes$CopiesPer20uLWell)
+    three_copies <- mean(threes$`Copy #`)
   }
   
   # Calculate the LOB
-  limit_blank <- mean(negative_controls$CopiesPer20uLWell) + (1.6 * sd(negative_controls$CopiesPer20uLWell))
+  limit_blank <- mean(negative_controls$`Copy #`) + (1.6 * sd(negative_controls$`Copy #`))
   # Calculate the LOD
   LOD <- three_copies + limit_blank
   
   # Put everything into the table
-  new_table <- fl %>% mutate(Positivity = case_when(CopiesPer20uLWell < LOD ~ "Negative",
+  new_table <- fl %>% mutate(Positivity = case_when(`Copy #` < LOD ~ "Negative",
                                                     TRUE ~ "Positive",)) %>%
     mutate(LimitOfDet = LOD)
   

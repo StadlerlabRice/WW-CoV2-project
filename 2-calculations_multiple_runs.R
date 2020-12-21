@@ -5,16 +5,16 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW90_1214_Manehole')
+read_these_sheets <- c('dd.WW92_1205_1208_Bayou','dd.WW86_1203_Manehole+redos')
 
-title_name <- '1214 Rice School'
+title_name <- '1203-1208 Rice Bayou'
 
 # Biobot_id sheet
 bb_sheets <- c('Week 30 (11/02)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|Control|e811|Acetone' # Depreciated: for excluding this category from a plot, make the switch (exclude_sample = TRUE)
-manhole_samples = scrub_spaces # putting manhole samples in a separate sheet 
+manhole_samples = get_bayou_names() # putting manhole samples in a separate sheet 
 # ideally put all manhole names into a sheet and read it when we have more
 
 regular_WWTP_run_output <- TRUE # make TRUE of you want to output the WWTP only data and manhole samples sheets 
@@ -167,6 +167,7 @@ processed_quant_data <- bind_rows(vol_R, vol_B) %>%
   # Calculations for spiked in and recovered copies of the virus
   mutate(`Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), 
          Recovered = `Copy #` * 1e3 * elution_volume/vol_extracted, 
+         Detection_Limit = LimitOfDet * 1e3 * elution_volume/vol_extracted,
          `Percentage_recovery_BCoV` = 100 * Recovered/`Actual spike-in`) %>% 
   
   mutate_cond(str_detect(Sample_name, 'Vaccine'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (.050 * 1e-3), Recovered = `Copy #` * 1e6 * 50/20, `Percentage_recovery_BCoV` = 100 * Recovered/`Actual spike-in`) %>% 
@@ -195,9 +196,9 @@ presentable_data <- processed_quant_data %>%
   # Adding new variables, modifying existing variables
   mutate(Date = title_name %>% str_extract('[:digit:]{3,4}') %>% str_replace('([:digit:]+)([:digit:]{2})', '\\1/\\2/20') , 
          Lab = if_else(str_detect(`Target Name`, 'Baylor'), 'B', 'R'),
-         Detection_Limit = if_else(str_detect(`Target Name`, 'N1|N2'), 330, 
-                                   if_else(str_detect(`Target Name`, 'Baylor'), 23500, 705) 
-                                   ) ,
+         # Detection_Limit = if_else(str_detect(`Target Name`, 'N1|N2'), 330, 
+         #                           if_else(str_detect(`Target Name`, 'Baylor'), 23500, 705) 
+         #                           ) ,
          Sample_Type = 'Composite', Comments = NA) %>% 
   mutate_at(c('Sample_name', 'original_sample_name'), ~as.character(.)) %>%
   mutate_at('Facility', ~if_else(. == assay_variable, str_c(original_sample_name, '/', assay_variable), .)) %>%
