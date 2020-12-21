@@ -325,7 +325,7 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   
   # Append LOD information ----
   
-  polished_results <- complete_LOD_table(polished_results)
+  polished_results <- complete_LOD_table(polished_results)  %>% select(1:8, 69:70, everything())
   
   # Data output ----
   

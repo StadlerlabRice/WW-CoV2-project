@@ -7,7 +7,7 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # sheets to read from qPCR data dump excel file
 read_these_sheets <- c('dd.WW92_1205_1208_Bayou','dd.WW86_1203_Manehole+redos')
 
-title_name <- '1203-1208 Rice Bayou'
+title_name <- '1203-1208 Rice Bayou TEST'
 
 # Biobot_id sheet
 bb_sheets <- c('Week 30 (11/02)')
@@ -32,7 +32,7 @@ spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 
 # Input data ----------------------------------------------------------------------
 
 # Acquire all the pieces of the data : read saved raw qPCR results from a google sheet
-list_raw_quant_data <- map(read_these_sheets, ~ read_sheet(sheeturls$data_dump, sheet = ., range = 'A:H')) 
+list_raw_quant_data <- map(read_these_sheets, ~ read_sheet(sheeturls$data_dump, sheet = ., range = 'A:J')) 
 
 # bind multiple reads and clean up names
 raw_quant_data <- bind_rows(list_raw_quant_data) %>% 
@@ -167,7 +167,7 @@ processed_quant_data <- bind_rows(vol_R, vol_B) %>%
   # Calculations for spiked in and recovered copies of the virus
   mutate(`Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), 
          Recovered = `Copy #` * 1e3 * elution_volume/vol_extracted, 
-         Detection_Limit = LimitOfDet * 1e3 * elution_volume/vol_extracted,
+         Detection_Limit = as.numeric(LimitOfDet * 1e3 * elution_volume/vol_extracted),
          `Percentage_recovery_BCoV` = 100 * Recovered/`Actual spike-in`) %>% 
   
   mutate_cond(str_detect(Sample_name, 'Vaccine'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (.050 * 1e-3), Recovered = `Copy #` * 1e6 * 50/20, `Percentage_recovery_BCoV` = 100 * Recovered/`Actual spike-in`) %>% 
@@ -213,7 +213,7 @@ presentable_data <- processed_quant_data %>%
   mutate_cond(str_detect(`Target Name`, '^N'), `Percentage_recovery_BCoV` = NA, `Spiked-in Copies/l WW` = NA) %>%
   
   # Selecting column order
-  select(Facility, WWTP, Date, Lab, `Target Name`, `Received_WW_vol`, `Volume Filtered`, Ct, `Copies/ul RNA`, `Copies/l WW`, Sample_ID, Detection_Limit, Sample_Type, `Spiked-in Copies/l WW`, `Percentage_recovery_BCoV`, WWTP_ID, Tube_ID, Comments) %>%
+  select(Facility, WWTP, Date, Lab, `Target Name`, `Received_WW_vol`, `Volume Filtered`, Ct, `Copies/ul RNA`, `Copies/l WW`, Sample_ID, Detection_Limit, Positivity, Sample_Type, `Spiked-in Copies/l WW`, `Percentage_recovery_BCoV`, WWTP_ID, Tube_ID, Comments) %>%
   mutate_at('Target Name', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2'))) %>% 
   mutate_at('Target Name', ~str_remove(., '/Baylor'))
 
