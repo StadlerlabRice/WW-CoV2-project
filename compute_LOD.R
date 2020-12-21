@@ -1,20 +1,29 @@
-# Loading libraries, functions and user inputs
-source('./general_functions.R') # Source the general_functions file
-source('./inputs_for_analysis.R') # Source the file with user inputs
 
+#' This function runs append_LOD_info() as many time as there are unique targets
+#' in the input dataframe under the Target column. Then sticks the data back
+#' together in a dataframe. The result should have the same length as the input
+#' 
+#' fl: a dataframe from qPCR data dump
 complete_LOD_table <- function(fl) {
-  targs <- c('N1_multiplex', 'N2_multiplex', 'BCoV')
+  targs <- unique(fl$Target)
+  totalsheet <- fl[0,]
   
-  n1sheet <- append_LOD_info(fl, targs[1])
-  n2sheet <- append_LOD_info(fl, targs[2])
-  bcovsheet <- append_LOD_info(fl, targs[3])
-  
-  totalsheet <- rbind(n1sheet, n2sheet, bcovsheet)
+  for(i in 1:length(targs)) {
+    nextsheet <- append_LOD_info(fl, targs[i])
+    totalsheet <- rbind(totalsheet, nextsheet)
+  }
   
   return(totalsheet)
   
 }
 
+#' This function appends info related to the LOD/LOB/LOQ to the sheet. This
+#' function can only do this for one PCR target at a time.
+#' 
+#' fl: a dataframe from qPCR data dump
+#' 
+#' targ: the name of a target from the Target column of the dataframe. Example
+#' "N1_multiplex", "N2_multiplex", "BCoV" etc.
 append_LOD_info <- function(fl, targ) {
   fl <- fl %>% filter(Target == targ)
   
