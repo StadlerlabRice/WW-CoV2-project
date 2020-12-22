@@ -194,7 +194,7 @@ presentable_data <- processed_quant_data %>%
   rename('Volume Filtered' = vol_extracted) %>% 
   
   # Adding new variables, modifying existing variables
-  mutate(Date = title_name %>% str_extract('[:digit:]{3,4}') %>% str_replace('([:digit:]+)([:digit:]{2})', '\\1/\\2/20') , 
+  mutate(Date = Sample_name %>% str_extract('[:digit:]{3,4}') %>% str_replace('([:digit:]+)([:digit:]{2})', '\\1/\\2/20') , 
          Lab = if_else(str_detect(`Target Name`, 'Baylor'), 'B', 'R'),
          # Detection_Limit = if_else(str_detect(`Target Name`, 'N1|N2'), 330, 
          #                           if_else(str_detect(`Target Name`, 'Baylor'), 23500, 705) 
