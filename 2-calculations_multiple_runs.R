@@ -5,17 +5,16 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW71_1102_N1N2',
-                        'dd.WW72_1102_BCoV')
+read_these_sheets <- c('dd.WW92_1205_1208_Bayou','dd.WW86_1203_Manehole+redos')
 
-title_name <- '1102 Rice'
+title_name <- '1203-1208 Rice Bayou TEST'
 
 # Biobot_id sheet
 bb_sheets <- c('Week 30 (11/02)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|Control|e811|Acetone' # Depreciated: for excluding this category from a plot, make the switch (exclude_sample = TRUE)
-manhole_samples = 'HCJ|SOH|ODM|AO|PM|MCHR|AW' # putting manhole samples in a separate sheet 
+manhole_samples = get_bayou_names() # putting manhole samples in a separate sheet 
 # ideally put all manhole names into a sheet and read it when we have more
 
 regular_WWTP_run_output <- TRUE # make TRUE of you want to output the WWTP only data and manhole samples sheets 
@@ -33,7 +32,7 @@ spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 
 # Input data ----------------------------------------------------------------------
 
 # Acquire all the pieces of the data : read saved raw qPCR results from a google sheet
-list_raw_quant_data <- map(read_these_sheets, ~ read_sheet(sheeturls$data_dump, sheet = ., range = 'A:H')) 
+list_raw_quant_data <- map(read_these_sheets, ~ read_sheet(sheeturls$data_dump, sheet = ., range = 'A:J')) 
 
 # bind multiple reads and clean up names
 raw_quant_data <- bind_rows(list_raw_quant_data) %>% 
@@ -168,6 +167,7 @@ processed_quant_data <- bind_rows(vol_R, vol_B) %>%
   # Calculations for spiked in and recovered copies of the virus
   mutate(`Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), 
          Recovered = `Copy #` * 1e3 * elution_volume/vol_extracted, 
+         Detection_Limit = as.numeric(LimitOfDet * 1e3 * elution_volume/vol_extracted),
          `Percentage_recovery_BCoV` = 100 * Recovered/`Actual spike-in`) %>% 
   
   mutate_cond(str_detect(Sample_name, 'Vaccine'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (.050 * 1e-3), Recovered = `Copy #` * 1e6 * 50/20, `Percentage_recovery_BCoV` = 100 * Recovered/`Actual spike-in`) %>% 
@@ -194,11 +194,11 @@ presentable_data <- processed_quant_data %>%
   rename('Volume Filtered' = vol_extracted) %>% 
   
   # Adding new variables, modifying existing variables
-  mutate(Date = title_name %>% str_extract('[:digit:]{3,4}') %>% str_replace('([:digit:]+)([:digit:]{2})', '\\1/\\2/20') , 
+  mutate(Date = Sample_name %>% str_extract('[:digit:]{3,4}') %>% str_replace('([:digit:]+)([:digit:]{2})', '\\1/\\2/20') , 
          Lab = if_else(str_detect(`Target Name`, 'Baylor'), 'B', 'R'),
-         Detection_Limit = if_else(str_detect(`Target Name`, 'N1|N2'), 330, 
-                                   if_else(str_detect(`Target Name`, 'Baylor'), 23500, 705) 
-                                   ) ,
+         # Detection_Limit = if_else(str_detect(`Target Name`, 'N1|N2'), 330, 
+         #                           if_else(str_detect(`Target Name`, 'Baylor'), 23500, 705) 
+         #                           ) ,
          Sample_Type = 'Composite', Comments = NA) %>% 
   mutate_at(c('Sample_name', 'original_sample_name'), ~as.character(.)) %>%
   mutate_at('Facility', ~if_else(. == assay_variable, str_c(original_sample_name, '/', assay_variable), .)) %>%
@@ -213,7 +213,7 @@ presentable_data <- processed_quant_data %>%
   mutate_cond(str_detect(`Target Name`, '^N'), `Percentage_recovery_BCoV` = NA, `Spiked-in Copies/l WW` = NA) %>%
   
   # Selecting column order
-  select(Facility, WWTP, Date, Lab, `Target Name`, `Received_WW_vol`, `Volume Filtered`, Ct, `Copies/ul RNA`, `Copies/l WW`, Sample_ID, Detection_Limit, Sample_Type, `Spiked-in Copies/l WW`, `Percentage_recovery_BCoV`, WWTP_ID, Tube_ID, Comments) %>%
+  select(Facility, WWTP, Date, Lab, `Target Name`, `Received_WW_vol`, `Volume Filtered`, Ct, `Copies/ul RNA`, `Copies/l WW`, Sample_ID, Detection_Limit, Positivity, Sample_Type, `Spiked-in Copies/l WW`, `Percentage_recovery_BCoV`, WWTP_ID, Tube_ID, Comments) %>%
   mutate_at('Target Name', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2'))) %>% 
   mutate_at('Target Name', ~str_remove(., '/Baylor'))
 
@@ -292,13 +292,13 @@ long_processed_minimal$summ.dat %<>% separate(Measurement, into = c('Measurement
   pivot_wider(names_from = val, values_from = value) # Seperate mean and variance and group by variable of measurement
 
 # Adding back the underscore in columns (ex: Percentage_recovery_BCoV)
-processed_minimal %>% map( ~ rename(.x, Percentage_recovery_BCoV = 'Percentage.recovery.BCoV'))
-long_processed_minimal %<>% map( 
-  ~ mutate(.x, across (Measurement, 
-                       ~ str_replace(.x, 'Percentage.recovery.BCoV', 'Percentage_recovery_BCoV') 
-  )
-  )
-)
+# processed_minimal %>% map( ~ rename(.x, Percentage_recovery_BCoV = 'Percentage.recovery.BCoV'))
+# long_processed_minimal %<>% map(
+#   ~ mutate(.x, across (Measurement,
+#                        ~ str_replace(.x, 'Percentage.recovery.BCoV', 'Percentage_recovery_BCoV')
+#   )
+#   )
+# )
 
 
 # Plotting into html -----------------------------------------------------------------------

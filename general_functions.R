@@ -575,3 +575,75 @@ check_ok_and_write <- function(data, sheet_URL, title_name)
     write_sheet(data, sheet_URL, sheet=title_name)
   }
 }
+
+
+# Manhole/Bayou Naming Utilities ----
+get_manhole_names <- function() {
+  lookup_table <- read_sheet(sheeturls$biobot_id, 'All manhole')
+  manhole_codes <- lookup_table %>% pull('Facility SYMBOL') %>% str_replace_all(" ", "")
+  scrub_spaces <- manhole_codes %>% str_replace_all(" ", "") %>% paste(collapse = "|")
+  return(scrub_spaces)
+}
+
+get_bayou_names <- function() {
+  lookup_table <- read_sheet(sheeturls$biobot_id, 'All Bayou')
+  manhole_codes <- lookup_table %>% pull('Facility SYMBOL') %>% str_replace_all(" ", "")
+  scrub_spaces <- manhole_codes %>% str_replace_all(" ", "") %>% paste(collapse = "|")
+  return(scrub_spaces)
+}
+
+# LOD Computation Utilities
+
+#' This function runs append_LOD_info() as many time as there are unique targets
+#' in the input dataframe under the Target column. Then sticks the data back
+#' together in a dataframe. The result should have the same length as the input
+#' 
+#' fl: a dataframe from qPCR data dump
+complete_LOD_table <- function(fl) {
+  targs <- unique(fl$Target)
+  totalsheet <- fl[0,]
+  
+  for(i in 1:length(targs)) {
+    nextsheet <- append_LOD_info(fl, targs[i])
+    totalsheet <- rbind(totalsheet, nextsheet)
+  }
+  
+  return(totalsheet)
+  
+}
+
+#' This function appends info related to the LOD/LOB/LOQ to the sheet. This
+#' function can only do this for one PCR target at a time.
+#' 
+#' fl: a dataframe from qPCR data dump
+#' 
+#' targ: the name of a target from the Target column of the dataframe. Example
+#' "N1_multiplex", "N2_multiplex", "BCoV" etc.
+append_LOD_info <- function(fl, targ) {
+  fl <- fl %>% filter(Target == targ)
+  
+  # Pull negative controls out
+  negative_controls <- fl %>% filter(Sample_name == 'NTC'| assay_variable == 'DI'| assay_variable == 'BLANK')
+  
+  # Pull any rows with 3 droplets a.k.a the LOQ
+  threes <- fl %>% filter(Positives == 3)
+  # If no rows has 3 droplets then the concentration is hard coded to 6
+  # Otherwise, take the mean of 3 droplet concentrations
+  if(dim(threes)[1] == 0) {
+    three_copies <- 0.7
+  } else {
+    three_copies <- mean(threes$`Copy #`)
+  }
+  
+  # Calculate the LOB
+  limit_blank <- mean(negative_controls$`Copy #`) + (1.6 * sd(negative_controls$`Copy #`))
+  # Calculate the LOD
+  LOD <- three_copies + limit_blank
+  
+  # Put everything into the table
+  new_table <- fl %>% mutate(Positivity = case_when(`Copy #` < LOD ~ "Negative",
+                                                    TRUE ~ "Positive",)) %>%
+    mutate(LimitOfDet = LOD)
+  
+  return(new_table)
+}
