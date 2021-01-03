@@ -5,16 +5,16 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c('dd.WW92_1205_1208_Bayou','dd.WW86_1203_Manehole+redos')
+read_these_sheets <- c( 'dd.WW97_1228_N1N2')
 
-title_name <- '1203-1208 Rice Bayou TEST'
+title_name <- '1228 Rice'
 
 # Biobot_id sheet
-bb_sheets <- c('Week 30 (11/02)')
+bb_sheets <- c('Week 38 (12/28)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|Control|e811|Acetone' # Depreciated: for excluding this category from a plot, make the switch (exclude_sample = TRUE)
-manhole_samples = get_bayou_names() # putting manhole samples in a separate sheet 
+manhole_sample_symbols = get_bayou_names() # putting manhole samples in a separate sheet 
 # ideally put all manhole names into a sheet and read it when we have more
 
 regular_WWTP_run_output <- TRUE # make TRUE of you want to output the WWTP only data and manhole samples sheets 
@@ -62,7 +62,7 @@ raw_quant_data <- bind_rows(list_raw_quant_data) %>%
 
 
 # Bring WWTP name to biobot_ID mapping from google sheet: "Biobot Sample IDs"
-biobot_lookup <- map_df(bb_sheets, 
+biobot_wwtps <- map_df(bb_sheets, 
                         ~ read_sheet(sheeturls$biobot_id , sheet = .x) %>% 
                           rename('Biobot_id' = matches('Biobot|Comments|Sample ID', ignore.case = T), 'WWTP' = contains('SYMBOL', ignore.case = T), 'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T)) %>% 
                           mutate('Biobot_id' = str_remove(`Biobot_id`,'\\.| '), WWTP = as.character(WWTP)) %>% 
@@ -71,7 +71,18 @@ biobot_lookup <- map_df(bb_sheets,
 
 
 # List of all WWTPs
-all_WWTP_names <- biobot_lookup %>% pull(WWTP) %>% unique()
+all_WWTP_names <- biobot_wwtps %>% pull(WWTP) %>% unique()
+
+biobot_lookup <- bind_rows(biobot_wwtps,
+                           # get all bayou and manhole sample names (remain same every week)
+                           map_df(c('All Bayou', 'All manhole'), 
+                                  ~ read_sheet(sheeturls$biobot_id , sheet = .x) %>% 
+                                    rename('WWTP' = contains('SYMBOL', ignore.case = T), 
+                                           'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T)) %>% 
+                                    mutate(WWTP = as.character(WWTP),
+                                           'Biobot_id' = WWTP)) %>% 
+                             select(`Biobot_id`, `FACILITY NAME`, WWTP)
+)
 
 # Get volumes data from google sheet : "Sample registry"
 volumes_data_Rice <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrated samples') %>% 
@@ -138,7 +149,10 @@ vol_R <- raw_quant_data %>%
   mutate_at('Biobot_id', ~if_else(is.na(.x), str_c(Sample_name, assay_variable), .x)) %>% # stand-by name for missing cols
   
   left_join(spike_list %>% select(Vaccine_ID, Target, spike_virus_conc),  by = c('Vaccine_ID', 'Target') ) %>% 
-  left_join(biobot_lookup, by = 'Biobot_id') %>% 
+  # left_join(biobot_lookup, by = 'Biobot_id') %>% 
+  fuzzyjoin::regex_left_join(., biobot_lookup, by = 'Biobot_id') %>% 
+  select(-Biobot_id.y) %>% rename(Biobot_id = Biobot_id.x) %>% 
+  
   
   mutate_at(c('WWTP', 'FACILITY NAME'), ~if_else(str_detect(., '^X')|is.na(.), assay_variable, .)) %>% 
   mutate(original_sample_name = Sample_name , Sample_name = harmonize_week(Sample_name)) # retain min of consecutive dates
@@ -260,7 +274,7 @@ if(regular_WWTP_run_output)
     write_csv(present_only_WW, path = str_c('excel files/Weekly data to HHD/', title_name, '.csv'), na = '') # output csv file
   }
   
-  present_manhole_samples <- present_WW_data %>% filter(str_detect(Facility, manhole_samples))
+  present_manhole_samples <- present_WW_data %>% filter(str_detect(WWTP, manhole_sample_symbols))
   
   # Write data if not empty
   if(present_manhole_samples %>% plyr::empty() %>% !.){
