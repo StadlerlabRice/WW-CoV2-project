@@ -492,6 +492,19 @@ Check if x_var and y_var are present in .data')
 
 # plot formatting ---- 
  
+
+# Set theme universally : format as classic, colours = Set1
+theme_set(theme_classic()) # theme
+scale_colour_discrete <- function(...) { # palette
+  scale_colour_brewer(..., palette="Set1")
+}
+
+# plot formatting function : format as classic, colours = Set1
+format_classic <- function(plt)
+{ # formats plot as classic, with colour palette Set1, centred title, angled x axis labels
+  plt <- plt +
+    theme_classic() + scale_color_brewer(palette="Set1")
+}
  
   # plot formatting function : format as classic, colours = Set1
   format_classic <- function(plt)
