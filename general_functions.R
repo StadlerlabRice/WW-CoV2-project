@@ -642,7 +642,7 @@ append_LOD_info <- function(fl, targ) {
   
   # Put everything into the table
   new_table <- fl %>% mutate(Positivity = case_when(`Copy #` < LOD ~ "Negative",
-                                                    TRUE ~ "Positive",)) %>%
+                                                    `Copy #` >= LOD ~ "Positive",)) %>%
     mutate(LimitOfDet = LOD)
   
   return(new_table)
