@@ -14,7 +14,7 @@ bb_sheets <- c('Week 38 (12/28)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|Control|e811|Acetone' # Depreciated: for excluding this category from a plot, make the switch (exclude_sample = TRUE)
-manhole_samples = get_bayou_names() # putting manhole samples in a separate sheet 
+manhole_sample_symbols = get_bayou_names() # putting manhole samples in a separate sheet 
 # ideally put all manhole names into a sheet and read it when we have more
 
 regular_WWTP_run_output <- TRUE # make TRUE of you want to output the WWTP only data and manhole samples sheets 
@@ -274,7 +274,7 @@ if(regular_WWTP_run_output)
     write_csv(present_only_WW, path = str_c('excel files/Weekly data to HHD/', title_name, '.csv'), na = '') # output csv file
   }
   
-  present_manhole_samples <- present_WW_data %>% filter(str_detect(Facility, manhole_samples))
+  present_manhole_samples <- present_WW_data %>% filter(str_detect(WWTP, manhole_sample_symbols))
   
   # Write data if not empty
   if(present_manhole_samples %>% plyr::empty() %>% !.){
