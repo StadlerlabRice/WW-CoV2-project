@@ -196,6 +196,25 @@ processed_quant_data <- bind_rows(vol_R, vol_B) %>%
 # Adding a dummy CT column (if only ddPCR data is being loaded; which lacks the CT column) - for compatibility with qPCR code
 if(processed_quant_data %>%  {!'CT' %in% colnames(.)}) processed_quant_data$CT = NA
 
+# Vaccine ID duplication value check - Brings user attention to duplicate values in the Vaccine_summary in data dump
+processed_quant_data$Vaccine_ID %>% 
+  unique() %>%  # find all the Vaccine IDs in use for the current week data
+  paste(collapse = '|') %>% # make a regular expression (regex) combining them
+  
+  {filter(spike_list, str_detect(Vaccine_ID, .))} %>% 
+  unique %>%  # filter the list of vaccine data with these IDs (from data dump) that are unique
+  {if(nrow (.) > 1) {
+    duplicate_vaccine_values <- . 
+    view(duplicate_vaccine_values)
+    stop("Duplicate vaccine IDs found in the data dump, 
+         please check the table: *duplicate_vaccine_values* for more information")
+  }
+    if(.$spike_virus_conc == 0){
+      zero_vaccine_values <- . 
+      view(zero_vaccine_values)
+      stop("Zeros found in vaccine quants in the data dump, please fix") 
+    }
+  }
 
 # Data output ----------------------------------------------------------------------
 
