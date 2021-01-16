@@ -258,6 +258,7 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
                                   template_vol = c(10, 10, 4, 4) /22 * 20) # ul template volume per well of the 20 ul ddPCR reaction for each target
   
   RNA_dilution_factor_BCoV <- 50  # RNA dilution factor for diluted BCoV samples
+  Vaccine_additional_RNA_dilution_factor_BCoV <- 50  # In addition to the above: RNA dilution factor for BCoV vaccine samples - both extracted and boiled
   
   # Ad hoc - marking the samples from baylor (will append /baylor to target name)
   # Work in progress?
@@ -311,7 +312,8 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
     mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
     
     mutate(across(`Copy #`, ~ if_else(str_detect(Target, 'BCoV'), .x * RNA_dilution_factor_BCoV, .x))) %>% # Correcting for template dilution in case of BCoV ddPCRs
-    
+    mutate_cond(str_detect(Sample_name, 'Vaccine') & str_detect(Target, 'BCoV'), 
+                across(`Copy #`, ~ .x * Vaccine_additional_RNA_dilution_factor_BCoV)) %>%  # Correcting for BCoV Vaccine with a higher dilution
     
     # Ad-hoc corrections for errors in making plate - sample dilutions etc.
     mutate_cond(str_detect(`Well Position`, adhoc_dilution_wells), # Regex of wells to manipulate
