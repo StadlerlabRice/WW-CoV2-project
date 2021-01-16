@@ -325,13 +325,13 @@ long_processed_minimal$summ.dat %<>% separate(Measurement, into = c('Measurement
   pivot_wider(names_from = val, values_from = value) # Seperate mean and variance and group by variable of measurement
 
 # Adding back the underscore in columns (ex: Percentage_recovery_BCoV)
-# processed_minimal %>% map( ~ rename(.x, Percentage_recovery_BCoV = 'Percentage.recovery.BCoV'))
-# long_processed_minimal %<>% map(
-#   ~ mutate(.x, across (Measurement,
-#                        ~ str_replace(.x, 'Percentage.recovery.BCoV', 'Percentage_recovery_BCoV')
-#   )
-#   )
-# )
+processed_minimal %<>% map( ~ rename(.x, Percentage_recovery_BCoV = contains('Percentage.recovery.BCoV')))
+long_processed_minimal %<>% map(
+  ~ mutate(.x, across (Measurement,
+                       ~ str_replace(.x, 'Percentage.recovery.BCoV', 'Percentage_recovery_BCoV')
+  )
+  )
+)
 
 
 # Plotting into html -----------------------------------------------------------------------
