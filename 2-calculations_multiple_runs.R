@@ -42,8 +42,8 @@ raw_quant_data <- bind_rows(list_raw_quant_data) %>%
   mutate_at('assay_variable', as.character) %>% 
   mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
   mutate_at('Tube ID', ~str_remove(., "\\.")) %>% 
-  unite('Label_tube', c('Sample_name', 'Tube ID'), sep = "", remove = F) # make a unique column for matching volumes 
-
+  unite('Label_tube', c('Sample_name', 'Tube ID'), sep = "", remove = F) %>%  # make a unique column for matching volumes 
+  mutate(across(Label_tube, ~str_remove(., ' ') )) # remove spaces from the Sample_name (Started with 1123 Pavan with 1123 69S names)
 
 # Load metadata ----------------------------------------------------------------------
 
