@@ -359,7 +359,7 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   vaccine_data.mean <- vaccine_data %>% ungroup() %>% 
     select(1:3, Target, `Copy #`, Run_ID) %>% group_by(across(-`Copy #`)) %>% 
     summarise(across(`Copy #`, list(Mean_qPCR = mean, SD_qPCR = sd), na.rm = T), .groups = 'keep') %>% 
-    mutate('[Stock conc.] copies/ul' = `Copy #_Mean_qPCR` * 50/20,
+    mutate('[Stock conc.] copies/ul' = `Copy #_Mean_qPCR` * if_else(str_detect(Vaccine_ID, 'S[:digit:]+'), 50/20, 1), # adding a RNA extraction conc. factor only if not boiled (Sbxx naming)
            'Estimated factor' = '',
            Comments = '',
            'Conc normalized to estimated factor' = '') %>% 
