@@ -258,6 +258,7 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
                                   template_vol = c(10, 10, 4, 4) /22 * 20) # ul template volume per well of the 20 ul ddPCR reaction for each target
   
   RNA_dilution_factor_BCoV <- 50  # RNA dilution factor for diluted BCoV samples
+  Vaccine_additional_RNA_dilution_factor_BCoV <- 50  # In addition to the above: RNA dilution factor for BCoV vaccine samples - both extracted and boiled
   
   # Ad hoc - marking the samples from baylor (will append /baylor to target name)
   # Work in progress?
@@ -284,6 +285,8 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   bring_results <- fl %>% 
     select(-Sample) %>% # Remove sample, it will be loaded from plate template sheet
     rename(CopiesPer20uLWell = any_of('Copies/20µLWell')) %>% # rename the column name - if exported from Quantasoft analysis Pro
+    rename(Concentration = any_of('Conc(copies/µL)')) %>%  # rename the column name - if exported from Quantasoft analysis Pro
+    mutate(across(any_of('Concentration'), as.numeric)) %>%  # Remove the NO CALLS and make it numeric column  
     
     mutate_at('Well', ~ str_replace(., '(?<=[:alpha:])0(?=[:digit:])', '') ) %>% rename('Well Position' = Well) %>% 
     right_join(plate_template, by = 'Well Position') %>%  # Incorporate samples names from the google sheet by matching well position
@@ -308,8 +311,14 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
     mutate_at('assay_variable', as.character) %>% 
     mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
     
-    mutate(across(`Copy #`, ~ if_else(str_detect(Target, 'BCoV'), .x * RNA_dilution_factor_BCoV, .x))) %>% # Correcting for template dilution in case of BCoV ddPCRs
-    
+    mutate(raw_copy_number_per_ul_rna = `Copy #`) %>%  # taking a backup of the copy number column before doing calculations for dilution factors
+    mutate(across(`Copy #`, 
+                  ~ if_else(str_detect(Target, 'BCoV') & !str_detect(Sample_name, 'NTC'), 
+                            .x * RNA_dilution_factor_BCoV, 
+                            .x))
+           ) %>% # Correcting for template dilution in case of BCoV ddPCRs (excluding NTC wells)
+    mutate_cond(str_detect(Sample_name, 'Vaccine') & str_detect(Target, 'BCoV'), 
+                across(`Copy #`, ~ .x * Vaccine_additional_RNA_dilution_factor_BCoV)) %>%  # Correcting for BCoV Vaccine with a higher dilution
     
     # Ad-hoc corrections for errors in making plate - sample dilutions etc.
     mutate_cond(str_detect(`Well Position`, adhoc_dilution_wells), # Regex of wells to manipulate
@@ -350,7 +359,7 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   vaccine_data.mean <- vaccine_data %>% ungroup() %>% 
     select(1:3, Target, `Copy #`, Run_ID) %>% group_by(across(-`Copy #`)) %>% 
     summarise(across(`Copy #`, list(Mean_qPCR = mean, SD_qPCR = sd), na.rm = T), .groups = 'keep') %>% 
-    mutate('[Stock conc.] copies/ul' = `Copy #_Mean_qPCR` * 50/20,
+    mutate('[Stock conc.] copies/ul' = `Copy #_Mean_qPCR` * if_else(str_detect(Vaccine_ID, 'S[:digit:]+'), 50/20, 1), # adding a RNA extraction conc. factor only if not boiled (Sbxx naming)
            'Estimated factor' = '',
            Comments = '',
            'Conc normalized to estimated factor' = '') %>% 

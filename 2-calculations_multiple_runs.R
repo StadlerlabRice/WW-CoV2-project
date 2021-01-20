@@ -42,8 +42,8 @@ raw_quant_data <- bind_rows(list_raw_quant_data) %>%
   mutate_at('assay_variable', as.character) %>% 
   mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
   mutate_at('Tube ID', ~str_remove(., "\\.")) %>% 
-  unite('Label_tube', c('Sample_name', 'Tube ID'), sep = "", remove = F) # make a unique column for matching volumes 
-
+  unite('Label_tube', c('Sample_name', 'Tube ID'), sep = "", remove = F) %>%  # make a unique column for matching volumes 
+  mutate(across(Label_tube, ~str_remove(., ' ') )) # remove spaces from the Sample_name (Started with 1123 Pavan with 1123 69S names)
 
 # Load metadata ----------------------------------------------------------------------
 
@@ -196,6 +196,25 @@ processed_quant_data <- bind_rows(vol_R, vol_B) %>%
 # Adding a dummy CT column (if only ddPCR data is being loaded; which lacks the CT column) - for compatibility with qPCR code
 if(processed_quant_data %>%  {!'CT' %in% colnames(.)}) processed_quant_data$CT = NA
 
+# Vaccine ID duplication value check - Brings user attention to duplicate values in the Vaccine_summary in data dump
+processed_quant_data$Vaccine_ID %>% 
+  unique() %>%  # find all the Vaccine IDs in use for the current week data
+  paste(collapse = '|') %>% # make a regular expression (regex) combining them
+  
+  {filter(spike_list, str_detect(Vaccine_ID, .))} %>% 
+  unique %>%  # filter the list of vaccine data with these IDs (from data dump) that are unique
+  {if(nrow (.) > 1) {
+    duplicate_vaccine_values <- . 
+    view(duplicate_vaccine_values)
+    stop("Duplicate vaccine IDs found in the data dump, 
+         please check the table: *duplicate_vaccine_values* for more information")
+  }
+    if(.$spike_virus_conc == 0){
+      zero_vaccine_values <- . 
+      view(zero_vaccine_values)
+      stop("Zeros found in vaccine quants in the data dump, please fix") 
+    }
+  }
 
 # Data output ----------------------------------------------------------------------
 
@@ -306,13 +325,13 @@ long_processed_minimal$summ.dat %<>% separate(Measurement, into = c('Measurement
   pivot_wider(names_from = val, values_from = value) # Seperate mean and variance and group by variable of measurement
 
 # Adding back the underscore in columns (ex: Percentage_recovery_BCoV)
-# processed_minimal %>% map( ~ rename(.x, Percentage_recovery_BCoV = 'Percentage.recovery.BCoV'))
-# long_processed_minimal %<>% map(
-#   ~ mutate(.x, across (Measurement,
-#                        ~ str_replace(.x, 'Percentage.recovery.BCoV', 'Percentage_recovery_BCoV')
-#   )
-#   )
-# )
+processed_minimal %<>% map( ~ rename(.x, Percentage_recovery_BCoV = contains('Percentage.recovery.BCoV')))
+long_processed_minimal %<>% map(
+  ~ mutate(.x, across (Measurement,
+                       ~ str_replace(.x, 'Percentage.recovery.BCoV', 'Percentage_recovery_BCoV')
+  )
+  )
+)
 
 
 # Plotting into html -----------------------------------------------------------------------
