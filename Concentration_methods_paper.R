@@ -208,3 +208,11 @@ data_to_plot %>% filter(str_detect(Target, 'BCoV|pMMoV'), `Copies/uL RNA` > 0 ) 
 
 write_sheet(.dat_by_method, sheet = 'Effective LOQ-3', 
             ss = 'https://docs.google.com/spreadsheets/d/1_32AE3IkBRD3oGSYcYqZwknHZEHiGKtoy1zK5VVTzsI/edit#gid=463904425')
+
+# mean fraction recovery by method calculation ----
+.recovery_by_method <- all_data_input %>% 
+  group_by(Method, `Concentration method`) %>% 
+  select(Fraction.recovered, everything()) %>%
+  summarise(across(where(is.numeric), mean, na.rm = T))
+
+write_sheet(.recovery_by_method, ss = 'https://docs.google.com/spreadsheets/d/1wwWyhp2EKggKhVSAHbw7cS7-LVw_ysie4usbBOT58r0/edit#gid=0')
