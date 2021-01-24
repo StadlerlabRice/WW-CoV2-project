@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 12, fig.he
 
 # NTC Positive droplets
 
-## Static plot
+## Static plots
 ```{r ntc}
 plt_NTC <- {ggplot(ntc_dd.data, aes(Run_ID, Positives, colour = Target)) +
     geom_point() + 
@@ -206,3 +206,22 @@ ntc_dd.data %>%
   length() 
 
 ```
+
+# Intensity plots
+
+```{r intthrsholds}
+all_long_dd.data <- all_dd.data %>% 
+  pivot_longer(cols = c('Threshold', 'MeanAmplitudeofPositives',	'MeanAmplitudeofNegatives'), 
+               names_to = 'type', values_to = 'intensity') 
+
+
+plt_intensity <- {ggplot(all_long_dd.data %>% 
+                           filter(!str_detect(Target, 'pMMoV')),
+                         aes(Run_ID, intensity, colour = type)) +
+    geom_point() + 
+    geom_line() +
+    facet_grid(~ Target)} %>% 
+  print()
+
+```
+
