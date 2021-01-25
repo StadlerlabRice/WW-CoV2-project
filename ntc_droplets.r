@@ -73,7 +73,8 @@ all_dd.data <- all_dd.data_list %>%
   mutate(across('Run_ID', as.numeric)) %>% 
   select(1:6, 'AcceptedDroplets',	'Positives', 
          'Threshold', 'MeanAmplitudeofPositives',	'MeanAmplitudeofNegatives', 'MeanAmplitudeTotal',
-         'PoissonConfMax',	'PoissonConfMin', everything()) # put the important columns first
+         'PoissonConfMax',	'PoissonConfMin', everything()) %>%  # put the important columns first
+  mutate(Sample_type = if_else(str_detect(Sample_name, 'NTC') | str_detect(assay_variable, 'DI|BLANK|NTC'), 'negative', 'regular')) # classify NTCs vs regular samples
 
 
 # write_csv(all_dd.data, path = 'excel files/Archive/ddpcr_rawdata_across-weeks.csv',  na = '')
