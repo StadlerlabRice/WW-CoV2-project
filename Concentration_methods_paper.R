@@ -53,7 +53,7 @@ all_data_input <- read_sheet(sheeturls$complete_data, sheet = input_sheet) %>%
   # atach LOQs
   left_join(loq_data) %>% 
   
-  # make newline after "+" in the concentraiton method (for nice display of facets)
+  # make newline after "+" in the concentration method (for nice display of facets)
   mutate(across(`Concentration method`, ~ str_replace(., '\\+', '+\n')), 
          across(`Concentration method`, ~ if_else(WWTP == 'NTC', 'NTC', .)), # adding NTC in the panels
          across(`Concentration method`, ~ fct_relevel(.x, 'NTC', after = Inf)) # Bringing NTC to the last facet
@@ -114,7 +114,7 @@ individual_plots <- function(.data_to_plot = data_to_plot,
   if(str_detect(plt.y_label, 'Recover') | str_detect(target_string, 'pMMoV|BCoV')) plt.LOQ <- 'no'
   # LOQ for copies/ul RNA
   if(str_detect(plt.y_label, 'RNA')) LOQ_var <- expr(LOQ_RNA) # place holder LOQ for ddPCR in copies/ul RNA
-  else LOQ_var <- expr(LOQ)
+  else LOQ_var <- expr(LOQ_WW)
  
   plt.alpha <- if_else(plt.LOQ == 'yes', 0.5, 1) 
     
@@ -168,7 +168,7 @@ save_plot <- function(plt.sv.name, sv.category = 'Copies ww', plt.format = 'pdf'
 # quick function for vectorization of making plots and saving
 # leave it alone for now
 
-# Plots ----
+# Plotting limits ----
 
 # manual limits for methods-2 - also applicable for methods-3 (tested)
 N_ww <- c('low' = 500, 'high' = 4e5)
@@ -176,11 +176,15 @@ N_RNA <- c('low' = .1, 'high' = 20)
 bcov_ww <- c(3.8e5, 8.7e8)
 bcov_RNA <- c(20, 4.3e4)
 
+# Plotting ----
 rmarkdown::render('conc_methods_allfigs.rmd', 
                   output_file = str_c('./qPCR analysis/Methods paper/concentration methods-3/', 'all_figs  (update)' , '.html'))
 
 
-# Scale of plots ----
+
+
+
+# plotting limits manual ----
 
 # Identify min and max per target: manually
 data_to_plot %>% filter(str_detect(Target, 'N1|N2')) %>% 
@@ -199,12 +203,12 @@ data_to_plot %>% filter(str_detect(Target, 'BCoV|pMMoV'), `Copies/uL RNA` > 0 ) 
 # Effective LOD calculation ----
 .dat_by_method <- all_data_input %>% 
   group_by(Method, `Concentration method`) %>% 
-  select(Fraction.recovered, LOQ, LoQ_units) %>% 
+  select(Fraction.recovered, LOQ_WW, LoQ_WW_units) %>% 
   drop_na() %>% 
   summarise(across(is.numeric, mean),
-            across(LoQ_units, unique)) %>% 
-  mutate(Effective_LOQ = LOQ * Fraction.recovered,
-         Effective_LOQ_formula = 'LOQ * Fraction.recovered')
+            across(LoQ_WW_units, unique)) %>% 
+  mutate(Effective_LOQ = LOQ_WW * Fraction.recovered,
+         Effective_LOQ_formula = 'LOQ_WW * Fraction.recovered')
 
 write_sheet(.dat_by_method, sheet = 'Effective LOQ-3', 
             ss = 'https://docs.google.com/spreadsheets/d/1_32AE3IkBRD3oGSYcYqZwknHZEHiGKtoy1zK5VVTzsI/edit#gid=463904425')
