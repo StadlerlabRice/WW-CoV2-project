@@ -14,9 +14,12 @@ dt_mid <- dt_in %>%
   
 # plot ----
 
-ggplot(dt_mid, aes(Sample_full_name, Copies_per_L_WW, colour = Variant)) + 
+plt1 <- ggplot(dt_mid, aes(Sample_full_name, Copies_per_L_WW, colour = Variant)) + 
   geom_point()
+
+lgplt1 <- plt1 %>% format_logscale_y() %>% print()
 
 # output ----
 
-ggsave('qPCR analysis/Extra graphs/B117 trial1.png', width = 7, height = 4)
+ggsave('qPCR analysis/Extra graphs/B117 trial1-log.png', width = 7, height = 4)
+ggsave('qPCR analysis/Extra graphs/B117 trial1.png', plot = plt1, width = 7, height = 4)
