@@ -88,7 +88,7 @@ plot_mean_sd_jitter(measure_var = 'Recovered', target_filter = 'BCoV|BRSV', x_va
 
 ```{r controls_recos, fig.width= 6}
 
-extra_samples_to_plot <- str_c(extra_categories, '|Vaccine|NTC') %>% str_remove('\\|Std|Std\\|')
+extra_samples_to_plot <- str_c('Std|Control', '|Vaccine|NTC') %>% str_remove('\\|Std|Std\\|')
 
 # N1/N2 and BCoV plots : Copies/ul RNA
 plot_mean_sd_jitter(WWTP_var = wwtp_manhole_names, exclude_WWTP = T, x_var = WWTP) %>% format_logscale_y() %>% print()

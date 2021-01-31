@@ -5,19 +5,17 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW97_1228_N1N2')
+read_these_sheets <- c( 'dd.WW117_0129_CHMGC-MAXWL_Pavan')
 
-title_name <- '1228 Rice'
+title_name <- '0129 chmagic-maxwell'
 
 # Biobot_id sheet
-bb_sheets <- c('Week 38 (12/28)')
+bb_sheets <- c('Week 42 (01/25)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
-extra_categories = 'Std|Control|e811|Acetone' # Depreciated: for excluding this category from a plot, make the switch (exclude_sample = TRUE)
-manhole_sample_symbols = get_bayou_names() # putting manhole samples in a separate sheet 
-# ideally put all manhole names into a sheet and read it when we have more
+manhole_sample_symbols = get_bayou_names() # putting manhole samples in a separate sheet
 
-regular_WWTP_run_output <- TRUE # make TRUE of you want to output the WWTP only data and manhole samples sheets 
+regular_WWTP_run_output <- FALSE # make TRUE of you want to output the WWTP only data and manhole samples sheets 
       # (make FALSE for controls, testing etc. where only "complete data" sheet is output)
 
 # rarely changed parameters
@@ -211,13 +209,14 @@ processed_quant_data$Vaccine_ID %>%
   
   {filter(spike_list, str_detect(Vaccine_ID, .))} %>% 
   unique %>%  # filter the list of vaccine data with these IDs (from data dump) that are unique
+  
   {if(nrow (.) > 1) {
     duplicate_vaccine_values <- . 
     view(duplicate_vaccine_values)
     stop("Duplicate vaccine IDs found in the data dump, 
          please check the table: *duplicate_vaccine_values* for more information")
   }
-    if(.$spike_virus_conc == 0){
+    else if(nrow(.) > 0 &&  .$spike_virus_conc == 0){
       zero_vaccine_values <- . 
       view(zero_vaccine_values)
       stop("Zeros found in vaccine quants in the data dump, please fix") 
