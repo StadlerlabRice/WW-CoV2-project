@@ -1,0 +1,85 @@
+---
+author: "Prashant Kalvapalle"
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+output: 
+  html_document:
+    theme: flatly
+    toc: TRUE
+    toc_float: TRUE
+---
+
+---
+title: `r title_name`
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 12, fig.height = 4)
+
+```
+
+## Goal of the analysis
+
+Comparing CoV2 N1 N2 signals across the same wastewater samples between two different RNA extraction methods : Maxwell and Chemagic
+
+```{r prelim}
+# MAxwell vs chemagic for dd.WW117 : Head to head. Adhoc script. Need to run the prerequisites
+
+# input ----
+
+dt.in <- read_sheet(sheeturls$complete_data, sheet = '0129 chmagic-maxwell+pavan')
+
+# processing ----
+
+dt.mid <- dt.in %>% 
+  mutate(extraction_method = if_else(str_detect(Facility, '^C'), 'Chemagic', 'Maxwell')) %>% 
+  mutate(across(WWTP_ID, ~ str_remove(., '^C'))) %>%  # remove the C that identifies Chemagic
+  filter(!str_detect(Facility, '^PR'))
+  
+
+```
+
+
+## Plots
+
+### (copies per l WW)
+
+```{r wwplt}
+plt.ww <-  {ggplot(dt.mid, aes(WWTP, `Copies/l WW`, colour = extraction_method)) +
+  geom_point(size = 2) + 
+    ggtitle('Copies per litre Wastewater', subtitle = 'Chemagic extraction vs Maxwell') + 
+    geom_hline(aes(yintercept = Detection_Limit)) +
+    facet_grid(~ `Target Name`)
+} %>% 
+  print()
+  
+```
+
+
+### (copies per ul RNA)
+
+```{r copiesrna}
+
+plt.rna <-  {ggplot(dt.mid, aes(WWTP, `Copies/ul RNA`, colour = extraction_method)) +
+    geom_point(size = 2) + 
+    ggtitle('Copies per microlitre RNA', subtitle = 'Chemagic extraction vs Maxwell') + 
+    facet_grid(~ `Target Name`)
+} %>% 
+  print()
+  
+```
+
+
+
+### Scatter plots
+
+### N1 vs N2 replicate
+
+```{r maxchemcorr}
+
+plot_scatter(.data = dt.mid, x_var = `Maxwell`, y_var = `Chemagic`, measure_var = 'Copies/l WW',
+             names_from_var = 'extraction_method',
+             text_cols = c('Target Name', 'WWTP_ID'), extra_cols_for_pivot = NULL,
+             sample_checking_column = WWTP_ID)
+
+```
