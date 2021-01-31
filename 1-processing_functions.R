@@ -346,7 +346,8 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   
   # Append LOD information ----
   
-  polished_results <- complete_LOD_table(polished_results)  %>% select(1:8, 69:70, everything())
+  polished_results <- complete_LOD_table(polished_results)%>% 
+    select(1:6, AcceptedDroplets, Positives, Positivity, LimitOfDet, everything())
   
   # Data output ----
   
@@ -356,7 +357,7 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   
   
   # Saving vaccine data into Vaccines sheet in data dump: For easy book keeping
-  vaccine_data <- polished_results %>% filter(str_detect(Sample_name, 'Vaccine') & !str_detect(Target, 'N._multiplex')) %>%
+  vaccine_data <- polished_results %>% filter(str_detect(Sample_name, 'Vaccine|Vaccineb|Vacboil') & !str_detect(Target, 'N._multiplex')) %>%
     mutate('Prepared on' = '',
            Week = str_extract(flnm, '[:digit:]{3,4}') %>% unlist() %>% str_c(collapse = ', '),
            Vaccine_ID = assay_variable, 
