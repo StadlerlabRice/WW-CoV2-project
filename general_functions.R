@@ -451,7 +451,7 @@ Check if x_var and y_var are present in .data')
       map_lgl(~class(.) == 'numeric') %>% 
       sum()) < 2) 
   { duplicated_data_points <- .data_for_plot %>% 
-    filter(map({{x_var}}, length) > 1)
+    filter(map({{x_var}}, length) > 1 | map({{y_var}}, length) > 1)
   print(duplicated_data_points)
   
   return('Repeated data instances for the same WWTP found in this scatterplot')
