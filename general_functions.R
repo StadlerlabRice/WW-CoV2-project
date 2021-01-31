@@ -424,7 +424,7 @@ plot_scatter <- function(.data = processed_quant_data,
   if(already_pivoted_data == 'no')
   {  # filtering data for plotting according to function inputs
     .data_for_plot <- .data %>% 
-      select(all_of(text_cols), extra_cols_for_pivot, all_of(measure_var), all_of(names_from_var)) %>% 
+      select(all_of(text_cols), all_of(extra_cols_for_pivot), all_of(measure_var), all_of(names_from_var)) %>% 
       # {if('Sample_name' %in% colnames(.)) filter(., str_detect(`Sample_name`, sample_var, negate = exclude_sample)) else .} %>% # account for missing var
       
       filter(., str_detect({{sample_checking_column}}, sample_var, negate = exclude_sample))  %>% # account for missing var

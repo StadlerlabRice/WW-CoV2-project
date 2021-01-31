@@ -1,4 +1,5 @@
 ---
+title: "0125 Chemagic-maxwell"
 author: "Prashant Kalvapalle"
 date: '`r format(Sys.time(), "%d %B, %Y")`'
 output: 
@@ -6,10 +7,6 @@ output:
     theme: flatly
     toc: TRUE
     toc_float: TRUE
----
-
----
-title: `r title_name`
 ---
 
 ```{r setup, include=FALSE}
@@ -24,6 +21,9 @@ Comparing CoV2 N1 N2 signals across the same wastewater samples between two diff
 
 ```{r prelim}
 # MAxwell vs chemagic for dd.WW117 : Head to head. Adhoc script. Need to run the prerequisites
+
+source('./general_functions.R') # Source the general_functions file
+title_name <- "0125 Chemagic-maxwell"
 
 # input ----
 
@@ -80,6 +80,7 @@ plt.rna <-  {ggplot(dt.mid, aes(WWTP, `Copies/ul RNA`, colour = extraction_metho
 plot_scatter(.data = dt.mid, x_var = `Maxwell`, y_var = `Chemagic`, measure_var = 'Copies/l WW',
              names_from_var = 'extraction_method',
              text_cols = c('Target Name', 'WWTP_ID'), extra_cols_for_pivot = NULL,
-             sample_checking_column = WWTP_ID)
+             sample_checking_column = WWTP_ID) %>% 
+  print()
 
 ```
