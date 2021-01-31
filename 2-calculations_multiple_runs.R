@@ -231,7 +231,8 @@ presentable_data <- processed_quant_data %>%
   # renaming variables
   rename('Facility' = `FACILITY NAME`, 'Received_WW_vol' = WW_vol, Ct = CT, 'Target Name' = Target) %>%
   rename('Copies/ul RNA' = `Copy #`, 'Copies/l WW' = Recovered, 'Spiked-in Copies/l WW' = `Actual spike-in`) %>%
-  rename('Volume Filtered' = vol_extracted) %>% 
+  rename('Volume Filtered' = vol_extracted,
+         PositiveDroplets = Positives) %>% 
   
   # Adding new variables, modifying existing variables
   mutate(Date = Sample_name %>% str_extract('[:digit:]{3,4}') %>% str_replace('([:digit:]+)([:digit:]{2})', '\\1/\\2/20') , 
@@ -253,7 +254,7 @@ presentable_data <- processed_quant_data %>%
   mutate_cond(str_detect(`Target Name`, '^N'), `Percentage_recovery_BCoV` = NA, `Spiked-in Copies/l WW` = NA) %>%
   
   # Selecting column order
-  select(Facility, WWTP, Date, Lab, `Target Name`, `Received_WW_vol`, `Volume Filtered`, Ct, `Copies/ul RNA`, `Copies/l WW`, Sample_ID, Detection_Limit, Positivity, Sample_Type, `Spiked-in Copies/l WW`, `Percentage_recovery_BCoV`, WWTP_ID, Tube_ID, Comments) %>%
+  select(Facility, WWTP, Date, Lab, `Target Name`, `Received_WW_vol`, `Volume Filtered`, `Copies/ul RNA`, `Copies/l WW`, Ct, AcceptedDroplets, PositiveDroplets, Sample_ID, Detection_Limit, Positivity, Sample_Type, `Spiked-in Copies/l WW`, `Percentage_recovery_BCoV`, WWTP_ID, Tube_ID, Comments) %>%
   mutate_at('Target Name', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2'))) %>% 
   mutate_at('Target Name', ~str_remove(., '/Baylor'))
 
@@ -289,7 +290,7 @@ if(regular_WWTP_run_output)
            'Copies_Per_Liter_WW' = `Copies/l WW`,
            'Recovery_Rate' = `Percentage_recovery_BCoV`,
            Target_Name = `Target Name`) %>%
-    select(-contains('Vol'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID)
+    select(-contains('Vol'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID, -contains('Droplet'))
   
   present_only_WW <- present_WW_data %>% 
     filter(WWTP %in% all_WWTP_names) # retain only WWTP data
