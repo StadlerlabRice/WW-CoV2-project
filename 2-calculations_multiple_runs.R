@@ -38,12 +38,17 @@ list_raw_quant_data <- map(read_these_sheets, ~ read_sheet(sheeturls$data_dump, 
 raw_quant_data <- bind_rows(list_raw_quant_data) %>% 
   rename(Sample_name = any_of('Sample Name')) %>% # if name is according to old convension, this will rename it 
   # unite('Biobot_id', c(Sample_name, assay_variable), sep = '', remove = F) %>%
-  select(-`Well Position`) %>% 
+  select(-any_of('Well Position')) %>% 
   mutate_at('assay_variable', as.character) %>% 
   mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
   mutate_at('Tube ID', ~str_remove(., "\\.")) %>% 
   unite('Label_tube', c('Sample_name', 'Tube ID'), sep = "", remove = F) %>%  # make a unique column for matching volumes 
-  mutate(across(Label_tube, ~str_remove(., ' ') )) # remove spaces from the Sample_name (Started with 1123 Pavan with 1123 69S names)
+  mutate(across(Label_tube, ~str_remove(., ' ') )) %>%  # remove spaces from the Sample_name (Started with 1123 Pavan with 1123 69S names)
+
+  # temporary for chemagic during transition
+  mutate(extraction_method = if_else(str_detect(Sample_name, '^C'), 'Chemagic', 'Maxwell')) %>% # note if Chemagic with a C
+  mutate(across(Label_tube, ~ str_remove(., '^C'))) # remove the prefix C to make samples match to the sample registry
+
 
 # Load metadata ----------------------------------------------------------------------
 
@@ -186,6 +191,9 @@ processed_quant_data <- bind_rows(vol_R, vol_B) %>%
   
   mutate_cond(str_detect(Sample_name, 'Vaccine'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (.050 * 1e-3), Recovered = `Copy #` * 1e6 * 50/20, `Percentage_recovery_BCoV` = 100 * Recovered/`Actual spike-in`) %>% 
   mutate_cond(str_detect(Target, 'Baylor'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e6 /30, `Percentage_recovery_BCoV` = 100 * Recovered/`Actual spike-in`) %>% 
+  
+  # temporary processing for chemagic ; during transition
+  mutate_cond(str_detect(Sample_name, '^C'), Recovered = `Copy #` * (1e6/150) * (elution_volume/vol_extracted) ) %>%  # concentration factor is different = 150
   
   select(-spike_virus_conc) %>% 
   
