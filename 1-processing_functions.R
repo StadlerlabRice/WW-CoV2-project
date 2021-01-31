@@ -284,8 +284,8 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   # Load desired qPCR result sheet and columns
   bring_results <- fl %>% 
     select(-Sample) %>% # Remove sample, it will be loaded from plate template sheet
-    rename(CopiesPer20uLWell = any_of('Copies/20µLWell')) %>% # rename the column name - if exported from Quantasoft analysis Pro
-    rename(Concentration = any_of('Conc(copies/µL)')) %>%  # rename the column name - if exported from Quantasoft analysis Pro
+    rename(CopiesPer20uLWell = matches('Copies/20.*µLWell')) %>% # rename the column name - if exported from Quantasoft analysis Pro
+    rename(Concentration = matches('Conc(copies/.*µL)')) %>%  # rename the column name - if exported from Quantasoft analysis Pro
     mutate(across(any_of('Concentration'), as.numeric)) %>%  # Remove the NO CALLS and make it numeric column  
     
     mutate_at('Well', ~ str_replace(., '(?<=[:alpha:])0(?=[:digit:])', '') ) %>% rename('Well Position' = Well) %>% 
@@ -297,10 +297,22 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
     left_join(template_volume_ddpcr) %>% # join array of template volume - different for N1,N2 and BCOV2
     mutate('Copy #' = CopiesPer20uLWell/ template_vol) %>%  
     
-    select(`Sample_name`, `Copy #`, Target, everything())
+    select(`Sample_name`, `Copy #`, Target, everything()) %>% 
+    
+    
+    # Changing rest of the problematic columns  - if exported from Quantasoft analysis Pro
+    rename(AcceptedDroplets = any_of('Accepted Droplets'),
+           Threshold = any_of('Threshold1'),
+           MeanAmplitudeofPositives = any_of('MeanAmplitudeOfPositives'),
+           MeanAmplitudeofNegatives = any_of('MeanAmplitudeOfNegatives')) %>%  # rename the column name - if exported from Quantasoft analysis Pro
+    mutate(across(matches('Total|Poisson|Mean|Ch|Ratio|Abundance|Linkage|CNV|Copies|Det'), as.numeric)) %>%  # convert ambiguous columns into numeric
+    mutate(across(where(is.list), as.character)) # convert any stray lists into character
+  
+  
   
   
   # polishing qPCR data - Make Biobot ID column clean
+  
   # isolate the primer pair and assay_variable into 3 columns : Sample name, assay variable and primer pair 
   polished_results <- bring_results %>% separate(`Sample_name`,c(NA, 'Sample_name'),'-') %>% separate(`Sample_name`,c('Sample_name','Tube ID'),'_') %>% 
     mutate(`Tube ID` = if_else(`Sample_name` == 'NTC', '0', `Tube ID`)) %>% 
