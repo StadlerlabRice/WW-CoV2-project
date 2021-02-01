@@ -267,15 +267,29 @@ lm_std_curve <- function(df, trig = 0)
 # linear regression equation
 lm_eqn <- function(m, trig = 0){
   
-  eq <- substitute(italic(y) == b %.% italic(x)+ a*","~~italic(r)^2~":"~r2, 
-                   list(a = format(unname(coef(m)[1]), digits = 4), 
+  eq.expr <- if (coef(m)[1] >= 0)   # accounting for sign of the y intercept. Source: https://stackoverflow.com/a/13451587/9049673
+    { expr(italic(y) == b %.% italic(x)+ a*","~~italic(r)^2~":"~r2)
+    
+      } else expr(italic(y) == b %.% italic(x) - a*","~~italic(r)^2~":"~r2)    
+  
+  
+  eq <- substitute_q(eq.expr,   # italic(y) == b %.% italic(x)+ a*","~~italic(r)^2~":"~r2, 
+                   list(a = format( abs(unname(coef(m)[1])), digits = 4), 
                         b = format(unname(coef(m)[2]), digits = 3), 
                         r2 = format(summary(m)$r.squared, digits = 3)))
-  # if(trig == 'coeff') c(round(coef(m)[2], 2), round(summary(m)$r.squared, 2))
+  
+  rsq <- substitute(~~italic(r)^2~"="~r2, 
+                    list(r2 = format(summary(m)$r.squared, digits = 3)))
+  
+  # Conditional output according to switch
+  
+  # if(trig == 'coeff') c(round(coef(m)[2], 2), round(summary(m)$r.squared, 2)) # legacy, outputing a vector. This is not vectorized
+  
+  # Coeff : output a tibbble with the slope and intercepts - useful for calculations (such as qPCR std curve efficiency)
   if(trig == 'coeff') tibble(slope = round(coef(m)[2], 2), y_intercept = round(coef(m)[1], 2), r_square = round(summary(m)$r.squared, 3))
-  else as.character(as.expression(eq)); 
+  else if(trig == 'Rsquare') as.character(as.expression(rsq)) # output R square
+  else as.character(as.expression(eq));  # Default : output full equation and R square
 }
-
   
   optional1 <- function()
     {# output the difference between consecutive CT values
@@ -307,6 +321,17 @@ plottm1 <- function(results_relevant)
     ggtitle(paste(title_name,': Melting curves')) + facet_grid(~`Primer pair`, scales = 'free_x', space = 'free_x')
 }
 
+
+# Non standard evals ----
+
+# Substitutes a pre-made expression
+substitute_q <- function(x, env)
+{# x is a pre made expression with x <- expr(something..)
+  
+  finl_call <- substitute(substitute(y, env), list(y = x)) # create a the final expression by substituting y
+  
+  eval(finl_call) # evaluate the call for the desired effect
+}
 
 # Plotting functions ----
 
