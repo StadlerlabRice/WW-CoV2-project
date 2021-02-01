@@ -78,9 +78,24 @@ plt.rna <-  {ggplot(dt.mid, aes(WWTP, `Copies/ul RNA`, colour = extraction_metho
 ```{r maxchemcorr, fig.width=5, fig.height=5}
 
 plot_scatter(.data = dt.mid, x_var = `Maxwell`, y_var = `Chemagic`, measure_var = 'Copies/l WW',
+             colour_var = `Target Name`, grouping_var = `Target Name`,
              names_from_var = 'extraction_method',
              text_cols = c('Target Name', 'WWTP_ID'), extra_cols_for_pivot = NULL,
-             sample_checking_column = WWTP_ID) %>% 
+             sample_checking_column = WWTP_ID,
+             text_for_equation = 'Rsquare') %>% 
+  print()
+
+```
+### N1 - N2 combined
+
+```{r maxchemcorrmerged, fig.width=5, fig.height=5}
+
+plot_scatter(.data = dt.mid, x_var = `Maxwell`, y_var = `Chemagic`, measure_var = 'Copies/l WW',
+             
+             names_from_var = 'extraction_method',
+             text_cols = c('Target Name', 'WWTP_ID'), extra_cols_for_pivot = NULL,
+             sample_checking_column = WWTP_ID,
+             text_for_equation = 'Rsquare') %>% 
   print()
 
 ```
