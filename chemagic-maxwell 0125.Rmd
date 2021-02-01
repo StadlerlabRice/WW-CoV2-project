@@ -32,11 +32,26 @@ dt.in <- read_sheet(sheeturls$complete_data, sheet = '0129 chmagic-maxwell+pavan
 # processing ----
 
 dt.mid <- dt.in %>% 
-  mutate(extraction_method = if_else(str_detect(Facility, '^C'), 'Chemagic', 'Maxwell')) %>% 
-  mutate(across(WWTP_ID, ~ str_remove(., '^C'))) %>%  # remove the C that identifies Chemagic
-  filter(!str_detect(Facility, '^PR'))
+  mutate(extraction_method = if_else(str_detect(Facility, '^C'), 'Chemagic', 'Maxwell'),
+         concentration_factor = `Copies/ul RNA` * 1e6/`Copies/l WW`, # just for checking/for kathy's easy reference
+         across(WWTP_ID, ~ str_remove(., '^C'))) %>%  # remove the C that identifies Chemagic
+  filter(!str_detect(Facility, '^PR')) # remove Pavan's samples included in this plate
   
+# polish for HHD/head to head analysis
 
+present_WW_data <- dt.mid %>%
+    
+  rename('Copies_per_uL' = `Copies/ul RNA`,
+         'Copies_Per_Liter_WW' = `Copies/l WW`,
+         'Recovery_Rate' = `Percentage_recovery_BCoV`,
+         Target_Name = `Target Name`) %>%
+  select(-contains('Vol'), -`Spiked-in Copies/l WW`, -Tube_ID, -contains('Droplets')) %>% 
+  select(WWTP_ID, extraction_method, concentration_factor, everything()) %>%  # order important columns first
+    filter(!str_detect(WWTP_ID, 'DI|Blank|NTC')) # remove DI, BLANK and NTC controls
+
+check_ok_and_write(present_only_WW, sheeturls$wwtp_only_data, title_name) # save results to a google sheet, ask for overwrite
+write_csv(present_only_WW, path = str_c('excel files/Weekly data to HHD/', '0125 lift station Rice', '.csv'), na = '') # output csv file
+    
 ```
 
 
