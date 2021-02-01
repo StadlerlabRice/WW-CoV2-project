@@ -394,16 +394,18 @@ plot_scatter <- function(.data = processed_quant_data,
                          x_var = N1_multiplex, y_var = N2_multiplex, colour_var = NULL, shape_var = NULL,
                          grouping_var = NULL, # CURRENTLY ONLY WORKS FOR NULL GROUP
                          
-                         already_pivoted_data = 'no',
+                         already_pivoted_data = 'no', # Pivoting + data filtering (optional)
                          names_from_var = 'Target Name', 
+                         measure_var = 'Copy #',
+                         extra_cols_for_pivot = 'biological_replicates',
+                         text_cols = minimal_label_columns,
                          
                          title_text = title_name,
                          
-                         show_y.equals.x_line = 'yes',
+                         plt.regression.stats = 'yes', 
                          text_for_equation = 'Rsquare', # choice: "Rsquare" or "full equation"
-                         measure_var = 'Copy #',
-                         text_cols = minimal_label_columns,
-                         extra_cols_for_pivot = 'biological_replicates',
+                         remove.zeros.before.correlating = 'yes',
+                         show_y.equals.x_line = 'yes',
                          
                          sample_checking_column = Sample_name,
                          sample_var = 'NTC', 
@@ -430,9 +432,8 @@ plot_scatter <- function(.data = processed_quant_data,
       filter(., str_detect({{sample_checking_column}}, sample_var, negate = exclude_sample))  %>% # account for missing var
       pivot_wider(names_from = names_from_var, values_from = all_of(measure_var)) %>% # Target can be generalized?
       ungroup() # why did you ungroup - for the lm ..?
-  } else .data_for_plot <- .data #%>%  # direct carrying of data to next steps
-  # {if(!is.null(grouping_var)) group_by(., {{grouping_var}}) else . } # DISABLED FOR CHECKING IF PLOTLY RUNS (GROUPS NOT WORKING RIGHT NOW
-  
+  } else .data_for_plot <- .data %>%  # direct carrying of data to next steps without pivoting
+    {if(!is.null(enexpr(grouping_var))) group_by(., {{grouping_var}}) else . } # Checking if it works
   
   # error handling
   
@@ -481,10 +482,19 @@ Check if x_var and y_var are present in .data')
     geom_point(size = 2, mapping = aes(colour = {{colour_var}}, shape = {{shape_var}})) +
     
     # linear regression
-    geom_smooth(method = 'lm') + # .. , mapping = aes(group = {{grouping_var}})  # DISABLED GROUPS 
-    geom_text(data = . %>% summarise(across(where(is.numeric), max, na.rm = T) ),
-              # mapping = aes(group = {{grouping_var}}), # DISABLED FOR CHECKING IF PLOTLY RUNS (GROUPS NOT WORKING RIGHT NOW)
-              label = lin_reg_eqn, parse = TRUE, show.legend = F, hjust = 'inward', nudge_x = -5) +
+    geom_smooth(data = . %>% {if(remove.zeros.before.correlating == 'yes') mutate(., across(all_of(c(checkx, checky)), ~if_else(.x == 0, NaN, .x))) else .},
+                method = 'lm', mapping = aes(group = {{grouping_var}},
+                                             colour = {if(identical(enexpr(colour_var),
+                                                                    enexpr(grouping_var)))  {{colour_var}}
+                                             })
+    ) +  # GROUPS enabled
+    
+    {if(plt.regression.stats == 'yes') geom_text(data = lin_reg_text_data,
+                                                 mapping = aes( colour = {if(!identical(enexpr(colour_var),
+                                                                                        enexpr(grouping_var)))  NULL},
+                                                                shape = NULL, group = {{grouping_var}}, # Groups working
+                                                                label = lin_reg_eqn),
+                                                 parse = TRUE, show.legend = F, hjust = 'inward', nudge_x = -5)} +
     
     # Dummy y = x line
     {if(show_y.equals.x_line == 'yes') list(geom_abline(slope = 1, intercept = 0, alpha = .4),
@@ -494,8 +504,6 @@ Check if x_var and y_var are present in .data')
     # Labeling
     ggtitle(title_text, subtitle = measure_var)
 }
-
-
 
 
 
