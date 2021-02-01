@@ -414,7 +414,7 @@ plot_scatter <- function(.data = processed_quant_data,
 { # Convenient handle for repetitive plotting in the same format; 
   
   
-  # Preliminaries
+  # Preliminaries ----
   
   
   # convert column names (target names) into string
@@ -423,19 +423,26 @@ plot_scatter <- function(.data = processed_quant_data,
   
   modx <- function(x) x # unimplemented feature: modifier in case this function gets transformed variables
   
-  if(already_pivoted_data == 'no')
-  {  # filtering data for plotting according to function inputs
-    .data_for_plot <- .data %>% 
-      select(all_of(text_cols), all_of(extra_cols_for_pivot), all_of(measure_var), all_of(names_from_var)) %>% 
-      # {if('Sample_name' %in% colnames(.)) filter(., str_detect(`Sample_name`, sample_var, negate = exclude_sample)) else .} %>% # account for missing var
-      
-      filter(., str_detect({{sample_checking_column}}, sample_var, negate = exclude_sample))  %>% # account for missing var
-      pivot_wider(names_from = names_from_var, values_from = all_of(measure_var)) %>% # Target can be generalized?
-      ungroup() # why did you ungroup - for the lm ..?
-  } else .data_for_plot <- .data %>%  # direct carrying of data to next steps without pivoting
-    {if(!is.null(enexpr(grouping_var))) group_by(., {{grouping_var}}) else . } # Checking if it works
   
-  # error handling
+  # pivot-group ---- 
+  # Optional filtering (subset), pivoting and grouping of data before plotting
+  
+  .data_for_plot <- .data %>% 
+    filter(., str_detect({{sample_checking_column}}, sample_var, negate = exclude_sample))  %>% # Used to filter out problematic columns before pivot
+    
+    { if(already_pivoted_data == 'no') {  # filtering data for plotting according to function inputs
+      select(all_of(text_cols), all_of(extra_cols_for_pivot), all_of(measure_var), all_of(names_from_var)) %>% 
+        # {if('Sample_name' %in% colnames(.)) filter(., str_detect(`Sample_name`, sample_var, negate = exclude_sample)) else .} %>% # old: fixed column name: account for missing var
+        
+        pivot_wider(names_from = names_from_var, values_from = all_of(measure_var)) %>% # Target can be generalized?
+        ungroup() # Need to ungroup for the lm, in case the data was grouped previously by error (..?)
+    
+      } else .data_for_plot <- .data } %>%  # direct carrying of data to next steps without pivoting
+       
+    {if(!is.null(enexpr(grouping_var))) group_by(., {{grouping_var}}) else . } # Grouping: Checking if it works
+
+  
+  # error handling ----
   
   # If plotting transformations of variables : Not fully implemented yet
   if(enexpr(x_var) %>% is.call()) {checkx <-  enexpr(x_var)[2] %>% paste(); }# modx <- eval(enexpr(x_var)[1])}
@@ -515,7 +522,7 @@ Check if x_var and y_var are present in .data')
                                                                 label = lin_reg_eqn),
                                                  parse = TRUE, show.legend = F, hjust = 'inward', nudge_x = -5)} +
     
-    # Dummy y = x line
+    # Reference: y = x line
     {if(show_y.equals.x_line == 'yes') list(geom_abline(slope = 1, intercept = 0, alpha = .4),
                                             annotate(geom = 'text', x = xyeq, y = xyeq, label = 'y = x', alpha = .3))
     } +
