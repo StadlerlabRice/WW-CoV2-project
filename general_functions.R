@@ -457,13 +457,13 @@ plot_scatter <- function(.data = processed_quant_data,
     filter(., str_detect({{sample_checking_column}}, sample_var, negate = exclude_sample))  %>% # Used to filter out problematic columns before pivot
     
     { if(already_pivoted_data == 'no') {  # filtering data for plotting according to function inputs
-      select(all_of(text_cols), all_of(extra_cols_for_pivot), all_of(measure_var), all_of(names_from_var)) %>% 
+      select(., all_of(text_cols), all_of(extra_cols_for_pivot), all_of(measure_var), all_of(names_from_var)) %>% 
         # {if('Sample_name' %in% colnames(.)) filter(., str_detect(`Sample_name`, sample_var, negate = exclude_sample)) else .} %>% # old: fixed column name: account for missing var
         
         pivot_wider(names_from = names_from_var, values_from = all_of(measure_var)) %>% # Target can be generalized?
         ungroup() # Need to ungroup for the lm, in case the data was grouped previously by error (..?)
     
-      } else .data_for_plot <- .data } %>%  # direct carrying of data to next steps without pivoting
+      } else .} %>%  # direct carrying of data to next steps without pivoting
        
     {if(!is.null(enexpr(grouping_var))) group_by(., {{grouping_var}}) else . } # Grouping: Checking if it works
 
@@ -542,8 +542,8 @@ Check if x_var and y_var are present in .data')
     ) +  # GROUPS enabled
     
     {if(plt.regression.stats == 'yes') geom_text(data = lin_reg_text_data,
-                                                 mapping = aes( colour = {if(!identical(enexpr(colour_var),
-                                                                                        enexpr(grouping_var)))  NULL},
+                                                 mapping = aes( colour = {if(identical(enexpr(colour_var),
+                                                                                        enexpr(grouping_var)))  {{colour_var}} },
                                                                 shape = NULL, group = {{grouping_var}}, # Groups working
                                                                 label = lin_reg_eqn),
                                                  parse = TRUE, show.legend = F, hjust = 'inward', nudge_x = -5)} +
