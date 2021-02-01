@@ -417,7 +417,7 @@ plot_biological_replicates <- function(results_abs, title_text = title_name, xla
 
 plot_scatter <- function(.data = processed_quant_data, 
                          x_var = N1_multiplex, y_var = N2_multiplex, colour_var = NULL, shape_var = NULL,
-                         grouping_var = NULL, # CURRENTLY ONLY WORKS FOR NULL GROUP
+                         grouping_var = NULL, # Works for any group and NULL!
                          
                          already_pivoted_data = 'no', # Pivoting + data filtering (optional)
                          names_from_var = 'Target Name', 
@@ -425,16 +425,16 @@ plot_scatter <- function(.data = processed_quant_data,
                          extra_cols_for_pivot = 'biological_replicates',
                          text_cols = minimal_label_columns,
                          
+                         sample_checking_column = Sample_name,
+                         sample_var = 'NTC', 
+                         exclude_sample = TRUE,
+                         
                          title_text = title_name,
                          
                          plt.regression.stats = 'yes', 
-                         text_for_equation = 'Rsquare', # choice: "Rsquare" or "full equation"
+                         text_for_equation = 'full equation', # choice: "Rsquare" or "full equation"
                          remove.zeros.before.correlating = 'yes',
-                         show_y.equals.x_line = 'yes',
-                         
-                         sample_checking_column = Sample_name,
-                         sample_var = 'NTC', 
-                         exclude_sample = T)
+                         show_y.equals.x_line = 'yes')
 
 { # Convenient handle for repetitive plotting in the same format; 
   
@@ -448,6 +448,7 @@ plot_scatter <- function(.data = processed_quant_data,
   
   modx <- function(x) x # unimplemented feature: modifier in case this function gets transformed variables
   
+  # grouping_var <- if it is not NULL, replace with c(colour_var, shape var) - as an expression - seems difficult
   
   # pivot-group ---- 
   # Optional filtering (subset), pivoting and grouping of data before plotting
