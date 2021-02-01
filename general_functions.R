@@ -460,22 +460,41 @@ Check if x_var and y_var are present in .data')
   
   
   
-  # For linear regression data
+  # Linear regression ----
   
   # Making linear regression formula (source: https://stackoverflow.com/a/50054285/9049673)
   fmla <- new_formula(enexpr(y_var), enexpr(x_var))
   
   # Max and ranges for plotting
-  xyeq <- .data_for_plot %>% summarise(across(where(is.numeric), max, na.rm = T)) %>% select(all_of(c(checkx, checky))) %>% min() %>% {.*0.9} %>% modx()
+  xyeq <- .data_for_plot %>% 
+    summarise(across(where(is.numeric), max, na.rm = T)) %>% 
+    select(all_of(c(checkx, checky))) %>% 
+    min() %>% {.*0.9} %>% modx() # equation will appear at 90% of maximum  
   
   # linear regression equation
-  lin_reg_eqn <- .data_for_plot %>% mutate(across(all_of(c(checkx, checky)), ~if_else(.x == 0, NaN, .x))) %>% 
-    lm(fmla, data = ., na.action = na.exclude) %>% lm_eqn(., trig = text_for_equation)
+  lin_reg_eqn <- .data_for_plot %>% 
+    {if(remove.zeros.before.correlating == 'yes') mutate(., across(all_of(c(checkx, checky)), ~if_else(.x == 0, NaN, .x))) else .} %>%  # removed zero values (why?)
+    nest(data = -{{grouping_var}}) %>% 
+    mutate( lin_reg_eqn = map_chr(data, 
+                                  ~ lm(fmla, data = .x, na.action = na.exclude) %>% 
+                                    lm_eqn(trig = text_for_equation) 
+    )
+    
+    ) #%>% 
+  # pull(lin_reg_eqn_colm) # if needed as a simple vector (legacy, problem with matching target names)
+  
+  facet_max_values <- .data_for_plot %>% 
+    summarise(across(where(is.numeric), max, na.rm = T) )
+  
+  # combining the max values for position and label into 1 data set
+  lin_reg_text_data <- lin_reg_eqn %>%  
+    select(-data) %>%
+    {if(!is.null(enexpr(grouping_var))) 
+    {left_join(., facet_max_values)
+    } else bind_cols(., facet_max_values)}
   
   
-  
-  
-  # plotting part
+  # plotting part ----
   
   plt1 <- .data_for_plot %>% 
     ggplot(aes(x = {{x_var}}, y =  {{y_var}} )) +
