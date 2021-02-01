@@ -460,7 +460,7 @@ plot_scatter <- function(.data = processed_quant_data,
       select(., all_of(text_cols), all_of(extra_cols_for_pivot), all_of(measure_var), all_of(names_from_var)) %>% 
         # {if('Sample_name' %in% colnames(.)) filter(., str_detect(`Sample_name`, sample_var, negate = exclude_sample)) else .} %>% # old: fixed column name: account for missing var
         
-        pivot_wider(names_from = names_from_var, values_from = all_of(measure_var)) %>% # Target can be generalized?
+        pivot_wider(names_from = all_of(names_from_var), values_from = all_of(measure_var)) %>% # Target can be generalized?
         ungroup() # Need to ungroup for the lm, in case the data was grouped previously by error (..?)
     
       } else .} %>%  # direct carrying of data to next steps without pivoting
