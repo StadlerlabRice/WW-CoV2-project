@@ -7,7 +7,7 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # sheets to read from qPCR data dump excel file
 read_these_sheets <- c( 'dd.WW117_0129_CHMGC-MAXWL_Pavan')
 
-title_name <- '0129 chmagic-maxwell'
+title_name <- '0129 chmagic-maxwell+pavan'
 
 # Biobot_id sheet
 bb_sheets <- c('Week 42 (01/25)')
@@ -191,7 +191,8 @@ processed_quant_data <- bind_rows(vol_R, vol_B) %>%
   mutate_cond(str_detect(Target, 'Baylor'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e6 /30, `Percentage_recovery_BCoV` = 100 * Recovered/`Actual spike-in`) %>% 
   
   # temporary processing for chemagic ; during transition
-  mutate_cond(str_detect(Sample_name, '^C'), Recovered = `Copy #` * (1e6/150) * (elution_volume/vol_extracted) ) %>%  # concentration factor is different = 150
+  mutate_cond(str_detect(Sample_name, '^C'), Recovered = `Copy #` * (1e6/300) * (elution_volume/vol_extracted) ) %>%  # concentration factor is different = 300 
+  # (source: concentration factor calc : https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=2134801800)
   
   select(-spike_virus_conc) %>% 
   
