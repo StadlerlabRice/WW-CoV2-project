@@ -661,7 +661,14 @@ check_ok_and_write <- function(data, sheet_URL, title_name)
 }
 
 
-# Dummy data ----
+# Dummy data, funs ----
 
-a <- tibble(a1 = 1:5, a2 = 5:1, a3 = letters[1:5])
+a <- tibble(a1 = 1:5, a2 = 5:1, a3 = letters[1:5], a4 = as_factor(6:10)) # test tibble with numeric, char and a factor
 
+dumfun <- function(a, var_a = a2, var_b = a3, c_var = 'a1', d_var = NULL)
+{ # this is a dummy function to provide an environment to test quosures, unquoting and things like that
+  
+  d_var %<>% {if(is.null(.)) expr(c(!!var_a, !!var_b)) else .}
+  
+  a %>% select(!!d_var)
+}
