@@ -30,6 +30,8 @@ addl_raw_quant_data <- map_dfr(read_these_sheets,
                                ~ read_sheet(sheeturls$data_dump, sheet = .x) %>%
                                  rename(Sample_name = any_of('Sample Name')) %>% # if name is according to old convension, this will rename it
                                  
+                                 filter(!str_detect(Sample_name, 'Std|Vac')) %>%  # remove standards and vaccine 
+                                 
                                  # Changing problematic columns
                                  rename(Concentration = any_of('Conc(copies/µL)'),
                                         AcceptedDroplets = any_of('Accepted Droplets'),
@@ -56,3 +58,6 @@ addl_selected <-  addl_raw_quant_data %>%
   select(-(2:6))
 
 mrg_dat <- left_join(all_data_input, addl_selected)
+
+write_sheet(mrg_dat, ss = sheeturls$complete_data, sheet = 'extra: Conc methods paper-3')
+
