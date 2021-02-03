@@ -57,8 +57,35 @@ addl_selected <-  addl_raw_quant_data %>%
          .before = 1) %>%  # add a unique column for each row to match to the complete data (for merge)
   select(-(2:6))
 
-mrg_dat <- left_join(all_data_input, addl_selected)
 
-# merge is not good, NTCs have non unique names, things getting jumbled up - also due to the dilution factor column
-# write_sheet(mrg_dat, ss = sheeturls$complete_data, sheet = 'extra: Conc methods paper-3')
+# making NTCs unique ----
 
+uniqize_ntcs <- function(.dat)
+{ .dat %>% 
+    filter(str_detect(WWTP_ID, 'NTC')) %>% 
+    mutate(WWTP = 'NTC') %>% 
+    group_by(WWTP, Target) %>% 
+    mutate(repl_numbr = row_number(),
+           WWTP_ID = str_c(WWTP, repl_numbr, sep = '.'),
+           Facility = str_c(WWTP, repl_numbr, sep = '/')) %>% 
+    select(-repl_numbr)
+}
+
+ntc_all_list <- list(all_data_input, addl_selected) %>% 
+  map( uniqize_ntcs)
+
+# merging ----
+
+ntc_all_mrg <- left_join(ntc_all_list[[1]], ntc_all_list[[2]]) # join NTCs separately
+  
+mrg_dat <- left_join(all_data_input, addl_selected) %>% 
+  filter(!str_detect(WWTP_ID, 'NTC')) %>%  # remove NTCs
+  bind_rows(., ntc_all_mrg) # add the NTCs back
+
+# output ----
+
+write_sheet(mrg_dat, ss = sheeturls$complete_data, sheet = 'extra: Conc methods paper-3') # write data in a new sheet
+
+# plot total accepted droplets
+ggplot(mrg_dat, aes(x = Target, y = AcceptedDroplets)) + geom_jitter(width = .2) + geom_hline(yintercept = 10000)  
+ggsave('qPCR analysis/Methods paper/Archive/concentration methods-2/TotalDroplets.png', width = 7, height = 4)
