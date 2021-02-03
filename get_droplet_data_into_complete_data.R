@@ -59,5 +59,6 @@ addl_selected <-  addl_raw_quant_data %>%
 
 mrg_dat <- left_join(all_data_input, addl_selected)
 
-write_sheet(mrg_dat, ss = sheeturls$complete_data, sheet = 'extra: Conc methods paper-3')
+# merge is not good, NTCs have non unique names, things getting jumbled up - also due to the dilution factor column
+# write_sheet(mrg_dat, ss = sheeturls$complete_data, sheet = 'extra: Conc methods paper-3')
 
