@@ -629,9 +629,42 @@ check_ok_and_write <- function(data, sheet_URL, title_name)
 }
 
 
-# dummy test tibble ----
+# Testing and troubleshooting ----
+
+# dummy test tibble
 a <- tibble(a1 = 1:6, a2 = 6:1, a3 = rep(c('a', 'b'),3), a4 = a2 ^2)
 y_namr_test <- list( 'a2' = expression(paste('this is a ', mu, 'L')),
                  'a4' = expression(paste('super large ', sigma, 'L')))
 
+# test plot
 aplt <- ggplot(a, aes(a1, a2, colour = a3)) + geom_point() + geom_line() + ylab(y_namr_test[['a4']])
+
+# find the number of times each element repeats in a dataframe column
+count_multiplicates <- function(.data, .colm, outliers_only = TRUE)
+{ 
+  # group by the desired column and count n() number of elements in the group
+  out_multi <- .data %>% group_by({{.colm}}) %>% summarize(repeated_instances = n())
+  
+  if(outliers_only) {
+    the_mode <- stat_mode_vector(out_multi$repeated_instances) # find the mode of the data using the handwritten function
+    
+    out_multi %>% 
+      filter(repeated_instances != the_mode) %>%  # remove most frequently repeated instances
+      add_row( {{.colm}} := 'most repeated', repeated_instances = the_mode) # add a row to refer to this
+      
+    # y <- .data  %>% pull({{.colm}}) %>% table # find the frequency table of the vector : named vector with frequency
+    # return(y[which(y != stat_mode_vector(y))])  
+    
+  } else return(out_multi)
+
+}
+
+
+# find mode of a vector
+
+stat_mode_vector <- function(x)
+{
+  y <- table(x) # find the frequency table of the vector : named vector with frequency
+  names(y)[which(y == max(y))] %>% as.numeric() # report elements which repeat the maximum number of times
+}
+
