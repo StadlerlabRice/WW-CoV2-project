@@ -183,17 +183,15 @@ processed_quant_data <- bind_rows(vol_R, vol_B) %>%
   
   # Calculations for spiked in and recovered copies of the virus
   mutate(`Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), 
-         Recovered = `Copy #` * 1e3 * elution_volume/vol_extracted, 
-         Detection_Limit = as.numeric(LimitOfDet * 1e3 * elution_volume/vol_extracted),
+         Recovered = `Copy #` *(1e6/300) * (elution_volume/vol_extracted), # Chemagic concentration factor = 300 
+         Detection_Limit = as.numeric(LimitOfDet * (1e6/300) * (elution_volume/vol_extracted) ), # Chemagic concentration factor = 300 
          `Percentage_recovery_BCoV` = 100 * Recovered/`Actual spike-in`) %>% 
+  # (source for chemagic conc. factor: concentration factor calc : https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=2134801800)
   
   mutate_cond(str_detect(Sample_name, 'Vaccine'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (.050 * 1e-3), Recovered = `Copy #` * 1e6 * 50/20, `Percentage_recovery_BCoV` = 100 * Recovered/`Actual spike-in`) %>% 
   mutate_cond(str_detect(Target, 'Baylor'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e6 /30, `Percentage_recovery_BCoV` = 100 * Recovered/`Actual spike-in`) %>% 
   
-  # temporary processing for chemagic ; during transition
-  mutate_cond(str_detect(Sample_name, '^C'), Recovered = `Copy #` * (1e6/300) * (elution_volume/vol_extracted) ) %>%  # concentration factor is different = 300 
-  # (source: concentration factor calc : https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=2134801800)
-  
+    
   select(-spike_virus_conc) %>% 
   
   # arranging data by facility name alphabetical
