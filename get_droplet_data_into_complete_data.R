@@ -55,6 +55,7 @@ addl_selected <-  addl_raw_quant_data %>%
                            str_c(Sample_name, '.', assay_variable, '-', biological_replicates)),
          across('Target', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2', 'BCoV$' = 'BCoV2'))),
          .before = 1) %>%  # add a unique column for each row to match to the complete data (for merge)
+  rename(PositiveDroplets = 'Positives') %>% 
   select(-(2:6))
 
 
@@ -89,3 +90,12 @@ write_sheet(mrg_dat, ss = sheeturls$complete_data, sheet = 'extra: Conc methods 
 # plot total accepted droplets
 ggplot(mrg_dat, aes(x = Target, y = AcceptedDroplets)) + geom_jitter(width = .2) + geom_hline(yintercept = 10000)  
 ggsave('qPCR analysis/Methods paper/Archive/concentration methods-2/TotalDroplets.png', width = 7, height = 4)
+
+# plot of positive droplets with LOQ of 3 droplets
+plt.droplets <- {ggplot(mrg_dat, aes(x = Target, y = PositiveDroplets)) + geom_jitter(width = .2) + geom_hline(yintercept = 3)} %>% 
+  print()
+ggsave('qPCR analysis/Methods paper/concentration methods-3/Archive/PositiveDroplets.png', plt.droplets, width = 7, height = 4)
+
+
+plt.droplets + ylim(c(0,60))
+ggsave('qPCR analysis/Methods paper/concentration methods-3/Archive/PositiveDroplets-zoom.png', width = 7, height = 4)
