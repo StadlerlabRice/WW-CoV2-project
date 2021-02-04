@@ -7,7 +7,7 @@
 source('./general_functions.R') # Source the general_functions file
 
 # file name
-input_sheet <- 'Concentration methods paper-3'
+input_sheet <- 'extra: Conc methods paper-3'
 limit_of_quant_sheet <- 'LOQ-3'
 
 # method_namer <- c('ha.*' = 'HA Filtration',
@@ -24,7 +24,8 @@ title_namer <- c('N1' = 'SARS-CoV2 N1',
 # naming scheme for plot y axis labels
 y_axis_namer <- list('Copies/L WW' = 'Genome copies/L wastewater',
                   'Copies/uL RNA' = expression(paste('Genome copies/', mu, 'L RNA extract')),
-                  'Fraction.recovered' = 'Fraction of surrogate virus recovered')
+                  'Fraction.recovered' = 'Fraction of surrogate virus recovered',
+                  'PositiveDroplets' = 'Positive droplets/well')
 
 # folder to save
 sv.category_namer <- c('Copies/L WW' = 'Copies ww',
@@ -42,13 +43,15 @@ loq_data <- read_sheet('https://docs.google.com/spreadsheets/d/1_32AE3IkBRD3oGSY
 # Input file ----
 
 all_data_input <- read_sheet(sheeturls$complete_data, sheet = input_sheet) %>% 
-  rename(`Concentration method` = Concentration_method, 
-         Target = `Target Name`,
-         Fraction.recovered = `Recovery fraction`,
-         Detection.limit = Detection_Limit,
-         `Copies/L WW` = 'Copies/l WW', `Copies/uL RNA` = 'Copies/ul RNA') %>% # for compatibility with old plotting functions
-  filter(!str_detect(Facility, 'Std|Vac')) %>% 
-  mutate(across(WWTP, ~ str_replace(., '0', 'NTC'))) %>% 
+ 
+  # old renaming/polishihg : This is already done when merging with droplet counts and additional info
+  #  rename(`Concentration method` = Concentration_method, 
+  #        Target = `Target Name`,
+  #        Fraction.recovered = `Recovery fraction`,
+  #        Detection.limit = Detection_Limit,
+  #        `Copies/L WW` = 'Copies/l WW', `Copies/uL RNA` = 'Copies/ul RNA') %>% # for compatibility with old plotting functions
+  # filter(!str_detect(Facility, 'Std|Vac')) %>% 
+  # mutate(across(WWTP, ~ str_replace(., '0', 'NTC'))) %>% 
   
   # atach LOQs
   left_join(loq_data) %>% 
@@ -112,9 +115,11 @@ individual_plots <- function(.data_to_plot = data_to_plot,
   
   # Remove LOQ for recovery fraction and pMMoV
   if(str_detect(plt.y_label, 'Recover') | str_detect(target_string, 'pMMoV|BCoV')) plt.LOQ <- 'no'
+  
   # LOQ for copies/ul RNA
   if(str_detect(plt.y_label, 'RNA')) LOQ_var <- expr(LOQ_RNA) # place holder LOQ for ddPCR in copies/ul RNA
-  else LOQ_var <- expr(LOQ_WW)
+  else if(str_detect(plt.y_label, 'droplets')) LOQ_var <- expr(LOQ_droplets) # place holder LOQ for ddPCR in droplets
+  else LOQ_var <- expr(LOQ_WW) # defaults to LOQ in copies/L WW
  
   plt.alpha <- if_else(plt.LOQ == 'yes', 0.5, 1) 
     
@@ -173,8 +178,10 @@ save_plot <- function(plt.sv.name, sv.category = 'Copies ww', plt.format = 'pdf'
 # manual limits for methods-2 - also applicable for methods-3 (tested)
 N_ww <- c('low' = 500, 'high' = 4e5)
 N_RNA <- c('low' = .1, 'high' = 20)
+N_droplets <- c('low' = 0, 'high' = 60)
 bcov_ww <- c(3.8e5, 8.7e8)
 bcov_RNA <- c(20, 4.3e4)
+# bcov_droplets <- c(0,1850)
 
 # Plotting ----
 rmarkdown::render('conc_methods_allfigs.rmd', 
@@ -188,16 +195,22 @@ rmarkdown::render('conc_methods_allfigs.rmd',
 
 # Identify min and max per target: manually
 data_to_plot %>% filter(str_detect(Target, 'N1|N2')) %>% 
-  pull(`Copies/L WW`) %>% max()
+  summarize(across(`Copies/L WW`, lst(max, min), na.rm = T))
 
 data_to_plot %>% filter(str_detect(Target, 'N1|N2')) %>% 
-  pull(`Copies/uL RNA`) %>% {.[. > 0]} %>% min()
+  pull(`Copies/uL RNA`) %>% {.[. > 0]} %>% {c('maximum' = max(.), 'minimum' = min(.))}
+
+data_to_plot %>% filter(str_detect(Target, 'N1|N2')) %>% 
+  pull(PositiveDroplets) %>% {c('maximum' = max(.), 'minimum' = min(.))}
 
 data_to_plot %>% filter(str_detect(Target, 'BCoV|pMMoV'), `Copies/L WW` > 0 ) %>% 
   summarise_at('Copies/L WW', lst(min, max), na.rm = T) %>% as.numeric() %>%  format(scientific = T, digits = 2)
 
 data_to_plot %>% filter(str_detect(Target, 'BCoV|pMMoV'), `Copies/uL RNA` > 0 ) %>% 
   summarise_at('Copies/uL RNA', lst(min, max), na.rm = T) #%>% as.numeric() %>%  format(scientific = T, digits = 2)
+
+data_to_plot %>% filter(str_detect(Target, 'BCoV|pMMoV')) %>% 
+  summarize(across(PositiveDroplets, lst(max, min), na.rm = T))
 
 
 # Effective LOD calculation ----
