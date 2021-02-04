@@ -92,6 +92,39 @@ plt_BCoV + plt_pMMoV + plt_BCoV_RNA + plt_pMMoV_RNA +
 save_plot('BCoV_pMMoV_4 panel', sv.category = 'patched', plt.width = 14, plt.height = 7)
 ```
 
+
+
+### Positive droplets
+
+#### Copies droplets/N1 by method
+```{r indN1_droplets}
+plt_N1_droplets <- individual_plots(target_string = 'N1', y_var = PositiveDroplets, plt.log = 'No', plt.save = 'yes', plt.format = 'png') +
+  ylim(N_droplets)
+```
+
+#### Copies droplets/N2 by method
+```{r indN2_droplets}
+plt_N2_droplets <- individual_plots(target_string = 'N2', y_var = PositiveDroplets, plt.log = 'No', plt.save = 'no') +
+  ylim(N_droplets)
+
+```
+
+
+#### Copies droplets/BCoV by method
+```{r indBCoV_droplets}
+plt_BCoV_droplets <- {individual_plots(.data_to_plot = all_data_input, target_string = 'BCoV', y_var = PositiveDroplets, plt.log = 'No') + geom_hline(yintercept = 3) } %>% 
+  print()
+
+
+plt_BCoV + plt_pMMoV + plt_BCoV_droplets + plt_pMMoV_RNA +
+  plot_layout(guides = 'collect') + 
+  plot_annotation(tag_levels = 'A')
+
+save_plot('BCoV_pMMoV_4 panel-droplets', sv.category = 'patched', plt.width = 14, plt.height = 7)
+```
+
+
+
 ### Patched 4 panel plot 
 ````{r patchedn12}
 plt_N1 + plt_N2 + plt_N1_RNA + plt_N2_RNA + 
@@ -100,6 +133,16 @@ plt_N1 + plt_N2 + plt_N1_RNA + plt_N2_RNA +
   # theme(legend.position = 'bottom')
 
 save_plot('N12_4 panel', sv.category = 'patched', plt.width = 14, plt.height = 7)
+```
+
+### Patched 4 panel plot - droplets 
+````{r patchedn13}
+plt_N1 + plt_N2 + plt_N1_droplets + plt_N2_droplets + 
+  plot_layout(guides = 'collect') + 
+  plot_annotation(tag_levels = 'A') #& 
+  # theme(legend.position = 'bottom')
+
+save_plot('N12_4 panel-droplets', sv.category = 'patched', plt.width = 14, plt.height = 7)
 ```
 
 --------------------------------------------------------------------------------------
