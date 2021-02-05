@@ -55,6 +55,7 @@ all_data_input <- read_sheet(sheeturls$complete_data, sheet = input_sheet) %>%
   
   # atach LOQs
   left_join(loq_data) %>% 
+  mutate(Detection_status = if_else(PositiveDroplets >= LOQ_droplets, 'Above', 'Below')) %>% # flag positivity above LOQ
   
   # make newline after "+" in the concentration method (for nice display of facets)
   mutate(across(`Concentration method`, ~ str_replace(., '\\+', '+\n')), 
@@ -134,8 +135,8 @@ individual_plots <- function(.data_to_plot = data_to_plot,
       scale_shape_manual(values = c(15,16,17,7,8,10,3,4)) +  # c(15,16,17,7,8,10,3)
       
       {if(plt.LOQ == 'yes') 
-        list(geom_hline(aes(yintercept = {{LOQ_var}})),
-             geom_point(data = . %>% filter({{y_var}} > {{LOQ_var}}) )
+        list(if(str_detect(plt.y_label, 'droplets')) geom_hline(aes(yintercept = {{LOQ_var}})),
+             geom_point(data = . %>% filter(PositiveDroplets > LOQ_droplets) )
              # annotate(data = loq_data, geom = 'rect', xmin = -Inf, xmax = +Inf, ymin = -Inf, ymax = {{LOQ_var}}, alpha = .3),
              # annotate(data = loq_data, geom = 'text', x = Inf, y = {{LOQ_var}}, hjust = 'inside', label = 'Limit of Quantification')
         )
