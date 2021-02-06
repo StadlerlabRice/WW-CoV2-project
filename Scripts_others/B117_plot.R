@@ -1,8 +1,14 @@
 # B117 variant plotting
 
+# Preliminaries ----
+
+# Loading libraries, functions and user inputs
+source('./general_functions.R') # Source the general_functions file
+
+
 # input ----
 
-dt_in <- read_sheet(sheeturls$data_dump, sheet = 'dd.WW112_B117_Test-B117')
+dt_in1 <- read_sheet(sheeturls$data_dump, sheet = 'dd.WW112_B117_Test-B117')
 
 # process ----
 
