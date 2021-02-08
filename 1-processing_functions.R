@@ -254,8 +254,8 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
 process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilution_wells = 'none')
 { # Baylor wells : choose 1) none, 2) '.*' for all, 3) '[A-H]([1-9]$|10)' etc. for specific wells 
   
-  template_volume_ddpcr <- tibble(Target = c('N1_multiplex', 'N2_multiplex', 'BCoV', 'pMMoV'),
-                                  template_vol = c(10, 10, 4, 4) /22 * 20) # ul template volume per well of the 20 ul ddPCR reaction for each target
+  template_volume_ddpcr <- tibble(Target = c('N1_multiplex', 'N2_multiplex', 'BCoV', 'pMMoV', 'N501Y', 'Del69-70'),
+                                  template_vol = c(10, 10, 4, 4, 9, 9) /22 * 20) # ul template volume per well of the 20 ul ddPCR reaction for each target
   
   RNA_dilution_factor_BCoV <- 50  # RNA dilution factor for diluted BCoV samples
   Vaccine_additional_RNA_dilution_factor_BCoV <- 50  # In addition to the above: RNA dilution factor for BCoV vaccine samples - both extracted and boiled
