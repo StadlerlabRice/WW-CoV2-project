@@ -272,9 +272,10 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   
   # Data input ----
   
-  # Read the ddPCR master file
+  # B117 extra
   
-  # Read in qPCR data and labels from plate template
+  
+  # Read in ddPCR/qPCR data and labels from plate template
   fl <- read_sheet(sheeturls$raw_ddpcr, sheet = flnm) # read excel file exported by Quantstudio
   plate_template <- get_template_for(flnm, sheeturls$templates)  # Get the plate template matching file name, convert to 1 column 
   
