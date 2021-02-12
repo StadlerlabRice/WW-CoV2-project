@@ -348,7 +348,7 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   # Append LOD information ----
   
   polished_results <- complete_LOD_table(polished_results)%>% 
-    select(1:6, AcceptedDroplets, Positives, Positivity, LimitOfDet, everything())
+    select(1:6, AcceptedDroplets, Positives, Positivity, LimitOfDet, Threshold, everything()) # Bring important columns to begining 
   
   # Data output ----
   
