@@ -3,7 +3,8 @@
 # prelims ----
 # running generation functions presumed
 
-rts <- c('dd.WW126_Schools+WWTP_N1N2', 'dd.WW127_Schools+WWTP_B117', 'dd.WW128_Schools_N1N2')
+rts <- c('dd.WW126_Schools+WWTP_N1N2', 'dd.WW127_Schools+WWTP_B117', 'dd.WW128_Schools_N1N2', 
+         'dd.WW129_0210_Con+0209_Schools_Rerun', 'dd.WW130_0209_WWTP_B117Redo', 'dd.WW131_0209_WWTP_N1N2Redo')
 
 # input ----
 
@@ -22,4 +23,4 @@ ggplot(raw_quant_data,
        aes(x = assay_variable, y = Positives, colour = run_ID)) + 
   geom_point() 
 
-ggsave('qPCR analysis/Extra graphs/dd.126-128_DI-blanks.png')
+ggsave('qPCR analysis/Extra graphs/dd.126-131_DI-blanks.png')
