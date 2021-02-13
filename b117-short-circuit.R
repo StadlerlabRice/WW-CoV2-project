@@ -1,12 +1,17 @@
 # B117 short circuit
 
-# Prelim ----
-source('C:/Users/new/Box Sync/Stadler lab/Data/COVID-qPCR work/1-processing_functions.R', encoding = 'UTF-8')
+# user input ----
 
 # Input names
-rps <- c('dd.WW127_Schools+WWTP_B117', 'dd.WW127_Schools+WWTP_B117-variant') 
+original_sheet_name <- 'dd.WW130_0209_WWTP_B117Redo'
+
+rps <- str_c(original_sheet_name, c('', '-variant') ) 
   # this can be automated if (B117 is in the name, look for a -variant too)
-title_name <- '0209 school+WWTP B117'
+title_name <- '0209 redo WWTP B117'
+
+# Prelims -----
+source('C:/Users/new/Box Sync/Stadler lab/Data/COVID-qPCR work/1-processing_functions.R', encoding = 'UTF-8')
+
 
 # Label the raw files
 map(rps, process_ddpcr)
