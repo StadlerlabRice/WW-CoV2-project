@@ -5,9 +5,9 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW117_0129_CHMGC-MAXWL_Pavan')
+read_these_sheets <- c( 'dd.WW130_testing_B117')
 
-title_name <- '0129 chmagic-maxwell+pavan'
+title_name <- '0209 testing b117'
 
 # Biobot_id sheet
 bb_sheets <- c('Week 42 (01/25)')
@@ -30,7 +30,7 @@ spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 
 # Input data ----------------------------------------------------------------------
 
 # Acquire all the pieces of the data : read saved raw qPCR results from a google sheet
-list_raw_quant_data <- map(read_these_sheets, ~ read_sheet(sheeturls$data_dump, sheet = ., range = 'A:J')) 
+list_raw_quant_data <- map(read_these_sheets, ~ read_sheet(sheeturls$data_dump, sheet = ., range = 'A:L')) 
 
 # bind multiple reads and clean up names
 raw_quant_data <- bind_rows(list_raw_quant_data) %>% 
@@ -190,7 +190,6 @@ processed_quant_data <- bind_rows(vol_R, vol_B) %>%
   
   mutate_cond(str_detect(Sample_name, 'Vaccine'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (.050 * 1e-3), Recovered = `Copy #` * 1e6 * 50/20, `Percentage_recovery_BCoV` = 100 * Recovered/`Actual spike-in`) %>% 
   mutate_cond(str_detect(Target, 'Baylor'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e6 /30, `Percentage_recovery_BCoV` = 100 * Recovered/`Actual spike-in`) %>% 
-  
     
   select(-spike_virus_conc) %>% 
   
@@ -253,9 +252,23 @@ presentable_data <- processed_quant_data %>%
   mutate_cond(str_detect(`Target Name`, '^N'), `Percentage_recovery_BCoV` = NA, `Spiked-in Copies/l WW` = NA) %>%
   
   # Selecting column order
-  select(Facility, WWTP, Date, Lab, `Target Name`, `Received_WW_vol`, `Volume Filtered`, `Copies/ul RNA`, `Copies/l WW`, Ct, AcceptedDroplets, PositiveDroplets, Sample_ID, Detection_Limit, Positivity, Sample_Type, `Spiked-in Copies/l WW`, `Percentage_recovery_BCoV`, WWTP_ID, Tube_ID, Comments) %>%
+  select(Facility, WWTP, Date, Lab, `Target Name`, 
+         `Received_WW_vol`, `Volume Filtered`, 
+         `Copies/ul RNA`, `Copies/l WW`, 
+         Ct, AcceptedDroplets, PositiveDroplets, Sample_ID, 
+         Detection_Limit, Positivity, 
+         Sample_Type, `Spiked-in Copies/l WW`, `Percentage_recovery_BCoV`, 
+         WWTP_ID, Tube_ID, Comments, any_of('variant_status')) %>%
+  
   mutate_at('Target Name', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2'))) %>% 
-  mutate_at('Target Name', ~str_remove(., '/Baylor'))
+  mutate_at('Target Name', ~str_remove(., '/Baylor')) %>% 
+
+  
+  # B117 special plug
+  {if(str_detect(read_these_sheets, 'B117') %>% any) {
+    calculate_B117_percentage_variant(.) %>% # calculating the percentage of variant vs total S copies 
+    select(-variant_status)}
+  }
 
 
 # Missing value check - Brings user attention to missing values in the sample registry
