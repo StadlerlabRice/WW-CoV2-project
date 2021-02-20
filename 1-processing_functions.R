@@ -18,6 +18,143 @@ source('./general_functions.R') # Source the general_functions file
 source('./inputs_for_analysis.R') # Source the file with user inputs
 
 
+# ddPCR processing: Attach sample labels from template table, calculate copies/ul using template volume/reaction, make names similar to qPCR data 
+process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilution_wells = 'none')
+{ # Baylor wells : choose 1) none, 2) '.*' for all, 3) '[A-H]([1-9]$|10)' etc. for specific wells 
+  
+  template_volume_ddpcr <- tibble(Target = c('N1_multiplex', 'N2_multiplex', 'BCoV', 'pMMoV', 'N501Y', 'Del69-70'),
+                                  template_vol = c(10, 10, 4, 4, 9, 9) /22 * 20) # ul template volume per well of the 20 ul ddPCR reaction for each target
+  
+  RNA_dilution_factor_BCoV <- 50  # RNA dilution factor for diluted BCoV samples
+  Vaccine_additional_RNA_dilution_factor_BCoV <- 50  # In addition to the above: RNA dilution factor for BCoV vaccine samples - both extracted and boiled
+  
+  # Ad hoc - marking the samples from baylor (will append /baylor to target name)
+  # Work in progress?
+  
+  
+  # Loading pre-reqisites ----
+  
+  
+  # Loading libraries, functions and user inputs
+  source('./general_functions.R') # Source the general_functions file
+  
+  # Data input ----
+  
+  # B117 extra
+  
+  
+  # Read in ddPCR/qPCR data and labels from plate template
+  fl <- read_sheet(sheeturls$raw_ddpcr, sheet = flnm) # read excel file exported by Quantstudio
+  plate_template <- get_template_for(flnm, sheeturls$templates)  # Get the plate template matching file name, convert to 1 column 
+  
+  # Polishing ----
+  
+  
+  # Load desired qPCR result sheet and columns
+  bring_results <- fl %>% 
+    select(-Sample) %>% # Remove sample, it will be loaded from plate template sheet
+    rename(CopiesPer20uLWell = matches('Copies/20.*µLWell')) %>% # rename the column name - if exported from Quantasoft analysis Pro
+    rename(Concentration = matches('Conc(copies/.*µL)')) %>%  # rename the column name - if exported from Quantasoft analysis Pro
+    mutate(across(any_of('Concentration'), as.numeric)) %>%  # Remove the NO CALLS and make it numeric column  
+    
+    mutate_at('Well', ~ str_replace(., '(?<=[:alpha:])0(?=[:digit:])', '') ) %>% rename('Well Position' = Well) %>% 
+    right_join(plate_template, by = 'Well Position') %>%  # Incorporate samples names from the google sheet by matching well position
+    mutate_at('Target', ~str_replace_all(., c('N1' = 'N1_multiplex' , 'N2' = 'N2_multiplex'))) %>% 
+    filter(!is.na(Target)) %>% 
+    
+    # Adding different template volumes for each target for division
+    left_join(template_volume_ddpcr) %>% # join array of template volume - different for N1,N2 and BCOV2
+    mutate('Copy #' = CopiesPer20uLWell/ template_vol) %>%  
+    
+    select(`Sample_name`, `Copy #`, Target, everything()) %>% 
+    
+    
+    # Changing rest of the problematic columns  - if exported from Quantasoft analysis Pro
+    rename(AcceptedDroplets = any_of('Accepted Droplets'),
+           Threshold = any_of('Threshold1'),
+           MeanAmplitudeofPositives = any_of('MeanAmplitudeOfPositives'),
+           MeanAmplitudeofNegatives = any_of('MeanAmplitudeOfNegatives')) %>%  # rename the column name - if exported from Quantasoft analysis Pro
+    mutate(across(matches('Total|Poisson|Mean|Ch|Ratio|Abundance|Linkage|CNV|Copies|Det'), as.numeric)) %>%  # convert ambiguous columns into numeric
+    mutate(across(where(is.list), as.character)) # convert any stray lists into character
+  
+  
+  
+  
+  # polishing qPCR data - Make Biobot ID column clean
+  
+  # isolate the primer pair and assay_variable into 3 columns : Sample name, assay variable and primer pair 
+  polished_results <- bring_results %>% separate(`Sample_name`,c(NA, 'Sample_name'),'-') %>% separate(`Sample_name`,c('Sample_name','Tube ID'),'_') %>% 
+    mutate(`Tube ID` = if_else(`Sample_name` == 'NTC', '0', `Tube ID`)) %>% 
+    separate(`Tube ID`, c('assay_variable', 'biological_replicates'), remove = F) %>%  # Separate out biological replicates 
+    unite('Tube ID', c(assay_variable, biological_replicates), sep = '.', remove = F, na.rm = T) %>% # remaking Tube ID - removes spaces after 'dot'
+    # unite('Biobot ID', c(`Sample_name`, assay_variable), sep = '', remove = F) %>%
+    
+    mutate_at('assay_variable', as.character) %>% 
+    mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
+    
+    mutate(raw_copy_number_per_ul_rna = `Copy #`) %>%  # taking a backup of the copy number column before doing calculations for dilution factors
+    mutate(across(`Copy #`, 
+                  ~ if_else(str_detect(Target, 'BCoV') & !str_detect(Sample_name, 'NTC'), 
+                            .x * RNA_dilution_factor_BCoV, 
+                            .x))
+    ) %>% # Correcting for template dilution in case of BCoV ddPCRs (excluding NTC wells)
+    mutate_cond(str_detect(Sample_name, 'Vaccine') & str_detect(Target, 'BCoV'), 
+                across(`Copy #`, ~ .x * Vaccine_additional_RNA_dilution_factor_BCoV)) %>%  # Correcting for BCoV Vaccine with a higher dilution
+    
+    # Ad-hoc corrections for errors in making plate - sample dilutions etc.
+    mutate_cond(str_detect(`Well Position`, adhoc_dilution_wells), # Regex of wells to manipulate
+                across(`Copy #`, ~ . / 50) # dilution corrections or other changes
+    ) %>% 
+    
+    # Adding tag to target for baylor smaples
+    { if(!str_detect(baylor_wells, 'none|None')) { 
+      mutate_at(., 'Target', as.character) %>% 
+        mutate_cond(str_detect(`Well Position`, baylor_wells), Target = str_c(Target, '/Baylor'))
+    } else .
+    }
+  
+  # Append LOD information ----
+  
+  polished_results <- complete_LOD_table(polished_results)%>% 
+    select(1:6, AcceptedDroplets, Positives, Positivity, LimitOfDet, Threshold, everything()) # Bring important columns to begining 
+  
+  # Data output ----
+  
+  check_ok_and_write(polished_results, sheeturls$data_dump, flnm) # save results to a google sheet
+  
+  # Vaccine processing ----
+  
+  
+  # Saving vaccine data into Vaccines sheet in data dump: For easy book keeping
+  vaccine_data <- polished_results %>% filter(str_detect(Sample_name, 'Vaccine|Vaccineb|Vacboil') & !str_detect(Target, 'N._multiplex')) %>%
+    mutate('Prepared on' = '',
+           Week = str_extract(flnm, '[:digit:]{3,4}') %>% unlist() %>% str_c(collapse = ', '),
+           Vaccine_ID = assay_variable, 
+           .before = 1) %>% 
+    mutate(Run_ID = str_extract(flnm, 'dd.WW[:digit:]*'), CT = NA) %>% 
+    select(`Prepared on`,	Week,	Vaccine_ID,	`Well Position`,	CT,	Target,	Sample_name,	assay_variable,	`Tube ID`,	biological_replicates,	`Copy #`,	Run_ID)
+  
+  # Add to existing sheet
+  if(vaccine_data %>% plyr::empty() %>% {!.}) sheet_append(sheeturls$data_dump, vaccine_data, 'Vaccines')
+  
+  # Mean of vaccine data
+  vaccine_data.mean <- vaccine_data %>% ungroup() %>% 
+    select(1:3, Target, `Copy #`, Run_ID) %>% group_by(across(-`Copy #`)) %>% 
+    summarise(across(`Copy #`, list(Mean_qPCR = mean, SD_qPCR = sd), na.rm = T), .groups = 'keep') %>% 
+    mutate('[Stock conc.] copies/ul' = `Copy #_Mean_qPCR` * if_else(str_detect(Vaccine_ID, 'S[:digit:]+'), 50/20, 1), # adding a RNA extraction conc. factor only if not boiled (Sbxx naming)
+           'Estimated factor' = '',
+           Comments = '',
+           'Conc normalized to estimated factor' = '') %>% 
+    relocate(Run_ID, .after = last_col()) %>% 
+    mutate('x' = '', .before = 1)
+  
+  # Add to existing sheet in Vaccine_summary
+  if(vaccine_data.mean %>% plyr::empty() %>% {!.}) sheet_append(sheeturls$data_dump, vaccine_data.mean, 'Vaccine_summary')
+  
+}
+
+
+# Obsolete stuff ---------------------------------------------------------------------------------
 # Standard curve ----
 
 process_standard_curve <- function(flnm)
@@ -248,142 +385,6 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
 }
 
 # ddPCR processing ----
-
-
-# ddPCR processing: Attach sample labels from template table, calculate copies/ul using template volume/reaction, make names similar to qPCR data 
-process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilution_wells = 'none')
-{ # Baylor wells : choose 1) none, 2) '.*' for all, 3) '[A-H]([1-9]$|10)' etc. for specific wells 
-  
-  template_volume_ddpcr <- tibble(Target = c('N1_multiplex', 'N2_multiplex', 'BCoV', 'pMMoV', 'N501Y', 'Del69-70'),
-                                  template_vol = c(10, 10, 4, 4, 9, 9) /22 * 20) # ul template volume per well of the 20 ul ddPCR reaction for each target
-  
-  RNA_dilution_factor_BCoV <- 50  # RNA dilution factor for diluted BCoV samples
-  Vaccine_additional_RNA_dilution_factor_BCoV <- 50  # In addition to the above: RNA dilution factor for BCoV vaccine samples - both extracted and boiled
-  
-  # Ad hoc - marking the samples from baylor (will append /baylor to target name)
-  # Work in progress?
-  
-  
-  # Loading pre-reqisites ----
-  
-  
-  # Loading libraries, functions and user inputs
-  source('./general_functions.R') # Source the general_functions file
-  
-  # Data input ----
-  
-  # B117 extra
-  
-  
-  # Read in ddPCR/qPCR data and labels from plate template
-  fl <- read_sheet(sheeturls$raw_ddpcr, sheet = flnm) # read excel file exported by Quantstudio
-  plate_template <- get_template_for(flnm, sheeturls$templates)  # Get the plate template matching file name, convert to 1 column 
-  
-  # Polishing ----
-  
-  
-  # Load desired qPCR result sheet and columns
-  bring_results <- fl %>% 
-    select(-Sample) %>% # Remove sample, it will be loaded from plate template sheet
-    rename(CopiesPer20uLWell = matches('Copies/20.*µLWell')) %>% # rename the column name - if exported from Quantasoft analysis Pro
-    rename(Concentration = matches('Conc(copies/.*µL)')) %>%  # rename the column name - if exported from Quantasoft analysis Pro
-    mutate(across(any_of('Concentration'), as.numeric)) %>%  # Remove the NO CALLS and make it numeric column  
-    
-    mutate_at('Well', ~ str_replace(., '(?<=[:alpha:])0(?=[:digit:])', '') ) %>% rename('Well Position' = Well) %>% 
-    right_join(plate_template, by = 'Well Position') %>%  # Incorporate samples names from the google sheet by matching well position
-    mutate_at('Target', ~str_replace_all(., c('N1' = 'N1_multiplex' , 'N2' = 'N2_multiplex'))) %>% 
-    filter(!is.na(Target)) %>% 
-    
-    # Adding different template volumes for each target for division
-    left_join(template_volume_ddpcr) %>% # join array of template volume - different for N1,N2 and BCOV2
-    mutate('Copy #' = CopiesPer20uLWell/ template_vol) %>%  
-    
-    select(`Sample_name`, `Copy #`, Target, everything()) %>% 
-    
-    
-    # Changing rest of the problematic columns  - if exported from Quantasoft analysis Pro
-    rename(AcceptedDroplets = any_of('Accepted Droplets'),
-           Threshold = any_of('Threshold1'),
-           MeanAmplitudeofPositives = any_of('MeanAmplitudeOfPositives'),
-           MeanAmplitudeofNegatives = any_of('MeanAmplitudeOfNegatives')) %>%  # rename the column name - if exported from Quantasoft analysis Pro
-    mutate(across(matches('Total|Poisson|Mean|Ch|Ratio|Abundance|Linkage|CNV|Copies|Det'), as.numeric)) %>%  # convert ambiguous columns into numeric
-    mutate(across(where(is.list), as.character)) # convert any stray lists into character
-  
-  
-  
-  
-  # polishing qPCR data - Make Biobot ID column clean
-  
-  # isolate the primer pair and assay_variable into 3 columns : Sample name, assay variable and primer pair 
-  polished_results <- bring_results %>% separate(`Sample_name`,c(NA, 'Sample_name'),'-') %>% separate(`Sample_name`,c('Sample_name','Tube ID'),'_') %>% 
-    mutate(`Tube ID` = if_else(`Sample_name` == 'NTC', '0', `Tube ID`)) %>% 
-    separate(`Tube ID`, c('assay_variable', 'biological_replicates'), remove = F) %>%  # Separate out biological replicates 
-    unite('Tube ID', c(assay_variable, biological_replicates), sep = '.', remove = F, na.rm = T) %>% # remaking Tube ID - removes spaces after 'dot'
-    # unite('Biobot ID', c(`Sample_name`, assay_variable), sep = '', remove = F) %>%
-    
-    mutate_at('assay_variable', as.character) %>% 
-    mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
-    
-    mutate(raw_copy_number_per_ul_rna = `Copy #`) %>%  # taking a backup of the copy number column before doing calculations for dilution factors
-    mutate(across(`Copy #`, 
-                  ~ if_else(str_detect(Target, 'BCoV') & !str_detect(Sample_name, 'NTC'), 
-                            .x * RNA_dilution_factor_BCoV, 
-                            .x))
-           ) %>% # Correcting for template dilution in case of BCoV ddPCRs (excluding NTC wells)
-    mutate_cond(str_detect(Sample_name, 'Vaccine') & str_detect(Target, 'BCoV'), 
-                across(`Copy #`, ~ .x * Vaccine_additional_RNA_dilution_factor_BCoV)) %>%  # Correcting for BCoV Vaccine with a higher dilution
-    
-    # Ad-hoc corrections for errors in making plate - sample dilutions etc.
-    mutate_cond(str_detect(`Well Position`, adhoc_dilution_wells), # Regex of wells to manipulate
-                across(`Copy #`, ~ . / 50) # dilution corrections or other changes
-    ) %>% 
-    
-    # Adding tag to target for baylor smaples
-    { if(!str_detect(baylor_wells, 'none|None')) { 
-      mutate_at(., 'Target', as.character) %>% 
-        mutate_cond(str_detect(`Well Position`, baylor_wells), Target = str_c(Target, '/Baylor'))
-    } else .
-    }
-  
-  # Append LOD information ----
-  
-  polished_results <- complete_LOD_table(polished_results)%>% 
-    select(1:6, AcceptedDroplets, Positives, Positivity, LimitOfDet, Threshold, everything()) # Bring important columns to begining 
-  
-  # Data output ----
-  
-  check_ok_and_write(polished_results, sheeturls$data_dump, flnm) # save results to a google sheet
-  
-  # Vaccine processing ----
-  
-  
-  # Saving vaccine data into Vaccines sheet in data dump: For easy book keeping
-  vaccine_data <- polished_results %>% filter(str_detect(Sample_name, 'Vaccine|Vaccineb|Vacboil') & !str_detect(Target, 'N._multiplex')) %>%
-    mutate('Prepared on' = '',
-           Week = str_extract(flnm, '[:digit:]{3,4}') %>% unlist() %>% str_c(collapse = ', '),
-           Vaccine_ID = assay_variable, 
-           .before = 1) %>% 
-    mutate(Run_ID = str_extract(flnm, 'dd.WW[:digit:]*'), CT = NA) %>% 
-    select(`Prepared on`,	Week,	Vaccine_ID,	`Well Position`,	CT,	Target,	Sample_name,	assay_variable,	`Tube ID`,	biological_replicates,	`Copy #`,	Run_ID)
-  
-  # Add to existing sheet
-  if(vaccine_data %>% plyr::empty() %>% {!.}) sheet_append(sheeturls$data_dump, vaccine_data, 'Vaccines')
-  
-  # Mean of vaccine data
-  vaccine_data.mean <- vaccine_data %>% ungroup() %>% 
-    select(1:3, Target, `Copy #`, Run_ID) %>% group_by(across(-`Copy #`)) %>% 
-    summarise(across(`Copy #`, list(Mean_qPCR = mean, SD_qPCR = sd), na.rm = T), .groups = 'keep') %>% 
-    mutate('[Stock conc.] copies/ul' = `Copy #_Mean_qPCR` * if_else(str_detect(Vaccine_ID, 'S[:digit:]+'), 50/20, 1), # adding a RNA extraction conc. factor only if not boiled (Sbxx naming)
-           'Estimated factor' = '',
-           Comments = '',
-           'Conc normalized to estimated factor' = '') %>% 
-    relocate(Run_ID, .after = last_col()) %>% 
-    mutate('x' = '', .before = 1)
-  
-  # Add to existing sheet in Vaccine_summary
-  if(vaccine_data.mean %>% plyr::empty() %>% {!.}) sheet_append(sheeturls$data_dump, vaccine_data.mean, 'Vaccine_summary')
-  
-}
 
 
 # Calls ----
