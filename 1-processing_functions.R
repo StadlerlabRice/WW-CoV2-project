@@ -40,12 +40,19 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   
   # Data input ----
   
-  # B117 extra
-  
-  
   # Read in ddPCR/qPCR data and labels from plate template
   fl <- read_sheet(sheeturls$raw_ddpcr, sheet = flnm) # read excel file exported by Quantstudio
   plate_template <- get_template_for(flnm, sheeturls$templates)  # Get the plate template matching file name, convert to 1 column 
+  
+  # B117 extra : grabbing the extra file named -variant for the B117 assay 
+  if(str_detect(flnm, regex('B117', ignore_case = TRUE))){
+    rps <- str_c(flnm, c('', '-variant') ) # Reading in two sheets, the second one has -variant attached
+    
+    fl <- map_dfr(rps,  # read the two files successively and attach them by row (df*r*)
+                  ~ read_sheet(sheeturls$raw_ddpcr, sheet = .x) %>% 
+                    mutate(variant_status = if_else(str_detect(.x, '-variant'),
+                                                    'Variant',
+                                                    'all'), .before = 1))}
   
   # Polishing ----
   
@@ -116,7 +123,7 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   # Append LOD information ----
   
   polished_results <- complete_LOD_table(polished_results)%>% 
-    select(1:6, AcceptedDroplets, Positives, Positivity, LimitOfDet, Threshold, everything()) # Bring important columns to begining 
+    select(1:6, AcceptedDroplets, Positives, Positivity, LimitOfDet, Threshold, any_of('variant_status'), everything()) # Bring important columns to begining 
   
   # Data output ----
   
