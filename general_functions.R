@@ -187,6 +187,41 @@ harmonize_week <- function(week_cols)
   
 }
 
+# paste without NAs
+paste_without_NAs <- function(.string1, .string2, .sep = "-")
+{
+  # if string2 is NA, it leaves string1 unchanged, else joins them as string1 *separater* string2
+  if_else(is.na(.string2), as.character(.string1), paste(.string1, .string2, sep = .sep))
+}
+
+# Calculate the percentage of the B117 variant in the data after pivoting
+
+calculate_B117_percentage_variant <- function(.dat)
+{
+  # processing 
+  # Select relevant columns, get the variant and WT side by side and calculate the variant/ all percentage and grab only necessary data
+  # take this data and join it to the source data later
+  
+  text_cols <- c('Tube_ID', 'variant_status', 'Target Name') # select constant columns
+  # value_cols <- c('Copy #', 'AcceptedDroplets', 'Positives', 'Threshold') # all the value columns that change with threshold
+  value_cols <- c('Copies/ul RNA')
+  
+  target_fused_data <- .dat %>% 
+    mutate(., across('Target Name', ~ paste_without_NAs(., variant_status, .sep = "-"))) %>% # add "-Variant" or "-all" to the target name
+    
+  processed_data_with_percentage <- .dat %>% 
+    select( all_of(text_cols), all_of(value_cols)) %>%  # select only important columns
+    pivot_wider(names_from = variant_status, values_from = all_of(value_cols)) %>%  # put variant and all side by side
+    
+    mutate(percentage_variant = (`Copies/ul RNA_Variant` / `Copies/ul RNA_all` * 100) %>% round(2)) %>%  # calculate % of variant, round it off
+    
+    mutate(across('Target Name', ~ str_c(., '-Variant'))) %>% # add "-Variant" to the target name
+    select(text_cols, percentage_variant) # exclude the raw Copy #s from selection
+  
+  mrged_data <- left_join(target_fused_data, processed_data_with_percentage) 
+  
+}
+
 # Data writing output ----
 
 # This function writes to the specified google sheet if the current sheet does
