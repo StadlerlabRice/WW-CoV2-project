@@ -270,7 +270,9 @@ presentable_data <- processed_quant_data %>%
     select(-variant_status) %>% 
     relocate(percentage_variant, .after = 'Copies/l WW') }
     else .
-  }
+  } %>% 
+  
+  mutate(across(where(is.numeric), ~ round(., 2))) # rounding off all numerical things
 
 
 # Missing value check - Brings user attention to missing values in the sample registry
