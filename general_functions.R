@@ -202,12 +202,12 @@ calculate_B117_percentage_variant <- function(.dat)
   # Select relevant columns, get the variant and WT side by side and calculate the variant/ all percentage and grab only necessary data
   # take this data and join it to the source data later
   
-  text_cols <- c('Tube_ID', 'variant_status', 'Target Name') # select constant columns
+  text_cols <- c('Tube_ID', 'variant_status', 'Target Name', 'Well Position') # select constant columns
   # value_cols <- c('Copy #', 'AcceptedDroplets', 'Positives', 'Threshold') # all the value columns that change with threshold
-  value_cols <- c('Copies/ul RNA')
+  value_cols <- c('Copies/ul RNA', 'PositiveDroplets')
   
   target_fused_data <- .dat %>% 
-    mutate(., across('Target Name', ~ paste_without_NAs(., variant_status, .sep = "-"))) %>% # add "-Variant" or "-all" to the target name
+    mutate(., across('Target Name', ~ paste_without_NAs(., variant_status, .sep = "-"))) # add "-Variant" or "-all" to the target name
     
   processed_data_with_percentage <- .dat %>% 
     select( all_of(text_cols), all_of(value_cols)) %>%  # select only important columns
@@ -216,7 +216,7 @@ calculate_B117_percentage_variant <- function(.dat)
     mutate(percentage_variant = (`Copies/ul RNA_Variant` / `Copies/ul RNA_all` * 100) %>% round(2)) %>%  # calculate % of variant, round it off
     
     mutate(across('Target Name', ~ str_c(., '-Variant'))) %>% # add "-Variant" to the target name
-    select(text_cols, percentage_variant) # exclude the raw Copy #s from selection
+    select(any_of(text_cols), percentage_variant) # exclude the raw Copy #s from selection
   
   mrged_data <- left_join(target_fused_data, processed_data_with_percentage) 
   
