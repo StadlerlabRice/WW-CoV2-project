@@ -5,9 +5,9 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW130_testing_B117')
+read_these_sheets <- c( 'dd.WW130_testing')
 
-title_name <- '0209 testing b117'
+title_name <- '0209 testing'
 
 # Biobot_id sheet
 bb_sheets <- c('Week 42 (01/25)')
@@ -30,22 +30,22 @@ spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 
 # Input data ----------------------------------------------------------------------
 
 # Acquire all the pieces of the data : read saved raw qPCR results from a google sheet
-list_raw_quant_data <- map(read_these_sheets, ~ read_sheet(sheeturls$data_dump, sheet = ., range = 'A:L')) 
+list_raw_quant_data <- map(read_these_sheets, 
+                           ~ read_sheet(sheeturls$data_dump, sheet = ., range = 'A:M')) 
 
 # bind multiple reads and clean up names
 raw_quant_data <- bind_rows(list_raw_quant_data) %>% 
   rename(Sample_name = any_of('Sample Name')) %>% # if name is according to old convension, this will rename it 
-  # unite('Biobot_id', c(Sample_name, assay_variable), sep = '', remove = F) %>%
-  select(-any_of('Well Position')) %>% 
+  # select(-any_of('Well Position')) %>%  # I wonder why Well Position needed to be removed..?
   mutate_at('assay_variable', as.character) %>% 
   mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
   mutate_at('Tube ID', ~str_remove(., "\\.")) %>% 
   unite('Label_tube', c('Sample_name', 'Tube ID'), sep = "", remove = F) %>%  # make a unique column for matching volumes 
-  mutate(across(Label_tube, ~str_remove(., ' ') )) %>%  # remove spaces from the Sample_name (Started with 1123 Pavan with 1123 69S names)
+  mutate(across(Label_tube, ~str_remove(., ' ') )) # remove spaces from the Sample_name (Started with 1123 Pavan with 1123 69S names)
 
   # temporary for chemagic during transition
-  mutate(extraction_method = if_else(str_detect(Sample_name, '^C'), 'Chemagic', 'Maxwell')) %>% # note if Chemagic with a C
-  mutate(across(Label_tube, ~ str_remove(., '^C'))) # remove the prefix C to make samples match to the sample registry
+  # mutate(extraction_method = if_else(str_detect(Sample_name, '^C'), 'Chemagic', 'Maxwell')) %>% # note if Chemagic with a C
+  # mutate(across(Label_tube, ~ str_remove(., '^C'))) # remove the prefix C to make samples match to the sample registry
 
 
 # Load metadata ----------------------------------------------------------------------
@@ -258,7 +258,7 @@ presentable_data <- processed_quant_data %>%
          Ct, AcceptedDroplets, PositiveDroplets, Sample_ID, 
          Detection_Limit, Positivity, 
          Sample_Type, `Spiked-in Copies/l WW`, `Percentage_recovery_BCoV`, 
-         WWTP_ID, Tube_ID, Comments, any_of('variant_status')) %>%
+         WWTP_ID, Tube_ID, Comments, any_of('variant_status'), 'Well Position') %>%
   
   mutate_at('Target Name', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2'))) %>% 
   mutate_at('Target Name', ~str_remove(., '/Baylor')) %>% 
@@ -267,7 +267,9 @@ presentable_data <- processed_quant_data %>%
   # B117 special plug
   {if(str_detect(read_these_sheets, 'B117') %>% any) {
     calculate_B117_percentage_variant(.) %>% # calculating the percentage of variant vs total S copies 
-    select(-variant_status)}
+    select(-variant_status) %>% 
+    relocate(percentage_variant, .after = 'Copies/l WW') }
+    else .
   }
 
 
@@ -302,7 +304,7 @@ if(regular_WWTP_run_output)
            'Copies_Per_Liter_WW' = `Copies/l WW`,
            'Recovery_Rate' = `Percentage_recovery_BCoV`,
            Target_Name = `Target Name`) %>%
-    select(-contains('Vol'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID, -contains('Droplet'))
+    select(-contains('Vol'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID, -contains('Droplet'), -'Well Position')
   
   present_only_WW <- present_WW_data %>% 
     filter(WWTP %in% all_WWTP_names) # retain only WWTP data
