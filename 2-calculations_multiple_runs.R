@@ -5,12 +5,12 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW130_testing')
+read_these_sheets <- c( 'dd.WW134_0223_WWTP_B117')
 
-title_name <- '0209 testing'
+title_name <- '0223 WWTP B117'
 
 # Biobot_id sheet
-bb_sheets <- c('Week 42 (01/25)')
+bb_sheets <- c('Week 45 (02/23)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 manhole_sample_symbols = get_bayou_names() # putting manhole samples in a separate sheet
@@ -267,8 +267,8 @@ presentable_data <- processed_quant_data %>%
   # B117 special plug
   {if(str_detect(read_these_sheets, 'B117') %>% any) {
     calculate_B117_percentage_variant(.) %>% # calculating the percentage of variant vs total S copies 
-    select(-variant_status) %>% 
-    relocate(percentage_variant, .after = 'Copies/l WW') }
+    select(-any_of('variant_status')) %>% 
+    relocate(percentage_variant, .after = 'Target Name') }
     else .
   } %>% 
   
