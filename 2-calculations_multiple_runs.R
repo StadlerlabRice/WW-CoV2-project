@@ -5,15 +5,14 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW139_0301_WWTP_B117')
+read_these_sheets <- c( 'dd.WW137_0301_WWTP_N1N2')
 
-title_name <- '0301 WWTP B117'
+title_name <- '0301 WWTP test'
 
 # Biobot_id sheet
 bb_sheets <- c('Week 46 (03/01)')
 
-# Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
-manhole_sample_symbols = get_bayou_names() # putting manhole samples in a separate sheet
+manhole_sample_symbols = get_manhole_names() # putting manhole samples in a separate sheet
 
 regular_WWTP_run_output <- FALSE # make TRUE of you want to output the WWTP only data and manhole samples sheets 
       # (make FALSE for controls, testing etc. where only "complete data" sheet is output)
