@@ -5,17 +5,17 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW130_testing')
+read_these_sheets <- c( 'dd.WW135_0225_CON_N1N2')
 
-title_name <- '0209 testing'
+title_name <- '0225 Rice'
 
 # Biobot_id sheet
 bb_sheets <- c('Week 42 (01/25)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
-manhole_sample_symbols = get_bayou_names() # putting manhole samples in a separate sheet
+manhole_sample_symbols = get_manhole_names() # putting manhole samples in a separate sheet
 
-regular_WWTP_run_output <- FALSE # make TRUE of you want to output the WWTP only data and manhole samples sheets 
+regular_WWTP_run_output <- TRUE # make TRUE of you want to output the WWTP only data and manhole samples sheets 
       # (make FALSE for controls, testing etc. where only "complete data" sheet is output)
 
 # rarely changed parameters
@@ -233,7 +233,7 @@ presentable_data <- processed_quant_data %>%
          PositiveDroplets = Positives) %>% 
   
   # Adding new variables, modifying existing variables
-  mutate(Date = Sample_name %>% str_extract('[:digit:]{3,4}') %>% str_replace('([:digit:]+)([:digit:]{2})', '\\1/\\2/20') , 
+  mutate(Date = Sample_name %>% str_extract('[:digit:]{3,4}') %>% str_replace('([:digit:]+)([:digit:]{2})', '\\1/\\2/21') , 
          Lab = if_else(str_detect(`Target Name`, 'Baylor'), 'B', 'R'),
          # Detection_Limit = if_else(str_detect(`Target Name`, 'N1|N2'), 330, 
          #                           if_else(str_detect(`Target Name`, 'Baylor'), 23500, 705) 
