@@ -5,12 +5,12 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW134_0223_WWTP_B117')
+read_these_sheets <- c( 'dd.WW139_0301_WWTP_B117')
 
-title_name <- '0223 WWTP B117'
+title_name <- '0301 WWTP B117'
 
 # Biobot_id sheet
-bb_sheets <- c('Week 45 (02/23)')
+bb_sheets <- c('Week 46 (03/01)')
 
 # Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
 manhole_sample_symbols = get_bayou_names() # putting manhole samples in a separate sheet
@@ -233,7 +233,9 @@ presentable_data <- processed_quant_data %>%
          PositiveDroplets = Positives) %>% 
   
   # Adding new variables, modifying existing variables
-  mutate(Date = Sample_name %>% str_extract('[:digit:]{3,4}') %>% str_replace('([:digit:]+)([:digit:]{2})', '\\1/\\2/20') , 
+  mutate(Date = Sample_name %>% 
+           str_extract('[:digit:]{3,4}') %>% # Extract the date component of the sample name
+           str_replace('([:digit:]+)([:digit:]{2})', '\\1/\\2/21') ,  # format it as mm/dd/yy
          Lab = if_else(str_detect(`Target Name`, 'Baylor'), 'B', 'R'),
          # Detection_Limit = if_else(str_detect(`Target Name`, 'N1|N2'), 330, 
          #                           if_else(str_detect(`Target Name`, 'Baylor'), 23500, 705) 
@@ -277,7 +279,6 @@ presentable_data <- processed_quant_data %>%
 
 # Missing value check - Brings user attention to missing values in the sample registry
 
-# work in progress - this is not where -Inf shoud be checked for since this has all data from begining of time
 if(map(presentable_data, ~ -Inf %in% .x) %>% any())
   
   {missing_values_sample_registry <- presentable_data %>% filter_if(is.numeric, any_vars( . < 0))
@@ -299,6 +300,12 @@ check_ok_and_write(presentable_data %>% select(-Sample_ID), sheeturls$complete_d
 # switch for output to sheet sent to HHD
 if(regular_WWTP_run_output)
 {
+  
+  if(str_detect(read_these_sheets, 'B117') %>% any) {
+    source('./b117-short-circuit.R')
+    stop('B117 output printed, exiting script')
+  }
+  
   # presentable data for health department
   present_WW_data <- presentable_data %>%
     
