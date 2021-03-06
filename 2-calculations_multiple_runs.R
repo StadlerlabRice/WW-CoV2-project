@@ -125,15 +125,16 @@ spike_list <- read_sheet(sheeturls$data_dump, sheet = 'Vaccine_summary', range =
 vol_R <- raw_quant_data %>% 
   filter(!str_detect(Target, 'Baylor')) %>% # filter only Rice data
   
+  # join sample registry data
   left_join(volumes_data_Rice, by = 'Label_tube') %>%
   mutate_at('Biobot_id', ~if_else(is.na(.x), str_c(Sample_name, assay_variable), .x)) %>% # stand-by name for missing cols
   
+  # join vaccine quantification
   left_join(spike_list %>% select(Vaccine_ID, Target, spike_virus_conc),  by = c('Vaccine_ID', 'Target') ) %>% 
-  # left_join(biobot_lookup, by = 'Biobot_id') %>% 
-  fuzzyjoin::regex_left_join(., biobot_lookup, by = 'Biobot_id') %>% 
-  select(-Biobot_id.y) %>% rename(Biobot_id = Biobot_id.x) %>% 
   
+  left_join(biobot_lookup) %>%  # join biobot_IDs
   
+
   mutate_at(c('WWTP', 'FACILITY NAME'), ~if_else(str_detect(., '^X')|is.na(.), assay_variable, .)) %>% 
   mutate(original_sample_name = Sample_name , Sample_name = harmonize_week(Sample_name)) # retain min of consecutive dates
 
