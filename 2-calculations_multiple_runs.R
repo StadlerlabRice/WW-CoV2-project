@@ -10,7 +10,7 @@ read_these_sheets <- c( 'dd.WW137_0301_WWTP_N1N2')
 title_name <- '0301 WWTP test'
 
 # Biobot_id sheet
-bb_sheets <- c('Week 46 (03/01)')
+# bb_sheets <- c('All wastewater')
 
 manhole_sample_symbols = get_manhole_names() # putting manhole samples in a separate sheet
 
@@ -49,42 +49,20 @@ raw_quant_data <- bind_rows(list_raw_quant_data) %>%
 
 # Load metadata ----------------------------------------------------------------------
 
-# determine which biobot sheets to get for Rice data : Under development
-# bb_sheet_match <- qpcr_polished %>% 
-#   filter(!str_detect(Target, 'Baylor')) %>% # filter only Rice data
-#   pull(Sample_name) %>% 
-#   str_match('[:digit:]+') %>% 
-#   unique() %>% 
-#   as.character() %>% 
-#   .[!is.na(.)]
-# 
-# # Or this one
-# bb_sheet_match <- read_these_sheets %>% 
-#      str_extract_all('[:digit:]{3}') %>% unlist()  
-
-
-# Bring WWTP name to biobot_ID mapping from google sheet: "Biobot Sample IDs"
-biobot_wwtps <- map_df(bb_sheets, 
-                        ~ read_sheet(sheeturls$biobot_id , sheet = .x) %>% 
-                          rename('Biobot_id' = matches('Biobot|Comments|Sample ID', ignore.case = T), 'WWTP' = contains('SYMBOL', ignore.case = T), 'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T)) %>% 
-                          mutate('Biobot_id' = str_remove(`Biobot_id`,'\\.| '), WWTP = as.character(WWTP)) %>% 
-                          select(`Biobot_id`, `FACILITY NAME`, WWTP)
-)
-
+# get all bayou, manhole and WWTP sample names (remain same every week)
+biobot_lookup <- map_df(c('All Bayou', 'All manhole', 'All wastewater'), 
+                        ~ read_sheet(sheeturls$biobot_id , sheet = .x, range = 'A:C', col_types = 'ccc') %>% 
+                          rename('WWTP' = contains('SYMBOL', ignore.case = T), 
+                                 'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T),
+                                 'Type' = 'Facility Type') %>% 
+                          mutate(WWTP = as.character(WWTP),
+                                 'assay_variable' = WWTP))
 
 # List of all WWTPs
-all_WWTP_names <- biobot_wwtps %>% pull(WWTP) %>% unique()
+all_WWTP_names <- biobot_lookup %>%
+  filter(Type == 'Wastewater') %>% 
+  pull(WWTP) %>% unique()
 
-biobot_lookup <- bind_rows(biobot_wwtps,
-                           # get all bayou and manhole sample names (remain same every week)
-                           map_df(c('All Bayou', 'All manhole'), 
-                                  ~ read_sheet(sheeturls$biobot_id , sheet = .x) %>% 
-                                    rename('WWTP' = contains('SYMBOL', ignore.case = T), 
-                                           'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T)) %>% 
-                                    mutate(WWTP = as.character(WWTP),
-                                           'Biobot_id' = WWTP)) %>% 
-                             select(`Biobot_id`, `FACILITY NAME`, WWTP)
-)
 
 # Get volumes data from google sheet : "Sample registry"
 volumes_data_Rice <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrated samples') %>% 
