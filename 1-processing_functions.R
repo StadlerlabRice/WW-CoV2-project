@@ -1,3 +1,6 @@
+# Don't need to run this if you are running 2-calculations_multiple_runs : This script is called from there
+---------------------------------------------------------------------
+
 # Read in the qPCR and ddPCR raw data, attach to sample names and process Cq to copy number (qPCR) 
 # Author: Prashant Kalvapalle;  June 16 2020.
 # Merged with other /R files Aug 4, 2020

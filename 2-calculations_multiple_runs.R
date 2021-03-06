@@ -25,6 +25,13 @@ elution_volume <- 50 # ul - RNA extraction final volume
 # copies/ul viral suspension spiked in : This is auto-matched from the list of vaccine data in data dump/Vaccine_summary
 spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 450 and varies for each sample)
 
+# Attaching names to data
+ 
+# Code 1 is called here
+source('./1-processing_functions.R') # Source the general_functions file
+
+# running function to attach names. Data is saved to sheet : "qPCR data dump"
+map(read_these_sheets, process_ddPCR) 
 
 # Input data ----------------------------------------------------------------------
 
