@@ -5,16 +5,14 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW137_0301_WWTP_N1N2')
+read_these_sheets <- c( 'dd.WW140_0303_LS_N1N2', 'dd.WW141_0304_LS_N1N2', 'dd.WW142_0305_LS-CON_N1N2')
 
-title_name <- '0301 WWTP test'
+title_name <- '0303 LS'
 
-# Biobot_id sheet
-# bb_sheets <- c('All wastewater')
-
+# phase out soon
 manhole_sample_symbols = get_manhole_names() # putting manhole samples in a separate sheet
 
-regular_WWTP_run_output <- FALSE # make TRUE of you want to output the WWTP only data and manhole samples sheets 
+regular_WWTP_run_output <- TRUE # make TRUE of you want to output the WWTP only data and manhole samples sheets 
       # (make FALSE for controls, testing etc. where only "complete data" sheet is output)
 
 # rarely changed parameters
@@ -27,11 +25,10 @@ spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 
 
 # Attaching names to data
  
-# Code 1 is called here
-source('./1-processing_functions.R') # Source the general_functions file
+source('./1-processing_functions.R') # Source the file with the ddPCR and qPCR name's attaching functions
 
 # running function to attach names. Data is saved to sheet : "qPCR data dump"
-map(read_these_sheets, process_ddPCR) 
+map(read_these_sheets, process_ddpcr)
 
 # Input data ----------------------------------------------------------------------
 
@@ -288,7 +285,7 @@ if(regular_WWTP_run_output)
   
   if(str_detect(read_these_sheets, 'B117') %>% any) {
     source('./b117-short-circuit.R')
-    stop('B117 output printed, exiting script')
+    stop('B117 output printed successfully, exiting script. This is not an error!')
   }
   
   # presentable data for health department

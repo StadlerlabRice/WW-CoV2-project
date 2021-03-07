@@ -1,5 +1,5 @@
 # Don't need to run this if you are running 2-calculations_multiple_runs : This script is called from there
----------------------------------------------------------------------
+#---------------------------------------------------------------------
 
 # Read in the qPCR and ddPCR raw data, attach to sample names and process Cq to copy number (qPCR) 
 # Author: Prashant Kalvapalle;  June 16 2020.
@@ -17,8 +17,8 @@
 # Loading pre-reqisites ----
 
 # Loading libraries, functions and user inputs
-source('./general_functions.R') # Source the general_functions file
-source('./inputs_for_analysis.R') # Source the file with user inputs
+# source('./general_functions.R') # Source the general_functions file
+# source('./inputs_for_analysis.R') # Source the file with user inputs
 
 
 # ddPCR processing: Attach sample labels from template table, calculate copies/ul using template volume/reaction, make names similar to qPCR data 
