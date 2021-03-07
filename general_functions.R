@@ -671,7 +671,9 @@ append_LOD_info <- function(fl, targ) {
   fl <- fl %>% filter(Target == targ)
   
   # Pull negative controls out
-  negative_controls <- fl %>% filter(Sample_name == 'NTC'| assay_variable == 'DI'| assay_variable == 'BLANK')
+  negative_controls <- fl %>% filter(assay_variable == 'NTC'| 
+                                       assay_variable == 'DI'| 
+                                       str_detect(assay_variable, regex('BLANK', ignore_case = TRUE)) )
   
   # Pull any rows with 3 droplets a.k.a the LOQ
   threes <- fl %>% filter(Positives == 3)
