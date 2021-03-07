@@ -63,8 +63,8 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   # Load desired qPCR result sheet and columns
   bring_results <- fl %>% 
     select(-Sample) %>% # Remove sample, it will be loaded from plate template sheet
-    rename(CopiesPer20uLWell = matches('Copies/20.*µLWell')) %>% # rename the column name - if exported from Quantasoft analysis Pro
-    rename(Concentration = matches('Conc(copies/.*µL)')) %>%  # rename the column name - if exported from Quantasoft analysis Pro
+    rename(CopiesPer20uLWell = matches('Copies/20.*LWell')) %>% # rename the column name - if exported from Quantasoft analysis Pro
+    rename(Concentration = matches('Conc\\(copies/.*L)')) %>%  # rename the column name - if exported from Quantasoft analysis Pro
     mutate(across(any_of('Concentration'), as.numeric)) %>%  # Remove the NO CALLS and make it numeric column  
     
     mutate_at('Well', ~ str_replace(., '(?<=[:alpha:])0(?=[:digit:])', '') ) %>% rename('Well Position' = Well) %>% 
