@@ -427,3 +427,35 @@ process_all_pcr <- function(flname, baylor_wells = 'none')
   # if it is a qPCR file (WWxx), call the qpcr processor
   if(str_detect(flname, '(?<!dd\\.)WW[:digit:]*')) process_qpcr(flname, baylor_wells = baylor_wells)
 }
+
+
+# Other stuff : temporarily housed here. WIll be moved to general functions
+# Work in progress : need to test
+read_gdrive_csv <- function(read_these_sheets)
+{
+  library(googledrive)
+  
+  # read_these_sheets <- c( 'dd.WW123_0201_Schools+WWTP_B117_Rerun', 'dd.WW138_0301_SCHOOLS_N1N2')
+  
+  run_ids_to_read <- read_these_sheets %>% str_extract('dd.WW[:digit:]*') %>% paste0(collapse = '|')
+  csv_to_read <- read_these_sheets %>% str_c('.csv')
+  
+  all_csv_files <- drive_get(id = 'https://drive.google.com/drive/u/0/folders/1aIek7-aqHe2l7EnUfZZUtox44bj3SZVQ') %>% 
+    drive_ls()
+  
+  csv_subset <- all_csv_files %>% 
+    filter(str_detect(name, run_ids_to_read) &  # detect all the run ids
+             str_detect(name, '.csv') &  # that are also csv files
+             !str_detect(name, 'variant')) # that are not variants (in the case of B117)
+  
+  # download csvs temporarily
+  map(csv_subset, drive_download)
+  
+  # read csvs
+  lst_output <- map(csv_to_read, read_csv)
+  
+  # clean up
+  map(csv_to_read, unlink) # deletes all the csvs downloaded from googledrive
+  
+  return(lst_output) # return a list of all the csv files read in
+}
