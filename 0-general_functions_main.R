@@ -39,6 +39,22 @@ a_plt <- ggplot(a, aes(a1, a2, colour = a3)) +
 
 # calling more funs ----
 
+list_of_general_functions <- c("1-reading_files_funs.R",
+                               "2-tibble_columns_funs.R",
+                               "3-obsolete_arcane_funs.R",
+                               "4-qPCR_specific_funs.R",
+                               "5-mathematical_fitting_funs.R",
+                               "6-formatting_plot_funs.R",
+                               "7-COVID specific_writing_funs.R",
+                               "8-plot_mean_sd_jitter.R",
+                               "9-plot_scatter.R")
+
+# handy command to print a tibble in this format
+# cat(paste(shQuote('Tibble/vector here', type="cmd"), collapse=",\n ")) : Source: https://stackoverflow.com/a/6347520/9049673
+
+# Source all the functions listed above
+map(str_c('./scripts_general functions/', list_of_general_functions),
+    source)
 
 
 
