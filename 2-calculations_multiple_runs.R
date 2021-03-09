@@ -147,7 +147,7 @@ vol_R <- raw_quant_data %>%
   
 
   mutate_at(c('WWTP', 'FACILITY NAME'), ~if_else(str_detect(., '^X')|is.na(.), assay_variable, .)) %>% 
-  mutate(original_sample_name = Sample_name , Sample_name = harmonize_week(Sample_name)) # retain min of consecutive dates
+  mutate(original_sample_name = Sample_name) # retain min of consecutive dates
 
 # Join Baylor WWTP volumes
 if (baylor_trigger) {
