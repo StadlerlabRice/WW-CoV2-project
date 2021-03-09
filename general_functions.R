@@ -685,8 +685,8 @@ append_LOD_info <- function(fl, targ) {
     three_copies <- mean(threes$`Copy #`)
   }
   
-  # Calculate the LOB
-  limit_blank <- mean(negative_controls$`Copy #`) + (1.6 * sd(negative_controls$`Copy #`))
+  # Calculate the LOB : mean + 1.6 stdev
+  limit_blank <- mean(negative_controls$`Copy #`, na.rm = TRUE) + (1.6 * sd(negative_controls$`Copy #`, na.rm = TRUE)) # ignore any missing values
   # Calculate the LOD
   LOD <- three_copies + limit_blank
   
