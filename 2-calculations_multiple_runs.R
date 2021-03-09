@@ -66,11 +66,14 @@ biobot_lookup <- map_df(c('All Bayou', 'All manhole', 'All wastewater'),
 # List of all WWTPs
 WWTP_symbols <- biobot_lookup %>%
   filter(Type == 'Wastewater') %>% 
-  pull(WWTP) %>% 
+  pull(WWTP)
+
+# combine the list of WWTPs into 1 string, separated by the OR symbol "|"
+WWTP_symbols_regex <- WWTP_symbols %>% 
   paste(collapse = "|")
 
 # list all manhole names (for regex matching)
-manhole_sample_symbols <- biobot_lookup %>%
+manhole_symbols_regex <- biobot_lookup %>%
   filter(!str_detect(Type, 'Wastewater|Bayou')) %>% 
   pull(WWTP) %>% 
   paste(collapse = "|")
@@ -273,8 +276,8 @@ presentable_data <- processed_quant_data %>%
 
 # Missing manhole samples in Biobot ID sheet
 missing_entries_in_Biobot_registry <- presentable_data %>%  # identify samples in the set that are 
-  filter(!str_detect(WWTP, paste(WWTP_symbols,  # neither WWTPS
-                                 manhole_sample_symbols,  # nor manholes
+  filter(!str_detect(WWTP, paste(WWTP_symbols_regex,  # neither WWTPS
+                                 manhole_symbols_regex,  # nor manholes
                                  samples_to_remove,  # nor controls : DI, NTC, Blanks
                                  sep = '|')))
 
@@ -335,7 +338,7 @@ if(regular_WWTP_run_output)
     }
       
       present_only_WW <- present_HHD_data %>% 
-        filter(str_detect(WWTP, WWTP_symbols)) # retain only WWTP data 
+        filter(WWTP %in% WWTP_symbols) # retain only WWTP data 
       
       # Write data if not empty
       if(present_only_WW %>% plyr::empty() %>% !.){
@@ -343,7 +346,7 @@ if(regular_WWTP_run_output)
         write_csv(present_only_WW, path = str_c('excel files/Weekly data to HHD/', title_name, '.csv'), na = '') # output csv file
       }
       
-      present_manhole_samples <- present_HHD_data %>% filter(str_detect(WWTP, manhole_sample_symbols))
+      present_manhole_samples <- present_HHD_data %>% filter(str_detect(WWTP, manhole_symbols_regex))
       
       # Write data if not empty
       if(present_manhole_samples %>% plyr::empty() %>% !.){
