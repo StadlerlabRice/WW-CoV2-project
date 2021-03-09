@@ -5,9 +5,9 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW138_0301_SCHOOLS_N1N2')
+read_these_sheets <- c( 'dd.WW140_0303_LS_N1N2', 'dd.WW141_0304_LS_N1N2', 'dd.WW142_0305_LS-CON_N1N2')
 
-title_name <- '0301 Schools'
+title_name <- '0303 LS'
 
 regular_WWTP_run_output <- TRUE # make TRUE of you want to output the WWTP only data and manhole samples sheets 
       # (make FALSE for controls, testing etc. where only "complete data" sheet is output)
@@ -20,7 +20,7 @@ elution_volume <- 50 # ul - RNA extraction final volume
 # copies/ul viral suspension spiked in : This is auto-matched from the list of vaccine data in data dump/Vaccine_summary
 spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 450 and varies for each sample)
 
-
+samples_to_remove <- regex('DI|NTC|Blank', ignore_case = TRUE) # control samples that wont be sent to HHD
 
 # Preliminary ----
 
@@ -64,9 +64,10 @@ biobot_lookup <- map_df(c('All Bayou', 'All manhole', 'All wastewater'),
                                  'assay_variable' = WWTP))
 
 # List of all WWTPs
-all_WWTP_names <- biobot_lookup %>%
+WWTP_symbols <- biobot_lookup %>%
   filter(Type == 'Wastewater') %>% 
-  pull(WWTP)
+  pull(WWTP) %>% 
+  paste(collapse = "|")
 
 # list all manhole names (for regex matching)
 manhole_sample_symbols <- biobot_lookup %>%
@@ -304,7 +305,7 @@ if(regular_WWTP_run_output)
     select(-contains('Vol'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID, -contains('Droplet'), -'Well Position')
   
   present_only_WW <- present_WW_data %>% 
-    filter(WWTP %in% all_WWTP_names) # retain only WWTP data
+    filter(str_detect(WWTP, WWTP_symbols)) # retain only WWTP data
   
   # Write data if not empty
   if(present_only_WW %>% plyr::empty() %>% !.){
