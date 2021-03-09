@@ -266,21 +266,46 @@ presentable_data <- processed_quant_data %>%
   mutate(across(where(is.numeric), ~ round(., 2))) # rounding off all numerical things
 
 
-# Missing value check - Brings user attention to missing values in the sample registry
+# Missing value check ---- 
 
-if(map(presentable_data, ~ -Inf %in% .x) %>% any())
-  
-  {missing_values_sample_registry <- presentable_data %>% filter_if(is.numeric, any_vars( . < 0))
-  View(missing_values_sample_registry)
-  proceed_with_errors_key <- menu(c('Yes', 'No'), title = 'Missing values identified in the sample registry,
+
+# Brings user attention to missing values in the sample registry
+
+# Missing manhole samples in Biobot ID sheet
+missing_entries_in_Biobot_registry <- presentable_data %>%  # identify samples in the set that are 
+  filter(!str_detect(WWTP, paste(WWTP_symbols,  # neither WWTPS
+                                 manhole_sample_symbols,  # nor manholes
+                                 samples_to_remove,  # nor controls : DI, NTC, Blanks
+                                 sep = '|')))
+
+if(missing_entries_in_Biobot_registry %>% plyr::empty() %>% !.)
+{View(missing_entries_in_Biobot_registry)
+proceed_with_errors_key <- menu(c('Yes', 'No'), title = 'Missing entries identified in the sample registry (most likely manhole),
 check the data output in the console and choose if you wish to continue processing data')
+
+if(proceed_with_errors_key == 2) stop("Cancel selected, script aborted.")
+if(proceed_with_errors_key == 1) 
+{ print('Missing Biobot ID entries will be named as Date/WWTP in the Facility Name')
+}
+}
+
+# Volume filtered columns empty => read as NA
+if(is.na(presentable_data$`Volume Filtered`) %>% any())  # old: map(presentable_data, ~ -Inf %in% .x) %>% any()
+  
+  {missing_values_sample_registry <- presentable_data %>% filter(is.na(`Volume Filtered`) & !str_detect(WWTP, samples_to_remove)) # old : filter_if(is.numeric, any_vars( . < 0))
+  View(missing_values_sample_registry)
+  proceed_with_errors_key <- menu(c('Yes', 'No'), title = 'Missing values identified in the sample registry : WW volume extracted (ml),
+check the data output in the console and choose if you wish to continue processing data, by assuming 50 ml default')
 
   if(proceed_with_errors_key == 2) stop("Cancel selected, script aborted.")
   if(proceed_with_errors_key == 1) 
-    { print('Missing values are being converted to NaNs to avoid error in writing data')
-    presentable_data %<>% mutate(across(where(is.numeric),  ~ if_else(.x == -Inf, NaN, .x)))
+    { print('Missing volumes filtered are being converted to 50 ml (default) to avoid error in processing data')
+    presentable_data %<>% replace_na(list(`Volume Filtered` = 50))
   }
 }
+
+print('Missing values (~ Received volume) are being converted to NaNs to avoid error in writing data')
+presentable_data %<>% mutate(across(where(is.numeric),  ~ if_else(.x == -Inf, NaN, .x)))
 
 
 # Output data - including controls
