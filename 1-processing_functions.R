@@ -21,6 +21,10 @@
 # source('./inputs_for_analysis.R') # Source the file with user inputs
 
 
+
+# ddPCR processing ----
+
+
 # ddPCR processing: Attach sample labels from template table, calculate copies/ul using template volume/reaction, make names similar to qPCR data 
 process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilution_wells = 'none')
 { # Baylor wells : choose 1) none, 2) '.*' for all, 3) '[A-H]([1-9]$|10)' etc. for specific wells 
@@ -125,18 +129,18 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   
   # Append LOD information ----
   
-  polished_results <- complete_LOD_table(polished_results)%>% 
+  final_data_with_LODs <- complete_LOD_table(polished_results)%>% 
     select(1:6, AcceptedDroplets, Positives, Positivity, LimitOfDet, Threshold, any_of('variant_status'), everything()) # Bring important columns to begining 
   
   # Data output ----
   
-  check_ok_and_write(polished_results, sheeturls$data_dump, flnm) # save results to a google sheet
+  check_ok_and_write(final_data_with_LODs, sheeturls$data_dump, flnm) # save results to a google sheet
   
   # Vaccine processing ----
   
   
   # Saving vaccine data into Vaccines sheet in data dump: For easy book keeping
-  vaccine_data <- polished_results %>% filter(str_detect(Sample_name, 'Vaccine|Vaccineb|Vacboil') & !str_detect(Target, 'N._multiplex')) %>%
+  vaccine_data <- final_data_with_LODs %>% filter(str_detect(Sample_name, 'Vaccine|Vaccineb|Vacboil') & !str_detect(Target, 'N._multiplex')) %>%
     mutate('Prepared on' = '',
            Week = str_extract(flnm, '[:digit:]{3,4}') %>% unlist() %>% str_c(collapse = ', '),
            Vaccine_ID = assay_variable, 
@@ -393,9 +397,6 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
   # Add to existing sheet in Vaccine_summary
   if(vaccine_data.mean %>% plyr::empty() %>% {!.}) sheet_append(sheeturls$data_dump, vaccine_data.mean, 'Vaccine_summary')
 }
-
-# ddPCR processing ----
-
 
 # Calls ----
 
