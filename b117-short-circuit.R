@@ -5,7 +5,7 @@
 # streamlined output for the HHD
 
 present_only_WW <- presentable_data %>% 
-  filter(WWTP %in% all_WWTP_names) # retain only WWTP data
+  filter(str_detect(WWTP, WWTP_names)) # retain only WWTP data
 
 # control_cols_for_deselection <- str_c('.', c('DI', 'NTC', 'Blank', 'WHC', 'Mix', 'b117'), '-', collapse = '|')
 

@@ -311,40 +311,47 @@ presentable_data %<>% mutate(across(where(is.numeric),  ~ if_else(.x == -Inf, Na
 # Output data - including controls
 check_ok_and_write(presentable_data %>% select(-Sample_ID), sheeturls$complete_data, title_name) # save results to a google sheet, ask for overwrite
 
+# HHD special output ----
+
+
 # switch for output to sheet sent to HHD
 if(regular_WWTP_run_output)
 {
   
-  if(str_detect(read_these_sheets, 'B117') %>% any) {
-    source('./b117-short-circuit.R')
-    stop('B117 output printed successfully, exiting script. This is not an error!')
-  }
-  
   # presentable data for health department
-  present_WW_data <- presentable_data %>%
+  present_HHD_data <- presentable_data %>%
     
-    rename('Copies_per_uL' = `Copies/ul RNA`,
-           'Copies_Per_Liter_WW' = `Copies/l WW`,
-           'Recovery_Rate' = `Percentage_recovery_BCoV`,
-           Target_Name = `Target Name`) %>%
-    select(-contains('Vol'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID, -contains('Droplet'), -'Well Position')
+    # for B117, don't do any of the below changes to the presentable_data
+    {if(str_detect(read_these_sheets, 'B117') %>% any) 
+      {.} else {
+      
+      # Otherwise proceed below  
+      rename(., 'Copies_per_uL' = `Copies/ul RNA`,
+             'Copies_Per_Liter_WW' = `Copies/l WW`,
+             'Recovery_Rate' = `Percentage_recovery_BCoV`,
+             Target_Name = `Target Name`) %>%
+        select(-contains('Vol'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID, -contains('Droplet'), -'Well Position') 
+      }
+    }
+      
+      present_only_WW <- present_HHD_data %>% 
+        filter(str_detect(WWTP, WWTP_symbols)) # retain only WWTP data 
+      
+      # Write data if not empty
+      if(present_only_WW %>% plyr::empty() %>% !.){
+        check_ok_and_write(present_only_WW, sheeturls$wwtp_only_data, title_name) # save results to a google sheet, ask for overwrite
+        write_csv(present_only_WW, path = str_c('excel files/Weekly data to HHD/', title_name, '.csv'), na = '') # output csv file
+      }
+      
+      present_manhole_samples <- present_HHD_data %>% filter(str_detect(WWTP, manhole_sample_symbols))
+      
+      # Write data if not empty
+      if(present_manhole_samples %>% plyr::empty() %>% !.){
+        check_ok_and_write(present_manhole_samples, sheeturls$wwtp_only_data, str_c(title_name, ' manhole samples')) # save results to a google sheet, ask for overwrite
+        write_csv(present_manhole_samples, path = str_c('excel files/Weekly data to HHD/', title_name, ' manhole samples.csv'), na = '') # output CSV file
+      }
+    
   
-  present_only_WW <- present_WW_data %>% 
-    filter(str_detect(WWTP, WWTP_symbols)) # retain only WWTP data
-  
-  # Write data if not empty
-  if(present_only_WW %>% plyr::empty() %>% !.){
-    check_ok_and_write(present_only_WW, sheeturls$wwtp_only_data, title_name) # save results to a google sheet, ask for overwrite
-    write_csv(present_only_WW, path = str_c('excel files/Weekly data to HHD/', title_name, '.csv'), na = '') # output csv file
-  }
-  
-  present_manhole_samples <- present_WW_data %>% filter(str_detect(WWTP, manhole_sample_symbols))
-  
-  # Write data if not empty
-  if(present_manhole_samples %>% plyr::empty() %>% !.){
-    check_ok_and_write(present_manhole_samples, sheeturls$wwtp_only_data, str_c(title_name, ' manhole samples')) # save results to a google sheet, ask for overwrite
-    write_csv(present_manhole_samples, path = str_c('excel files/Weekly data to HHD/', title_name, ' manhole samples.csv'), na = '') # output CSV file
-  }
 }
 
 
