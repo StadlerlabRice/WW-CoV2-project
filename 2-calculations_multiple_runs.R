@@ -346,8 +346,12 @@ if(regular_WWTP_run_output)
         write_csv(present_only_WW, path = str_c('excel files/Weekly data to HHD/', title_name, '.csv'), na = '') # output csv file
       }
       
-      present_manhole_samples <- present_HHD_data %>% filter(str_detect(WWTP, manhole_symbols_regex))
-      
+      # Inclusive reporting : # This ensures that no sample is missed from the reporting just because it does not exist in the biobot ID sheet
+      present_manhole_samples <- present_HHD_data %>%  # identify the remaining samples
+        filter(!str_detect(WWTP, paste(WWTP_symbols_regex,  # After removing the WWTP samples
+                                       samples_to_remove,  # and controls : DI, NTC, Blanks, WHC etc.
+                                       sep = '|')))
+            
       # Write data if not empty
       if(present_manhole_samples %>% plyr::empty() %>% !.){
         check_ok_and_write(present_manhole_samples, sheeturls$wwtp_only_data, str_c(title_name, ' manhole samples')) # save results to a google sheet, ask for overwrite
