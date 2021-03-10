@@ -25,7 +25,7 @@ Quantifying CoV2-N1,N2 (multiplexed) and BCoV surrogate spiked into wastewater s
 ```{r scripts, fig.width = 12}
 
 # Make a string to filter out all regular WWTP and manhole samples to plot separately
-wwtp_manhole_names <- all_WWTP_names %>% str_c(collapse = '|') %>% str_c(manhole_sample_symbols, sep = '|')
+wwtp_manhole_names <- str_c(WWTP_symbols_regex, manhole_symbols_regex, sep = '|')
 
 # plot individual biological replicates (for quality control)
 # map2(list_rawqpcr, read_these_sheets, ~(plot_biological_replicates(.x, title_text = .y)))
