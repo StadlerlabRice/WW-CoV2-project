@@ -5,9 +5,9 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW143_0308_WWTPRERUN_B117')
+read_these_sheets <- c( 'dd.WW147_0309_LS_N1N2', 'dd.WW148_0310_LS_CON_N1N2')
 
-title_name <- '0301 WWTP redo B117'
+title_name <- '0309 LS testing'
 
 regular_WWTP_run_output <- TRUE # make TRUE of you want to output the WWTP only data and manhole samples sheets 
       # (make FALSE for controls, testing etc. where only "complete data" sheet is output)
@@ -283,7 +283,7 @@ missing_entries_in_Biobot_registry <- presentable_data %>%  # identify samples i
 
 if(missing_entries_in_Biobot_registry %>% plyr::empty() %>% !.)
 {View(missing_entries_in_Biobot_registry)
-proceed_with_errors_key <- menu(c('Yes', 'No'), title = 'Missing entries identified in the sample registry (most likely manhole),
+proceed_with_errors_key <- menu(c('Yes', 'No'), title = 'Missing entries identified in the Biobot ID sheet (most likely manhole),
 check the data output in the console and choose if you wish to continue processing data')
 
 if(proceed_with_errors_key == 2) stop("Cancel selected, script aborted.")
@@ -348,9 +348,9 @@ if(regular_WWTP_run_output)
       
       # Inclusive reporting : # This ensures that no sample is missed from the reporting just because it does not exist in the biobot ID sheet
       present_manhole_samples <- present_HHD_data %>%  # identify the remaining samples
-        filter(!str_detect(WWTP, paste(WWTP_symbols_regex,  # After removing the WWTP samples
-                                       samples_to_remove,  # and controls : DI, NTC, Blanks, WHC etc.
-                                       sep = '|')))
+        filter(! WWTP %in% WWTP_symbols & 
+                 !str_detect(WWTP, samples_to_remove)  # and controls : DI, NTC, Blanks, WHC etc.
+        )
             
       # Write data if not empty
       if(present_manhole_samples %>% plyr::empty() %>% !.){
