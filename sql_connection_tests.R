@@ -3,7 +3,9 @@
 # Date: 24/March/21
 
 # Prerequisites ----
-library(tidyverse) ; # install 'keyring' package and store username password in it
+library(tidyverse) ; 
+# install 'keyring' package and store username password in it
+# https://db.rstudio.com/best-practices/managing-credentials
 
 # Load database ----
 con <- DBI::dbConnect(RMariaDB::MariaDB(), 
