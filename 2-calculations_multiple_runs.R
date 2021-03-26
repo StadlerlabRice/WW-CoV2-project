@@ -336,28 +336,29 @@ if(regular_WWTP_run_output)
         select(-contains('Vol'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID, -contains('Droplet'), -'Well Position') 
       }
     }
+  
       
-      present_only_WW <- present_HHD_data %>% 
-        filter(WWTP %in% WWTP_symbols) # retain only WWTP data 
-      
-      # Write data if not empty
-      if(present_only_WW %>% plyr::empty() %>% !.){
-        check_ok_and_write(present_only_WW, sheeturls$wwtp_only_data, title_name) # save results to a google sheet, ask for overwrite
-        write_csv(present_only_WW, path = str_c('excel files/Weekly data to HHD/', title_name, '.csv'), na = '') # output csv file
-      }
-      
-      # Inclusive reporting : # This ensures that no sample is missed from the reporting just because it does not exist in the biobot ID sheet
-      present_manhole_samples <- present_HHD_data %>%  # identify the remaining samples
-        filter(! WWTP %in% WWTP_symbols & 
-                 !str_detect(WWTP, samples_to_remove)  # and controls : DI, NTC, Blanks, WHC etc.
-        )
-            
-      # Write data if not empty
-      if(present_manhole_samples %>% plyr::empty() %>% !.){
-        check_ok_and_write(present_manhole_samples, sheeturls$wwtp_only_data, str_c(title_name, ' manhole samples')) # save results to a google sheet, ask for overwrite
-        write_csv(present_manhole_samples, path = str_c('excel files/Weekly data to HHD/', title_name, ' manhole samples.csv'), na = '') # output CSV file
-      }
-    
+  present_only_WW <- present_HHD_data %>% 
+    filter(WWTP %in% WWTP_symbols) # retain only WWTP data 
+  
+  # Write data if not empty
+  if(present_only_WW %>% plyr::empty() %>% !.){
+    check_ok_and_write(present_only_WW, sheeturls$wwtp_only_data, title_name) # save results to a google sheet, ask for overwrite
+    write_csv(present_only_WW, path = str_c('excel files/Weekly data to HHD/', title_name, '.csv'), na = '') # output csv file
+  }
+  
+  # Inclusive reporting : # This ensures that no sample is missed from the reporting just because it does not exist in the biobot ID sheet
+  present_manhole_samples <- present_HHD_data %>%  # identify the remaining samples
+    filter(! WWTP %in% WWTP_symbols & 
+             !str_detect(WWTP, samples_to_remove)  # and controls : DI, NTC, Blanks, WHC etc.
+    )
+  
+  # Write data if not empty
+  if(present_manhole_samples %>% plyr::empty() %>% !.){
+    check_ok_and_write(present_manhole_samples, sheeturls$wwtp_only_data, str_c(title_name, ' manhole samples')) # save results to a google sheet, ask for overwrite
+    write_csv(present_manhole_samples, path = str_c('excel files/Weekly data to HHD/', title_name, ' manhole samples.csv'), na = '') # output CSV file
+  }
+  
   
 }
 
