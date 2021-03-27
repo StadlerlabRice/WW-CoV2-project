@@ -84,11 +84,15 @@ complete_LOD_table <- function(fl) {
 #' 
 #' targ: the name of a target from the Target column of the dataframe. Example
 #' "N1_multiplex", "N2_multiplex", "BCoV" etc.
-cappend_LOD_info <- function(fl, targ) {
+
+append_LOD_info <- function(fl, targ) {
   fl <- fl %>% filter(Target == targ)
   
   # Pull negative controls out
-  negative_controls <- fl %>% filter(Sample_name == 'NTC'| assay_variable == 'DI'| assay_variable == 'BLANK')
+  negative_controls <- fl %>% filter(Sample_name == 'NTC'| 
+                                       assay_variable == 'DI'| 
+                                       str_detect(assay_variable, regex('BLANK', ignore.case = TRUE)) )
+  
   
   # Pull any rows with 3 droplets a.k.a the LOQ
   threes <- fl %>% filter(Positives == 3)
@@ -101,7 +105,7 @@ cappend_LOD_info <- function(fl, targ) {
   }
   
   # Calculate the LOB
-  limit_blank <- mean(negative_controls$`Copy #`) + (1.6 * sd(negative_controls$`Copy #`))
+  limit_blank <- mean(negative_controls$`Copy #`, na.rm = TRUE) + (1.6 * sd(negative_controls$`Copy #`, na.rm = TRUE))
   # Calculate the LOD
   LOD <- three_copies + limit_blank
   
