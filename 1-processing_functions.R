@@ -1,3 +1,6 @@
+# Don't need to run this if you are running 2-calculations_multiple_runs : This script is called from there
+#---------------------------------------------------------------------
+
 # Read in the qPCR and ddPCR raw data, attach to sample names and process Cq to copy number (qPCR) 
 # Author: Prashant Kalvapalle;  June 16 2020.
 # Merged with other /R files Aug 4, 2020
@@ -14,8 +17,12 @@
 # Loading pre-reqisites ----
 
 # Loading libraries, functions and user inputs
-source('./general_functions.R') # Source the general_functions file
-source('./inputs_for_analysis.R') # Source the file with user inputs
+# source('./general_functions.R') # Source the general_functions file
+# source('./inputs_for_analysis.R') # Source the file with user inputs
+
+
+
+# ddPCR processing ----
 
 
 # ddPCR processing: Attach sample labels from template table, calculate copies/ul using template volume/reaction, make names similar to qPCR data 
@@ -60,8 +67,8 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   # Load desired qPCR result sheet and columns
   bring_results <- fl %>% 
     select(-Sample) %>% # Remove sample, it will be loaded from plate template sheet
-    rename(CopiesPer20uLWell = matches('Copies/20.*µLWell')) %>% # rename the column name - if exported from Quantasoft analysis Pro
-    rename(Concentration = matches('Conc(copies/.*µL)')) %>%  # rename the column name - if exported from Quantasoft analysis Pro
+    rename(CopiesPer20uLWell = matches('Copies/20.*LWell')) %>% # rename the column name - if exported from Quantasoft analysis Pro
+    rename(Concentration = matches('Conc\\(copies/.*L)')) %>%  # rename the column name - if exported from Quantasoft analysis Pro
     mutate(across(any_of('Concentration'), as.numeric)) %>%  # Remove the NO CALLS and make it numeric column  
     
     mutate_at('Well', ~ str_replace(., '(?<=[:alpha:])0(?=[:digit:])', '') ) %>% rename('Well Position' = Well) %>% 
@@ -122,18 +129,18 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   
   # Append LOD information ----
   
-  polished_results <- complete_LOD_table(polished_results)%>% 
+  final_data_with_LODs <- complete_LOD_table(polished_results)%>% 
     select(1:6, AcceptedDroplets, Positives, Positivity, LimitOfDet, Threshold, any_of('variant_status'), everything()) # Bring important columns to begining 
   
   # Data output ----
   
-  check_ok_and_write(polished_results, sheeturls$data_dump, flnm) # save results to a google sheet
+  check_ok_and_write(final_data_with_LODs, sheeturls$data_dump, flnm) # save results to a google sheet
   
   # Vaccine processing ----
   
   
   # Saving vaccine data into Vaccines sheet in data dump: For easy book keeping
-  vaccine_data <- polished_results %>% filter(str_detect(Sample_name, 'Vaccine|Vaccineb|Vacboil') & !str_detect(Target, 'N._multiplex')) %>%
+  vaccine_data <- final_data_with_LODs %>% filter(str_detect(Sample_name, 'Vaccine|Vaccineb|Vacboil') & !str_detect(Target, 'N._multiplex')) %>%
     mutate('Prepared on' = '',
            Week = str_extract(flnm, '[:digit:]{3,4}') %>% unlist() %>% str_c(collapse = ', '),
            Vaccine_ID = assay_variable, 
@@ -391,9 +398,6 @@ process_qpcr <- function(flnm = flnm.here, std_override = NULL, baylor_wells = '
   if(vaccine_data.mean %>% plyr::empty() %>% {!.}) sheet_append(sheeturls$data_dump, vaccine_data.mean, 'Vaccine_summary')
 }
 
-# ddPCR processing ----
-
-
 # Calls ----
 
 # function calls (copy and run from console if you need individual processing)
@@ -423,4 +427,36 @@ process_all_pcr <- function(flname, baylor_wells = 'none')
   
   # if it is a qPCR file (WWxx), call the qpcr processor
   if(str_detect(flname, '(?<!dd\\.)WW[:digit:]*')) process_qpcr(flname, baylor_wells = baylor_wells)
+}
+
+
+# Other stuff : temporarily housed here. WIll be moved to general functions
+# Work in progress : need to test
+read_gdrive_csv <- function(read_these_sheets)
+{
+  library(googledrive)
+  
+  # read_these_sheets <- c( 'dd.WW123_0201_Schools+WWTP_B117_Rerun', 'dd.WW138_0301_SCHOOLS_N1N2')
+  
+  run_ids_to_read <- read_these_sheets %>% str_extract('dd.WW[:digit:]*') %>% paste0(collapse = '|')
+  csv_to_read <- read_these_sheets %>% str_c('.csv')
+  
+  all_csv_files <- drive_get(id = 'https://drive.google.com/drive/u/0/folders/1aIek7-aqHe2l7EnUfZZUtox44bj3SZVQ') %>% 
+    drive_ls()
+  
+  csv_subset <- all_csv_files %>% 
+    filter(str_detect(name, run_ids_to_read) &  # detect all the run ids
+             str_detect(name, '.csv') &  # that are also csv files
+             !str_detect(name, 'variant')) # that are not variants (in the case of B117)
+  
+  # download csvs temporarily
+  map(csv_subset, drive_download)
+  
+  # read csvs
+  lst_output <- map(csv_to_read, read_csv)
+  
+  # clean up
+  map(csv_to_read, unlink) # deletes all the csvs downloaded from googledrive
+  
+  return(lst_output) # return a list of all the csv files read in
 }

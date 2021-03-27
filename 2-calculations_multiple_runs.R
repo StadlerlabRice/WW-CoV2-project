@@ -5,17 +5,11 @@ source('./inputs_for_analysis.R') # Source the file with user inputs
 # Parameters ----------------------------------------------------------------------
 
 # sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW130_testing')
+read_these_sheets <- c( 'dd.WW147_0309_LS_N1N2', 'dd.WW148_0310_LS_CON_N1N2')
 
-title_name <- '0209 testing'
+title_name <- '0309 LS testing'
 
-# Biobot_id sheet
-bb_sheets <- c('Week 42 (01/25)')
-
-# Extra categories for plotting separately (separate by | like this 'Vaccine|Troubleshooting')
-manhole_sample_symbols = get_bayou_names() # putting manhole samples in a separate sheet
-
-regular_WWTP_run_output <- FALSE # make TRUE of you want to output the WWTP only data and manhole samples sheets 
+regular_WWTP_run_output <- TRUE # make TRUE of you want to output the WWTP only data and manhole samples sheets 
       # (make FALSE for controls, testing etc. where only "complete data" sheet is output)
 
 # rarely changed parameters
@@ -26,6 +20,16 @@ elution_volume <- 50 # ul - RNA extraction final volume
 # copies/ul viral suspension spiked in : This is auto-matched from the list of vaccine data in data dump/Vaccine_summary
 spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 450 and varies for each sample)
 
+samples_to_remove <- regex('DI|NTC|Blank|B117|MIX|WHC', ignore_case = TRUE) # control samples that wont be sent to HHD
+
+# Preliminary ----
+
+# Attaching names to data
+ 
+source('./1-processing_functions.R') # Source the file with the ddPCR and qPCR name's attaching functions
+
+# running function to attach names. Data is saved to sheet : "qPCR data dump"
+map(read_these_sheets, process_ddpcr)
 
 # Input data ----------------------------------------------------------------------
 
@@ -50,42 +54,29 @@ raw_quant_data <- bind_rows(list_raw_quant_data) %>%
 
 # Load metadata ----------------------------------------------------------------------
 
-# determine which biobot sheets to get for Rice data : Under development
-# bb_sheet_match <- qpcr_polished %>% 
-#   filter(!str_detect(Target, 'Baylor')) %>% # filter only Rice data
-#   pull(Sample_name) %>% 
-#   str_match('[:digit:]+') %>% 
-#   unique() %>% 
-#   as.character() %>% 
-#   .[!is.na(.)]
-# 
-# # Or this one
-# bb_sheet_match <- read_these_sheets %>% 
-#      str_extract_all('[:digit:]{3}') %>% unlist()  
-
-
-# Bring WWTP name to biobot_ID mapping from google sheet: "Biobot Sample IDs"
-biobot_wwtps <- map_df(bb_sheets, 
-                        ~ read_sheet(sheeturls$biobot_id , sheet = .x) %>% 
-                          rename('Biobot_id' = matches('Biobot|Comments|Sample ID', ignore.case = T), 'WWTP' = contains('SYMBOL', ignore.case = T), 'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T)) %>% 
-                          mutate('Biobot_id' = str_remove(`Biobot_id`,'\\.| '), WWTP = as.character(WWTP)) %>% 
-                          select(`Biobot_id`, `FACILITY NAME`, WWTP)
-)
-
+# get all bayou, manhole and WWTP sample names (remain same every week)
+biobot_lookup <- map_df(c('All Bayou', 'All manhole', 'All wastewater'), 
+                        ~ read_sheet(sheeturls$biobot_id , sheet = .x, range = 'A:C', col_types = 'ccc') %>% 
+                          rename('WWTP' = contains('SYMBOL', ignore.case = T), 
+                                 'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T),
+                                 'Type' = 'Facility Type') %>% 
+                          mutate(WWTP = as.character(WWTP) %>% str_remove(' '), # convert to char and removed spaces
+                                 'assay_variable' = WWTP))
 
 # List of all WWTPs
-all_WWTP_names <- biobot_wwtps %>% pull(WWTP) %>% unique()
+WWTP_symbols <- biobot_lookup %>%
+  filter(Type == 'Wastewater') %>% 
+  pull(WWTP)
 
-biobot_lookup <- bind_rows(biobot_wwtps,
-                           # get all bayou and manhole sample names (remain same every week)
-                           map_df(c('All Bayou', 'All manhole'), 
-                                  ~ read_sheet(sheeturls$biobot_id , sheet = .x) %>% 
-                                    rename('WWTP' = contains('SYMBOL', ignore.case = T), 
-                                           'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T)) %>% 
-                                    mutate(WWTP = as.character(WWTP),
-                                           'Biobot_id' = WWTP)) %>% 
-                             select(`Biobot_id`, `FACILITY NAME`, WWTP)
-)
+# combine the list of WWTPs into 1 string, separated by the OR symbol "|"
+WWTP_symbols_regex <- WWTP_symbols %>% 
+  paste(collapse = "|")
+
+# list all manhole names (for regex matching)
+manhole_symbols_regex <- biobot_lookup %>%
+  filter(!str_detect(Type, 'Wastewater|Bayou')) %>% 
+  pull(WWTP) %>% 
+  paste(collapse = "|")
 
 # Get volumes data from google sheet : "Sample registry"
 volumes_data_Rice <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrated samples') %>% 
@@ -148,17 +139,18 @@ spike_list <- read_sheet(sheeturls$data_dump, sheet = 'Vaccine_summary', range =
 vol_R <- raw_quant_data %>% 
   filter(!str_detect(Target, 'Baylor')) %>% # filter only Rice data
   
+  # join sample registry data
   left_join(volumes_data_Rice, by = 'Label_tube') %>%
   mutate_at('Biobot_id', ~if_else(is.na(.x), str_c(Sample_name, assay_variable), .x)) %>% # stand-by name for missing cols
   
+  # join vaccine quantification
   left_join(spike_list %>% select(Vaccine_ID, Target, spike_virus_conc),  by = c('Vaccine_ID', 'Target') ) %>% 
-  # left_join(biobot_lookup, by = 'Biobot_id') %>% 
-  fuzzyjoin::regex_left_join(., biobot_lookup, by = 'Biobot_id') %>% 
-  select(-Biobot_id.y) %>% rename(Biobot_id = Biobot_id.x) %>% 
   
+  left_join(biobot_lookup) %>%  # join biobot_IDs
   
+
   mutate_at(c('WWTP', 'FACILITY NAME'), ~if_else(str_detect(., '^X')|is.na(.), assay_variable, .)) %>% 
-  mutate(original_sample_name = Sample_name , Sample_name = harmonize_week(Sample_name)) # retain min of consecutive dates
+  mutate(original_sample_name = Sample_name) # retain min of consecutive dates
 
 # Join Baylor WWTP volumes
 if (baylor_trigger) {
@@ -233,7 +225,9 @@ presentable_data <- processed_quant_data %>%
          PositiveDroplets = Positives) %>% 
   
   # Adding new variables, modifying existing variables
-  mutate(Date = Sample_name %>% str_extract('[:digit:]{3,4}') %>% str_replace('([:digit:]+)([:digit:]{2})', '\\1/\\2/20') , 
+  mutate(Date = Sample_name %>% 
+           str_extract('[:digit:]{3,4}') %>% # Extract the date component of the sample name
+           str_replace('([:digit:]+)([:digit:]{2})', '\\1/\\2/21') ,  # format it as mm/dd/yy
          Lab = if_else(str_detect(`Target Name`, 'Baylor'), 'B', 'R'),
          # Detection_Limit = if_else(str_detect(`Target Name`, 'N1|N2'), 330, 
          #                           if_else(str_detect(`Target Name`, 'Baylor'), 23500, 705) 
@@ -267,49 +261,85 @@ presentable_data <- processed_quant_data %>%
   # B117 special plug
   {if(str_detect(read_these_sheets, 'B117') %>% any) {
     calculate_B117_percentage_variant(.) %>% # calculating the percentage of variant vs total S copies 
-    select(-variant_status) %>% 
-    relocate(percentage_variant, .after = 'Copies/l WW') }
+    select(-any_of('variant_status')) %>% 
+    relocate(percentage_variant, .after = 'Target Name') }
     else .
   } %>% 
   
   mutate(across(where(is.numeric), ~ round(., 2))) # rounding off all numerical things
 
 
-# Missing value check - Brings user attention to missing values in the sample registry
+# Missing value check ---- 
 
-# work in progress - this is not where -Inf shoud be checked for since this has all data from begining of time
-if(map(presentable_data, ~ -Inf %in% .x) %>% any())
-  
-  {missing_values_sample_registry <- presentable_data %>% filter_if(is.numeric, any_vars( . < 0))
-  View(missing_values_sample_registry)
-  proceed_with_errors_key <- menu(c('Yes', 'No'), title = 'Missing values identified in the sample registry,
+
+# Brings user attention to missing values in the sample registry
+
+# Missing manhole samples in Biobot ID sheet
+missing_entries_in_Biobot_registry <- presentable_data %>%  # identify samples in the set that are 
+  filter(!str_detect(WWTP, paste(WWTP_symbols_regex,  # neither WWTPS
+                                 manhole_symbols_regex,  # nor manholes
+                                 samples_to_remove,  # nor controls : DI, NTC, Blanks
+                                 sep = '|')))
+
+if(missing_entries_in_Biobot_registry %>% plyr::empty() %>% !.)
+{View(missing_entries_in_Biobot_registry)
+proceed_with_errors_key <- menu(c('Yes', 'No'), title = 'Missing entries identified in the Biobot ID sheet (most likely manhole),
 check the data output in the console and choose if you wish to continue processing data')
+
+if(proceed_with_errors_key == 2) stop("Cancel selected, script aborted.")
+if(proceed_with_errors_key == 1) 
+{ print('Missing Biobot ID entries will be named as Date/WWTP in the Facility Name')
+}
+}
+
+# Volume filtered columns empty => read as NA
+if(is.na(presentable_data$`Volume Filtered`) %>% any())  # old: map(presentable_data, ~ -Inf %in% .x) %>% any()
+  
+  {missing_values_sample_registry <- presentable_data %>% filter(is.na(`Volume Filtered`) & !str_detect(WWTP, samples_to_remove)) # old : filter_if(is.numeric, any_vars( . < 0))
+  View(missing_values_sample_registry)
+  proceed_with_errors_key <- menu(c('Yes', 'No'), title = 'Missing values identified in the sample registry : WW volume extracted (ml),
+check the data output in the console and choose if you wish to continue processing data, by assuming 50 ml default')
 
   if(proceed_with_errors_key == 2) stop("Cancel selected, script aborted.")
   if(proceed_with_errors_key == 1) 
-    { print('Missing values are being converted to NaNs to avoid error in writing data')
-    presentable_data %<>% mutate(across(where(is.numeric),  ~ if_else(.x == -Inf, NaN, .x)))
+    { print('Missing volumes filtered are being converted to 50 ml (default) to avoid error in processing data')
+    presentable_data %<>% replace_na(list(`Volume Filtered` = 50))
   }
 }
+
+print('Missing values (~ Received volume) are being converted to NaNs to avoid error in writing data')
+presentable_data %<>% mutate(across(where(is.numeric),  ~ if_else(.x == -Inf, NaN, .x)))
 
 
 # Output data - including controls
 check_ok_and_write(presentable_data %>% select(-Sample_ID), sheeturls$complete_data, title_name) # save results to a google sheet, ask for overwrite
 
+# HHD special output ----
+
+
 # switch for output to sheet sent to HHD
 if(regular_WWTP_run_output)
 {
-  # presentable data for health department
-  present_WW_data <- presentable_data %>%
-    
-    rename('Copies_per_uL' = `Copies/ul RNA`,
-           'Copies_Per_Liter_WW' = `Copies/l WW`,
-           'Recovery_Rate' = `Percentage_recovery_BCoV`,
-           Target_Name = `Target Name`) %>%
-    select(-contains('Vol'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID, -contains('Droplet'), -'Well Position')
   
-  present_only_WW <- present_WW_data %>% 
-    filter(WWTP %in% all_WWTP_names) # retain only WWTP data
+  # presentable data for health department
+  present_HHD_data <- presentable_data %>%
+    
+    # for B117, don't do any of the below changes to the presentable_data
+    {if(str_detect(read_these_sheets, 'B117') %>% any) 
+      {.} else {
+      
+      # Otherwise proceed below  
+      rename(., 'Copies_per_uL' = `Copies/ul RNA`,
+             'Copies_Per_Liter_WW' = `Copies/l WW`,
+             'Recovery_Rate' = `Percentage_recovery_BCoV`,
+             Target_Name = `Target Name`) %>%
+        select(-contains('Vol'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID, -contains('Droplet'), -'Well Position') 
+      }
+    }
+  
+      
+  present_only_WW <- present_HHD_data %>% 
+    filter(WWTP %in% WWTP_symbols) # retain only WWTP data 
   
   # Write data if not empty
   if(present_only_WW %>% plyr::empty() %>% !.){
@@ -317,13 +347,19 @@ if(regular_WWTP_run_output)
     write_csv(present_only_WW, path = str_c('excel files/Weekly data to HHD/', title_name, '.csv'), na = '') # output csv file
   }
   
-  present_manhole_samples <- present_WW_data %>% filter(str_detect(WWTP, manhole_sample_symbols))
+  # Inclusive reporting : # This ensures that no sample is missed from the reporting just because it does not exist in the biobot ID sheet
+  present_manhole_samples <- present_HHD_data %>%  # identify the remaining samples
+    filter(! WWTP %in% WWTP_symbols & 
+             !str_detect(WWTP, samples_to_remove)  # and controls : DI, NTC, Blanks, WHC etc.
+    )
   
   # Write data if not empty
   if(present_manhole_samples %>% plyr::empty() %>% !.){
     check_ok_and_write(present_manhole_samples, sheeturls$wwtp_only_data, str_c(title_name, ' manhole samples')) # save results to a google sheet, ask for overwrite
     write_csv(present_manhole_samples, path = str_c('excel files/Weekly data to HHD/', title_name, ' manhole samples.csv'), na = '') # output CSV file
   }
+  
+  
 }
 
 
