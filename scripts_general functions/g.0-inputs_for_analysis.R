@@ -1,4 +1,4 @@
-# Read in the qPCR file and do manual analysis and plotting
+# OBSOLETE: Parameters for qPCR analysis
 # Author: Prashant Kalvapalle;  June 13 2020
 
 

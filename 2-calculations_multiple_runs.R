@@ -398,4 +398,4 @@ long_processed_minimal %<>% map(
 
 
 # calling r markdown file
-rmarkdown::render('make_html_plots.rmd', output_file = str_c('./qPCR analysis/', title_name, '.html'))
+rmarkdown::render('2.1-make_html_plots.rmd', output_file = str_c('./qPCR analysis/', title_name, '.html'))
