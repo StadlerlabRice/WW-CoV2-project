@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 12, fig.he
 
 ## Static plots
 ```{r ntc}
-plt_NTC <- {ggplot(ntc_dd.data, aes(Run_ID, Positives, colour = Target)) +
+plt_NTC <- {ggplot(ntc_dd.data, aes(Run_ID, PositiveDroplets, colour = Target)) +
     geom_point() + 
     geom_line(aes(y = mean_positive))} %>% 
   format_classic() %>% 
@@ -39,10 +39,10 @@ plotly::ggplotly(plt_NTC, dynamicTicks = T)
 ```{r ntc3}
 
 ntc_dd.data %>%
-  filter(Positives > 3) %>% 
-  mutate(mean_positive = mean(Positives)) %>% 
+  filter(PositiveDroplets > 3) %>% 
+  mutate(mean_positive = mean(PositiveDroplets)) %>% 
 
-  {ggplot(., aes(Run_ID, Positives, colour = Target)) +
+  {ggplot(., aes(Run_ID, PositiveDroplets, colour = Target)) +
     geom_point() + 
     geom_line(aes(y = mean_positive))} %>% 
   format_classic() %>% 
@@ -55,11 +55,11 @@ ntc_dd.data %>%
 ```{r ntcalltgt}
 
 ntc_dd.data %>%
-  # filter(Positives > 3) %>% 
+  # filter(PositiveDroplets > 3) %>% 
   group_by(Run_ID) %>% 
-  mutate(mean_positive = mean(Positives)) %>% 
+  mutate(mean_positive = mean(PositiveDroplets)) %>% 
 
-  {ggplot(., aes(Run_ID, Positives)) +
+  {ggplot(., aes(Run_ID, PositiveDroplets)) +
     geom_point() + 
     geom_line(aes(y = mean_positive))} %>% 
   format_classic() %>% 
@@ -71,11 +71,11 @@ ntc_dd.data %>%
 ```{r ntcalltgt0}
 
 ntc_dd.data %>%
-  filter(Positives > 3) %>%
+  filter(PositiveDroplets > 3) %>%
   group_by(Run_ID) %>% 
-  mutate(mean_positive = mean(Positives)) %>% 
+  mutate(mean_positive = mean(PositiveDroplets)) %>% 
 
-  {ggplot(., aes(Run_ID, Positives)) +
+  {ggplot(., aes(Run_ID, PositiveDroplets)) +
     geom_point() + 
     geom_line(aes(y = mean_positive))} %>% 
   format_classic() %>% 
@@ -89,11 +89,11 @@ By target
 ```{r scatterntc}
 
 pltsctr <- ntc_dd.data %>%
-  # filter(Positives > 3) %>% 
+  # filter(PositiveDroplets > 3) %>% 
   # group_by(Run_ID) %>% 
-  # mutate(mean_positive = mean(Positives)) %>% 
+  # mutate(mean_positive = mean(PositiveDroplets)) %>% 
 
-  {ggplot(., aes(Target, Positives, colour = Target)) +
+  {ggplot(., aes(Target, PositiveDroplets, colour = Target)) +
       geom_jitter(width = .5)
     } %>% 
   format_classic() %>% 
@@ -101,7 +101,7 @@ pltsctr <- ntc_dd.data %>%
   print()
 
 ntc_dd.data %>%
-  {ggplot(., aes(1, Positives, colour = Target, label = Run_ID)) +
+  {ggplot(., aes(1, PositiveDroplets, colour = Target, label = Run_ID)) +
       geom_violin() + geom_jitter(width = .5)
     } %>% 
   format_classic() %>% 
@@ -117,7 +117,7 @@ ordered density plots for visualization
 ```{r beeswarm}
 
 ntc_dd.data %>%
-  {ggplot(., aes(1, Positives, colour = Target, label = Run_ID)) +
+  {ggplot(., aes(1, PositiveDroplets, colour = Target, label = Run_ID)) +
       geom_beeswarm(priority = 'descending')
     } %>% 
   format_classic() %>% 
@@ -130,11 +130,11 @@ All targets
 ```{r scatterntcall}
 
 ntc_dd.data %>%
-  # filter(Positives > 3) %>% 
+  # filter(PositiveDroplets > 3) %>% 
   # group_by(Run_ID) %>% 
-  # mutate(mean_positive = mean(Positives)) %>% 
+  # mutate(mean_positive = mean(PositiveDroplets)) %>% 
 
-  {ggplot(., aes(1, Positives)) +
+  {ggplot(., aes(1, PositiveDroplets)) +
       geom_violin() + geom_jitter()
     } %>% 
   format_classic() %>% 
@@ -150,28 +150,28 @@ ntc_dd.data %>%
 
 ntc_dd.data %>% 
   ungroup() %>% 
-  summarise(across(Positives, lst(mean, median, sd)))
+  summarise(across(PositiveDroplets, lst(mean, median, sd)))
 ```
 Statistics for Runs with > 3 droplets (assumed LOD)
 
 ```{r summary3}
 
 ntc_more_than_3 <- ntc_dd.data %>% 
-  filter(Positives > 3) %>% 
-  mutate(mean_positive = mean(Positives)) 
+  filter(PositiveDroplets > 3) %>% 
+  mutate(mean_positive = mean(PositiveDroplets)) 
 
 ntc_more_than_3 %>% 
   ungroup() %>% 
-  summarise(across(Positives, lst(mean, median, sd)))
+  summarise(across(PositiveDroplets, lst(mean, median, sd)))
 ```
 Statistics for Runs with > 0 droplets (assumed LOD)
 
 ```{r summary0}
 
 ntc_dd.data %>% 
-  filter(Positives > 0) %>% 
+  filter(PositiveDroplets > 0) %>% 
   ungroup() %>% 
-  summarise(across(Positives, lst(mean, median, sd)))
+  summarise(across(PositiveDroplets, lst(mean, median, sd)))
 ```
 
 Total number of runs
@@ -200,7 +200,7 @@ Number of runs with > 0 droplets
 ```{r number0}
 
 ntc_dd.data %>% 
-  filter(Positives > 0) %>% 
+  filter(PositiveDroplets > 0) %>% 
   pull(Run_ID) %>% 
   unique() %>% 
   length() 
