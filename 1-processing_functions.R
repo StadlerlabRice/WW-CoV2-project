@@ -99,7 +99,7 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   # isolate the primer pair and assay_variable into 3 columns : Sample name, assay variable and primer pair 
   polished_results <- bring_results %>% separate(`Sample_name`,c(NA, 'Sample_name'),'-') %>% separate(`Sample_name`,c('Sample_name','Tube ID'),'_') %>% 
     mutate(`Tube ID` = if_else(`Sample_name` == 'NTC', '0', `Tube ID`)) %>% 
-    separate(`Tube ID`, c('assay_variable', 'biological_replicates'), remove = F) %>%  # Separate out biological replicates 
+    separate(`Tube ID`, c('assay_variable', 'biological_replicates', '\\.'), remove = F) %>%  # Separate out biological replicates 
     unite('Tube ID', c(assay_variable, biological_replicates), sep = '.', remove = F, na.rm = T) %>% # remaking Tube ID - removes spaces after 'dot'
     # unite('Biobot ID', c(`Sample_name`, assay_variable), sep = '', remove = F) %>%
     
