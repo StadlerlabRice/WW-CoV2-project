@@ -19,15 +19,18 @@ sheeturls <- list(templates = 'https://docs.google.com/spreadsheets/d/19oRiRcRVS
 )
 
 
-# dummy data  ---- 
-# or test data for testing simple functions 
+# dummy data, fns  ---- 
+# test data for testing simple functions and other functions for testing 
 
 # dummy test tibble
-a <- tibble(a1 = 1:6, a2 = 6:1, a3 = rep(c('a', 'b'),3), a4 = a2 ^2)
+# test tibble with numeric, char and a factor
+a <- tibble(a1 = 1:6, a2 = 6:1, a3 = rep(c('a', 'b'),3), a4 = as_factor(5:10))
+
 
 # expression to test on plotting
 y_namr_test <- list( 'a2' = expression(paste('this is a ', mu, 'L')),
                      'a4' = expression(paste('super large ', sigma, 'L')))
+
 
 # test ggplot
 a_plt <- ggplot(a, aes(a1, a2, colour = a3)) + 
@@ -36,6 +39,13 @@ a_plt <- ggplot(a, aes(a1, a2, colour = a3)) +
   ylab(y_namr_test[['a4']])
 
 
+# this is a dummy function to provide an environment to test quosures, unquoting and things like that
+dumfun <- function(a, var_a = a2, var_b = a3, c_var = 'a1', d_var = NULL)
+{   
+  d_var %<>% {if(is.null(.)) expr(c(!!var_a, !!var_b)) else .}
+  
+  a %>% select(!!d_var)
+}
 
 # calling more funs ----
 
