@@ -28,6 +28,3 @@ template_volume_qpcr <- 4 # ul template volume in qPCR reaction
 plot_select_facet <- '' # Options ('' or 'something') ; filters a particular template name to plot 
 # plot_exclude_facet <- '^none' # Regex pattern: 'Controls2', '^MHT*', '^none; exclude categories for plotting; ex: Controls etc.: filters based on `Sample Name`: works only in assay mode
 plot_exclude_assay_variable <- '^none' # Regex pattern: '^N', '^none' or ''; exclude assay_variables for plotting; ex: no template control etc.: filters based on assay_variable: works only in assay mode
-
-# dummy tibble for troubleshooting
-a <- tibble(a1 = 1:4, a2 = 5:2, a3 = c('s', 's', 'n', 'n'), a4 = 1:4 * 10)
