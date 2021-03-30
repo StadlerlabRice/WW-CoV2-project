@@ -16,9 +16,12 @@ count_multiplicates <- function(.data, .colm, outliers_only = TRUE)
     the_mode <- stat_mode_vector(out_multi$repeated_instances) # find the mode of the data using the handwritten function
     
     out_multi %>% 
-      filter(repeated_instances != the_mode) %>%  # remove most frequently repeated instances
-      add_row( {{.colm}} := 'most repeated', repeated_instances = the_mode) # add a row to refer to this
-    
+      filter(! repeated_instances %in% the_mode) %>%  # remove most frequently repeated instances
+      
+      {if(is.character(pull(., {{.colm}})) ) 
+        add_row(., {{.colm}} := 'most repeated', repeated_instances = the_mode) 
+        else add_row(., {{.colm}} := 999, repeated_instances = the_mode)}  # add a row to refer to the mode that was removed
+      
     # y <- .data  %>% pull({{.colm}}) %>% table # find the frequency table of the vector : named vector with frequency
     # return(y[which(y != stat_mode_vector(y))])  
     
