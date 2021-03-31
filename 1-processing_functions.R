@@ -14,11 +14,12 @@
   # For baylor wells, choose : none, '.*' for all, '[A-H][1-9]$|10' for columns 1 - 10; '.*(?!3).$' for everything except 3rd column etc.
 
 
-# Loading pre-reqisites ----
+# Loading pre-requisites ----
 
 # Loading libraries, functions and user inputs
-# source('./general_functions.R') # Source the general_functions file
+
 # source('./inputs_for_analysis.R') # Source the file with user inputs
+source('./0-general_functions_main.R') # Source the general_functions file
 
 
 
@@ -36,14 +37,9 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   Vaccine_additional_RNA_dilution_factor_BCoV <- 50  # In addition to the above: RNA dilution factor for BCoV vaccine samples - both extracted and boiled
   
   # Ad hoc - marking the samples from baylor (will append /baylor to target name)
-  # Work in progress?
+  # Work in progress or remove feature?
   
   
-  # Loading pre-reqisites ----
-  
-  
-  # Loading libraries, functions and user inputs
-  source('./general_functions.R') # Source the general_functions file
   
   # Data input ----
   

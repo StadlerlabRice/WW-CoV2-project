@@ -1,5 +1,5 @@
 # Loading libraries, functions and user inputs
-source('./general_functions.R') # Source the general_functions file
+source('./0-general_functions_main.R') # Source the general_functions file
 source('./inputs_for_analysis.R') # Source the file with user inputs
 
 # Parameters ----------------------------------------------------------------------
