@@ -32,7 +32,15 @@ check_ok_and_write <- function(data, sheet_URL, title_name)
   }
   
   if (write_ok == 1) {
-    write_sheet(data, sheet_URL, sheet=title_name)
+    tryCatch({ R.utils::withTimeout({write_sheet(data, sheet_URL, sheet=title_name)}, 
+                                          substitute = FALSE,
+                                          timeout = 5, # 5 second timeout
+                                          onTimeout = "warning")},
+             warning = function(e) 
+             {cat('Sheet was not written due to timeout. Manually copy the excel file from excel files/Archive/Data dump files')
+               message(e)
+               write_csv(data, str_c('excel files/Archive/Data dump files', title_name, '.csv'), na = '')}
+    )
   }
 }
 
