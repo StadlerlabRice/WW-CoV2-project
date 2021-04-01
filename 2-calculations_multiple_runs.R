@@ -28,14 +28,16 @@ samples_to_remove <- regex('DI|NTC|Blank|B117|MIX|WHC', ignore_case = TRUE) # co
  
 source('./1-processing_functions.R') # Source the file with the ddPCR and qPCR name's attaching functions
 
-# running function to attach names. Data is saved to sheet : "qPCR data dump"
-map(read_these_sheets, process_ddpcr)
+# running function to attach names. Data is ALSO saved to sheet : "qPCR data dump"
+list_raw_quant_data <- map(read_these_sheets, 
+                           ~ process_ddpcr(.x) %>% 
+                             select(1:13))
 
 # Input data ----------------------------------------------------------------------
 
-# Acquire all the pieces of the data : read saved raw qPCR results from a google sheet
-list_raw_quant_data <- map(read_these_sheets, 
-                           ~ read_sheet(sheeturls$data_dump, sheet = ., range = 'A:M')) 
+# Acquire all the pieces of the data : read saved raw qPCR results from a google sheet -- Obsolete
+# list_raw_quant_data2 <- map(read_these_sheets, 
+#                            ~ read_sheet(sheeturls$data_dump, sheet = ., range = 'A:M')) 
 
 # bind multiple reads and clean up names
 raw_quant_data <- bind_rows(list_raw_quant_data) %>% 

@@ -161,6 +161,9 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   # Add to existing sheet in Vaccine_summary
   if(vaccine_data.mean %>% plyr::empty() %>% {!.}) sheet_append(sheeturls$data_dump, vaccine_data.mean, 'Vaccine_summary')
   
+  
+  # Return the data frame
+  return(final_data_with_LODs)
 }
 
 
