@@ -13,28 +13,24 @@ user_param_table <- read_sheet(sheeturls$user_inputs) %>%
 
 # Takes a single column of a tibble and assigns the contents to variables named as the column names
 # Convenient handle to obtain parameters from a google sheet
+
+# Takes each column of a tibble as a native type (by pull()) and assigns to a variable named after .colm_name
 tbl.colm_to_assigmnent <- function(.singl_colm, .colm_name = NULL)
-{ # this will not work with vectorization since each column enters this function as a vector (not a tibble)
+{ 
   
-  # print(1)
-  # cleaned the column
-  # colm.val <- .singl_colm %>%  # remove trailing nas - whitespaces from the sheet
-  #   {case_when(is_tibble(.) ~ drop_na(.) %>% pull(1),  # removes NA from a tibble and get the contents of the column as a vector
-  #              is_list(.) ~ .[!sapply(., is.null)] %>% as_vector(),  # removes NULL from lists and converts to vector
-  #              is_vector(.) ~ .[!is.na(.)] )} # removes NA from a vector
-  
-  # Use this instead
-  colm.val <- .singl_colm %>% .[!sapply(., function(x) is.null(x)||is.na(x))]
-  
-  # get the column name
-  colm.nm <- if(is.null(.colm_name)) 
-    colnames(cleaned_colm) else # get the name of the column from the tibble
-      .colm_name  # take the name
   # throw an error if no column name is found
-  if(is.null(colm.nm)) stop('No column name found, check and provide the `.colm_nam` argument to the function `cleaned_colm`')
+  if(is.null(.colm_name)) stop('No column name found, check and provide the `.colm_nam` argument to the function `tbl.colm_to_assignment`')
+  
+  
+  # Clean the column and make a vector
+  colm.val <- .singl_colm %>% 
+    # remove trailing whiteshaces from sheet
+    .[!sapply(., function(x) is.null(x)||is.na(x))] %>% # Remove NAs if a vector and NULLs if a list
+    as_vector() # convert to a vector
+
   
   # Assign variable
-  eval(call2(`<-`, colm.nm, colm.val), envir = global_env()) # assign a new variable colm.nm into the global environment
+  eval(call2(`<-`, .colm_name, colm.val), envir = global_env()) # assign a new variable .colm_name into the global environment
 }
 
 

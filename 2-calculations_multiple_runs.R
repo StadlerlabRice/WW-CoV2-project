@@ -1,26 +1,15 @@
 # Loading libraries, functions and user inputs
 source('./0-general_functions_main.R') # Source the general_functions file
-source('./inputs_for_analysis.R') # Source the file with user inputs
 
 # Parameters ----------------------------------------------------------------------
 
-# sheets to read from qPCR data dump excel file
-read_these_sheets <- c( 'dd.WW147_0309_LS_N1N2', 'dd.WW148_0310_LS_CON_N1N2')
+# Enter all the parameters in the google sheet : User inputs, metadata, queries for R code
+# url = https://docs.google.com/spreadsheets/d/1SAINnazqMrjTBSuhYiIBbx8B7_reHzaEuwGTdkNA6wk/edit#gid=288270795
+# Duplicate the 'template', name it after the data set (same as title_name) and BRING it to the FIRST position in sheets
 
-title_name <- '0309 LS testing'
+# Read the input parameters sheet and create all the parameters
+source('./scripts_general functions/g.12-sheet-to-params.R') 
 
-regular_WWTP_run_output <- TRUE # make TRUE of you want to output the WWTP only data and manhole samples sheets 
-      # (make FALSE for controls, testing etc. where only "complete data" sheet is output)
-
-# rarely changed parameters
-
-# Spike in and concentration details
-elution_volume <- 50 # ul - RNA extraction final volume
-
-# copies/ul viral suspension spiked in : This is auto-matched from the list of vaccine data in data dump/Vaccine_summary
-spike_virus_volume <- 50 # ul of viral suspension spiked in x ml WW; (x ~ 350 - 450 and varies for each sample)
-
-samples_to_remove <- regex('DI|NTC|Blank|B117|MIX|WHC', ignore_case = TRUE) # control samples that wont be sent to HHD
 
 # Preliminary ----
 
