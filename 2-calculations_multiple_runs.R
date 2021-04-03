@@ -17,24 +17,27 @@ source('./scripts_general functions/g.12-sheet-to-params.R')
  
 source('./1-processing_functions.R') # Source the file with the ddPCR and qPCR name's attaching functions
 
-# running function to attach names. Data is ALSO saved to sheet : "qPCR data dump"
-list_raw_quant_data <- map(read_these_sheets, 
-                           ~ process_ddpcr(.x) %>% 
-                             select(1:13))
+
 
 # Input data ----------------------------------------------------------------------
 
+# running function to attach names. Data is ALSO saved to sheet : "qPCR data dump"
+list_quant_data <- map(read_these_sheets, 
+                           ~ process_ddpcr(.x) %>% 
+                             select(1:13))
+
 # Acquire all the pieces of the data : read saved raw qPCR results from a google sheet -- Obsolete
-# list_raw_quant_data2 <- map(read_these_sheets, 
+# list_quant_data2 <- map(read_these_sheets, 
 #                            ~ read_sheet(sheeturls$data_dump, sheet = ., range = 'A:M')) 
 
-# bind multiple reads and clean up names
-raw_quant_data <- bind_rows(list_raw_quant_data) %>% 
-  rename(Sample_name = any_of('Sample Name')) %>% # if name is according to old convension, this will rename it 
+# bind multiple ddPCR runs and clean up names
+quant_data <- bind_rows(list_quant_data) %>% 
+  
+  rename(Sample_name = any_of('Sample Name')) %>% # if name is according to old convention, this will rename it 
   # select(-any_of('Well Position')) %>%  # I wonder why Well Position needed to be removed..?
-  mutate_at('assay_variable', as.character) %>% 
-  mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
-  mutate_at('Tube ID', ~str_remove(., "\\.")) %>% 
+  mutate_at('assay_variable', as.character) %>%  # if assay_variable has all numbers, this will turn them into char
+  mutate_at('biological_replicates', ~str_replace_na(., '')) %>%  # make empty biological_replicates into empty string ('')
+  mutate_at('Tube ID', ~str_remove(., "\\.")) %>% # remove dot (.) from Tube ID
   unite('Label_tube', c('Sample_name', 'Tube ID'), sep = "", remove = F) %>%  # make a unique column for matching volumes 
   mutate(across(Label_tube, ~str_remove(., ' ') )) # remove spaces from the Sample_name (Started with 1123 Pavan with 1123 69S names)
 
@@ -57,11 +60,11 @@ biobot_lookup <- map_df(c('All Bayou', 'All manhole', 'All wastewater'),
 # List of all WWTPs
 WWTP_symbols <- biobot_lookup %>%
   filter(Type == 'Wastewater') %>% 
-  pull(WWTP)
+  pull(WWTP) # this vector of all WWTP abbreviations (symbols) is good for exact matching 
 
 # combine the list of WWTPs into 1 string, separated by the OR symbol "|"
 WWTP_symbols_regex <- WWTP_symbols %>% 
-  paste(collapse = "|")
+  paste(collapse = "|") # this single char with all WWTP names is for regex string matching (approx) : Use with caution
 
 # list all manhole names (for regex matching)
 manhole_symbols_regex <- biobot_lookup %>%
@@ -70,7 +73,7 @@ manhole_symbols_regex <- biobot_lookup %>%
   paste(collapse = "|")
 
 # Get volumes data from google sheet : "Sample registry"
-volumes_data_Rice <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrated samples') %>% 
+volumes.data_registry <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrated samples') %>% 
   rename('WW_vol' = `Total WW vol measured (ml)`, 
          'Label_tube' = `Label on tube`, 
          vol_extracted = `WW volume extracted (ml)`,
@@ -92,32 +95,6 @@ volumes_data_Rice <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrate
   select(-unique_labels, -WW_weight)
 
 
-# baylor's ID, vols ----------------------------------------------------------------------   
-
-baylor_trigger <- raw_quant_data$Target %>% str_detect('Baylor') %>% any()
-
-# Getting baylor's volumes from a separate excel file (from Austen's email)
-if (baylor_trigger) {
-  
-  baylor_volumes_and_biobots <- raw_quant_data %>% 
-    filter(str_detect(Target, 'Baylor')) %>%  
-    pull(Sample_name) %>% unique() %>%  # get all Baylor sheet names present in data
-    .[!str_detect(., 'NTC|Std')] %>%  # Excluding NTC or Standards from being counted as Baylor data (data is still output)
-    
-    # read the sheets matching the names, while renaming columns
-    map_dfr( ~ read_xlsx (str_c('excel files/Baylor/', 'Baylor_sample volumes', '.xlsx'), sheet = .x) %>%
-               rename('WWTP' = contains('SYMBOL', ignore.case = T), 
-                      'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T), 
-                      'Biobot_id' = `Sample ID`) %>% 
-               mutate('Label_tube' = str_c(.x, WWTP)) ) %>% 
-    mutate_at('Biobot_id', ~str_remove(., '\\.')) %>% 
-    
-    pivot_longer(cols = starts_with('Volume'), names_to = 'index', values_to = 'WW_vol') %>% 
-    separate(index, into =  c(NA, 'biological_replicates')) %>% 
-    mutate(Label_tube = str_c(Label_tube, biological_replicates), vol_extracted = 1.5) %>% 
-    select(-biological_replicates)
-}
-
 # Vaccine spike concentrations
 spike_list <- read_sheet(sheeturls$data_dump, sheet = 'Vaccine_summary', range = 'B6:K', col_types = 'Dcccnnnccn') %>% 
   rename(spike_virus_conc = matches('Stock conc.'), Sample_name = Week)  
@@ -127,11 +104,10 @@ spike_list <- read_sheet(sheeturls$data_dump, sheet = 'Vaccine_summary', range =
 
 # Join WWTP names to qPCR dataset for Rice data
 
-vol_R <- raw_quant_data %>% 
-  filter(!str_detect(Target, 'Baylor')) %>% # filter only Rice data
+meta.attached_quant_data <- quant_data %>% 
   
   # join sample registry data
-  left_join(volumes_data_Rice, by = 'Label_tube') %>%
+  left_join(volumes.data_registry, by = 'Label_tube') %>%
   mutate_at('Biobot_id', ~if_else(is.na(.x), str_c(Sample_name, assay_variable), .x)) %>% # stand-by name for missing cols
   
   # join vaccine quantification
@@ -140,29 +116,15 @@ vol_R <- raw_quant_data %>%
   left_join(biobot_lookup) %>%  # join biobot_IDs
   
 
-  mutate_at(c('WWTP', 'FACILITY NAME'), ~if_else(str_detect(., '^X')|is.na(.), assay_variable, .)) %>% 
-  mutate(original_sample_name = Sample_name) # retain min of consecutive dates
+  mutate_at(c('WWTP', 'FACILITY NAME'), ~if_else(str_detect(., '^X')|is.na(.), assay_variable, .))
 
-# Join Baylor WWTP volumes
-if (baylor_trigger) {
-  
-  vol_B <- raw_quant_data %>% 
-    filter(str_detect(Target, 'Baylor')) %>% 
-    # select(-`Biobot_id`) %>% 
-    left_join(baylor_volumes_and_biobots, by = 'Label_tube') %>% 
-    fuzzyjoin::regex_left_join(., 
-                                spike_list %>% select(Sample_name, Vaccine_ID, Target, spike_virus_conc),
-                                by = c('Sample_name', 'Target')) %>% 
-    select(-`Sample_name.y`, -`Target.y`) %>% rename(Sample_name = `Sample_name.x`, Target = Target.x)
-  
-  
-} else vol_B <- tibble(NULL)
+
 
 # Calculations ----
 
 # Copies/ul RNA to copies/l WW. Spike in concentration, % recovery are calculated
 # join the results with the WWTP identifiers and names
-processed_quant_data <- bind_rows(vol_R, vol_B) %>% 
+processed_quant_data <- meta.attached_quant_data %>% 
   
   # Calculations for spiked in and recovered copies of the virus
   mutate(`Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), 
@@ -172,7 +134,6 @@ processed_quant_data <- bind_rows(vol_R, vol_B) %>%
   # (source for chemagic conc. factor: concentration factor calc : https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=2134801800)
   
   mutate_cond(str_detect(Sample_name, 'Vaccine'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (.050 * 1e-3), Recovered = `Copy #` * 1e6 * 50/20, `Percentage_recovery_BCoV` = 100 * Recovered/`Actual spike-in`) %>% 
-  mutate_cond(str_detect(Target, 'Baylor'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), Recovered = `Copy #` * 1e6 /30, `Percentage_recovery_BCoV` = 100 * Recovered/`Actual spike-in`) %>% 
     
   select(-spike_virus_conc) %>% 
   
@@ -219,14 +180,11 @@ presentable_data <- processed_quant_data %>%
   mutate(Date = Sample_name %>% 
            str_extract('[:digit:]{3,4}') %>% # Extract the date component of the sample name
            str_replace('([:digit:]+)([:digit:]{2})', '\\1/\\2/21') ,  # format it as mm/dd/yy
-         Lab = if_else(str_detect(`Target Name`, 'Baylor'), 'B', 'R'),
-         # Detection_Limit = if_else(str_detect(`Target Name`, 'N1|N2'), 330, 
-         #                           if_else(str_detect(`Target Name`, 'Baylor'), 23500, 705) 
-         #                           ) ,
+         Lab = 'R', 
          Sample_Type = 'Composite', Comments = NA) %>% 
-  mutate_at(c('Sample_name', 'original_sample_name'), ~as.character(.)) %>%
-  mutate_at('Facility', ~if_else(. == assay_variable, str_c(original_sample_name, '/', assay_variable), .)) %>%
-  mutate(Tube_ID = if_else(biological_replicates == ''|is.na(biological_replicates), str_c(original_sample_name, ' ', assay_variable), str_c(original_sample_name, ' ', assay_variable, '', biological_replicates)) ,
+  mutate(across('Sample_name', as.character) ) %>% # covert sample name into char
+  mutate_at('Facility', ~if_else(. == assay_variable, str_c(Sample_name, '/', assay_variable), .)) %>%
+  mutate(Tube_ID = if_else(biological_replicates == ''|is.na(biological_replicates), str_c(Sample_name, ' ', assay_variable), str_c(Sample_name, ' ', assay_variable, '', biological_replicates)) ,
          WWTP_ID = if_else(biological_replicates == ''|is.na(biological_replicates), str_c(Sample_name, '.', WWTP) , str_c(Sample_name, '.', WWTP, '-', biological_replicates)),
          Sample_ID = WWTP_ID,
          'Limit of detection (copies/ul RNA)' = if_else(str_detect(`Target Name`, 'N1|N2'), 0.3, 0.5 )) %>% 
@@ -309,7 +267,7 @@ check_ok_and_write(presentable_data %>% select(-Sample_ID), sheeturls$complete_d
 
 
 # switch for output to sheet sent to HHD
-if(regular_WWTP_run_output)
+if(HHD_data_output)
 {
   
   # presentable data for health department
@@ -334,7 +292,7 @@ if(regular_WWTP_run_output)
   
   # Write data if not empty
   if(present_only_WW %>% plyr::empty() %>% !.){
-    check_ok_and_write(present_only_WW, sheeturls$wwtp_only_data, title_name) # save results to a google sheet, ask for overwrite
+    check_ok_and_write(present_only_WW, sheeturls$HHD_data, title_name) # save results to a google sheet, ask for overwrite
     write_csv(present_only_WW, path = str_c('excel files/Weekly data to HHD/', title_name, '.csv'), na = '') # output csv file
   }
   
@@ -346,7 +304,7 @@ if(regular_WWTP_run_output)
   
   # Write data if not empty
   if(present_manhole_samples %>% plyr::empty() %>% !.){
-    check_ok_and_write(present_manhole_samples, sheeturls$wwtp_only_data, str_c(title_name, ' manhole samples')) # save results to a google sheet, ask for overwrite
+    check_ok_and_write(present_manhole_samples, sheeturls$HHD_data, str_c(title_name, ' manhole samples')) # save results to a google sheet, ask for overwrite
     write_csv(present_manhole_samples, path = str_c('excel files/Weekly data to HHD/', title_name, ' manhole samples.csv'), na = '') # output CSV file
   }
   
