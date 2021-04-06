@@ -33,7 +33,13 @@ get_template_for <- function(bait, sheet_url = sheeturls$templates)
   # read the template corresponding to the file name
   plate_template_raw <- read_sheet(sheet_url, sheet = 'Plate layouts', range = range_to_get)
   
+  # checking if row and column names are unique, else throw an error 
+  plate_template_raw %>% {if((.[,'<>']) %>% anyDuplicated | 
+                             colnames(.) %>% anyDuplicated) 
+    stop(str_c(bait, ' : plate layout\'s row letters and column numbers are not unique. Please correct it and rerun'))}
+  
   # Convert the 96 well into a single column, alongside the Well position
   plate_template <- read_plate_to_column(plate_template_raw, 'Sample_name') # convert plate template (Sample_names) into a single vector, columnwise
   
-}
+  }
+  
