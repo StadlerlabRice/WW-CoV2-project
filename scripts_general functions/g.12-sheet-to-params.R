@@ -40,5 +40,5 @@ tbl.colm_to_assigmnent <- function(.singl_colm, .colm_name = NULL)
 map2(user_param_table, 
      colnames(user_param_table),
      ~ tbl.colm_to_assigmnent(.x, .y)
-     # ~ eval_tidy(call2(`<-`, .y, .x[!is.na(.x)]))
+     # ~ eval_tidy(call2(`<-`, .y, .x[!sapply(.x, function(x) is.null(x)||is.na(x))], envir = global_env()))
      )
