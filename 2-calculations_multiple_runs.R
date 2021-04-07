@@ -48,7 +48,7 @@ quant_data <- bind_rows(list_quant_data) %>%
 biobot_lookup <- map_df(c('All Bayou', 'All manhole', 'All wastewater'), 
                         ~ read_sheet(sheeturls$biobot_id , sheet = .x, range = 'A:C', col_types = 'ccc') %>% 
                           rename('WWTP' = contains('SYMBOL', ignore.case = T), 
-                                 'FACILITY NAME' = matches('FACILITY NAME', ignore.case = T),
+                                 'Facility' = matches('FACILITY NAME', ignore.case = T),
                                  'Type' = 'Facility Type') %>% 
                           mutate(WWTP = as.character(WWTP) %>% str_remove(' '), # convert to char and removed spaces
                                  'assay_variable' = WWTP))
@@ -70,15 +70,15 @@ manhole_symbols_regex <- biobot_lookup %>%
 
 # Get volumes data from google sheet : "Sample registry"
 volumes.data_registry <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrated samples') %>% 
-  rename('WW_vol' = `Total WW vol measured (ml)`, 
+  rename('Received_WW_vol' = `Total WW vol measured (ml)`, 
          'Label_tube' = `Label on tube`, 
-         vol_extracted = `WW volume extracted (ml)`,
+         Filtered_WW_vol = `WW volume filtered (ml)`,
          Vaccine_ID = `Stock ID of Spike`,
          'Biobot_id' = `Biobot/other ID`,
          WW_weight = `Total WW weight measured (kg)`) %>% 
-  mutate('WW_vol' = coalesce(WW_vol, `Total WW volume calculated (ml)`) ) %>% 
+  mutate('Received_WW_vol' = coalesce(Received_WW_vol, `Total WW volume received (ml)`) ) %>% 
   
-  select(WW_vol, Label_tube, vol_extracted, Vaccine_ID, `Biobot_id`, WW_weight) %>% # select only the useful columns
+  select(Received_WW_vol, Label_tube, Filtered_WW_vol, Vaccine_ID, `Biobot_id`, WW_weight) %>% # select only the useful columns
   distinct() %>% # for removing repeated data in early stuff, before 608 (interferes with the merging of volumes for same bottles)
   mutate_at('Label_tube', ~str_remove_all(., " ")) %>% 
   mutate_at('Biobot_id', str_remove,  ' ') %>% 
@@ -86,14 +86,14 @@ volumes.data_registry <- read_sheet(sheeturls$sample_registry , sheet = 'Concent
   # Extrapolating volumes for same bottle - If weights are written out, we assume different bottles with different volumes
   mutate(., unique_labels = str_remove_all(Label_tube,'^m|[1-9]$'))  %>%  # this will be changed to the 'Bottle' column soon
   group_by(unique_labels) %>% 
-  mutate(across(WW_vol, ~ifelse(is.na(WW_weight), max(., na.rm = T), .))) %>% 
+  mutate(across(Received_WW_vol, ~ifelse(is.na(WW_weight), max(., na.rm = T), .))) %>% 
   ungroup() %>% 
   select(-unique_labels, -WW_weight)
 
 
 # Vaccine spike concentrations
 spike_list <- read_sheet(sheeturls$data_dump, sheet = 'Vaccine_summary', range = 'B6:K', col_types = 'Dcccnnnccn') %>% 
-  rename(spike_virus_conc = matches('Stock conc.'), Sample_name = Week)  
+  rename(spiking_virus_vaccine_stock_conc = matches('Stock conc.'), Sample_name = Week)  
 
 
 # Attach metadata ----------------------------------------------------------------------
@@ -107,31 +107,42 @@ meta.attached_quant_data <- quant_data %>%
   mutate_at('Biobot_id', ~if_else(is.na(.x), str_c(Sample_name, assay_variable), .x)) %>% # stand-by name for missing cols
   
   # join vaccine quantification
-  left_join(spike_list %>% select(Vaccine_ID, Target, spike_virus_conc),  by = c('Vaccine_ID', 'Target') ) %>% 
+  left_join(spike_list %>% select(Vaccine_ID, Target, spiking_virus_vaccine_stock_conc),  by = c('Vaccine_ID', 'Target') ) %>% 
   
   left_join(biobot_lookup) %>%  # join biobot_IDs
   
 
-  mutate_at(c('WWTP', 'FACILITY NAME'), ~if_else(str_detect(., '^X')|is.na(.), assay_variable, .))
+  mutate_at(c('WWTP', 'FACILITY NAME'), ~if_else(str_detect(., '^X')|is.na(.), assay_variable, .)) %>% 
 
+  rename(Target_Name = Target) # rename to match the final output desired by HHD
 
 
 # Calculations ----
 
-# Copies/ul RNA to copies/l WW. Spike in concentration, % recovery are calculated
+# Copies_per_uL_RNA to Copies_Per_Liter_WW. Spike in concentration, % recovery are calculated
 # join the results with the WWTP identifiers and names
 processed_quant_data <- meta.attached_quant_data %>% 
   
-  # Calculations for spiked in and recovered copies of the virus
-  mutate(`Actual spike-in` = spike_virus_conc * spike_virus_volume / (WW_vol * 1e-3), 
-         Recovered = `Copy #` *(1e6/300) * (elution_volume/vol_extracted), # Chemagic concentration factor = 300 
-         Detection_Limit = as.numeric(LimitOfDet * (1e6/300) * (elution_volume/vol_extracted) ), # Chemagic concentration factor = 300 
-         `Percentage_recovery_BCoV` = 100 * Recovered/`Actual spike-in`) %>% 
-  # (source for chemagic conc. factor: concentration factor calc : https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=2134801800)
+  # Calculations for Copies_Per_Liter_WW from Copies_per_uL_RNA
+  mutate(Copies_Per_Liter_WW = Copies_per_uL_RNA *(1e6/300) * (elution_volume/Filtered_WW_vol), # Chemagic concentration factor = 300 
+         Detection_Limit = as.numeric(LimitOfDet * (1e6/300) * (elution_volume/Filtered_WW_vol) )) %>%  # Chemagic concentration factor = 300 
+         
+  # (source for chemagic conc. factor calculations : Google sheet below
+  # "concentration factor calc" : https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=2134801800)
   
-  mutate_cond(str_detect(Sample_name, 'Vaccine'), `Actual spike-in` = spike_virus_conc * spike_virus_volume / (.050 * 1e-3), Recovered = `Copy #` * 1e6 * 50/20, `Percentage_recovery_BCoV` = 100 * Recovered/`Actual spike-in`) %>% 
+  # Calculations for Surrogate_virus_input_per.L.WW (input) and Percentage_recovery (output/input * 100)
+  # Remove the columns not relevant targets that are not surrogate viruses (currently only BCoV being used)
+  mutate_cond(!str_detect(Target_Name, 'BCoV|BRSV') |
+                str_detect(Sample_name, 'Vaccine'),  # And vaccines
+              Surrogate_virus_input_per.L.WW = spiking_virus_vaccine_stock_conc * spike_virus_volume / (Received_WW_vol * 1e-3), 
+              Percentage_recovery_BCoV = 100 * Copies_Per_Liter_WW/Surrogate_virus_input_per.L.WW) %>% 
+  
+  # And for vaccine (ie. Vaccine stock quants), remove Copies_Per_Liter_WW
+  mutate_cond(str_detect(Sample_name, 'Vaccine'),
+              Copies_Per_Liter_WW = NA) %>%  # not relevant for vaccine stock
+              
     
-  select(-spike_virus_conc) %>% 
+  select(-spiking_virus_vaccine_stock_conc) %>% 
   
   # arranging data by facility name alphabetical
   arrange(`FACILITY NAME`) %>% 
@@ -154,7 +165,7 @@ processed_quant_data$Vaccine_ID %>%
     stop("Duplicate vaccine IDs found in the data dump, 
          please check the table: *duplicate_vaccine_values* for more information")
   }
-    else if(nrow(.) > 0 &&  .$spike_virus_conc == 0){
+    else if(nrow(.) > 0 &&  .$spiking_virus_vaccine_stock_conc == 0){
       zero_vaccine_values <- . 
       view(zero_vaccine_values)
       stop("Zeros found in vaccine quants in the data dump, please fix") 
@@ -166,11 +177,7 @@ processed_quant_data$Vaccine_ID %>%
 
 presentable_data <- processed_quant_data %>% 
   
-  # renaming variables
-  rename('Facility' = `FACILITY NAME`, 'Received_WW_vol' = WW_vol, Ct = CT, 'Target Name' = Target) %>%
-  rename('Copies/ul RNA' = `Copy #`, 'Copies/l WW' = Recovered, 'Spiked-in Copies/l WW' = `Actual spike-in`) %>%
-  rename('Volume Filtered' = vol_extracted,
-         PositiveDroplets = Positives) %>% 
+  rename(Ct = CT) %>% # format that HHD/Kathy needs
   
   # Adding new variables, modifying existing variables
   mutate(Date = Sample_name %>% 
@@ -180,34 +187,31 @@ presentable_data <- processed_quant_data %>%
          Sample_Type = 'Composite', Comments = NA) %>% 
   mutate(across('Sample_name', as.character) ) %>% # covert sample name into char
   mutate_at('Facility', ~if_else(. == assay_variable, str_c(Sample_name, '/', assay_variable), .)) %>%
-  mutate(Tube_ID = if_else(biological_replicates == ''|is.na(biological_replicates), str_c(Sample_name, ' ', assay_variable), str_c(Sample_name, ' ', assay_variable, '', biological_replicates)) ,
-         WWTP_ID = if_else(biological_replicates == ''|is.na(biological_replicates), str_c(Sample_name, '.', WWTP) , str_c(Sample_name, '.', WWTP, '-', biological_replicates)),
-         Sample_ID = WWTP_ID,
-         'Limit of detection (copies/ul RNA)' = if_else(str_detect(`Target Name`, 'N1|N2'), 0.3, 0.5 )) %>% 
+  mutate(Sample_ID = if_else(biological_replicates == ''|is.na(biological_replicates), 
+                             str_c(Sample_name, '.', WWTP) , 
+                             str_c(Sample_name, '.', WWTP, '-', biological_replicates))) %>% 
   
   # Arrange rows by WWTP facility 
   arrange(Facility, biological_replicates) %>%
-  # unite('Facility', c(Facility, biological_replicates), sep = "-", na.rm = T) %>%
-  mutate_cond(str_detect(`Target Name`, '^N'), `Percentage_recovery_BCoV` = NA, `Spiked-in Copies/l WW` = NA) %>%
   
   # Selecting column order
-  select(Facility, WWTP, Date, Lab, `Target Name`, 
+  select(Facility, WWTP, Date, Lab, Target_Name, 
          `Received_WW_vol`, `Volume Filtered`, 
-         `Copies/ul RNA`, `Copies/l WW`, 
+         Copies_per_uL_RNA, Copies_Per_Liter_WW, 
          Ct, AcceptedDroplets, PositiveDroplets, Sample_ID, 
          Detection_Limit, Positivity, 
-         Sample_Type, `Spiked-in Copies/l WW`, `Percentage_recovery_BCoV`, 
-         WWTP_ID, Tube_ID, Comments, any_of('variant_status'), 'Well Position') %>%
+         Sample_Type, Surrogate_virus_input_per.L.WW, `Percentage_recovery_BCoV`, 
+         Comments, any_of('variant_status'), 'Well Position') %>%
   
-  mutate_at('Target Name', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2'))) %>% 
-  mutate_at('Target Name', ~str_remove(., '/Baylor')) %>% 
+  mutate_at('Target_Name', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2'))) %>% 
+  mutate_at('Target_Name', ~str_remove(., '/Baylor')) %>% 
 
   
   # B117 special plug
   {if(str_detect(read_these_sheets, 'B117') %>% any) {
     calculate_B117_percentage_variant(.) %>% # calculating the percentage of variant vs total S copies 
     select(-any_of('variant_status')) %>% 
-    relocate(percentage_variant, .after = 'Target Name') }
+    relocate(percentage_variant, .after = 'Target_Name') }
     else .
   } %>% 
   
@@ -257,7 +261,7 @@ presentable_data %<>% mutate(across(where(is.numeric),  ~ if_else(.x == -Inf, Na
 
 
 # Output data - including controls
-check_ok_and_write(presentable_data %>% select(-Sample_ID), sheeturls$complete_data, title_name) # save results to a google sheet, ask for overwrite
+check_ok_and_write(presentable_data, sheeturls$complete_data, title_name) # save results to a google sheet, ask for overwrite
 
 # HHD special output ----
 
@@ -274,11 +278,11 @@ if(HHD_data_output)
       {.} else {
       
       # Otherwise proceed below  
-      rename(., 'Copies_per_uL' = `Copies/ul RNA`,
-             'Copies_Per_Liter_WW' = `Copies/l WW`,
-             'Recovery_Rate' = `Percentage_recovery_BCoV`,
-             Target_Name = `Target Name`) %>%
-        select(-contains('Vol'), -`Spiked-in Copies/l WW`, -Tube_ID, -WWTP_ID, -contains('Droplet'), -'Well Position') 
+        # rename to format that HHD/Kathy needs
+      rename(., 'Copies_per_uL' = Copies_per_uL_RNA, 
+             'Recovery_Rate' = `Percentage_recovery_BCoV`) %>%
+          
+          select(-contains('Vol'), -Surrogate_virus_input_per.L.WW, -contains('Droplet'), -'Well Position') 
       }
     }
   
@@ -300,47 +304,64 @@ if(HHD_data_output)
   
   # Write data if not empty
   if(present_manhole_samples %>% plyr::empty() %>% !.){
-    check_ok_and_write(present_manhole_samples, sheeturls$HHD_data, str_c(title_name, ' manhole samples')) # save results to a google sheet, ask for overwrite
-    write_csv(present_manhole_samples, path = str_c('excel files/Weekly data to HHD/', title_name, ' manhole samples.csv'), na = '') # output CSV file
+    check_ok_and_write(present_manhole_samples, sheeturls$HHD_data, str_c(title_name, ' -manhole')) # save results to a google sheet, ask for overwrite
+    write_csv(present_manhole_samples, path = str_c('excel files/Weekly data to HHD/', title_name, ' -manhole.csv'), na = '') # output CSV file
   }
   
   
 }
 
+# Run log ----
 
+# This is an approximate method to figure out if PK did the run or Camille
+script_user_name <- gargle::gargle_oauth_sitrep()$email[1] %>% # select the first email from the list of authorized emails
+  str_match('(.*)@.*') %>% .[,2]  # extract the username before the @
+
+run_log <- tibble('Item' = c('', '',   # insert 2 empty lines
+                             '## RUN LOG',
+                             'Script user',
+                             'Run at'),
+                             
+                  'Log' = c('', '', # insert 2 empty lines
+                            '',
+                            script_user_name,
+                            Sys.time()) )
+
+
+sheet_append(ss = sheeturls$user_inputs, data = run_log, title_name)
 
 # Summary and long_format ------------------------------------
-# For ease of plotting data with mean and standard deviations
-
-minimal_label_columns <- c('Target', 'Sample_name', 'WWTP')
-
-# Extract minimal columns from processed data (good for running averages and std deviations for plotting)
-processed_minimal = list( raw.dat = processed_quant_data %>% 
-                            select(all_of(minimal_label_columns), where(is.numeric), -matches('vol')) %>% 
-                            rename(Percentage.recovery.BCoV = 'Percentage_recovery_BCoV')) # removing underscores to enable adding mean, sd prefixes in summarize
-# Group by all the text columns and calculate mean and standard deviation for biological replicates
-processed_minimal$summ.dat <- processed_minimal$raw.dat %>% 
-  group_by_at(all_of(minimal_label_columns)) %>% 
-  summarize_all(.funs = lst(mean, sd), na.rm = T)
-
-# Convert the above minimal data into long format (convenient for plotting multiple data types on the same plot)
-long_processed_minimal <- processed_minimal %>% map(pivot_longer, cols = where(is.numeric),
-                                                    names_to = 'Measurement', values_to = 'value')                                                   
-long_processed_minimal$summ.dat %<>% separate(Measurement, into = c('Measurement','val'),"_") %>% 
-  pivot_wider(names_from = val, values_from = value) # Seperate mean and variance and group by variable of measurement
-
-# Adding back the underscore in columns (ex: Percentage_recovery_BCoV)
-processed_minimal %<>% map( ~ rename(.x, Percentage_recovery_BCoV = contains('Percentage.recovery.BCoV')))
-long_processed_minimal %<>% map(
-  ~ mutate(.x, across (Measurement,
-                       ~ str_replace(.x, 'Percentage.recovery.BCoV', 'Percentage_recovery_BCoV')
-  )
-  )
-)
+# # For ease of plotting data with mean and standard deviations
+# 
+# minimal_label_columns <- c('Target', 'Sample_name', 'WWTP')
+# 
+# # Extract minimal columns from processed data (good for running averages and std deviations for plotting)
+# processed_minimal = list( raw.dat = processed_quant_data %>% 
+#                             select(all_of(minimal_label_columns), where(is.numeric), -matches('vol')) %>% 
+#                             rename(Percentage.recovery.BCoV = 'Percentage_recovery_BCoV')) # removing underscores to enable adding mean, sd prefixes in summarize
+# # Group by all the text columns and calculate mean and standard deviation for biological replicates
+# processed_minimal$summ.dat <- processed_minimal$raw.dat %>% 
+#   group_by_at(all_of(minimal_label_columns)) %>% 
+#   summarize_all(.funs = lst(mean, sd), na.rm = T)
+# 
+# # Convert the above minimal data into long format (convenient for plotting multiple data types on the same plot)
+# long_processed_minimal <- processed_minimal %>% map(pivot_longer, cols = where(is.numeric),
+#                                                     names_to = 'Measurement', values_to = 'value')                                                   
+# long_processed_minimal$summ.dat %<>% separate(Measurement, into = c('Measurement','val'),"_") %>% 
+#   pivot_wider(names_from = val, values_from = value) # Seperate mean and variance and group by variable of measurement
+# 
+# # Adding back the underscore in columns (ex: Percentage_recovery_BCoV)
+# processed_minimal %<>% map( ~ rename(.x, Percentage_recovery_BCoV = contains('Percentage.recovery.BCoV')))
+# long_processed_minimal %<>% map(
+#   ~ mutate(.x, across (Measurement,
+#                        ~ str_replace(.x, 'Percentage.recovery.BCoV', 'Percentage_recovery_BCoV')
+#   )
+#   )
+# )
 
 
 # Plotting into html -----------------------------------------------------------------------
 
 
 # calling r markdown file
-rmarkdown::render('2.1-make_html_plots.rmd', output_file = str_c('./qPCR analysis/', title_name, '.html'))
+# rmarkdown::render('2.1-make_html_plots.rmd', output_file = str_c('./qPCR analysis/', title_name, '.html'))

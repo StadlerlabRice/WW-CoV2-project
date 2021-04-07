@@ -31,7 +31,7 @@ source('./0-general_functions_main.R') # Source the general_functions file
 process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilution_wells = 'none')
 { # Baylor wells : choose 1) none, 2) '.*' for all, 3) '[A-H]([1-9]$|10)' etc. for specific wells 
   
-  template_volume_ddpcr <- tibble(Target = c('N1_multiplex', 'N2_multiplex', 'BCoV', 'pMMoV', 'N501Y', 'Del69-70'),
+  template_volume_ddpcr <- tibble(Target = c('N1', 'N2', 'BCoV', 'pMMoV', 'N501Y', 'Del69-70'),
                                   template_vol = c(10, 10, 4, 4, 9, 9) /22 * 20) # ul template volume per well of the 20 ul ddPCR reaction for each target
   
   RNA_dilution_factor_BCoV <- 50  # RNA dilution factor for diluted BCoV samples
@@ -92,18 +92,18 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
     mutate_at('assay_variable', as.character) %>% 
     mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
     
-    mutate(raw_copy_number_per_ul_rna = `Copy #`) %>%  # taking a backup of the copy number column before doing calculations for dilution factors
-    mutate(across(`Copy #`, 
+    mutate(backup_copies_per.ul.rna_if.undiluted = Copies_per_uL_RNA) %>%  # taking a backup of the copy number column before doing calculations for dilution factors
+    mutate(across(Copies_per_uL_RNA, 
                   ~ if_else(str_detect(Target, 'BCoV') & !str_detect(Sample_name, 'NTC'), 
                             .x * RNA_dilution_factor_BCoV, 
                             .x))
     ) %>% # Correcting for template dilution in case of BCoV ddPCRs (excluding NTC wells)
     mutate_cond(str_detect(Sample_name, 'Vaccine') & str_detect(Target, 'BCoV'), 
-                across(`Copy #`, ~ .x * Vaccine_additional_RNA_dilution_factor_BCoV)) %>%  # Correcting for BCoV Vaccine with a higher dilution
+                across(Copies_per_uL_RNA, ~ .x * Vaccine_additional_RNA_dilution_factor_BCoV)) %>%  # Correcting for BCoV Vaccine with a higher dilution
     
     # Ad-hoc corrections for errors in making plate - sample dilutions etc.
     mutate_cond(str_detect(`Well Position`, adhoc_dilution_wells), # Regex of wells to manipulate
-                across(`Copy #`, ~ . / 50) # dilution corrections or other changes
+                across(Copies_per_uL_RNA, ~ . / 50) # dilution corrections or other changes
     ) %>% 
     
     # Adding tag to target for baylor smaples
@@ -132,15 +132,15 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
            Vaccine_ID = assay_variable, 
            .before = 1) %>% 
     mutate(Run_ID = str_extract(flnm, 'dd.WW[:digit:]*'), CT = NA) %>% 
-    select(`Prepared on`,	Week,	Vaccine_ID,	`Well Position`,	CT,	Target,	Sample_name,	assay_variable,	`Tube ID`,	biological_replicates,	`Copy #`,	Run_ID)
+    select(`Prepared on`,	Week,	Vaccine_ID,	`Well Position`,	CT,	Target,	Sample_name,	assay_variable,	`Tube ID`,	biological_replicates,	Copies_per_uL_RNA,	Run_ID)
   
   # Add to existing sheet
   if(vaccine_data %>% plyr::empty() %>% {!.}) sheet_append(sheeturls$data_dump, vaccine_data, 'Vaccines')
   
   # Mean of vaccine data
   vaccine_data.mean <- vaccine_data %>% ungroup() %>% 
-    select(1:3, Target, `Copy #`, Run_ID) %>% group_by(across(-`Copy #`)) %>% 
-    summarise(across(`Copy #`, list(Mean_qPCR = mean, SD_qPCR = sd), na.rm = T), .groups = 'keep') %>% 
+    select(1:3, Target, Copies_per_uL_RNA, Run_ID) %>% group_by(across(-Copies_per_uL_RNA)) %>% 
+    summarise(across(Copies_per_uL_RNA, list(Mean_qPCR = mean, SD_qPCR = sd), na.rm = T), .groups = 'keep') %>% 
     mutate('[Stock conc.] copies/ul' = `Copy #_Mean_qPCR` * if_else(str_detect(Vaccine_ID, 'S[:digit:]+'), 50/20, 1), # adding a RNA extraction conc. factor only if not boiled (Sbxx naming)
            'Estimated factor' = '',
            Comments = '',
@@ -178,8 +178,14 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
 
 # check the filename and call the appropriate ddPCR, standard curve or qpcr processing functions
 process_all_pcr <- function(flname, baylor_wells = 'none')
-{ # use only when there are no special features on plate : Like Baylor wells, or overriding standard curves
+{ # use only when qPCR data is encountered 
+  # and there are no special features on plate : such as overriding standard curves
 
+  # source qPCR related functions
+  str_c('./scripts_general functions/', 
+        c("g.4-qPCR_specific_funs.R", 'g.14-qPCR_std_curve_processing_fns.R') ) %>% 
+    source()
+  
   # if it is a ddPCR file (dd.WWxx), call the ddPCR processor
   if(str_detect(flname, 'dd.WW.*')) process_ddpcr(flname, baylor_wells = baylor_wells)
   
@@ -191,33 +197,3 @@ process_all_pcr <- function(flname, baylor_wells = 'none')
 }
 
 
-# Other stuff : temporarily housed here. WIll be moved to general functions
-# Work in progress : need to test
-read_gdrive_csv <- function(read_these_sheets)
-{
-  library(googledrive)
-  
-  # read_these_sheets <- c( 'dd.WW123_0201_Schools+WWTP_B117_Rerun', 'dd.WW138_0301_SCHOOLS_N1N2')
-  
-  run_ids_to_read <- read_these_sheets %>% str_extract('dd.WW[:digit:]*') %>% paste0(collapse = '|')
-  csv_to_read <- read_these_sheets %>% str_c('.csv')
-  
-  all_csv_files <- drive_get(id = 'https://drive.google.com/drive/u/0/folders/1aIek7-aqHe2l7EnUfZZUtox44bj3SZVQ') %>% 
-    drive_ls()
-  
-  csv_subset <- all_csv_files %>% 
-    filter(str_detect(name, run_ids_to_read) &  # detect all the run ids
-             str_detect(name, '.csv') &  # that are also csv files
-             !str_detect(name, 'variant')) # that are not variants (in the case of B117)
-  
-  # download csvs temporarily
-  map(csv_subset, drive_download)
-  
-  # read csvs
-  lst_output <- map(csv_to_read, read_csv)
-  
-  # clean up
-  map(csv_to_read, unlink) # deletes all the csvs downloaded from googledrive
-  
-  return(lst_output) # return a list of all the csv files read in
-}
