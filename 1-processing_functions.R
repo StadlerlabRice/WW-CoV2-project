@@ -7,10 +7,11 @@
 
 
 # Run-command ----
-# How to use this script - Copy and run the command below with the file names in variable: read_these_sheets (same as calculations_multiple_runs.R)
-  # Exceptions: When samples from Baylor are present on any plate, you need to process each plate individually with a regular expression (REGEX)
-  # indicating wells where Baylor data is present
 # map(read_these_sheets, process_all_pcr)
+
+# How to use this script - Copy and run the command below with the file names in variable: read_these_sheets (same as calculations_multiple_runs.R)
+  # Exceptions: When samples from Baylor are present on any plate, you need to process each plate individually 
+  # with a regular expression (REGEX) indicating wells where Baylor data is present
   # For baylor wells, choose : none, '.*' for all, '[A-H][1-9]$|10' for columns 1 - 10; '.*(?!3).$' for everything except 3rd column etc.
 
 
@@ -63,31 +64,20 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   # Load desired qPCR result sheet and columns
   bring_results <- fl %>% 
     select(-Sample) %>% # Remove sample, it will be loaded from plate template sheet
-    rename(CopiesPer20uLWell = matches('Copies/20.*LWell')) %>% # rename the column name - if exported from Quantasoft analysis Pro
-    rename(Concentration = matches('Conc\\(copies/.*L)')) %>%  # rename the column name - if exported from Quantasoft analysis Pro
-    mutate(across(any_of('Concentration'), as.numeric)) %>%  # Remove the NO CALLS and make it numeric column  
     
+    raw_ddpcr_renamer %>% # rename columns and remove NO CALLs to account for Quantasoft analysis pro export  
+  
     mutate_at('Well', ~ str_replace(., '(?<=[:alpha:])0(?=[:digit:])', '') ) %>% rename('Well Position' = Well) %>% 
     right_join(plate_template, by = 'Well Position') %>%  # Incorporate samples names from the google sheet by matching well position
-    mutate_at('Target', ~str_replace_all(., c('N1' = 'N1_multiplex' , 'N2' = 'N2_multiplex'))) %>% 
-    filter(!is.na(Target)) %>% 
+    
+    # mutate_at('Target', ~str_replace_all(., c('N1' = 'N1_multiplex' , 'N2' = 'N2_multiplex'))) %>%  # old -- for compatibility with qPCR
+    # filter(!is.na(Target)) %>% # I don't recall why this is here
     
     # Adding different template volumes for each target for division
     left_join(template_volume_ddpcr) %>% # join array of template volume - different for N1,N2 and BCOV2
-    mutate('Copy #' = CopiesPer20uLWell/ template_vol) %>%  
+    mutate('Copies_per_uL_RNA' = CopiesPer20uLWell/ template_vol) %>%  
     
-    select(`Sample_name`, `Copy #`, Target, everything()) %>% 
-    
-    
-    # Changing rest of the problematic columns  - if exported from Quantasoft analysis Pro
-    rename(AcceptedDroplets = any_of('Accepted Droplets'),
-           Threshold = any_of('Threshold1'),
-           MeanAmplitudeofPositives = any_of('MeanAmplitudeOfPositives'),
-           MeanAmplitudeofNegatives = any_of('MeanAmplitudeOfNegatives')) %>%  # rename the column name - if exported from Quantasoft analysis Pro
-    mutate(across(matches('Total|Poisson|Mean|Ch|Ratio|Abundance|Linkage|CNV|Copies|Det'), as.numeric)) %>%  # convert ambiguous columns into numeric
-    mutate(across(where(is.list), as.character)) # convert any stray lists into character
-  
-  
+    select(`Sample_name`, Copies_per_uL_RNA, Target, everything())
   
   
   # polishing qPCR data - Make Biobot ID column clean

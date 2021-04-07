@@ -1,6 +1,32 @@
-# Metaanalysis reading functions
-# Specific reading functions for meta-analysis across runs, across weeks etc.
+# Backwards compatibility function
+# Useful for Metaanalysis - where multiple sheets will be read which might have different column names (due to changes in code)
+# meta-analysis = > reading sheets across runs, across weeks etc.
 # example : Looking at NTCs across weeks / Looking for trends in specific or all sites across weeks
+
+# Raw ddPCR read ----
+
+raw_ddpcr_renamer <- function(.df)
+{
+  .df %>% 
+    
+    rename(PositiveDroplets = Positives) %>%  # rename to be more meaningful
+    
+    # rename the column names - if exported from Quantasoft analysis Pro
+    rename(CopiesPer20uLWell = matches('Copies/20.*LWell'),
+           Concentration = matches('Conc\\(copies/.*L)'),
+           AcceptedDroplets = any_of('Accepted Droplets'),
+           Threshold = any_of('Threshold1'),
+           MeanAmplitudeofPositives = any_of('MeanAmplitudeOfPositives'),  # 'Of' to 'of'
+           MeanAmplitudeofNegatives = any_of('MeanAmplitudeOfNegatives')) %>%  # rename the column name - if exported from Quantasoft analysis Pro
+    
+    
+    mutate(across(any_of('Concentration'), as.numeric)) %>%  # Remove the NO CALLS and make it numeric column  
+    
+    mutate(across(matches('Total|Poisson|Mean|Ch|Ratio|Abundance|Linkage|CNV|Copies|Det'), as.numeric)) %>%  # convert ambiguous columns into numeric
+    mutate(across(where(is.list), as.character)) # convert any stray lists into character
+  
+  
+}
 
 
 # read from data dump ----

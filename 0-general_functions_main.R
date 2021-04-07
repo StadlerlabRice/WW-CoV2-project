@@ -54,15 +54,20 @@ dumfun <- function(a, var_a = a2, var_b = a3, c_var = 'a1', d_var = NULL)
 list_of_general_functions <- c("g.1-reading_files_funs.R",
                                "g.2-tibble_columns_funs.R",
                                "g.3-obsolete_arcane_funs.R",
-                               "g.4-qPCR_specific_funs.R",
+                              
                                "g.5-mathematical_fitting_funs.R",
                                "g.6-formatting_plot_funs.R",
                                "g.7-COVID specific_writing_funs.R",
                                "g.8-plot_mean_sd_jitter.R",
-                               "g.9-plot_scatter.R")
+                               "g.9-plot_scatter.R",
+                               'g.10-sheet_columns_renaming_funs.R',
+                               'g.11-data_QC_funs.R')
 
-# handy command to print a tibble in this format
-# cat(paste(shQuote('Tibble/vector here', type="cmd"), collapse=",\n ")) : Source: https://stackoverflow.com/a/6347520/9049673
+
+# handy command to print a tibble in this format (read all the file names into a tibble)
+# cat(paste(shQuote('Tibble/vector here', type="cmd"), collapse=",\n ")) 
+# : Source: https://stackoverflow.com/a/6347520/9049673
+
 
 # Source all the functions listed above
 map(str_c('./scripts_general functions/', list_of_general_functions),

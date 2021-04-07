@@ -41,10 +41,6 @@ quant_data <- bind_rows(list_quant_data) %>%
   unite('Label_tube', c('Sample_name', 'Tube ID'), sep = "", remove = F) %>%  # make a unique column for matching volumes 
   mutate(across(Label_tube, ~str_remove(., ' ') )) # remove spaces from the Sample_name (Started with 1123 Pavan with 1123 69S names)
 
-  # temporary for chemagic during transition
-  # mutate(extraction_method = if_else(str_detect(Sample_name, '^C'), 'Chemagic', 'Maxwell')) %>% # note if Chemagic with a C
-  # mutate(across(Label_tube, ~ str_remove(., '^C'))) # remove the prefix C to make samples match to the sample registry
-
 
 # Load metadata ----------------------------------------------------------------------
 
