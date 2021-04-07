@@ -3,10 +3,41 @@
 # These parameters are things that change every week
 # Ex: file name, title of the complete data etc.
 
+
+# Check for ## RUN LOG ----
+
+param_colm1 <- read_sheet(sheeturls$user_inputs, range = 'A1:A', col_names = FALSE) # read the first column of the user inputs (first visible sheet)
+check_for_run_log <- param_colm1 %>% 
+  pull(1) %>% 
+  str_detect('## RUN LOG') # check which cell in the first column matches the run log start key
+
+first_visible_sheetname <- sheet_properties(sheeturls$user_inputs) %>%  # get all sheets along with properties (within the user inputs googlsheet)
+  filter(visible == TRUE) %>%  # retain only visible sheets
+  pull(name) %>%  # Get the name of the 
+  .[1] # first sheet 
+
+
+# Ask for re-run permission ----
+
+range_to_read <- if(any(check_for_run_log)) {
+   str_c('A1:', which(check_for_run_log) - 3) # if RUN LOG key appears, read till 3 rows before it
+
+  rerun_sheet_key <- menu(c('Yes', 'No'), 
+                          title = paste("The sheet with the name", 
+                                        first_visible_sheetname, 
+                                        "has already been read and has a ## RUN LOG. Do you want to re-run and write another LOG?", 
+                                        sep=" "))
+  if (rerun_sheet_key == 2){
+    # stop("Cancel selected, script aborted.")
+    print(str_c("Cancen selected. script aborted without running : ", first_visible_sheetname))
+  }
+}
+
+
 # Input sheet ----
 
-user_param_table <- read_sheet(sheeturls$user_inputs) %>% 
-  .[-1,-1]  # Remove the first row (second row in the sheet) : description and first column : row headers
+user_param_table <- read_sheet(sheeturls$user_inputs, range = range_to_read) %>% # read user inputs (first visible sheet)
+  .[-1,-1]  # Remove the first row (second row in the sheet) which is description and first column which is row headers
   
 
 # Parse data ----
@@ -34,9 +65,9 @@ tbl.colm_to_assigmnent <- function(.singl_colm, .colm_name = NULL)
 }
 
 
-# Make variables ----
+# Make variables from sheet ----
 
-# Run a vectorized function to turn tibble column name -- contents into variable name -- values
+# Run a vectorized function to turn tibble column name--contents into variable name--values
 map2(user_param_table, 
      colnames(user_param_table),
      ~ tbl.colm_to_assigmnent(.x, .y)
