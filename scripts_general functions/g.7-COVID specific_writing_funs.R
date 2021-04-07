@@ -103,23 +103,23 @@ append_LOD_info <- function(fl, targ) {
   
   
   # Pull any rows with 3 droplets a.k.a the LOQ
-  threes <- fl %>% filter(Positives == 3)
+  threes <- fl %>% filter(PositiveDroplets == 3)
   # If no rows has 3 droplets then the concentration is hard coded to 6
   # Otherwise, take the mean of 3 droplet concentrations
   if(dim(threes)[1] == 0) {
     three_copies <- 0.7
   } else {
-    three_copies <- mean(threes$`Copy #`)
+    three_copies <- mean(threes$Copies_per_uL_RNA)
   }
   
   # Calculate the LOB
-  limit_blank <- mean(negative_controls$`Copy #`, na.rm = TRUE) + (1.6 * sd(negative_controls$`Copy #`, na.rm = TRUE))
+  limit_blank <- mean(negative_controls$Copies_per_uL_RNA, na.rm = TRUE) + (1.6 * sd(negative_controls$Copies_per_uL_RNA, na.rm = TRUE))
   # Calculate the LOD
   LOD <- three_copies + limit_blank
   
   # Put everything into the table
-  new_table <- fl %>% mutate(Positivity = case_when(`Copy #` < LOD ~ "Negative",
-                                                    `Copy #` >= LOD ~ "Positive",)) %>%
+  new_table <- fl %>% mutate(Positivity = case_when(Copies_per_uL_RNA < LOD ~ "Negative",
+                                                    Copies_per_uL_RNA >= LOD ~ "Positive",)) %>%
     mutate(LimitOfDet = LOD)
   
   return(new_table)
@@ -132,7 +132,7 @@ append_LOD_info <- function(fl, targ) {
 plot_biological_replicates <- function(results_abs, title_text = title_name, xlabel = plot_assay_variable)
 { # Convenient handle for repetitive plotting 'Copy #' vs biological replicate
   
-  plt <- results_abs %>% ggplot(aes(x = `Tube ID`, y = `Copy #`, color = Target)) + ylab('Copies/ul RNA extract') +    # Specify the plotting variables 
+  plt <- results_abs %>% ggplot(aes(x = `Tube ID`, y = Copies_per_uL_RNA, color = Target)) + ylab('Copies/ul RNA extract') +    # Specify the plotting variables 
     geom_point(size = 2) + facet_grid(~`Sample_name`, scales = 'free_x', space = 'free_x') + # plot points and facetting
     ggtitle(title_text) + xlab(xlabel)
   plt.formatted <- plt %>% format_classic(.) %>% format_logscale_y() # formatting plot, axes labels, title and logcale plotting
