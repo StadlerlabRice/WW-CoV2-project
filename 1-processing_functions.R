@@ -34,13 +34,6 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   template_volume_ddpcr <- tibble(Target = c('N1', 'N2', 'BCoV', 'pMMoV', 'N501Y', 'Del69-70'),
                                   template_vol = c(10, 10, 4, 4, 9, 9) /22 * 20) # ul template volume per well of the 20 ul ddPCR reaction for each target
   
-  RNA_dilution_factor_BCoV <- 50  # RNA dilution factor for diluted BCoV samples
-  Vaccine_additional_RNA_dilution_factor_BCoV <- 50  # In addition to the above: RNA dilution factor for BCoV vaccine samples - both extracted and boiled
-  
-  # Ad hoc - marking the samples from baylor (will append /baylor to target name)
-  # Work in progress or remove feature?
-  
-  
   
   # Data input ----
   
@@ -132,7 +125,9 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
            Vaccine_ID = assay_variable, 
            .before = 1) %>% 
     mutate(Run_ID = str_extract(flnm, 'dd.WW[:digit:]*'), CT = NA) %>% 
-    select(`Prepared on`,	Week,	Vaccine_ID,	`Well Position`,	CT,	Target,	Sample_name,	assay_variable,	`Tube ID`,	biological_replicates,	Copies_per_uL_RNA,	Run_ID)
+    select(`Prepared on`,	Week,	Vaccine_ID,	`Well Position`,	
+           CT,	Target,	Sample_name,	assay_variable,	`Tube ID`,	
+           biological_replicates,	Copies_per_uL_RNA,	Run_ID)
   
   # Add to existing sheet
   if(vaccine_data %>% plyr::empty() %>% {!.}) sheet_append(sheeturls$data_dump, vaccine_data, 'Vaccines')
@@ -141,7 +136,9 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   vaccine_data.mean <- vaccine_data %>% ungroup() %>% 
     select(1:3, Target, Copies_per_uL_RNA, Run_ID) %>% group_by(across(-Copies_per_uL_RNA)) %>% 
     summarise(across(Copies_per_uL_RNA, list(Mean_qPCR = mean, SD_qPCR = sd), na.rm = T), .groups = 'keep') %>% 
-    mutate('[Stock conc.] copies/ul' = `Copy #_Mean_qPCR` * if_else(str_detect(Vaccine_ID, 'S[:digit:]+'), 50/20, 1), # adding a RNA extraction conc. factor only if not boiled (Sbxx naming)
+    
+    # adding a RNA extraction conc. factor only if not boiled (Sbxx naming)
+    mutate('[Stock conc.] copies/ul' = `Copies_per_uL_RNA_Mean_qPCR` * if_else(str_detect(Vaccine_ID, 'S[:digit:]+'), 50/20, 1), 
            'Estimated factor' = '',
            Comments = '',
            'Conc normalized to estimated factor' = '') %>% 
@@ -163,18 +160,6 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
 
 # function calls (copy and run from console if you need individual processing)
 # process_qpcr(flnm.here)
-# process_standard_curve(flnm.here)
-# process_ddpcr(flnm.here)
-
-# Grand function call
-
-# if dd in file name, get droplet file(- from google drive)
-# googledrive::drive_get(path =  "~/Stadler research group/COV2 Wastewater Surveillance/Results and raw data/ddPCR/Weekly Results in Individual Files/", file = ..)
-# write to Raw.ddpcr (just in case?>?)
-# 
-# if not then invoke process_qpcr
-#  (chekc for standard curve and process it)
-
 
 # check the filename and call the appropriate ddPCR, standard curve or qpcr processing functions
 process_all_pcr <- function(flname, baylor_wells = 'none')

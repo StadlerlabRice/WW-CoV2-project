@@ -12,7 +12,10 @@ read_gdrive_csv <- function(read_this_sheet)
   
   list_all_csv_files_in_folder <- drive_get(id = 'https://drive.google.com/drive/u/0/folders/1aIek7-aqHe2l7EnUfZZUtox44bj3SZVQ') %>%
     drive_ls()
-    
+  # Consider this 
+  # googledrive::drive_get(path =  "~/Stadler research group/COV2 Wastewater Surveillance/Results and raw data/ddPCR/Weekly Results in Individual Files/")
+  
+  
   csv_dribble <- list_all_csv_files_in_folder %>%
     filter(str_detect(name, csv_to_read))  # detect all the run ids
           
