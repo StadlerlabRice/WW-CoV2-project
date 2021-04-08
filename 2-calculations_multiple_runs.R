@@ -72,21 +72,27 @@ manhole_symbols_regex <- biobot_lookup %>%
 volumes.data_registry <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrated samples') %>% 
   rename('Received_WW_vol' = `Total WW vol measured (ml)`, 
          'Label_tube' = `Label on tube`, 
-         Filtered_WW_vol = `WW volume filtered (ml)`,
+        Filtered_WW_vol = `WW volume filtered (ml)`,
          Vaccine_ID = `Stock ID of Spike`,
          'Biobot_id' = `Biobot/other ID`,
          WW_weight = `Total WW weight measured (kg)`) %>% 
   mutate('Received_WW_vol' = coalesce(Received_WW_vol, `Total WW volume received (ml)`) ) %>% 
   
-  select(Received_WW_vol, Label_tube, Filtered_WW_vol, Vaccine_ID, `Biobot_id`, WW_weight) %>% # select only the useful columns
+  select(Received_WW_vol, Label_tube,Filtered_WW_vol, Vaccine_ID, `Biobot_id`, WW_weight) %>% # select only the useful columns
   distinct() %>% # for removing repeated data in early stuff, before 608 (interferes with the merging of volumes for same bottles)
   mutate_at('Label_tube', ~str_remove_all(., " ")) %>% 
   mutate_at('Biobot_id', str_remove,  ' ') %>% 
   
   # Extrapolating volumes for same bottle - If weights are written out, we assume different bottles with different volumes
-  mutate(., unique_labels = str_remove_all(Label_tube,'^m|[1-9]$'))  %>%  # this will be changed to the 'Bottle' column soon
+  mutate(., unique_labels = str_remove_all(Label_tube,'[:digit:]$'))  %>% # Remove the training single digit that tells the replicate # 
+  # this will be changed to the 'Bottle' column? Too much data entry
+  
   group_by(unique_labels) %>% 
-  mutate(across(Received_WW_vol, ~ifelse(is.na(WW_weight), max(., na.rm = T), .))) %>% 
+  mutate(across(Received_WW_vol, 
+                       ~ifelse(is.na(WW_weight), # If any of the replicates doesn't have weight
+                               if(all(is.na(.))) NA else max(., na.rm = T), # the make it's volume the max
+                               .) # Unless the volume is all NA in which case NA is used insteado of the max
+                ) ) %>% # This will not allw MAX to create -Inf :: to prevent errors in write_sheet 
   ungroup() %>% 
   select(-unique_labels, -WW_weight)
 
@@ -112,7 +118,7 @@ meta.attached_quant_data <- quant_data %>%
   left_join(biobot_lookup) %>%  # join biobot_IDs
   
 
-  mutate_at(c('WWTP', 'FACILITY NAME'), ~if_else(str_detect(., '^X')|is.na(.), assay_variable, .)) %>% 
+  mutate_at(c('WWTP', 'Facility'), ~if_else(str_detect(., '^X')|is.na(.), assay_variable, .)) %>% 
 
   rename(Target_Name = Target) # rename to match the final output desired by HHD
 
@@ -125,17 +131,21 @@ processed_quant_data <- meta.attached_quant_data %>%
   
   # Calculations for Copies_Per_Liter_WW from Copies_per_uL_RNA
   mutate(Copies_Per_Liter_WW = Copies_per_uL_RNA *(1e6/300) * (elution_volume/Filtered_WW_vol), # Chemagic concentration factor = 300 
-         Detection_Limit = as.numeric(LimitOfDet * (1e6/300) * (elution_volume/Filtered_WW_vol) )) %>%  # Chemagic concentration factor = 300 
+         Detection_Limit = as.numeric(LimitOfDet * (1e6/300) * (elution_volume/Filtered_WW_vol) ),  # Chemagic concentration factor = 300 
          
+         # conditional calculations reg surrogate spiked virus
+         # Calculations for Surrogate_virus_input_per.L.WW (input) and Percentage_recovery (output/input * 100)
+         Surrogate_virus_input_per.L.WW = spiking_virus_vaccine_stock_conc * spike_virus_volume / (Received_WW_vol * 1e-3), 
+         Percentage_recovery_BCoV = 100 * Copies_Per_Liter_WW/Surrogate_virus_input_per.L.WW) %>% 
+  
   # (source for chemagic conc. factor calculations : Google sheet below
   # "concentration factor calc" : https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=2134801800)
   
-  # Calculations for Surrogate_virus_input_per.L.WW (input) and Percentage_recovery (output/input * 100)
-  # Remove the columns not relevant targets that are not surrogate viruses (currently only BCoV being used)
+  # Remove the columns not relevant targets that are not surrogate viruses (BCoV or BRSV) or for Vaccine stocks
   mutate_cond(!str_detect(Target_Name, 'BCoV|BRSV') |
                 str_detect(Sample_name, 'Vaccine'),  # And vaccines
-              Surrogate_virus_input_per.L.WW = spiking_virus_vaccine_stock_conc * spike_virus_volume / (Received_WW_vol * 1e-3), 
-              Percentage_recovery_BCoV = 100 * Copies_Per_Liter_WW/Surrogate_virus_input_per.L.WW) %>% 
+              Surrogate_virus_input_per.L.WW = NA, 
+              Percentage_recovery_BCoV = NA) %>% 
   
   # And for vaccine (ie. Vaccine stock quants), remove Copies_Per_Liter_WW
   mutate_cond(str_detect(Sample_name, 'Vaccine'),
@@ -145,7 +155,7 @@ processed_quant_data <- meta.attached_quant_data %>%
   select(-spiking_virus_vaccine_stock_conc) %>% 
   
   # arranging data by facility name alphabetical
-  arrange(`FACILITY NAME`) %>% 
+  arrange(Facility) %>% 
   mutate_at('WWTP', as_factor)
 
 # Adding a dummy CT column (if only ddPCR data is being loaded; which lacks the CT column) - for compatibility with qPCR code
@@ -196,7 +206,7 @@ presentable_data <- processed_quant_data %>%
   
   # Selecting column order
   select(Facility, WWTP, Date, Lab, Target_Name, 
-         `Received_WW_vol`, `Volume Filtered`, 
+         `Received_WW_vol`, Filtered_WW_vol, 
          Copies_per_uL_RNA, Copies_Per_Liter_WW, 
          Ct, AcceptedDroplets, PositiveDroplets, Sample_ID, 
          Detection_Limit, Positivity, 
@@ -227,8 +237,8 @@ presentable_data <- processed_quant_data %>%
 missing_entries_in_Biobot_registry <- presentable_data %>%  # identify samples in the set that are 
   filter(!str_detect(WWTP, paste(WWTP_symbols_regex,  # neither WWTPS
                                  manhole_symbols_regex,  # nor manholes
-                                 samples_to_remove,  # nor controls : DI, NTC, Blanks
-                                 sep = '|')))
+                                 sep = '|')) &
+           !str_detect(WWTP, samples_to_remove) ) # nor controls : DI, NTC, Blanks
 
 if(missing_entries_in_Biobot_registry %>% plyr::empty() %>% !.)
 {View(missing_entries_in_Biobot_registry)
@@ -242,19 +252,25 @@ if(proceed_with_errors_key == 1)
 }
 
 # Volume filtered columns empty => read as NA
-if(is.na(presentable_data$`Volume Filtered`) %>% any())  # old: map(presentable_data, ~ -Inf %in% .x) %>% any()
-  
-  {missing_values_sample_registry <- presentable_data %>% filter(is.na(`Volume Filtered`) & !str_detect(WWTP, samples_to_remove)) # old : filter_if(is.numeric, any_vars( . < 0))
-  View(missing_values_sample_registry)
+missing_values_sample_registry <- presentable_data %>% 
+  filter(is.na(Filtered_WW_vol) &  # Filtered_WW_vol is NA (when left blank in sample registry)
+           !str_detect(WWTP, samples_to_remove)) # Exclude the Blanks, controls etc.
+
+if(missing_values_sample_registry %>% plyr::empty() %>% !.) 
+  {View(missing_values_sample_registry)
   proceed_with_errors_key <- menu(c('Yes', 'No'), title = 'Missing values identified in the sample registry : WW volume extracted (ml),
 check the data output in the console and choose if you wish to continue processing data, by assuming 50 ml default')
 
   if(proceed_with_errors_key == 2) stop("Cancel selected, script aborted.")
   if(proceed_with_errors_key == 1) 
     { print('Missing volumes filtered are being converted to 50 ml (default) to avoid error in processing data')
-    presentable_data %<>% replace_na(list(`Volume Filtered` = 50))
+    presentable_data %<>% replace_na(list(Filtered_WW_vol = 50))
   }
 }
+
+# Old : checking for -Inf in Received_WW_vol (only relevant when doing BCoV -- can put an IF condition)
+# if(map(presentable_data, ~ -Inf %in% .x) %>% any())
+# missing_values_sample_registry <- filter_if(is.numeric, any_vars( . < 0))
 
 print('Missing values (~ Received volume) are being converted to NaNs to avoid error in writing data')
 presentable_data %<>% mutate(across(where(is.numeric),  ~ if_else(.x == -Inf, NaN, .x)))
@@ -317,18 +333,52 @@ if(HHD_data_output)
 script_user_name <- gargle::gargle_oauth_sitrep()$email[1] %>% # select the first email from the list of authorized emails
   str_match('(.*)@.*') %>% .[,2]  # extract the username before the @
 
-run_log <- tibble('Item' = c('', '',   # insert 2 empty lines
-                             '## RUN LOG',
-                             'Script user',
-                             'Run at'),
-                             
-                  'Log' = c('', '', # insert 2 empty lines
-                            '',
-                            script_user_name,
-                            Sys.time()) )
 
+# Sample number tally
 
-sheet_append(ss = sheeturls$user_inputs, data = run_log, title_name)
+# Incoming
+sample_colm_incoming <- quant_data %>% 
+  unite(week_facility, c(Sample_name, `Tube ID`)) %>% # make a column containing both the date and Tube ID
+  pull(week_facility) %>% 
+  unique() # Remove the duplicates for the 2 targets N1.N2 (only counting samples)
+
+num_samples_input <- length(sample_colm_incoming)
+# num_controls_input <- str_count(sample_colm_incoming, samples_to_remove) %>% 
+#   sum()
+
+# Outgoing
+num_outgoing <- map2_int(list(presentable_data, present_only_WW, present_manhole_samples),
+                     c(samples_to_remove, '.*', '.*'),
+                     ~ pull(.x, Sample_ID) %>% 
+                       unique %>% 
+                       str_subset(.y) %>% 
+                       length()
+                     )
+
+# Generate the run log
+run_log <- matrix( 
+  c('', '',   # insert 2 empty lines
+  '', '',
+  '## RUN LOG --------------------', '',
+  'Script user :', script_user_name,  
+  'Run at :', Sys.time() %>% as.character,
+  'Sample tally --------------------', '',
+  'Entering script --------', '',
+  'Total replicates :', num_samples_input,
+  'Leaving script --------', '',
+  'Controls :', num_outgoing[1],
+  'WWTP :', num_outgoing[2],
+  'Manholes and others :', num_outgoing[3],
+  'TALLY CHECK', num_samples_input == sum(num_outgoing),
+  'Missing samples', num_samples_input - sum(num_outgoing)
+  ),
+  nrow = 2
+) 
+
+df_run_log <- t(run_log) %>% as_tibble()
+
+# Attach run log to the same sheet as the input
+sheet_append(ss = sheeturls$user_inputs, data = df_run_log, title_name)
 
 # Summary and long_format ------------------------------------
 # # For ease of plotting data with mean and standard deviations
