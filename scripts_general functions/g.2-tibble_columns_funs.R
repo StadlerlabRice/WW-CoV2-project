@@ -38,17 +38,17 @@ mutate_when <- function(data, ...)
 mutate_cond <- function(.data, condition, ..., envir = parent.frame()) 
 { # Source: Stackoverflow -  https://stackoverflow.com/a/34096575/9049673
   
-  # (PKs additions) :: Only works for numeric columns
-  # Capture the arguments
-  manipulation_args <- enexprs(...)
-
-  # Check if the mutate call is going to be creating new variables
-  # and add a dummy NA filled vector if so
-  ncol(.data)
-
-  map(names(manipulation_args), function(x) {
-    if(!x %in% colnames(.data)) .data <<- mutate(.data, !!x := NaN) # Initialize non existing cols //ASSUMING NUMERIC
-  })
+  # (PKs additions) :: Only works for numeric columns : Fails with calling across(..)
+  # # Capture the arguments
+  # manipulation_args <- enexprs(...)
+  # 
+  # # Check if the mutate call is going to be creating new variables
+  # # and add a dummy NA filled vector if so
+  # ncol(.data)
+  # 
+  # map(names(manipulation_args), function(x) {
+  #   if(!x %in% colnames(.data)) .data <<- mutate(.data, !!x := NaN) # Initialize non existing cols //ASSUMING NUMERIC
+  # })
   
   condition <- eval(substitute(condition), .data, envir)
   .data[condition, ] <- .data[condition, ] %>% mutate(...)
