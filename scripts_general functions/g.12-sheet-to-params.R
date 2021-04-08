@@ -77,3 +77,6 @@ map2(user_param_table,
 # Evaluate the function calls (which are read in as strings)
 samples_to_remove <- eval(parse_expr(samples_to_remove))
   # Can be generalized later with a if(is.call(..) ) check
+
+# Designate the sheet name as title_name
+title_name <- first_visible_sheetname
