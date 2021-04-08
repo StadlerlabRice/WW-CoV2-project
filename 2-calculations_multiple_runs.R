@@ -13,15 +13,14 @@ source('./scripts_general functions/g.12-sheet-to-params.R')
 
 # Preliminary ----
 
-# Attaching names to data
- 
+# Source script
 source('./1-processing_functions.R') # Source the file with the ddPCR and qPCR name's attaching functions
 
 
 
 # Input data ----------------------------------------------------------------------
 
-# running function to attach names. Data is ALSO saved to sheet : "qPCR data dump"
+# running function to attach samples names to data. Attached data is ALSO saved to sheet : "qPCR data dump"
 list_quant_data <- map(read_these_sheets, 
                            ~ process_ddpcr(.x) %>% 
                              select(1:13))
@@ -271,9 +270,6 @@ check the data output in the console and choose if you wish to continue processi
 # Old : checking for -Inf in Received_WW_vol (only relevant when doing BCoV -- can put an IF condition)
 # if(map(presentable_data, ~ -Inf %in% .x) %>% any())
 # missing_values_sample_registry <- filter_if(is.numeric, any_vars( . < 0))
-
-print('Missing values (~ Received volume) are being converted to NaNs to avoid error in writing data')
-presentable_data %<>% mutate(across(where(is.numeric),  ~ if_else(.x == -Inf, NaN, .x)))
 
 
 # Output data - including controls
