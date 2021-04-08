@@ -73,3 +73,7 @@ map2(user_param_table,
      ~ tbl.colm_to_assigmnent(.x, .y)
      # ~ eval_tidy(call2(`<-`, .y, .x[!sapply(.x, function(x) is.null(x)||is.na(x))], envir = global_env()))
      )
+
+# Evaluate the function calls (which are read in as strings)
+samples_to_remove <- eval(parse_expr(samples_to_remove))
+  # Can be generalized later with a if(is.call(..) ) check
