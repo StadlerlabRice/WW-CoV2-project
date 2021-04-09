@@ -20,7 +20,6 @@ first_visible_sheetname <- sheet_properties(sheeturls$user_inputs) %>%  # get al
 # Ask for re-run permission ----
 
 range_to_read <- if(any(check_for_run_log)) {
-   str_c('A1:', which(check_for_run_log) - 3) # if RUN LOG key appears, read till 3 rows before it
 
   rerun_sheet_key <- menu(c('Yes', 'No'), 
                           title = paste("The sheet with the name", 
@@ -29,8 +28,12 @@ range_to_read <- if(any(check_for_run_log)) {
                                         sep=" "))
   if (rerun_sheet_key == 2){
     # stop("Cancel selected, script aborted.")
-    print(str_c("Cancen selected. script aborted without running : ", first_visible_sheetname))
+    print(str_c("Cancel selected. script aborted without running : ", first_visible_sheetname))
   }
+  
+  # This value is saved in the variable range_to_read
+  str_c('A1:', which(check_for_run_log) - 3) # if RUN LOG key appears, read till 3 rows before it
+  
 }
 
 
