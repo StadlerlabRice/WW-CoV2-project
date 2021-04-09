@@ -181,7 +181,7 @@ processed_quant_data$Vaccine_ID %>%
     }
   }
 
-# Data output ----------------------------------------------------------------------
+# Data for output ----------------------------------------------------------------------
 
 
 presentable_data <- processed_quant_data %>% 
@@ -272,8 +272,6 @@ check the data output in the console and choose if you wish to continue processi
 # missing_values_sample_registry <- filter_if(is.numeric, any_vars( . < 0))
 
 
-# Output data - including controls
-check_ok_and_write(presentable_data, sheeturls$complete_data, title_name) # save results to a google sheet, ask for overwrite
 
 # HHD special output ----
 
@@ -411,3 +409,12 @@ sheet_append(ss = sheeturls$user_inputs, data = df_run_log, title_name)
 
 # calling r markdown file
 # rmarkdown::render('2.1-make_html_plots.rmd', output_file = str_c('./qPCR analysis/', title_name, '.html'))
+
+
+# Complete data output ----
+
+# This has been moved to the end to avoid stopping the script in the event of errors
+# errors have been noticed for curl::memory limitation while running from Mac/Camille
+
+# Output data - including controls
+check_ok_and_write(presentable_data, sheeturls$complete_data, title_name) # save results to a google sheet, ask for overwrite
