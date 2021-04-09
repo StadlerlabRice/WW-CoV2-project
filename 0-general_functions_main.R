@@ -53,7 +53,7 @@ dumfun <- function(a, var_a = a2, var_b = a3, c_var = 'a1', d_var = NULL)
 
 list_of_general_functions <- c("g.1-reading_files_funs.R",
                                "g.2-tibble_columns_funs.R",
-                               "g.3-obsolete_arcane_funs.R",
+                               "g.3-B117_and_obsolete_fns.R",
                               
                                "g.5-mathematical_fitting_funs.R",
                                "g.6-formatting_plot_funs.R",
