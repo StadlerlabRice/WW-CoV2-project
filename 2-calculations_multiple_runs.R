@@ -371,7 +371,7 @@ run_log <- matrix(
   nrow = 2
 ) 
 
-df_run_log <- t(run_log) %>% as_tibble()
+df_run_log <- t(run_log) %>% as_tibble(.name_repair = 'unique')
 
 # Attach run log to the same sheet as the input
 sheet_append(ss = sheeturls$user_inputs, data = df_run_log, title_name)
