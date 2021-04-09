@@ -7,20 +7,20 @@ Takes excel file output from qPCR and ddPCR, attaches the sample names and makes
   *This is to ensure that there are no conflicts if someone changed the master while you were working on a side branch*
 
 ## Readme step by step guide
-### Current workflow for qPCR data analysis
+### Current workflow for COVID data analysis
 
-#### Github (version control)
+#### Git (version control)
 1. Make sure you are on the main branch by typing: `git checkout WW_master` in *git bash* (black window)
-2. Get the branch upto date to the remote branch *(in case others made any changes)*: `git pull`
+2. Get the branch upto date to the remote branch *(in case others made any changes)* using: `git pull`
 	
 #### File and sample name convention
-1. qPCR excel filename should include the WWxy ID, Target name and standard curve ID, Ex: **WW66_831_BCoV_Std48** 
-2. ddPCR sheet name *(in Raw ddpcr)* should include the dd.WWxy ID (*good to add a descriptive title after the ID*)
-3. Sample naming in the '*calculations (lab notebook)/Plate layouts*' google sheet
+1. ddPCR sheet name *(in Raw ddpcr)* should include the dd.WWxy ID (*good to add a descriptive title after the ID*)
+2. Sample naming in the '*calculations (lab notebook)/Plate layouts*' google sheet
     a. Make sure the WWx or dd.WWx ID matches the ID in the name of the data file
     b. Set sample names using the automatic labeller to the right side of the plate in this format
 	**Target-Sample category_tube name.replicate number**
 	Example: *BCoV-Vaccine_S32.2* or *N1N2-908_W.1*
+3. qPCR excel filename should include the WWxy ID, Target name and standard curve ID, Ex: **WW66_831_BCoV_Std48** 
 	
 #### qPCR (//obsolete) (Quantstudio software)
 1. Open the .eds file in Quantstudio (Applied Biosystems)
@@ -31,52 +31,53 @@ Takes excel file output from qPCR and ddPCR, attaches the sample names and makes
 	
 	
 #### ddPCR (Quantalife software)
-1. Once the droplets reader run is done, the samples are auto processed (each well has a different threshold). Open the data file in Quantalife or Quantalife Pro
-2. Identify the wells where automatic processing has not worked, by looking for the *NO CALL* in the quantity column
-3. Select all the wells with No CALL and set an appropriate threshold for both targets in the 2d view
-4. Check all the thresholds by selecting 1 column at a time and correct any thresholds that are set too low or two high (*aim for 1 cluster in each quadrant, without the thresholds cutting through any clusters*)
+1. Once the droplets reader run is done, open the data file in Quantalife or Quantalife analysis Pro
+2. Ignore the automatic thresholding (each well has a different threshold), and set a manual threshold to be optimally separating the positive and negative clusters in the 2D view. (**aim for 1 cluster in each quadrant, without the thresholds cutting through any clusters**).*You can rely on positive/negative controls for assistance*
+3. Check all the thresholds in the 1D view, by selecting 1 column at a time and correct any thresholds that are set too low or two high. 
 	
 #### Metadata 
 
 ##### Sample registry
 1. Check to make sure all the samples are entered in the *Sample registry/concentrated samples* sheet and they match the sample names entered in the template file in *calculations (lab notebook) Cov2/Plate layouts*
-a. Check that the DI water sample has a unique name and doesn't match with previous weeks. Name it such as : 831Control Water1
-2. Check that these columns are filled: **Biobot/other ID, Stock ID of Spike, Total WW volume calculated (ml), WW volume extracted (ml)**
+a. Check that the DI water sample has a unique name and doesn't match with previous weeks. Name it such as : *0304 DI1*
+2. Check that these columns are filled: **Biobot/other ID, WW volume filtered (ml)**. And if samples are being spiked, these columns should be filled in too **Stock ID of Spike, Total WW volume received (ml)**
 
 ##### Other metadata sheets
-1. Biobot_ID should be updated with the biobot id vs the WWTP name table for each week's samples
+1. Biobot_ID should be updated with should be updated with any new manhole samples in sheet **All manhole**
 
 #### Directory map
-If you are running this set of scripts for the first time, make sure that you mimic the directory structure in the folder in which the Rprojct file + all the scripts exist
-- qPCR analysis (this is where the html file with all the plots are stored)
+If you are running this set of scripts for the first time, all essential directories should be loaded by git automatically. If running additional functions, make sure that you mimic the directory structures mentioned below. These directories should exist in the folder in which the Rprojct file + all the scripts exist
 - qPCR analysis/Standards *only if running qPCR files with standards on them* (saving plot with standard curves)
-- Excel files/Weekly data to HHD (saving csv files given to Kathy's team and HHD)
 - require *WWTP_All_Results.csv* file (only if running 3-weekly_comparisions.R)
 
 #### Source data files
-Source data and metada is in google sheets, ask Prashant/David Zong for access
-URLs for all the spreadsheets are in the *general functions.R/sheeturls* variable
+Source data and metada is in google sheets, ask Prashant/Camille Mccall for access
+URLs for all the spreadsheets are in the *0-general_functions_main.R/sheeturls* variable
 
 #### Rstudio (scripts)
-1. Open the Rproject file **qPCR** in Rstudio - this will load from the current directory (all subpaths are relative to this) 
-2. Run (source) the **1-processing_functions.R** file (clicking on the *save* button top left or *Run* - top right)
-3. Make a variable with the names of the files to be processed: Ex- **read_these_sheets <- c('dd.WW31_831_N1N2', 'WW66_831_BCoV_Std48')**
-4. Run this command: **map(read_these_sheets, process_all_pcr)**: This will process Standard curve, qPCR data and ddPCR data for each file automatically (according to the name)
+1. Open the Rproject file **COVID-qPCR work** in Rstudio - this will load Rstudio from the current directory (all subpaths are relative to this which will enable the script to run properly) 
+2. File name and other inputs 
+- Go to the google sheet [User inputs, ...for R code](https://docs.google.com/spreadsheets/d/1SAINnazqMrjTBSuhYiIBbx8B7_reHzaEuwGTdkNA6wk/edit#gid=931502497)
+- duplicate the **template** sheet and rename it after the desired final output file name. Ex *0304 Liftstations*
+- **Drag it the the leftmost position**
+
+2. Run (source) the **2-calculations_multiple_runs** file (clicking on the *save* button top left or *Run* - top right)
+3. Authenticate the google drive and follow other prompts and it should lead to the outputs being saved to various other google sheets and local CSV files. This saves data in 3 different locations with the same name as **title_name**
+    a. qPCR complete data - all data including controls
+    b. WWTP and manhole data for HHD - only the 38 WWTPs
+    c. WWTP and manhole data for HHD - non WWTP samples (Ex: Lift station, congregate facilities, manholes, Bayou etc.) - saved to a sheet with *manhole* in the name
+    d. Plots are saved to a html file in qPCR analysis folder
+
+
+4. --- Exceptions ---
+- If you have any qPCR data, then run this command: `list_quant_data <- map(read_these_sheets, process_all_pcr)` after sourcing *1-processing_functions.R* and before running *2-calculations_multiple_runs.R*. Comment out the call to this list_quant_data <- map(read_these_sheets ... in the 2-calcs file. There might be errors that need troubleshooting since this has not been extensively tested. 
+: This will process Standard curve, qPCR data and ddPCR data for each file automatically (according to the name)
     - This dumps the data for each file with the appropriate sample labels in a google sheet 'qPCR data dump' google sheet.
     - If you have a single file to run, you can call the function directly, instead of using `map` **process_all_qpcr('WW66_831_BCoV_Std48')**
-	 
     - If you already ran standard curve, and only need to process the qPCR. use `process_qpcr('WW66_831_BCoV_Std48')` instead
     - If the qPCR plate does not have a standard curve in it and you want to use an older standard curve, run something like this: `process_qpcr('WW66_831_BCoV_Std48', std_override = 'Std21')`
     - If you are processing baylor data *(whose name/volume information is emailed to us and saved in a local excel sheet)* give a regular expression indicating the baylor_samples location to the baylor_wells input to the functions. Example: Baylor samples present in wells A1 to D11, then run: `process_all_pcr('WW66_831_BCoV_Std48', baylor_wells = '[A-D]([1-9]$|10|11)')` 
     
-5. Open **2-calculations_multiple_runs** file
-    a. Change the read_these_sheets to the 1 or more sheets to plot together that are already in the 'qPCR data dump' and change the title_name to appropriate week :Ex- *713 Rice*
-6. Source or run the script after saving the changes. This saves data in 3 different locations with the same name as **title_name**
-    a. qPCR complete data - all data including controls
-    b. WWTP data for HHD - only the 38 WWTPs
-    c. WWTP data for HHD - Designated manhole samples - saved to a sheet with *Special samples* in the name
-    d. Plots are saved to a html file in qPCR analysis folder
-
 
 In case you see any errors,
 1. look for `Show Traceback` key next to the error (not always available)
