@@ -41,9 +41,18 @@ check_ok_and_write <- function(data, sheet_URL, title_name)
              warning = function(e) 
              {cat('Sheet was not written due to timeout. Manually copy the excel file from excel files/Archive/Data dump files')
                message(e)
-               write_csv(data, str_c('excel files/Archive/Data dump files', title_name, '.csv'), na = '')}
+               write_csv(data, str_c('excel files/Archive/To google sheets/', title_name, '.csv'), na = '')},
+             
+             error = function(e) 
+             {cat('Sheet was not written due to error. Manually copy the csv file from excel files/Archive/To google sheets/ 
+                  to google sheets for record')
+               message(e)
+               write_csv(data, str_c('excel files/Archive/To google sheets/', title_name, '.csv'), na = '')}
     )
   }
+
+return() # Dummy output return, since this function is used only for side effects
+  
 }
 
 
