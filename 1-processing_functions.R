@@ -113,9 +113,9 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   
   # Data output ----
   
-  # Not writing to googlesheets anymore
-  # check_ok_and_write(final_data_with_LODs, sheeturls$data_dump, flnm) # save results to a google sheet
-  write_csv(final_data_with_LODs, str_c('excel files/Archive/Data dump files/', flnm, '.csv'), na = '')
+  check_ok_and_write(final_data_with_LODs, sheeturls$data_dump, flnm) # save results to a google sheet
+      # If you don't want to write to google sheets, use the command below and comment the one above
+  # write_csv(final_data_with_LODs, str_c('excel files/Archive/Data dump files/', flnm, '.csv'), na = '')
   
   # Vaccine processing ----
   
