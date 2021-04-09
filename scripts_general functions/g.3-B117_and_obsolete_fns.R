@@ -8,23 +8,24 @@ calculate_B117_percentage_variant <- function(.dat)
   # Select relevant columns, get the variant and WT side by side and calculate the variant/ all percentage and grab only necessary data
   # take this data and join it to the source data later
   
-  text_cols <- c('Sample_ID', 'variant_status', 'Target_Name', 'Well Position') # select constant columns
+  text_cols <- c('Facility', 'WWTP', 'Date', 'Lab', 'Sample_ID','Target_Name', 'variant_status', 'Well Position', 'Filtered_WW_vol') # select constant columns
   # value_cols <- c('Copy #', 'AcceptedDroplets', 'Positives', 'Threshold') # all the value columns that change with threshold
-  value_cols <- c('Copies_per_uL_RNA', 'PositiveDroplets')
+  value_cols <- c('Copies_per_uL_RNA', 'Copies_Per_Liter_WW', 'PositiveDroplets')
   
-  target_fused_data <- .dat %>% 
-    mutate(., across('Target_Name', ~ paste_without_NAs(., variant_status, .sep = "-"))) # add "-Variant" or "-all" to the Target_Name
+  # target_fused_data <- .dat %>% 
+  #   mutate(., across('Target_Name', ~ paste_without_NAs(., variant_status, .sep = "-"))) # add "-Variant" or "-all" to the Target_Name
   
   processed_data_with_percentage <- .dat %>% 
     select( all_of(text_cols), all_of(value_cols)) %>%  # select only important columns
     pivot_wider(names_from = variant_status, values_from = all_of(value_cols)) %>%  # put variant and all side by side
     
-    mutate(percentage_variant = (`Copies_per_uL_RNA_Variant` / `Copies_per_uL_RNA_all` * 100) %>% round(2)) %>%  # calculate % of variant, round it off
+    mutate(percentage_variant = (`Copies_per_uL_RNA_Variant` / `Copies_per_uL_RNA_all` * 100) %>% round(2)) #%>%  # calculate % of variant, round it off
     
-    mutate(across('Target_Name', ~ str_c(., '-Variant'))) %>% # add "-Variant" to the Target_Name
-    select(any_of(text_cols), percentage_variant) # exclude the raw Copy #s from selection
+    # below lines will produce stacked data for both variants so the B117 data is in the same format as the N1N2 data
+    # mutate(across('Target_Name', ~ str_c(., '-Variant'))) %>% # add "-Variant" to the Target_Name
+    # select(any_of(text_cols), percentage_variant) # exclude the raw Copy #s from selection
   
-  mrged_data <- left_join(target_fused_data, processed_data_with_percentage) 
+  # mrged_data <- left_join(target_fused_data, processed_data_with_percentage) 
   
 }
 
