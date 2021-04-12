@@ -1,6 +1,10 @@
-# Ad-hoc plots for qPCR standard curves across freeze-thaws
+# Plots for qPCR standard curves across freeze-thaws
+# Pull all std curve parameters from the data dump/Standard curves sheet and plot their parameters
 
 # Easy way first : Load the slope and intercepts and run them
+
+# Prelims
+source('./general_functions.R') # Source the general_functions file
 
 # Load slope_intercepts ----
 std.data <- read_sheet(sheeturls$data_dump, sheet = 'Standard curves')
@@ -29,3 +33,10 @@ std.bcov %>%
   ggtitle('BCoV standard curves: Y_intercept across freeze thaws')
 
 ggsave('qPCR analysis/Extra graphs/BCoV_standard_curve_evolution_yint.png')
+
+# Plot full curve ----
+ggplot(mapping = aes(x = 3:5, y = 35 - 3 * 3:5)) +
+  geom_line() +
+  geom_abline(data = std.bcov, aes(slope = Slope, intercept = y_intercept, colour = std.ID)) +
+  ggtitle('BCoV standard curves reconstructed: across freeze thaws')
+
