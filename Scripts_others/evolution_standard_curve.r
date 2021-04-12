@@ -36,7 +36,13 @@ ggsave('qPCR analysis/Extra graphs/BCoV_standard_curve_evolution_yint.png')
 
 # Plot full curve ----
 ggplot(mapping = aes(x = 3:5, y = 35 - 3 * 3:5)) +
-  geom_line() +
-  geom_abline(data = std.bcov, aes(slope = Slope, intercept = y_intercept, colour = std.ID)) +
-  ggtitle('BCoV standard curves reconstructed: across freeze thaws')
+  geom_point() +
+  geom_abline(data = std.bcov, 
+              aes(slope = Slope, intercept = y_intercept, colour = std.ID), 
+              size = 1.5 #, alpha = .4
+              ) +
+  ggtitle('BCoV standard curves reconstructed: across freeze thaws',
+          subtitle = 'No clear trend of increasing intercept with increasing Std.ID (time)') + 
+  scale_colour_viridis_b()
 
+ggsave('qPCR analysis/Extra graphs/BCoV_standard_curve_evolution_reconstructed.png')
