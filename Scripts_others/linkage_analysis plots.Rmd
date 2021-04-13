@@ -1,0 +1,133 @@
+---
+author: "Prashant Kalvapalle"
+date: '`r format(Sys.time(), "%d %B, %Y; %H:%M")`'
+output: 
+  html_document:
+    theme: flatly
+    toc: TRUE
+    toc_float: TRUE
+---
+
+---
+title: `r title_name`
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 12, fig.height = 4)
+```
+
+# Scatter/jitter plots
+
+## Jitter by run ID
+
+```{r dens1}
+linkageplot <- {all_dd.data %>% 
+  ggplot(aes(x = Run_ID, y = Linkage, 
+             colour = Target_group,
+             label = assay_variable)) + 
+  geom_point(alpha = 0.3) + 
+  geom_violin()} %>% 
+  print
+
+
+```
+
+### Zoomed 0:10
+
+```{r dens1zoom}
+linkageplot + ylim(c(0,10))
+
+# ggplotly(linkageplot.zoom, dynamicTicks = TRUE)
+
+```
+
+## By target
+
+```{r bytgt1}
+linkage.tgt <- {all_dd.data %>% 
+  ggplot(aes(x = Target_group, y = Linkage, 
+             colour = Target_group,
+             label = assay_variable)) + 
+  geom_point(alpha = 0.3,
+             position = position_jitter(height = 0, width = .3, seed = 1L) # standard jitter with reproducible randomness
+             ) + 
+  geom_violin(show.legend = FALSE)} %>% 
+  print()
+
+# ggplotly(linkage.tgt, dynamicTicks = TRUE)
+
+```
+
+### Zoom 0:10
+
+```{r bytgtzoom}
+
+linkage.tgt.zoom <- {linkage.tgt + ylim(c(0,10))} %>% 
+  print()
+
+
+```
+
+# Non zero linkage
+
+```{r linkageabove0}
+
+linkage_plt.above.0 <- {linkage_above.0 %>% 
+  ggplot(aes(x = Target_group, y = Linkage, 
+             colour = Target_group,
+             label = assay_variable)) + 
+    geom_point(alpha = 0.3,
+             position = position_jitter(height = 0, width = .3, seed = 1L) # standard jitter with reproducible randomness
+             ) + 
+    geom_violin(show.legend = FALSE)} %>% 
+  print()
+
+```
+Zoom 0:10
+
+```{r linkageabove0zoom}
+
+linkage.tgt.zoom <- {linkage_plt.above.0 + ylim(c(0,10))} %>% 
+  print()
+
+```
+
+
+# Summary statistics
+
+```{r summarystats}
+
+all_dd.data  %>% 
+  group_by(Target_group,
+           Linkage.bracket) %>% 
+  summarise(counts = n()) %>% 
+  print()
+
+```
+
+# Plot by facility
+
+```{r facilityplt, fig.width = 12}
+
+b117.data <- all_dd.data %>% 
+  filter(str_detect(Target_group,'S_501'))
+
+b117_plt <- {b117.data %>% 
+  ggplot(aes(x = assay_variable, 
+         y = Linkage,
+         colour = Linkage.bracket)) +
+  geom_point(alpha = .4) + 
+    facet_grid(Target_group ~ .)} %>% 
+  print()
+
+ggplotly(b117_plt)
+
+```
+
+Zoom 0:6
+
+```{r facilityzoom}
+b117_plt + ylim(c(0,6))
+
+```
