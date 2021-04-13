@@ -55,8 +55,8 @@ data_dump_renamer <- function(.df)
     
     
     # other columns with extra changes made from old times 
-    mutate(across(Target, ~ str_replace_all(., c('BCoV.*' = 'BCoV', '/Baylor' = '')) ) ) %>% # accounts for BCoV.2 and Baylor runs
-    mutate('Run_ID' = str_extract(.x, '(?<=dd\\.WW)[:digit:]+'), .before = 1) # Extract the number of the ddPCR run
+    mutate(across(Target, ~ str_replace_all(., c('BCoV.*' = 'BCoV', '/Baylor' = '')) ) ) # accounts for BCoV.2 and Baylor runs
+    
   
 }
 
