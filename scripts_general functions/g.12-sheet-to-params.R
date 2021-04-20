@@ -32,7 +32,7 @@ range_to_read <- if(any(check_for_run_log)) {
   }
   
   # This value is saved in the variable range_to_read
-  str_c('A1:', which(check_for_run_log) - 3) # if RUN LOG key appears, read till 3 rows before it
+  str_c('A1:', which(check_for_run_log) %>% min - 3) # if RUN LOG key appears, read till 3 rows before the first instance
   
 }
 
