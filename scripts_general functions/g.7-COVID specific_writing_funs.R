@@ -108,7 +108,7 @@ append_LOD_info <- function(fl, targ) {
   fl <- fl %>% filter(Target == targ)
   
   # Pull negative controls out
-  negative_controls <- fl %>% filter(Sample_name == 'NTC'| 
+  negative_controls <- fl %>% filter(assay_variable == 'NTC'| 
                                        assay_variable == 'DI'| 
                                        str_detect(assay_variable, regex('BLANK', ignore.case = TRUE)) )
   
