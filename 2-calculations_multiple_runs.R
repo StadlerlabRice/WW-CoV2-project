@@ -319,7 +319,20 @@ if(HHD_data_output)
   }
   
   
-}
+  # Count the outgoing samples
+  num_outgoing <- map2_int(list(presentable_data, 
+                                present_only_WW, 
+                                present_manhole_samples),
+                           c(samples_to_remove, '.*', '.*'), # Select controls or all samples
+                           
+                           ~ pull(.x, Sample_ID) %>% # Make a vector - only the unique Sample_ID
+                             unique %>%  # remove duplicates for different targets - N1/N2/B117..
+                             str_subset(.y) %>% 
+                             length()
+  )
+  
+} else num_outgoing <- rep(NaN, 3)
+  
 
 # Run log ----
 
@@ -327,7 +340,18 @@ if(HHD_data_output)
 script_user_name <- gargle::gargle_oauth_sitrep()$email[1] %>% # select the first email from the list of authorized emails
   str_match('(.*)@.*') %>% .[,2]  # extract the username before the @
 
-
+# Get blank samples to report any contaminations
+negative_controls_maxPositiveDroplets <- presentable_data %>% 
+  filter(across(WWTP,
+                ~ . == 'NTC',
+                . == 'DI',
+                str_detect(., regex('Blank', ignore_case = TRUE)) )) %>% 
+  select(WWTP, PositiveDroplets) %>% 
+  group_by(WWTP) %>% 
+  summarise(across(PositiveDroplets, max)) %>%  # get the maximum # of positivedroplets among replicates
+  mutate(across(.fns = as.character)) # make both rows character for merging
+  # arrange(WWTP) # arranges in alphabetical order : Blank, DI, NTC
+  
 # Sample number tally
 
 # Incoming
@@ -340,14 +364,6 @@ num_samples_input <- length(sample_colm_incoming)
 # num_controls_input <- str_count(sample_colm_incoming, samples_to_remove) %>% 
 #   sum()
 
-# Outgoing
-num_outgoing <- map2_int(list(presentable_data, present_only_WW, present_manhole_samples),
-                     c(samples_to_remove, '.*', '.*'),
-                     ~ pull(.x, Sample_ID) %>% 
-                       unique %>% 
-                       str_subset(.y) %>% 
-                       length()
-                     )
 
 # Generate the run log
 run_log <- matrix( 
@@ -364,12 +380,16 @@ run_log <- matrix(
   'WWTP :', num_outgoing[2],
   'Manholes and others :', num_outgoing[3],
   'TALLY CHECK', num_samples_input == sum(num_outgoing),
-  'Missing samples', num_samples_input - sum(num_outgoing)
+  'Missing samples', num_samples_input - sum(num_outgoing),
+  'Contamination check --------------------', '',
+  'Control type', 'max PositiveDroplets'
   ),
   nrow = 2
 ) 
 
-df_run_log <- t(run_log) %>% as_tibble(.name_repair = 'unique')
+df_run_log <- t(run_log) %>% as_tibble(.name_repair = 'unique') %>%  # Transpose matrix and make tibble
+  rbind(setNames(negative_controls_maxPositiveDroplets, names(.)) ) # attach the # positive droplets of negative controls
+
 
 # Attach run log to the same sheet as the input
 sheet_append(ss = sheeturls$user_inputs, data = df_run_log, title_name)
