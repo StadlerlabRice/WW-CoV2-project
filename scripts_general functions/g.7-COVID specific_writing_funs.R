@@ -115,7 +115,9 @@ append_LOD_info <- function(fl, targ) {
   
   # Pull any rows with 3 droplets a.k.a the LOQ
   threes <- fl %>% filter(PositiveDroplets == 3)
-  # If no rows has 3 droplets then the concentration is hard coded to 6
+  # If no rows has 3 droplets then the concentration is hard coded to 0.7
+    # Estimate for 3 droplets is 0.7674 copies/ul RNA (Wonder if DZ rounded down to 0.7)
+    # LOD Details - https://docs.google.com/document/d/1V1Dun0vMMb4XpyJELzMI5ClO3wWziE56Mblrm1kDyMo/edit
   # Otherwise, take the mean of 3 droplet concentrations
   if(dim(threes)[1] == 0) {
     three_copies <- 0.7
