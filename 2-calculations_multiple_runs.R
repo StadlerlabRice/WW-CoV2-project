@@ -239,7 +239,7 @@ missing_entries_in_Biobot_registry <- presentable_data %>%  # identify samples i
   filter(!str_detect(WWTP, paste(WWTP_symbols_regex,  # neither WWTPS
                                  manhole_symbols_regex,  # nor manholes
                                  sep = '|')) &
-           !str_detect(WWTP, samples_to_remove) ) # nor controls : DI, NTC, Blanks
+           !(str_detect(WWTP, samples_to_remove)| WWTP == 'NTC') ) # nor controls : DI, NTC, Blanks
 
 if(missing_entries_in_Biobot_registry %>% plyr::empty() %>% !.)
 {View(missing_entries_in_Biobot_registry)
@@ -255,11 +255,11 @@ if(proceed_with_errors_key == 1)
 # Volume filtered columns empty => read as NA
 missing_values_sample_registry <- presentable_data %>% 
   filter(is.na(Filtered_WW_vol) &  # Filtered_WW_vol is NA (when left blank in sample registry)
-           !str_detect(WWTP, samples_to_remove)) # Exclude the Blanks, controls etc.
+           !(str_detect(WWTP, samples_to_remove) | WWTP == 'NTC') ) # Exclude the Blanks, controls etc.
 
 if(missing_values_sample_registry %>% plyr::empty() %>% !.) 
   {View(missing_values_sample_registry)
-  proceed_with_errors_key <- menu(c('Yes', 'No'), title = 'Missing values identified in the sample registry : WW volume extracted (ml),
+  proceed_with_errors_key <- menu(c('Yes', 'No'), title = 'Missing values identified in the sample registry : WW volume extracted (ml) / Filtered_ww_vol in this table,
 check the data output in the console and choose if you wish to continue processing data, by assuming 50 ml default')
 
   if(proceed_with_errors_key == 2) stop("Cancel selected, script aborted.")
@@ -294,7 +294,7 @@ if(HHD_data_output)
       rename(., 'Copies_per_uL' = Copies_per_uL_RNA, 
              'Recovery_Rate' = `Percentage_recovery_BCoV`) %>%
           
-          select(-contains('Vol'), -Surrogate_virus_input_per.L.WW, -contains('Droplet'), -'Well Position') 
+          select(-contains('Vol'), -Surrogate_virus_input_per.L.WW, -PositiveDroplets, -'Well Position') 
       }
     }
   
