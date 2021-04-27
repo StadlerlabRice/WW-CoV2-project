@@ -430,7 +430,7 @@ sheet_append(ss = sheeturls$user_inputs, data = df_run_log, title_name)
 
 
 # calling r markdown file
-# rmarkdown::render('2.1-make_html_plots.rmd', output_file = str_c('./qPCR analysis/', title_name, '.html'))
+rmarkdown::render('2.1-make_html_plots.rmd', output_file = str_c('./qPCR analysis/', title_name, '.html'))
 
 
 # Complete data output ----
