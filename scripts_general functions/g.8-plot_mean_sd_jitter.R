@@ -68,11 +68,13 @@ plot_mean_sd_jitter <- function(.data = presentable_data,
   
   # plotting
   plt1 <- .data_to_plot %>% ggplot(aes(x = {{x_var}}, y = {{y_var}}, colour = {{colour_var}})) +
-    geom_point(aes_string(y = mean_y_var_str), size = 2, show.legend = FALSE) + 
+    geom_point(aes_string(y = mean_y_var_str), size = 2) + 
     # geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd), width = .1) +
     
     # Individual data points
-    geom_jitter(data = .data_to_plot$raw.dat, aes(y = {{y_var}}, alpha = map_chr({{y_var}}, ~. == 0), size = map_chr({{y_var}}, ~. == 0)), width = .2, show.legend = F ) +
+    geom_jitter(mapping = aes(alpha = map_chr({{y_var}}, ~. == 0), 
+                              size = map_chr({{y_var}}, ~. == 0)), 
+                width = .2, show.legend = F ) +
     scale_alpha_manual(values = c(.3, 1)) + scale_size_manual(values = c(1, 2)) + # manual scale for emphasizing unamplified samples
     
     # # Plotting actual spike ins (only for Recovery plot'; only with long format data )

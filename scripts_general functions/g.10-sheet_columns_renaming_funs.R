@@ -76,7 +76,7 @@ compl_data_renamer <- function(.df)
   
   .df %>% 
     
-    mutate('Week' = str_match(.x, '^[:digit:]*')) %>% # add a column for the week name (untested)
+    # mutate('Week' = str_match(.x, '^[:digit:]*')) %>% # add a column for the week name (untested)
     
     # backward compatibility (accounting for column name changes)
     rename('Target' = matches('Target'), 
@@ -84,7 +84,9 @@ compl_data_renamer <- function(.df)
            'Percentage_recovery_BCoV' = matches('Recovery fraction'),
            'Ct' = matches('^CT', ignore.case = T)) %>% 
     
-    mutate_at('Target', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2')))
+    mutate_at('Target', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2'))) %>% 
+    
+    mutate(across(is.list, as.character))
 }
 
 # Usage
