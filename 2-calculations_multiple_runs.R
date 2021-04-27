@@ -116,9 +116,11 @@ meta.attached_quant_data <- quant_data %>%
   
   left_join(biobot_lookup) %>%  # join biobot_IDs
   
-
-  mutate_at(c('WWTP', 'Facility'), ~if_else(str_detect(., '^X')|is.na(.), assay_variable, .)) %>% 
-
+  # clean up controls etc. that don't appear in biobot_lookup
+  mutate(across('WWTP', ~if_else(str_detect(., '^X')|is.na(.), assay_variable, .)), # wwtp == assay_var
+         across('Facility', ~if_else(str_detect(., '^X')|is.na(.), str_c(Sample_name, '/', assay_variable), .)) ) %>% 
+          # Facility = Sample_name/assay_variable
+  
   rename(Target_Name = Target) # rename to match the final output desired by HHD
 
 
@@ -195,7 +197,7 @@ presentable_data <- processed_quant_data %>%
          Lab = 'R', 
          Sample_Type = 'Composite', Comments = NA) %>% 
   mutate(across('Sample_name', as.character) ) %>% # covert sample name into char
-  mutate_at('Facility', ~if_else(. == assay_variable, str_c(Sample_name, '/', assay_variable), .)) %>%
+  # mutate_at('Facility', ~if_else(. == assay_variable, str_c(Sample_name, '/', assay_variable), .)) %>%
   mutate(Sample_ID = if_else(biological_replicates == ''|is.na(biological_replicates), 
                              str_c(Sample_name, '.', WWTP) , 
                              str_c(Sample_name, '.', WWTP, '-', biological_replicates))) %>% 
