@@ -31,15 +31,8 @@ source('./0-general_functions_main.R') # Source the general_functions file
 process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilution_wells = 'none')
 { # Baylor wells : choose 1) none, 2) '.*' for all, 3) '[A-H]([1-9]$|10)' etc. for specific wells 
   
-  template_volume_ddpcr <- tibble(
-    Target = c('N1', 'N2', 'BCoV', 'pMMoV', # individual template volumes for these targets
-               
-               # 9 ul for all these targets below (B117 assay, CA-India assay, 5Plex assay)
-               'N501Y', 'Del69-70', 'L452R', 'E484Q', 'L452wt', 'E484wt', '484K', 'E484 wild-type', '417T', 'K417 wild-type', '417N'), 
-    
-    template_vol = c(10, 10, 4, 4, 
-                     rep(9, 11)) /22 * 20) # ul template volume per well of the 20 ul ddPCR reaction for each target
-  
+  # get the template volumes for each assay from the metadata sheet
+  template_volume_ddpcr <- read_sheet(ss = sheeturls$user_inputs, sheet = 'ddPCR template volumes', range = 'A:B')
   
   # Data input ----
   
