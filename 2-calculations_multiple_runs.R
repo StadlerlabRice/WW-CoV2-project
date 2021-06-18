@@ -10,8 +10,6 @@ source('./0-general_functions_main.R') # Source the general_functions file
 # Read the input parameters sheet and create all the parameters
 source('./scripts_general functions/g.12-sheet-to-params.R') 
 
-minimal_label_columns <- c('Target_Name', 'Sample_name', 'WWTP') # for scatter plots
-
 # Preliminary ----
 
 # Source script
@@ -424,6 +422,9 @@ sheet_append(ss = sheeturls$user_inputs, data = df_run_log, title_name)
 #   )
 #   )
 # )
+
+# Designating columns to maintain constant when pivoting for scatter plots
+minimal_label_columns <- c('Target_Name', 'Sample_name', 'WWTP') # for scatter plots
 
 
 # Plotting into html -----------------------------------------------------------------------
