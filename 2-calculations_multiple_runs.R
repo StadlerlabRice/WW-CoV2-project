@@ -10,6 +10,7 @@ source('./0-general_functions_main.R') # Source the general_functions file
 # Read the input parameters sheet and create all the parameters
 source('./scripts_general functions/g.12-sheet-to-params.R') 
 
+minimal_label_columns <- c('Target_Name', 'Sample_name', 'WWTP') # for scatter plots
 
 # Preliminary ----
 
@@ -399,7 +400,6 @@ sheet_append(ss = sheeturls$user_inputs, data = df_run_log, title_name)
 # Summary and long_format ------------------------------------
 # # For ease of plotting data with mean and standard deviations
 # 
-# minimal_label_columns <- c('Target', 'Sample_name', 'WWTP')
 # 
 # # Extract minimal columns from processed data (good for running averages and std deviations for plotting)
 # processed_minimal = list( raw.dat = processed_quant_data %>% 
