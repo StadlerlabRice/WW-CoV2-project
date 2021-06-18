@@ -50,7 +50,7 @@ plot_mean_sd_jitter <- function(.data = presentable_data,
     
   {
     .data_to_plot <- .dat_filtered %>% 
-      group_by({{x_var}}, {{colour_var}}, across(unique_columns_to_incl)) %>%  # group
+      group_by({{x_var}}, {{colour_var}}, across(any_of(unique_columns_to_incl))) %>%  # group
       mutate( "mean_{{y_var}}" := mean({{y_var}}) ) %>% 
       
     {if(ascending_order) 
