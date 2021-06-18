@@ -10,9 +10,9 @@ plot_scatter <- function(.data = processed_quant_data,
                          
                          show_y.equals.x_line = 'yes',
                          text_for_equation = 'Rsquare', # choice: "Rsquare" or "full equation"
-                         measure_var = 'Copy #',
+                         measure_var = 'Copies_Per_Liter_WW',
                          text_cols = minimal_label_columns,
-                         sample_var = str_c(extra_categories, '|NTC|Vaccine'), 
+                         sample_var = str_c(samples_to_remove, '|NTC|Vaccine'), 
                          exclude_sample = T)
 
 { # Convenient handle for repetitive plotting in the same format; 
@@ -32,7 +32,7 @@ plot_scatter <- function(.data = processed_quant_data,
     .data_for_plot <- .data %>% 
       select(all_of(text_cols), biological_replicates, all_of(measure_var)) %>% 
       filter(str_detect(`Sample_name`, sample_var, negate = exclude_sample)) %>% # account for missing var
-      pivot_wider(names_from = 'Target', values_from = all_of(measure_var)) %>% # Target can be generalized?
+      pivot_wider(names_from = 'Target_Name', values_from = all_of(measure_var)) %>% # Target can be generalized?
       ungroup() # why did you ungroup - for the lm ..?
   } else .data_for_plot <- .data #%>%  # direct carrying of data to next steps
   # {if(!is.null(grouping_var)) group_by(., {{grouping_var}}) else . } # DISABLED FOR CHECKING IF PLOTLY RUNS (GROUPS NOT WORKING RIGHT NOW
