@@ -5,13 +5,14 @@
 
 # Library calling  ----
 # calling libraries ; make sure they are installed (install.packages)
-library(readxl)
-library(magrittr) 
-library(tidyverse) 
-library(googlesheets4) 
-library(rlang) 
-library(lubridate) 
-library(plotly) 
+library(tidyverse) # main data processing library
+library(readxl) # read excel files
+library(magrittr)  # for pipe operation of nested functions `%>%`
+library(googlesheets4) # for reading and writing google sheets
+library(rlang) # for special non standard evaluation purposes (for PK..)
+library(lubridate) # for dates
+library(plotly) # for interactive plots
+
 
 # google sheets ----
 sheeturls <- list(templates = 'https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=478762118',
@@ -25,6 +26,32 @@ sheeturls <- list(templates = 'https://docs.google.com/spreadsheets/d/19oRiRcRVS
                   complete_data = 'https://docs.google.com/spreadsheets/d/1ltvW7xZf2aUPoBchD4NFGuV0gGWPkdsOW3a0Hxalm-Y/edit#gid=1363292517',
                   HHD_data = 'https://docs.google.com/spreadsheets/d/1dBESjgWSFsOBodFFpYNhWIOAQ2a3wvoLkrn12V_rFck/edit#gid=0' 
 )
+
+
+# calling more funs ----
+
+list_of_general_functions <- c("g.1-reading_files_funs.R",
+                               "g.2-tibble_columns_funs.R",
+                               "g.3-B117_and_obsolete_fns.R",
+                              
+                               "g.5-mathematical_fitting_funs.R",
+                               "g.6-formatting_plot_funs.R",
+                               "g.7-COVID specific_writing_funs.R",
+                               "g.8-plot_mean_sd_jitter.R",
+                               "g.9-plot_scatter.R",
+                               'g.10-sheet_columns_renaming_funs.R',
+                               'g.11-data_QC_funs.R')
+
+
+# handy command to print a tibble in this format (read all the file names into a tibble)
+# cat(paste(shQuote('Tibble/vector here', type="cmd"), collapse=",\n ")) 
+# : Source: https://stackoverflow.com/a/6347520/9049673
+
+
+# Source all the functions listed above
+map(str_c('./scripts_general functions/', list_of_general_functions),
+    source)
+
 
 
 # dummy data, fns  ---- 
@@ -54,34 +81,3 @@ dumfun <- function(a, var_a = a2, var_b = a3, c_var = 'a1', d_var = NULL)
   
   a %>% select(!!d_var)
 }
-
-# calling more funs ----
-
-list_of_general_functions <- c("g.1-reading_files_funs.R",
-                               "g.2-tibble_columns_funs.R",
-                               "g.3-B117_and_obsolete_fns.R",
-                              
-                               "g.5-mathematical_fitting_funs.R",
-                               "g.6-formatting_plot_funs.R",
-                               "g.7-COVID specific_writing_funs.R",
-                               "g.8-plot_mean_sd_jitter.R",
-                               "g.9-plot_scatter.R",
-                               'g.10-sheet_columns_renaming_funs.R',
-                               'g.11-data_QC_funs.R')
-
-
-# handy command to print a tibble in this format (read all the file names into a tibble)
-# cat(paste(shQuote('Tibble/vector here', type="cmd"), collapse=",\n ")) 
-# : Source: https://stackoverflow.com/a/6347520/9049673
-
-
-# Source all the functions listed above
-map(str_c('./scripts_general functions/', list_of_general_functions),
-    source)
-
-
-
-
-
-
-
