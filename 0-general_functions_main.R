@@ -5,7 +5,13 @@
 
 # Library calling  ----
 # calling libraries ; make sure they are installed (install.packages)
-library(readxl); library(magrittr); library(tidyverse); library(ggrepel); library(googlesheets4); library(rlang); library(lubridate); library(plotly) 
+library(readxl)
+library(magrittr) 
+library(tidyverse) 
+library(googlesheets4) 
+library(rlang) 
+library(lubridate) 
+library(plotly) 
 
 # google sheets ----
 sheeturls <- list(templates = 'https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=478762118',
