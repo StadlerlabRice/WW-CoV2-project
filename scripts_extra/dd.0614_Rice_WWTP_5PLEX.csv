@@ -1,0 +1,481 @@
+Facility,WWTP,Date,Lab,Target_Name,Type,Filtered_WW_vol,Copies_per_uL_RNA,AcceptedDroplets,PositiveDroplets,Sample_ID,Sample_Type,Well_Position,Match_Column ,Match_Conc,Target_rawfile,Well_rawfile,Combined,Conc_copies_20uL_rawfile
+0614/Blank,Blank,6/14/21,R,484K,mutation,50,0,18157,0,0614.Blank-1,Composite,C1,484KC1,0,484K,A1,484KA1,
+0614/Blank,Blank,6/14/21,R,E484 wild-type,wild_type,50,0,18157,0,0614.Blank-1,Composite,C1,E484 wild-typeC1,0,E484 wild-type,A1,E484 wild-typeA1,0
+0614/Blank,Blank,6/14/21,R,417T,mutation_BJ,50,0,18157,0,0614.Blank-1,Composite,C1,417TC1,0,417T,A1,417TA1,
+0614/Blank,Blank,6/14/21,R,K417 wild-type,wild_type,50,0,18157,0,0614.Blank-1,Composite,C1,K417 wild-typeC1,0,K417 wild-type,A1,K417 wild-typeA1,0
+0614/Blank,Blank,6/14/21,R,417N,mutation_SA,50,0,18157,0,0614.Blank-1,Composite,C1,417NC1,0,417N,A1,417NA1,
+0614/Blank,Blank,6/14/21,R,484K,mutation,50,0,15305,0,0614.Blank-2,Composite,D1,484KD1,0,484K,A2,484KA2,
+0614/Blank,Blank,6/14/21,R,E484 wild-type,wild_type,50,0,15305,0,0614.Blank-2,Composite,D1,E484 wild-typeD1,0,E484 wild-type,A2,E484 wild-typeA2,3.167664528
+0614/Blank,Blank,6/14/21,R,417T,mutation_BJ,50,0,15305,0,0614.Blank-2,Composite,D1,417TD1,0,417T,A2,417TA2,
+0614/Blank,Blank,6/14/21,R,K417 wild-type,wild_type,50,0,15305,0,0614.Blank-2,Composite,D1,K417 wild-typeD1,0,K417 wild-type,A2,K417 wild-typeA2,31.69585228
+0614/Blank,Blank,6/14/21,R,417N,mutation_SA,50,0,15305,0,0614.Blank-2,Composite,D1,417ND1,0,417N,A2,417NA2,
+0614/DI,DI,6/14/21,R,484K,mutation,50,0,16853,0,0614.DI-1,Composite,A1,484KA1,0,484K,A3,484KA3,
+0614/DI,DI,6/14/21,R,E484 wild-type,wild_type,50,0,16853,0,0614.DI-1,Composite,A1,E484 wild-typeA1,0,E484 wild-type,A3,E484 wild-typeA3,4.446642876
+0614/DI,DI,6/14/21,R,417T,mutation_BJ,50,0,16853,0,0614.DI-1,Composite,A1,417TA1,0,417T,A3,417TA3,
+0614/DI,DI,6/14/21,R,K417 wild-type,wild_type,50,0,16853,0,0614.DI-1,Composite,A1,K417 wild-typeA1,0,K417 wild-type,A3,K417 wild-typeA3,16.30846786
+0614/DI,DI,6/14/21,R,417N,mutation_SA,50,0,16853,0,0614.DI-1,Composite,A1,417NA1,0,417N,A3,417NA3,
+0614/DI,DI,6/14/21,R,484K,mutation,50,0,16695,0,0614.DI-2,Composite,B1,484KB1,0,484K,A4,484KA4,
+0614/DI,DI,6/14/21,R,E484 wild-type,wild_type,50,0,16695,0,0614.DI-2,Composite,B1,E484 wild-typeB1,0,E484 wild-type,A4,E484 wild-typeA4,
+0614/DI,DI,6/14/21,R,417T,mutation_BJ,50,0,16695,0,0614.DI-2,Composite,B1,417TB1,0,417T,A4,417TA4,0
+0614/DI,DI,6/14/21,R,K417 wild-type,wild_type,50,0,16695,0,0614.DI-2,Composite,B1,K417 wild-typeB1,0,K417 wild-type,A4,K417 wild-typeA4,0
+0614/DI,DI,6/14/21,R,417N,mutation_SA,50,0,16695,0,0614.DI-2,Composite,B1,417NB1,0,417N,A4,417NA4,
+0616/NTC,NTC,6/16/21,R,484K,mutation,50,0,16579,0,0616.NTC-1,Composite,A12,484KA12,0,484K,A5,484KA5,
+0616/NTC,NTC,6/16/21,R,E484 wild-type,wild_type,50,0,16579,0,0616.NTC-1,Composite,A12,E484 wild-typeA12,0,E484 wild-type,A5,E484 wild-typeA5,
+0616/NTC,NTC,6/16/21,R,417T,mutation_BJ,50,0,16579,0,0616.NTC-1,Composite,A12,417TA12,0,417T,A5,417TA5,0
+0616/NTC,NTC,6/16/21,R,K417 wild-type,wild_type,50,0,16579,0,0616.NTC-1,Composite,A12,K417 wild-typeA12,0,K417 wild-type,A5,K417 wild-typeA5,0
+0616/NTC,NTC,6/16/21,R,417N,mutation_SA,50,0,16579,0,0616.NTC-1,Composite,A12,417NA12,0,417N,A5,417NA5,
+0616/NTC,NTC,6/16/21,R,484K,mutation,50,0,15572,0,0616.NTC-2,Composite,B12,484KB12,0,484K,A6,484KA6,0
+0616/NTC,NTC,6/16/21,R,E484 wild-type,wild_type,50,0,15572,0,0616.NTC-2,Composite,B12,E484 wild-typeB12,0,E484 wild-type,A6,E484 wild-typeA6,17.48748589
+0616/NTC,NTC,6/16/21,R,417T,mutation_BJ,50,0,15572,0,0616.NTC-2,Composite,B12,417TB12,0,417T,A6,417TA6,5.255033493
+0616/NTC,NTC,6/16/21,R,K417 wild-type,wild_type,50,0,15572,0,0616.NTC-2,Composite,B12,K417 wild-typeB12,0,K417 wild-type,A6,K417 wild-typeA6,43.74311066
+0616/NTC,NTC,6/16/21,R,417N,mutation_SA,50,0,15572,0,0616.NTC-2,Composite,B12,417NB12,0,417N,A6,417NA6,
+0616/NTC,NTC,6/16/21,R,484K,mutation,50,0,16091,0,0616.NTC-3,Composite,C12,484KC12,0,484K,A7,484KA7,5.51977253
+0616/NTC,NTC,6/16/21,R,E484 wild-type,wild_type,50,0,16091,0,0616.NTC-3,Composite,C12,E484 wild-typeC12,0,E484 wild-type,A7,E484 wild-typeA7,9.647438049
+0616/NTC,NTC,6/16/21,R,417T,mutation_BJ,50,0,16091,0,0616.NTC-3,Composite,C12,417TC12,0,417T,A7,417TA7,2.760048151
+0616/NTC,NTC,6/16/21,R,K417 wild-type,wild_type,50,0,16091,0,0616.NTC-3,Composite,C12,K417 wild-typeC12,0,K417 wild-type,A7,K417 wild-typeA7,34.47331238
+0616/NTC,NTC,6/16/21,R,417N,mutation_SA,50,0,16091,0,0616.NTC-3,Composite,C12,417NC12,0,417N,A7,417NA7,
+0616/NTC,NTC,6/16/21,R,484K,mutation,50,0,16888,0,0616.NTC-4,Composite,D12,484KD12,0,484K,A8,484KA8,
+0616/NTC,NTC,6/16/21,R,E484 wild-type,wild_type,50,0,16888,0,0616.NTC-4,Composite,D12,E484 wild-typeD12,0,E484 wild-type,A8,E484 wild-typeA8,0
+0616/NTC,NTC,6/16/21,R,417T,mutation_BJ,50,0,16888,0,0616.NTC-4,Composite,D12,417TD12,0,417T,A8,417TA8,0
+0616/NTC,NTC,6/16/21,R,K417 wild-type,wild_type,50,0,16888,0,0616.NTC-4,Composite,D12,K417 wild-typeD12,0,K417 wild-type,A8,K417 wild-typeA8,6.923062325
+0616/NTC,NTC,6/16/21,R,417N,mutation_SA,50,0,16888,0,0616.NTC-4,Composite,D12,417ND12,0,417N,A8,417NA8,
+0616/NTC,NTC,6/16/21,R,484K,mutation,50,0,16563,0,0616.NTC-5,Composite,E12,484KE12,0,484K,A9,484KA9,
+0616/NTC,NTC,6/16/21,R,E484 wild-type,wild_type,50,0,16563,0,0616.NTC-5,Composite,E12,E484 wild-typeE12,0,E484 wild-type,A9,E484 wild-typeA9,8.062159538
+0616/NTC,NTC,6/16/21,R,417T,mutation_BJ,50,0,16563,0,0616.NTC-5,Composite,E12,417TE12,0,417T,A9,417TA9,2.019952059
+0616/NTC,NTC,6/16/21,R,K417 wild-type,wild_type,50,0,16563,0,0616.NTC-5,Composite,E12,K417 wild-typeE12,0,K417 wild-type,A9,K417 wild-typeA9,50.43387985
+0616/NTC,NTC,6/16/21,R,417N,mutation_SA,50,0,16563,0,0616.NTC-5,Composite,E12,417NE12,0,417N,A9,417NA9,
+0616/NTC,NTC,6/16/21,R,484K,mutation,50,0,14319,0,0616.NTC-6,Composite,F12,484KF12,0,484K,A10,484KA10,0
+0616/NTC,NTC,6/16/21,R,E484 wild-type,wild_type,50,0,14319,0,0616.NTC-6,Composite,F12,E484 wild-typeF12,0,E484 wild-type,A10,E484 wild-typeA10,0
+0616/NTC,NTC,6/16/21,R,417T,mutation_BJ,50,0,14319,0,0616.NTC-6,Composite,F12,417TF12,0,417T,A10,417TA10,0
+0616/NTC,NTC,6/16/21,R,K417 wild-type,wild_type,50,0,14319,0,0616.NTC-6,Composite,F12,K417 wild-typeF12,0,K417 wild-type,A10,K417 wild-typeA10,0
+0616/NTC,NTC,6/16/21,R,417N,mutation_SA,50,0,14319,0,0616.NTC-6,Composite,F12,417NF12,0,417N,A10,417NA10,
+0616/NTC,NTC,6/16/21,R,484K,mutation,50,0,15487,0,0616.NTC-7,Composite,G12,484KG12,0,484K,A11,484KA11,
+0616/NTC,NTC,6/16/21,R,E484 wild-type,wild_type,50,0,15487,0,0616.NTC-7,Composite,G12,E484 wild-typeG12,0,E484 wild-type,A11,E484 wild-typeA11,10.51728153
+0616/NTC,NTC,6/16/21,R,417T,mutation_BJ,50,0,15487,0,0616.NTC-7,Composite,G12,417TG12,0,417T,A11,417TA11,3.016397953
+0616/NTC,NTC,6/16/21,R,K417 wild-type,wild_type,50,0,15487,0,0616.NTC-7,Composite,G12,K417 wild-typeG12,0,K417 wild-type,A11,K417 wild-typeA11,93.31704712
+0616/NTC,NTC,6/16/21,R,417N,mutation_SA,50,0,15487,0,0616.NTC-7,Composite,G12,417NG12,0,417N,A11,417NA11,
+0616/NTC,NTC,6/16/21,R,484K,mutation,50,0,14701,0,0616.NTC-8,Composite,H12,484KH12,0,484K,A12,484KA12,
+0616/NTC,NTC,6/16/21,R,E484 wild-type,wild_type,50,0,14701,0,0616.NTC-8,Composite,H12,E484 wild-typeH12,0,E484 wild-type,A12,E484 wild-typeA12,
+0616/NTC,NTC,6/16/21,R,417T,mutation_BJ,50,0,14701,0,0616.NTC-8,Composite,H12,417TH12,0,417T,A12,417TA12,
+0616/NTC,NTC,6/16/21,R,K417 wild-type,wild_type,50,0,14701,0,0616.NTC-8,Composite,H12,K417 wild-typeH12,0,K417 wild-type,A12,K417 wild-typeA12,
+0616/NTC,NTC,6/16/21,R,417N,mutation_SA,50,0,14701,0,0616.NTC-8,Composite,H12,417NH12,0,417N,A12,417NA12,
+0616/stdBJ,stdBJ,6/16/21,R,484K,mutation,50,0,17467,0,0616.stdBJ-1,Composite,C11,484KC11,0,484K,B1,484KB1,
+0616/stdBJ,stdBJ,6/16/21,R,E484 wild-type,wild_type,50,0.607734728,17467,4,0616.stdBJ-1,Composite,C11,E484 wild-typeC11,5.524308681,E484 wild-type,B1,E484 wild-typeB1,0
+0616/stdBJ,stdBJ,6/16/21,R,417T,mutation_BJ,50,0,17467,0,0616.stdBJ-1,Composite,C11,417TC11,0,417T,B1,417TB1,
+0616/stdBJ,stdBJ,6/16/21,R,K417 wild-type,wild_type,50,0,17467,0,0616.stdBJ-1,Composite,C11,K417 wild-typeC11,0,K417 wild-type,B1,K417 wild-typeB1,0
+0616/stdBJ,stdBJ,6/16/21,R,417N,mutation_SA,50,0,17467,0,0616.stdBJ-1,Composite,C11,417NC11,0,417N,B1,417NB1,
+0616/stdBJ,stdBJ,6/16/21,R,484K,mutation,50,0,16112,0,0616.stdBJ-2,Composite,D11,484KD11,0,484K,B2,484KB2,
+0616/stdBJ,stdBJ,6/16/21,R,E484 wild-type,wild_type,50,1.152087779,16112,7,0616.stdBJ-2,Composite,D11,E484 wild-typeD11,10.47247791,E484 wild-type,B2,E484 wild-typeB2,3.229178905
+0616/stdBJ,stdBJ,6/16/21,R,417T,mutation_BJ,50,0,16112,0,0616.stdBJ-2,Composite,D11,417TD11,0,417T,B2,417TB2,
+0616/stdBJ,stdBJ,6/16/21,R,K417 wild-type,wild_type,50,0,16112,0,0616.stdBJ-2,Composite,D11,K417 wild-typeD11,0,K417 wild-type,B2,K417 wild-typeB2,32.3117485
+0616/stdBJ,stdBJ,6/16/21,R,417N,mutation_SA,50,0,16112,0,0616.stdBJ-2,Composite,D11,417ND11,0,417N,B2,417NB2,
+0616/stdMix,stdMix,6/16/21,R,484K,mutation,50,0,15485,0,0616.stdMix-1,Composite,G11,484KG11,0,484K,B3,484KB3,
+0616/stdMix,stdMix,6/16/21,R,E484 wild-type,wild_type,50,0,15485,0,0616.stdMix-1,Composite,G11,E484 wild-typeG11,0,E484 wild-type,B3,E484 wild-typeB3,7.797650814
+0616/stdMix,stdMix,6/16/21,R,417T,mutation_BJ,50,0,15485,0,0616.stdMix-1,Composite,G11,417TG11,0,417T,B3,417TB3,
+0616/stdMix,stdMix,6/16/21,R,K417 wild-type,wild_type,50,0,15485,0,0616.stdMix-1,Composite,G11,K417 wild-typeG11,0,K417 wild-type,B3,K417 wild-typeB3,23.40070915
+0616/stdMix,stdMix,6/16/21,R,417N,mutation_SA,50,0,15485,0,0616.stdMix-1,Composite,G11,417NG11,0,417N,B3,417NB3,
+0616/stdMix,stdMix,6/16/21,R,484K,mutation,50,0,16333,0,0616.stdMix-2,Composite,H11,484KH11,0,484K,B4,484KB4,
+0616/stdMix,stdMix,6/16/21,R,E484 wild-type,wild_type,50,0,16333,0,0616.stdMix-2,Composite,H11,E484 wild-typeH11,0,E484 wild-type,B4,E484 wild-typeB4,
+0616/stdMix,stdMix,6/16/21,R,417T,mutation_BJ,50,0,16333,0,0616.stdMix-2,Composite,H11,417TH11,0,417T,B4,417TB4,0
+0616/stdMix,stdMix,6/16/21,R,K417 wild-type,wild_type,50,0,16333,0,0616.stdMix-2,Composite,H11,K417 wild-typeH11,0,K417 wild-type,B4,K417 wild-typeB4,0
+0616/stdMix,stdMix,6/16/21,R,417N,mutation_SA,50,0,16333,0,0616.stdMix-2,Composite,H11,417NH11,0,417N,B4,417NB4,
+0616/stdSA,stdSA,6/16/21,R,484K,mutation,50,0,14705,0,0616.stdSA-1,Composite,E11,484KE11,0,484K,B5,484KB5,
+0616/stdSA,stdSA,6/16/21,R,E484 wild-type,wild_type,50,0,14705,0,0616.stdSA-1,Composite,E11,E484 wild-typeE11,0,E484 wild-type,B5,E484 wild-typeB5,25849.70313
+0616/stdSA,stdSA,6/16/21,R,417T,mutation_BJ,50,0,14705,0,0616.stdSA-1,Composite,E11,417TE11,0,417T,B5,417TB5,0
+0616/stdSA,stdSA,6/16/21,R,K417 wild-type,wild_type,50,0,14705,0,0616.stdSA-1,Composite,E11,K417 wild-typeE11,0,K417 wild-type,B5,K417 wild-typeB5,1.347193718
+0616/stdSA,stdSA,6/16/21,R,417N,mutation_SA,50,7.415597746,14705,41,0616.stdSA-1,Composite,E11,417NE11,67.40778351,417N,B5,417NB5,
+0616/stdSA,stdSA,6/16/21,R,484K,mutation,50,0,17003,0,0616.stdSA-2,Composite,F11,484KF11,0,484K,B6,484KB6,0
+0616/stdSA,stdSA,6/16/21,R,E484 wild-type,wild_type,50,0,17003,0,0616.stdSA-2,Composite,F11,E484 wild-typeF11,0,E484 wild-type,B6,E484 wild-typeB6,13.9195261
+0616/stdSA,stdSA,6/16/21,R,417T,mutation_BJ,50,0,17003,0,0616.stdSA-2,Composite,F11,417TF11,0,417T,B6,417TB6,3.098013401
+0616/stdSA,stdSA,6/16/21,R,K417 wild-type,wild_type,50,0,17003,0,0616.stdSA-2,Composite,F11,K417 wild-typeF11,0,K417 wild-type,B6,K417 wild-typeB6,37.13705063
+0616/stdSA,stdSA,6/16/21,R,417N,mutation_SA,50,6.383466143,17003,41,0616.stdSA-2,Composite,F11,417NF11,58.02570724,417N,B6,417NB6,
+69th Street,69,6/14/21,R,484K,mutation,50,0,16056,0,0614.69-1,Composite,E2,484KE2,0,484K,B7,484KB7,4.427121162
+69th Street,69,6/14/21,R,E484 wild-type,wild_type,50,0,16056,0,0614.69-1,Composite,E2,E484 wild-typeE2,0,E484 wild-type,B7,E484 wild-typeB7,16.21549034
+69th Street,69,6/14/21,R,417T,mutation_BJ,50,0,16056,0,0614.69-1,Composite,E2,417TE2,0,417T,B7,417TB7,2.951506615
+69th Street,69,6/14/21,R,K417 wild-type,wild_type,50,0.322493494,16056,2,0614.69-1,Composite,E2,K417 wild-typeE2,2.931465864,K417 wild-type,B7,K417 wild-typeB7,30.96654701
+69th Street,69,6/14/21,R,417N,mutation_SA,50,0,16056,0,0614.69-1,Composite,E2,417NE2,0,417N,B7,417NB7,
+69th Street,69,6/14/21,R,484K,mutation,50,0,16266,0,0614.69-2,Composite,F2,484KF2,0,484K,B8,484KB8,
+69th Street,69,6/14/21,R,E484 wild-type,wild_type,50,0.31834884,16266,2,0614.69-2,Composite,F2,E484 wild-typeF2,2.89379096,E484 wild-type,B8,E484 wild-typeB8,0
+69th Street,69,6/14/21,R,417T,mutation_BJ,50,0,16266,0,0614.69-2,Composite,F2,417TF2,0,417T,B8,417TB8,1.401102304
+69th Street,69,6/14/21,R,K417 wild-type,wild_type,50,1.273630266,16266,8,0614.69-2,Composite,F2,K417 wild-typeF2,11.57729912,K417 wild-type,B8,K417 wild-typeB8,0
+69th Street,69,6/14/21,R,417N,mutation_SA,50,0,16266,0,0614.69-2,Composite,F2,417NF2,0,417N,B8,417NB8,
+Almeda Sims,AS,6/14/21,R,484K,mutation,50,0,15879,0,0614.AS-1,Composite,A3,484KA3,0,484K,B9,484KB9,
+Almeda Sims,AS,6/14/21,R,E484 wild-type,wild_type,50,0.489179634,15879,3,0614.AS-1,Composite,A3,E484 wild-typeA3,4.446642876,E484 wild-type,B9,E484 wild-typeB9,8.351166725
+Almeda Sims,AS,6/14/21,R,417T,mutation_BJ,50,0,15879,0,0614.AS-1,Composite,A3,417TA3,0,417T,B9,417TB9,0
+Almeda Sims,AS,6/14/21,R,K417 wild-type,wild_type,50,1.794110876,15879,11,0614.AS-1,Composite,A3,K417 wild-typeA3,16.30846786,K417 wild-type,B9,K417 wild-typeB9,30.63544464
+Almeda Sims,AS,6/14/21,R,417N,mutation_SA,50,0,15879,0,0614.AS-1,Composite,A3,417NA3,0,417N,B9,417NB9,
+Almeda Sims,AS,6/14/21,R,484K,mutation,50,0,15095,0,0614.AS-2,Composite,B3,484KB3,0,484K,B10,484KB10,1.370898247
+Almeda Sims,AS,6/14/21,R,E484 wild-type,wild_type,50,0.857827372,15095,5,0614.AS-2,Composite,B3,E484 wild-typeB3,7.797650814,E484 wild-type,B10,E484 wild-typeB10,6.849701881
+Almeda Sims,AS,6/14/21,R,417T,mutation_BJ,50,0,15095,0,0614.AS-2,Composite,B3,417TB3,0,417T,B10,417TB10,1.370898247
+Almeda Sims,AS,6/14/21,R,K417 wild-type,wild_type,50,2.57433544,15095,15,0614.AS-2,Composite,B3,K417 wild-typeB3,23.40070915,K417 wild-type,B10,K417 wild-typeB10,17.81337547
+Almeda Sims,AS,6/14/21,R,417N,mutation_SA,50,0,15095,0,0614.AS-2,Composite,B3,417NB3,0,417N,B10,417NB10,
+Beltway,BW,6/14/21,R,484K,mutation,50,0,15698,0,0614.BW-1,Composite,C3,484KC3,0,484K,B11,484KB11,
+Beltway,BW,6/14/21,R,E484 wild-type,wild_type,50,1.155614591,15698,7,0614.BW-1,Composite,C3,E484 wild-typeC3,10.50453663,E484 wild-type,B11,E484 wild-typeB11,22.12034607
+Beltway,BW,6/14/21,R,417T,mutation_BJ,50,0,15698,0,0614.BW-1,Composite,C3,417TC3,0,417T,B11,417TB11,1.477653384
+Beltway,BW,6/14/21,R,K417 wild-type,wild_type,50,2.311745362,15698,14,0614.BW-1,Composite,C3,K417 wild-typeC3,21.01376534,K417 wild-type,B11,K417 wild-typeB11,47.21523666
+Beltway,BW,6/14/21,R,417N,mutation_SA,50,0,15698,0,0614.BW-1,Composite,C3,417NC3,0,417N,B11,417NB11,
+Beltway,BW,6/14/21,R,484K,mutation,50,0,15154,0,0614.BW-2,Composite,D3,484KD3,0,484K,B12,484KB12,
+Beltway,BW,6/14/21,R,E484 wild-type,wild_type,50,0.341670322,15154,2,0614.BW-2,Composite,D3,E484 wild-typeD3,3.105783224,E484 wild-type,B12,E484 wild-typeB12,
+Beltway,BW,6/14/21,R,417T,mutation_BJ,50,0,15154,0,0614.BW-2,Composite,D3,417TD3,0,417T,B12,417TB12,
+Beltway,BW,6/14/21,R,K417 wild-type,wild_type,50,1.708802662,15154,10,0614.BW-2,Composite,D3,K417 wild-typeD3,15.5330162,K417 wild-type,B12,K417 wild-typeB12,
+Beltway,BW,6/14/21,R,417N,mutation_SA,50,0,15154,0,0614.BW-2,Composite,D3,417ND3,0,417N,B12,417NB12,
+Cedar Bayou,CD,6/14/21,R,484K,mutation,50,0,16741,0,0614.CD-1,Composite,G3,484KG3,0,484K,C1,484KC1,
+Cedar Bayou,CD,6/14/21,R,E484 wild-type,wild_type,50,0.309295518,16741,2,0614.CD-1,Composite,G3,E484 wild-typeG3,2.811496258,E484 wild-type,C1,E484 wild-typeC1,0
+Cedar Bayou,CD,6/14/21,R,417T,mutation_BJ,50,0,16741,0,0614.CD-1,Composite,G3,417TG3,0,417T,C1,417TC1,
+Cedar Bayou,CD,6/14/21,R,K417 wild-type,wild_type,50,0.463957152,16741,3,0614.CD-1,Composite,G3,K417 wild-typeG3,4.21737051,K417 wild-type,C1,K417 wild-typeC1,0
+Cedar Bayou,CD,6/14/21,R,417N,mutation_SA,50,0,16741,0,0614.CD-1,Composite,G3,417NG3,0,417N,C1,417NC1,
+Cedar Bayou,CD,6/14/21,R,484K,mutation,50,0,18174,0,0614.CD-2,Composite,H3,484KH3,0,484K,C2,484KC2,
+Cedar Bayou,CD,6/14/21,R,E484 wild-type,wild_type,50,0,18174,0,0614.CD-2,Composite,H3,E484 wild-typeH3,0,E484 wild-type,C2,E484 wild-typeC2,2.85620451
+Cedar Bayou,CD,6/14/21,R,417T,mutation_BJ,50,0,18174,0,0614.CD-2,Composite,H3,417TH3,0,417T,C2,417TC2,
+Cedar Bayou,CD,6/14/21,R,K417 wild-type,wild_type,50,0.712475289,18174,5,0614.CD-2,Composite,H3,K417 wild-typeH3,6.476400375,K417 wild-type,C2,K417 wild-typeC2,15.7134161
+Cedar Bayou,CD,6/14/21,R,417N,mutation_SA,50,0,18174,0,0614.CD-2,Composite,H3,417NH3,0,417N,C2,417NC2,
+Chocolate Bayou,CB,6/14/21,R,484K,mutation,50,0,14165,0,0614.CB-1,Composite,E3,484KE3,0,484K,C3,484KC3,
+Chocolate Bayou,CB,6/14/21,R,E484 wild-type,wild_type,50,0.548429143,14165,3,0614.CB-1,Composite,E3,E484 wild-typeE3,4.985220909,E484 wild-type,C3,E484 wild-typeC3,10.50453663
+Chocolate Bayou,CB,6/14/21,R,417T,mutation_BJ,50,0,14165,0,0614.CB-1,Composite,E3,417TE3,0,417T,C3,417TC3,
+Chocolate Bayou,CB,6/14/21,R,K417 wild-type,wild_type,50,2.194414254,14165,12,0614.CB-1,Composite,E3,K417 wild-typeE3,19.94722557,K417 wild-type,C3,K417 wild-typeC3,21.01376534
+Chocolate Bayou,CB,6/14/21,R,417N,mutation_SA,50,0,14165,0,0614.CB-1,Composite,E3,417NE3,0,417N,C3,417NC3,
+Chocolate Bayou,CB,6/14/21,R,484K,mutation,50,0,15458,0,0614.CB-2,Composite,F3,484KF3,0,484K,C4,484KC4,
+Chocolate Bayou,CB,6/14/21,R,E484 wild-type,wild_type,50,0.334993421,15458,2,0614.CB-2,Composite,F3,E484 wild-typeF3,3.045090199,E484 wild-type,C4,E484 wild-typeC4,
+Chocolate Bayou,CB,6/14/21,R,417T,mutation_BJ,50,0,15458,0,0614.CB-2,Composite,F3,417TF3,0,417T,C4,417TC4,2.167310953
+Chocolate Bayou,CB,6/14/21,R,K417 wild-type,wild_type,50,2.178232426,15458,13,0614.CB-2,Composite,F3,K417 wild-typeF3,19.80013275,K417 wild-type,C4,K417 wild-typeC4,21.66413116
+Chocolate Bayou,CB,6/14/21,R,417N,mutation_SA,50,0,15458,0,0614.CB-2,Composite,F3,417NF3,0,417N,C4,417NC4,
+Clinton Park,CP,6/14/21,R,484K,mutation,50,0,12611,0,0614.CP-1,Composite,A4,484KA4,0,484K,C5,484KC5,
+Clinton Park,CP,6/14/21,R,E484 wild-type,wild_type,50,0,12611,0,0614.CP-1,Composite,A4,E484 wild-typeA4,0,E484 wild-type,C5,E484 wild-typeC5,0
+Clinton Park,CP,6/14/21,R,417T,mutation_BJ,50,0,12611,0,0614.CP-1,Composite,A4,417TA4,0,417T,C5,417TC5,1.535411477
+Clinton Park,CP,6/14/21,R,K417 wild-type,wild_type,50,0,12611,0,0614.CP-1,Composite,A4,K417 wild-typeA4,0,K417 wild-type,C5,K417 wild-typeC5,30.68920517
+Clinton Park,CP,6/14/21,R,417N,mutation_SA,50,0,12611,0,0614.CP-1,Composite,A4,417NA4,0,417N,C5,417NC5,
+Clinton Park,CP,6/14/21,R,484K,mutation,50,0,11544,0,0614.CP-2,Composite,B4,484KB4,0,484K,C6,484KC6,0
+Clinton Park,CP,6/14/21,R,E484 wild-type,wild_type,50,0,11544,0,0614.CP-2,Composite,B4,E484 wild-typeB4,0,E484 wild-type,C6,E484 wild-typeC6,121.5054703
+Clinton Park,CP,6/14/21,R,417T,mutation_BJ,50,0,11544,0,0614.CP-2,Composite,B4,417TB4,0,417T,C6,417TC6,0
+Clinton Park,CP,6/14/21,R,K417 wild-type,wild_type,50,0,11544,0,0614.CP-2,Composite,B4,K417 wild-typeB4,0,K417 wild-type,C6,K417 wild-typeC6,254.9044647
+Clinton Park,CP,6/14/21,R,417N,mutation_SA,50,0,11544,0,0614.CP-2,Composite,B4,417NB4,0,417N,C6,417NC6,
+Easthaven,EH,6/14/21,R,484K,mutation,50,0,10868,0,0614.EH-1,Composite,C4,484KC4,0,484K,C7,484KC7,0
+Easthaven,EH,6/14/21,R,E484 wild-type,wild_type,50,0,10868,0,0614.EH-1,Composite,C4,E484 wild-typeC4,0,E484 wild-type,C7,E484 wild-typeC7,2.607859373
+Easthaven,EH,6/14/21,R,417T,mutation_BJ,50,0.238428048,10868,1,0614.EH-1,Composite,C4,417TC4,2.167310953,417T,C7,417TC7,5.218031883
+Easthaven,EH,6/14/21,R,K417 wild-type,wild_type,50,2.383292757,10868,10,0614.EH-1,Composite,C4,K417 wild-typeC4,21.66413116,K417 wild-type,C7,K417 wild-typeC7,13.04218769
+Easthaven,EH,6/14/21,R,417N,mutation_SA,50,0,10868,0,0614.EH-1,Composite,C4,417NC4,0,417N,C7,417NC7,
+Easthaven,EH,6/14/21,R,484K,mutation,50,0,13341,0,0614.EH-2,Composite,D4,484KD4,0,484K,C8,484KC8,
+Easthaven,EH,6/14/21,R,E484 wild-type,wild_type,50,0,13341,0,0614.EH-2,Composite,D4,E484 wild-typeD4,0,E484 wild-type,C8,E484 wild-typeC8,26.25318146
+Easthaven,EH,6/14/21,R,417T,mutation_BJ,50,0,13341,0,0614.EH-2,Composite,D4,417TD4,0,417T,C8,417TC8,0
+Easthaven,EH,6/14/21,R,K417 wild-type,wild_type,50,1.553018757,13341,8,0614.EH-2,Composite,D4,K417 wild-typeD4,14.1169405,K417 wild-type,C8,K417 wild-typeC8,44.64785004
+Easthaven,EH,6/14/21,R,417N,mutation_SA,50,0,13341,0,0614.EH-2,Composite,D4,417ND4,0,417N,C8,417NC8,
+F.W.S.D. # 23,23,6/14/21,R,484K,mutation,50,0,14861,0,0614.23-1,Composite,A2,484KA2,0,484K,C9,484KC9,
+F.W.S.D. # 23,23,6/14/21,R,E484 wild-type,wild_type,50,0.348477946,14861,2,0614.23-1,Composite,A2,E484 wild-typeA2,3.167664528,E484 wild-type,C9,E484 wild-typeC9,4.707294464
+F.W.S.D. # 23,23,6/14/21,R,417T,mutation_BJ,50,0,14861,0,0614.23-1,Composite,A2,417TA2,0,417T,C9,417TC9,4.711064339
+F.W.S.D. # 23,23,6/14/21,R,K417 wild-type,wild_type,50,3.48689244,14861,20,0614.23-1,Composite,A2,K417 wild-typeA2,31.69585228,K417 wild-type,C9,K417 wild-typeC9,21.97543716
+F.W.S.D. # 23,23,6/14/21,R,417N,mutation_SA,50,0,14861,0,0614.23-1,Composite,A2,417NA2,0,417N,C9,417NC9,
+F.W.S.D. # 23,23,6/14/21,R,484K,mutation,50,0,14574,0,0614.23-2,Composite,B2,484KB2,0,484K,C10,484KC10,0
+F.W.S.D. # 23,23,6/14/21,R,E484 wild-type,wild_type,50,0.355245204,14574,2,0614.23-2,Composite,B2,E484 wild-typeB2,3.229178905,E484 wild-type,C10,E484 wild-typeC10,4.262188435
+F.W.S.D. # 23,23,6/14/21,R,417T,mutation_BJ,50,0,14574,0,0614.23-2,Composite,B2,417TB2,0,417T,C10,417TC10,1.422275305
+F.W.S.D. # 23,23,6/14/21,R,K417 wild-type,wild_type,50,3.5546478,14574,20,0614.23-2,Composite,B2,K417 wild-typeB2,32.3117485,K417 wild-type,C10,K417 wild-typeC10,25.58472061
+F.W.S.D. # 23,23,6/14/21,R,417N,mutation_SA,50,0,14574,0,0614.23-2,Composite,B2,417NB2,0,417N,C10,417NC10,
+Forest Cove,FC,6/14/21,R,484K,mutation,50,0,11857,0,0614.FC-1,Composite,E4,484KE4,0,484K,C11,484KC11,
+Forest Cove,FC,6/14/21,R,E484 wild-type,wild_type,50,0,11857,0,0614.FC-1,Composite,E4,E484 wild-typeE4,0,E484 wild-type,C11,E484 wild-typeC11,5.524308681
+Forest Cove,FC,6/14/21,R,417T,mutation_BJ,50,0,11857,0,0614.FC-1,Composite,E4,417TE4,0,417T,C11,417TC11,0
+Forest Cove,FC,6/14/21,R,K417 wild-type,wild_type,50,2.184014693,11857,10,0614.FC-1,Composite,E4,K417 wild-typeE4,19.85269356,K417 wild-type,C11,K417 wild-typeC11,
+Forest Cove,FC,6/14/21,R,417N,mutation_SA,50,0,11857,0,0614.FC-1,Composite,E4,417NE4,0,417N,C11,417NC11,
+Forest Cove,FC,6/14/21,R,484K,mutation,50,0,14857,0,0614.FC-2,Composite,F4,484KF4,0,484K,C12,484KC12,
+Forest Cove,FC,6/14/21,R,E484 wild-type,wild_type,50,0,14857,0,0614.FC-2,Composite,F4,E484 wild-typeF4,0,E484 wild-type,C12,E484 wild-typeC12,
+Forest Cove,FC,6/14/21,R,417T,mutation_BJ,50,0,14857,0,0614.FC-2,Composite,F4,417TF4,0,417T,C12,417TC12,
+Forest Cove,FC,6/14/21,R,K417 wild-type,wild_type,50,2.440331504,14857,14,0614.FC-2,Composite,F4,K417 wild-typeF4,22.18261337,K417 wild-type,C12,K417 wild-typeC12,
+Forest Cove,FC,6/14/21,R,417N,mutation_SA,50,0,14857,0,0614.FC-2,Composite,F4,417NF4,0,417N,C12,417NC12,
+Greenridge,GR,6/14/21,R,484K,mutation,50,0,14249,0,0614.GR-1,Composite,G4,484KG4,0,484K,D1,484KD1,
+Greenridge,GR,6/14/21,R,E484 wild-type,wild_type,50,0,14249,0,0614.GR-1,Composite,G4,E484 wild-typeG4,0,E484 wild-type,D1,E484 wild-typeD1,0
+Greenridge,GR,6/14/21,R,417T,mutation_BJ,50,0.728178916,14249,4,0614.GR-1,Composite,G4,417TG4,6.619146347,417T,D1,417TD1,
+Greenridge,GR,6/14/21,R,K417 wild-type,wild_type,50,3.093347035,14249,17,0614.GR-1,Composite,G4,K417 wild-typeG4,28.11852455,K417 wild-type,D1,K417 wild-typeD1,0
+Greenridge,GR,6/14/21,R,417N,mutation_SA,50,0,14249,0,0614.GR-1,Composite,G4,417NG4,0,417N,D1,417ND1,
+Greenridge,GR,6/14/21,R,484K,mutation,50,0,15571,0,0614.GR-2,Composite,H4,484KH4,0,484K,D2,484KD2,
+Greenridge,GR,6/14/21,R,E484 wild-type,wild_type,50,0,15571,0,0614.GR-2,Composite,H4,E484 wild-typeH4,0,E484 wild-type,D2,E484 wild-typeD2,10.5835104
+Greenridge,GR,6/14/21,R,417T,mutation_BJ,50,0.499436092,15571,3,0614.GR-2,Composite,H4,417TH4,4.539874077,417T,D2,417TD2,
+Greenridge,GR,6/14/21,R,K417 wild-type,wild_type,50,1.664412428,15571,10,0614.GR-2,Composite,H4,K417 wild-typeH4,15.12950897,K417 wild-type,D2,K417 wild-typeD2,30.25123978
+Greenridge,GR,6/14/21,R,417N,mutation_SA,50,0,15571,0,0614.GR-2,Composite,H4,417NH4,0,417N,D2,417ND2,
+Homestead,HO,6/14/21,R,484K,mutation,50,0,13007,0,0614.HO-1,Composite,A5,484KA5,0,484K,D3,484KD3,
+Homestead,HO,6/14/21,R,E484 wild-type,wild_type,50,0,13007,0,0614.HO-1,Composite,A5,E484 wild-typeA5,0,E484 wild-type,D3,E484 wild-typeD3,3.105783224
+Homestead,HO,6/14/21,R,417T,mutation_BJ,50,0,13007,0,0614.HO-1,Composite,A5,417TA5,0,417T,D3,417TD3,
+Homestead,HO,6/14/21,R,K417 wild-type,wild_type,50,0,13007,0,0614.HO-1,Composite,A5,K417 wild-typeA5,0,K417 wild-type,D3,K417 wild-typeD3,15.5330162
+Homestead,HO,6/14/21,R,417N,mutation_SA,50,0,13007,0,0614.HO-1,Composite,A5,417NA5,0,417N,D3,417ND3,
+Homestead,HO,6/14/21,R,484K,mutation,50,0,17471,0,0614.HO-2,Composite,B5,484KB5,0,484K,D4,484KD4,
+Homestead,HO,6/14/21,R,E484 wild-type,wild_type,50,2843.751719,17471,2,0614.HO-2,Composite,B5,E484 wild-typeB5,25849.70313,E484 wild-type,D4,E484 wild-typeD4,
+Homestead,HO,6/14/21,R,417T,mutation_BJ,50,0,17471,0,0614.HO-2,Composite,B5,417TB5,0,417T,D4,417TD4,0
+Homestead,HO,6/14/21,R,K417 wild-type,wild_type,50,0.14820613,17471,1,0614.HO-2,Composite,B5,K417 wild-typeB5,1.347193718,K417 wild-type,D4,K417 wild-typeD4,14.1169405
+Homestead,HO,6/14/21,R,417N,mutation_SA,50,0,17471,0,0614.HO-2,Composite,B5,417NB5,0,417N,D4,417ND4,
+Imperial Valley,IV,6/14/21,R,484K,mutation,50,0,9716,0,0614.IV-1,Composite,E5,484KE5,0,484K,D5,484KD5,
+Imperial Valley,IV,6/14/21,R,E484 wild-type,wild_type,50,0,9716,0,0614.IV-1,Composite,E5,E484 wild-typeE5,0,E484 wild-type,D5,E484 wild-typeD5,0
+Imperial Valley,IV,6/14/21,R,417T,mutation_BJ,50,0,9716,0,0614.IV-1,Composite,E5,417TE5,0,417T,D5,417TD5,2.976334333
+Imperial Valley,IV,6/14/21,R,K417 wild-type,wild_type,50,0,9716,0,0614.IV-1,Composite,E5,K417 wild-typeE5,0,K417 wild-type,D5,K417 wild-typeD5,17.85236168
+Imperial Valley,IV,6/14/21,R,417N,mutation_SA,50,0,9716,0,0614.IV-1,Composite,E5,417NE5,0,417N,D5,417ND5,
+Imperial Valley,IV,6/14/21,R,484K,mutation,50,0,17009,0,0614.IV-2,Composite,F5,484KF5,0,484K,D6,484KD6,0
+Imperial Valley,IV,6/14/21,R,E484 wild-type,wild_type,50,156.9264763,17009,1,0614.IV-2,Composite,F5,E484 wild-typeF5,1426.46167,E484 wild-type,D6,E484 wild-typeD6,40.34511185
+Imperial Valley,IV,6/14/21,R,417T,mutation_BJ,50,0,17009,0,0614.IV-2,Composite,F5,417TF5,0,417T,D6,417TD6,1.505834103
+Imperial Valley,IV,6/14/21,R,K417 wild-type,wild_type,50,2.436803433,17009,16,0614.IV-2,Composite,F5,K417 wild-typeF5,22.15054321,K417 wild-type,D6,K417 wild-typeD6,184.3572693
+Imperial Valley,IV,6/14/21,R,417N,mutation_SA,50,0,17009,0,0614.IV-2,Composite,F5,417NF5,0,417N,D6,417ND6,
+Intercontinental Airport,IA,6/14/21,R,484K,mutation,50,0,15346,0,0614.IA-1,Composite,C5,484KC5,0,484K,D7,484KD7,0
+Intercontinental Airport,IA,6/14/21,R,E484 wild-type,wild_type,50,0,15346,0,0614.IA-1,Composite,C5,E484 wild-typeC5,0,E484 wild-type,D7,E484 wild-typeD7,2.82992506
+Intercontinental Airport,IA,6/14/21,R,417T,mutation_BJ,50,0.168912154,15346,1,0614.IA-1,Composite,C5,417TC5,1.535411477,417T,D7,417TD7,1.415856481
+Intercontinental Airport,IA,6/14/21,R,K417 wild-type,wild_type,50,3.376150184,15346,20,0614.IA-1,Composite,C5,K417 wild-typeC5,30.68920517,K417 wild-type,D7,K417 wild-typeD7,14.1530304
+Intercontinental Airport,IA,6/14/21,R,417N,mutation_SA,50,0,15346,0,0614.IA-1,Composite,C5,417NC5,0,417N,D7,417ND7,
+Intercontinental Airport,IA,6/14/21,R,484K,mutation,50,0,15825,0,0614.IA-2,Composite,D5,484KD5,0,484K,D8,484KD8,
+Intercontinental Airport,IA,6/14/21,R,E484 wild-type,wild_type,50,0,15825,0,0614.IA-2,Composite,D5,E484 wild-typeD5,0,E484 wild-type,D8,E484 wild-typeD8,22.90385246
+Intercontinental Airport,IA,6/14/21,R,417T,mutation_BJ,50,0.32742952,15825,2,0614.IA-2,Composite,D5,417TD5,2.976334333,417T,D8,417TD8,0
+Intercontinental Airport,IA,6/14/21,R,K417 wild-type,wild_type,50,1.96395618,15825,12,0614.IA-2,Composite,D5,K417 wild-typeD5,17.85236168,K417 wild-type,D8,K417 wild-typeD8,40.09638214
+Intercontinental Airport,IA,6/14/21,R,417N,mutation_SA,50,0,15825,0,0614.IA-2,Composite,D5,417ND5,0,417N,D8,417ND8,
+Keegans Bayou,KB,6/14/21,R,484K,mutation,50,0,15853,0,0614.KB-1,Composite,G5,484KG5,0,484K,D9,484KD9,
+Keegans Bayou,KB,6/14/21,R,E484 wild-type,wild_type,50,0,15853,0,0614.KB-1,Composite,G5,E484 wild-typeG5,0,E484 wild-type,D9,E484 wild-typeD9,0
+Keegans Bayou,KB,6/14/21,R,417T,mutation_BJ,50,0,15853,0,0614.KB-1,Composite,G5,417TG5,0,417T,D9,417TD9,4.216866016
+Keegans Bayou,KB,6/14/21,R,K417 wild-type,wild_type,50,0,15853,0,0614.KB-1,Composite,G5,K417 wild-typeG5,0,K417 wild-type,D9,K417 wild-typeD9,18.26763153
+Keegans Bayou,KB,6/14/21,R,417N,mutation_SA,50,0,15853,0,0614.KB-1,Composite,G5,417NG5,0,417N,D9,417ND9,
+Keegans Bayou,KB,6/14/21,R,484K,mutation,50,0,16600,0,0614.KB-2,Composite,H5,484KH5,0,484K,D10,484KD10,1.437920451
+Keegans Bayou,KB,6/14/21,R,E484 wild-type,wild_type,50,1216.601562,16600,3,0614.KB-2,Composite,H5,E484 wild-typeH5,11058.9082,E484 wild-type,D10,E484 wild-typeD10,4.311126709
+Keegans Bayou,KB,6/14/21,R,417T,mutation_BJ,50,0,16600,0,0614.KB-2,Composite,H5,417TH5,0,417T,D10,417TD10,0
+Keegans Bayou,KB,6/14/21,R,K417 wild-type,wild_type,50,0.779925347,16600,5,0614.KB-2,Composite,H5,K417 wild-typeH5,7.089521408,K417 wild-type,D10,K417 wild-typeD10,15.81132793
+Keegans Bayou,KB,6/14/21,R,417N,mutation_SA,50,0,16600,0,0614.KB-2,Composite,H5,417NH5,0,417N,D10,417ND10,
+Kingwood Central,KW,6/14/21,R,484K,mutation,50,0,13470,0,0614.KW-1,Composite,A6,484KA6,0,484K,D11,484KD11,
+Kingwood Central,KW,6/14/21,R,E484 wild-type,wild_type,50,1.923815829,13470,10,0614.KW-1,Composite,A6,E484 wild-typeA6,17.48748589,E484 wild-type,D11,E484 wild-typeD11,10.47247791
+Kingwood Central,KW,6/14/21,R,417T,mutation_BJ,50,0.578111495,13470,3,0614.KW-1,Composite,A6,417TA6,5.255033493,417T,D11,417TD11,0
+Kingwood Central,KW,6/14/21,R,K417 wild-type,wild_type,50,4.812223395,13470,25,0614.KW-1,Composite,A6,K417 wild-typeA6,43.74311066,K417 wild-type,D11,K417 wild-typeD11,
+Kingwood Central,KW,6/14/21,R,417N,mutation_SA,50,0,13470,0,0614.KW-1,Composite,A6,417NA6,0,417N,D11,417ND11,
+Kingwood Central,KW,6/14/21,R,484K,mutation,50,0,15224,0,0614.KW-2,Composite,B6,484KB6,0,484K,D12,484KD12,
+Kingwood Central,KW,6/14/21,R,E484 wild-type,wild_type,50,1.531301001,15224,9,0614.KW-2,Composite,B6,E484 wild-typeB6,13.9195261,E484 wild-type,D12,E484 wild-typeD12,
+Kingwood Central,KW,6/14/21,R,417T,mutation_BJ,50,0.340815556,15224,2,0614.KW-2,Composite,B6,417TB6,3.098013401,417T,D12,417TD12,
+Kingwood Central,KW,6/14/21,R,K417 wild-type,wild_type,50,4.085484118,15224,24,0614.KW-2,Composite,B6,K417 wild-typeB6,37.13705063,K417 wild-type,D12,K417 wild-typeD12,
+Kingwood Central,KW,6/14/21,R,417N,mutation_SA,50,0,15224,0,0614.KW-2,Composite,B6,417NB6,0,417N,D12,417ND12,
+Kingwood West,KWW,6/14/21,R,484K,mutation,50,0,16895,0,0614.KWW-1,Composite,C6,484KC6,0,484K,E1,484KE1,
+Kingwood West,KWW,6/14/21,R,E484 wild-type,wild_type,50,13.36693843,16895,87,0614.KWW-1,Composite,C6,E484 wild-typeC6,121.5054703,E484 wild-type,E1,E484 wild-typeE1,15.04656792
+Kingwood West,KWW,6/14/21,R,417T,mutation_BJ,50,0,16895,0,0614.KWW-1,Composite,C6,417TC6,0,417T,E1,417TE1,
+Kingwood West,KWW,6/14/21,R,K417 wild-type,wild_type,50,28.04229535,16895,182,0614.KWW-1,Composite,C6,K417 wild-typeC6,254.9044647,K417 wild-type,E1,K417 wild-typeE1,10.94200325
+Kingwood West,KWW,6/14/21,R,417N,mutation_SA,50,0,16895,0,0614.KWW-1,Composite,C6,417NC6,0,417N,E1,417NE1,
+Kingwood West,KWW,6/14/21,R,484K,mutation,50,0,15763,0,0614.KWW-2,Composite,D6,484KD6,0,484K,E2,484KE2,
+Kingwood West,KWW,6/14/21,R,E484 wild-type,wild_type,50,4.438406144,15763,27,0614.KWW-2,Composite,D6,E484 wild-typeD6,40.34511185,E484 wild-type,E2,E484 wild-typeE2,0
+Kingwood West,KWW,6/14/21,R,417T,mutation_BJ,50,0.165658317,15763,1,0614.KWW-2,Composite,D6,417TD6,1.505834103,417T,E2,417TE2,
+Kingwood West,KWW,6/14/21,R,K417 wild-type,wild_type,50,20.28132776,15763,123,0614.KWW-2,Composite,D6,K417 wild-typeD6,184.3572693,K417 wild-type,E2,K417 wild-typeE2,2.931465864
+Kingwood West,KWW,6/14/21,R,417N,mutation_SA,50,0,15763,0,0614.KWW-2,Composite,D6,417ND6,0,417N,E2,417NE2,
+M.U.D. # 203,203,6/14/21,R,484K,mutation,50,0,16981,0,0614.203-1,Composite,G1,484KG1,0,484K,E3,484KE3,
+M.U.D. # 203,203,6/14/21,R,E484 wild-type,wild_type,50,4.272198651,16981,28,0614.203-1,Composite,G1,E484 wild-typeG1,38.83428574,E484 wild-type,E3,E484 wild-typeE3,4.985220909
+M.U.D. # 203,203,6/14/21,R,417T,mutation_BJ,50,0,16981,0,0614.203-1,Composite,G1,417TG1,0,417T,E3,417TE3,
+M.U.D. # 203,203,6/14/21,R,K417 wild-type,wild_type,50,5.646903916,16981,37,0614.203-1,Composite,G1,K417 wild-typeG1,51.3303566,K417 wild-type,E3,K417 wild-typeE3,19.94722557
+M.U.D. # 203,203,6/14/21,R,417N,mutation_SA,50,0,16981,0,0614.203-1,Composite,G1,417NG1,0,417N,E3,417NE3,
+M.U.D. # 203,203,6/14/21,R,484K,mutation,50,0,17160,0,0614.203-2,Composite,H1,484KH1,0,484K,E4,484KE4,
+M.U.D. # 203,203,6/14/21,R,E484 wild-type,wild_type,50,2.868137843,17160,19,0614.203-2,Composite,H1,E484 wild-typeH1,26.07137299,E484 wild-type,E4,E484 wild-typeE4,
+M.U.D. # 203,203,6/14/21,R,417T,mutation_BJ,50,0,17160,0,0614.203-2,Composite,H1,417TH1,0,417T,E4,417TE4,0
+M.U.D. # 203,203,6/14/21,R,K417 wild-type,wild_type,50,6.344351438,17160,42,0614.203-2,Composite,H1,K417 wild-typeH1,57.67015457,K417 wild-type,E4,K417 wild-typeE4,19.85269356
+M.U.D. # 203,203,6/14/21,R,417N,mutation_SA,50,0,17160,0,0614.203-2,Composite,H1,417NH1,0,417N,E4,417NE4,
+Metro Central,MC,6/14/21,R,484K,mutation,50,0,9404,0,0614.MC-1,Composite,E6,484KE6,0,484K,E5,484KE5,
+Metro Central,MC,6/14/21,R,E484 wild-type,wild_type,50,0,9404,0,0614.MC-1,Composite,E6,E484 wild-typeE6,0,E484 wild-type,E5,E484 wild-typeE5,
+Metro Central,MC,6/14/21,R,417T,mutation_BJ,50,0,9404,0,0614.MC-1,Composite,E6,417TE6,0,417T,E5,417TE5,0
+Metro Central,MC,6/14/21,R,K417 wild-type,wild_type,50,0,9404,0,0614.MC-1,Composite,E6,K417 wild-typeE6,0,K417 wild-type,E5,K417 wild-typeE5,0
+Metro Central,MC,6/14/21,R,417N,mutation_SA,50,0,9404,0,0614.MC-1,Composite,E6,417NE6,0,417N,E5,417NE5,
+Metro Central,MC,6/14/21,R,484K,mutation,50,0,13693,0,0614.MC-2,Composite,F6,484KF6,0,484K,E6,484KE6,0
+Metro Central,MC,6/14/21,R,E484 wild-type,wild_type,50,0,13693,0,0614.MC-2,Composite,F6,E484 wild-typeF6,0,E484 wild-type,E6,E484 wild-typeE6,0
+Metro Central,MC,6/14/21,R,417T,mutation_BJ,50,0,13693,0,0614.MC-2,Composite,F6,417TF6,0,417T,E6,417TE6,0
+Metro Central,MC,6/14/21,R,K417 wild-type,wild_type,50,0,13693,0,0614.MC-2,Composite,F6,K417 wild-typeF6,0,K417 wild-type,E6,K417 wild-typeE6,0
+Metro Central,MC,6/14/21,R,417N,mutation_SA,50,0,13693,0,0614.MC-2,Composite,F6,417NF6,0,417N,E6,417NE6,
+Northbelt,NO,6/14/21,R,484K,mutation,50,0,18056,0,0614.NO-1,Composite,C7,484KC7,0,484K,E7,484KE7,0
+Northbelt,NO,6/14/21,R,E484 wild-type,wild_type,50,0.28689322,18056,2,0614.NO-1,Composite,C7,E484 wild-typeC7,2.607859373,E484 wild-type,E7,E484 wild-typeE7,1.371777296
+Northbelt,NO,6/14/21,R,417T,mutation_BJ,50,0.574040911,18056,4,0614.NO-1,Composite,C7,417TC7,5.218031883,417T,E7,417TE7,0
+Northbelt,NO,6/14/21,R,K417 wild-type,wild_type,50,1.434784124,18056,10,0614.NO-1,Composite,C7,K417 wild-typeC7,13.04218769,K417 wild-type,E7,K417 wild-typeE7,1.371777296
+Northbelt,NO,6/14/21,R,417N,mutation_SA,50,0,18056,0,0614.NO-1,Composite,C7,417NC7,0,417N,E7,417NE7,
+Northbelt,NO,6/14/21,R,484K,mutation,50,0,16633,0,0614.NO-2,Composite,D7,484KD7,0,484K,E8,484KE8,
+Northbelt,NO,6/14/21,R,E484 wild-type,wild_type,50,0.311322889,16633,2,0614.NO-2,Composite,D7,E484 wild-typeD7,2.82992506,E484 wild-type,E8,E484 wild-typeE8,9.067793846
+Northbelt,NO,6/14/21,R,417T,mutation_BJ,50,0.155759789,16633,1,0614.NO-2,Composite,D7,417TD7,1.415856481,417T,E8,417TE8,1.513096809
+Northbelt,NO,6/14/21,R,K417 wild-type,wild_type,50,1.556989043,16633,10,0614.NO-2,Composite,D7,K417 wild-typeD7,14.1530304,K417 wild-type,E8,K417 wild-typeE8,30.23957825
+Northbelt,NO,6/14/21,R,417N,mutation_SA,50,0,16633,0,0614.NO-2,Composite,D7,417ND7,0,417N,E8,417NE8,
+Northeast,NE,6/14/21,R,484K,mutation,50,0.204518959,12701,1,0614.NE-1,Composite,G6,484KG6,1.859077334,484K,E9,484KE9,
+Northeast,NE,6/14/21,R,E484 wild-type,wild_type,50,0.815916166,12701,4,0614.NE-1,Composite,G6,E484 wild-typeG6,7.416677952,E484 wild-type,E9,E484 wild-typeE9,250.9957275
+Northeast,NE,6/14/21,R,417T,mutation_BJ,50,1.636604272,12701,8,0614.NE-1,Composite,G6,417TG6,14.87673283,417T,E9,417TE9,0
+Northeast,NE,6/14/21,R,K417 wild-type,wild_type,50,8.579974285,12701,42,0614.NE-1,Composite,G6,K417 wild-typeG6,77.99196625,K417 wild-type,E9,K417 wild-typeE9,595.3827515
+Northeast,NE,6/14/21,R,417N,mutation_SA,50,0,12701,0,0614.NE-1,Composite,G6,417NG6,0,417N,E9,417NE9,
+Northeast,NE,6/14/21,R,484K,mutation,50,0.337241087,15426,2,0614.NE-2,Composite,H6,484KH6,3.065521479,484K,E10,484KE10,0
+Northeast,NE,6/14/21,R,E484 wild-type,wild_type,50,1.176168108,15426,7,0614.NE-2,Composite,H6,E484 wild-typeH6,10.6913681,E484 wild-type,E10,E484 wild-typeE10,38.22813416
+Northeast,NE,6/14/21,R,417T,mutation_BJ,50,2.361611092,15426,14,0614.NE-2,Composite,H6,417TH6,21.46704483,417T,E10,417TE10,0
+Northeast,NE,6/14/21,R,K417 wild-type,wild_type,50,11.61705411,15426,69,0614.NE-2,Composite,H6,K417 wild-typeH6,105.5990219,K417 wild-type,E10,K417 wild-typeE10,113.449646
+Northeast,NE,6/14/21,R,417N,mutation_SA,50,0,15426,0,0614.NE-2,Composite,H6,417NH6,0,417N,E10,417NE10,
+Northgate,NG,6/14/21,R,484K,mutation,50,0.607235702,17087,4,0614.NG-1,Composite,A7,484KA7,5.51977253,484K,E11,484KE11,
+Northgate,NG,6/14/21,R,E484 wild-type,wild_type,50,1.061324318,17087,7,0614.NG-1,Composite,A7,E484 wild-typeA7,9.647438049,E484 wild-type,E11,E484 wild-typeE11,
+Northgate,NG,6/14/21,R,417T,mutation_BJ,50,0.30363566,17087,2,0614.NG-1,Composite,A7,417TA7,2.760048151,417T,E11,417TE11,
+Northgate,NG,6/14/21,R,K417 wild-type,wild_type,50,3.792443606,17087,25,0614.NG-1,Composite,A7,K417 wild-typeA7,34.47331238,K417 wild-type,E11,K417 wild-typeE11,
+Northgate,NG,6/14/21,R,417N,mutation_SA,50,0,17087,0,0614.NG-1,Composite,A7,417NA7,0,417N,E11,417NE11,67.40778351
+Northgate,NG,6/14/21,R,484K,mutation,50,0.487032031,15979,3,0614.NG-2,Composite,B7,484KB7,4.427121162,484K,E12,484KE12,
+Northgate,NG,6/14/21,R,E484 wild-type,wild_type,50,1.783882326,15979,11,0614.NG-2,Composite,B7,E484 wild-typeB7,16.21549034,E484 wild-type,E12,E484 wild-typeE12,
+Northgate,NG,6/14/21,R,417T,mutation_BJ,50,0.324698197,15979,2,0614.NG-2,Composite,B7,417TB7,2.951506615,417T,E12,417TE12,
+Northgate,NG,6/14/21,R,K417 wild-type,wild_type,50,3.406660837,15979,21,0614.NG-2,Composite,B7,K417 wild-typeB7,30.96654701,K417 wild-type,E12,K417 wild-typeE12,
+Northgate,NG,6/14/21,R,417N,mutation_SA,50,0,15979,0,0614.NG-2,Composite,B7,417NB7,0,417N,E12,417NE12,
+Northwest,NW,6/14/21,R,484K,mutation,50,0,17155,0,0614.NW-1,Composite,E7,484KE7,0,484K,F1,484KF1,
+Northwest,NW,6/14/21,R,E484 wild-type,wild_type,50,0.150910594,17155,1,0614.NW-1,Composite,E7,E484 wild-typeE7,1.371777296,E484 wild-type,F1,E484 wild-typeF1,2.78010416
+Northwest,NW,6/14/21,R,417T,mutation_BJ,50,0,17155,0,0614.NW-1,Composite,E7,417TE7,0,417T,F1,417TF1,
+Northwest,NW,6/14/21,R,K417 wild-type,wild_type,50,0.150910594,17155,1,0614.NW-1,Composite,E7,K417 wild-typeE7,1.371777296,K417 wild-type,F1,K417 wild-typeF1,9.731801987
+Northwest,NW,6/14/21,R,417N,mutation_SA,50,0,17155,0,0614.NW-1,Composite,E7,417NE7,0,417N,F1,417NF1,
+Northwest,NW,6/14/21,R,484K,mutation,50,0,16008,0,0614.NW-2,Composite,F7,484KF7,0,484K,F2,484KF2,
+Northwest,NW,6/14/21,R,E484 wild-type,wild_type,50,0.161705093,16008,1,0614.NW-2,Composite,F7,E484 wild-typeF7,1.469899297,E484 wild-type,F2,E484 wild-typeF2,2.89379096
+Northwest,NW,6/14/21,R,417T,mutation_BJ,50,0,16008,0,0614.NW-2,Composite,F7,417TF7,0,417T,F2,417TF2,
+Northwest,NW,6/14/21,R,K417 wild-type,wild_type,50,0,16008,0,0614.NW-2,Composite,F7,K417 wild-typeF7,0,K417 wild-type,F2,K417 wild-typeF2,11.57729912
+Northwest,NW,6/14/21,R,417N,mutation_SA,50,0,16008,0,0614.NW-2,Composite,F7,417NF7,0,417N,F2,417NF2,
+Park Ten,PT,6/14/21,R,484K,mutation,50,0,16204,0,0614.PT-1,Composite,G7,484KG7,0,484K,F3,484KF3,
+Park Ten,PT,6/14/21,R,E484 wild-type,wild_type,50,0.79884398,16204,5,0614.PT-1,Composite,G7,E484 wild-typeG7,7.261491776,E484 wild-type,F3,E484 wild-typeF3,3.045090199
+Park Ten,PT,6/14/21,R,417T,mutation_BJ,50,0,16204,0,0614.PT-1,Composite,G7,417TG7,0,417T,F3,417TF3,
+Park Ten,PT,6/14/21,R,K417 wild-type,wild_type,50,1.757782285,16204,11,0614.PT-1,Composite,G7,K417 wild-typeG7,15.97824097,K417 wild-type,F3,K417 wild-typeF3,19.80013275
+Park Ten,PT,6/14/21,R,417N,mutation_SA,50,0,16204,0,0614.PT-1,Composite,G7,417NG7,0,417N,F3,417NF3,
+Park Ten,PT,6/14/21,R,484K,mutation,50,0,15779,0,0614.PT-2,Composite,H7,484KH7,0,484K,F4,484KF4,
+Park Ten,PT,6/14/21,R,E484 wild-type,wild_type,50,0.164062381,15779,1,0614.PT-2,Composite,H7,E484 wild-typeH7,1.491327047,E484 wild-type,F4,E484 wild-typeF4,
+Park Ten,PT,6/14/21,R,417T,mutation_BJ,50,0,15779,0,0614.PT-2,Composite,H7,417TH7,0,417T,F4,417TF4,0
+Park Ten,PT,6/14/21,R,K417 wild-type,wild_type,50,1.148655076,15779,7,0614.PT-2,Composite,H7,K417 wild-typeH7,10.44127464,K417 wild-type,F4,K417 wild-typeF4,22.18261337
+Park Ten,PT,6/14/21,R,417N,mutation_SA,50,0,15779,0,0614.PT-2,Composite,H7,417NH7,0,417N,F4,417NF4,
+Sagemont,SG,6/14/21,R,484K,mutation,50,0,15574,0,0614.SG-1,Composite,E8,484KE8,0,484K,F5,484KF5,
+Sagemont,SG,6/14/21,R,E484 wild-type,wild_type,50,0.997557079,15574,6,0614.SG-1,Composite,E8,E484 wild-typeE8,9.067793846,E484 wild-type,F5,E484 wild-typeF5,1426.46167
+Sagemont,SG,6/14/21,R,417T,mutation_BJ,50,0.166457295,15574,1,0614.SG-1,Composite,E8,417TE8,1.513096809,417T,F5,417TF5,0
+Sagemont,SG,6/14/21,R,K417 wild-type,wild_type,50,3.326686276,15574,20,0614.SG-1,Composite,E8,K417 wild-typeE8,30.23957825,K417 wild-type,F5,K417 wild-typeF5,22.15054321
+Sagemont,SG,6/14/21,R,417N,mutation_SA,50,0,15574,0,0614.SG-1,Composite,E8,417NE8,0,417N,F5,417NF5,
+Sagemont,SG,6/14/21,R,484K,mutation,50,0,16235,0,0614.SG-2,Composite,F8,484KF8,0,484K,F6,484KF6,0
+Sagemont,SG,6/14/21,R,E484 wild-type,wild_type,50,1.435615469,16235,9,0614.SG-2,Composite,F8,E484 wild-typeF8,13.04974461,E484 wild-type,F6,E484 wild-typeF6,0
+Sagemont,SG,6/14/21,R,417T,mutation_BJ,50,0.15967026,16235,1,0614.SG-2,Composite,F8,417TF8,1.451402664,417T,F6,417TF6,0
+Sagemont,SG,6/14/21,R,K417 wild-type,wild_type,50,2.872027239,16235,18,0614.SG-2,Composite,F8,K417 wild-typeF8,26.1067276,K417 wild-type,F6,K417 wild-typeF6,0
+Sagemont,SG,6/14/21,R,417N,mutation_SA,50,0,16235,0,0614.SG-2,Composite,F8,417NF8,0,417N,F6,417NF6,
+Sims Bayou North,SB,6/14/21,R,484K,mutation,50,0,16996,0,0614.SB-1,Composite,A8,484KA8,0,484K,F7,484KF7,0
+Sims Bayou North,SB,6/14/21,R,E484 wild-type,wild_type,50,0,16996,0,0614.SB-1,Composite,A8,E484 wild-typeA8,0,E484 wild-type,F7,E484 wild-typeF7,1.469899297
+Sims Bayou North,SB,6/14/21,R,417T,mutation_BJ,50,0,16996,0,0614.SB-1,Composite,A8,417TA8,0,417T,F7,417TF7,0
+Sims Bayou North,SB,6/14/21,R,K417 wild-type,wild_type,50,0.761613017,16996,5,0614.SB-1,Composite,A8,K417 wild-typeA8,6.923062325,K417 wild-type,F7,K417 wild-typeF7,0
+Sims Bayou North,SB,6/14/21,R,417N,mutation_SA,50,0,16996,0,0614.SB-1,Composite,A8,417NA8,0,417N,F7,417NF7,
+Sims Bayou North,SB,6/14/21,R,484K,mutation,50,0,16795,0,0614.SB-2,Composite,B8,484KB8,0,484K,F8,484KF8,
+Sims Bayou North,SB,6/14/21,R,E484 wild-type,wild_type,50,0,16795,0,0614.SB-2,Composite,B8,E484 wild-typeB8,0,E484 wild-type,F8,E484 wild-typeF8,13.04974461
+Sims Bayou North,SB,6/14/21,R,417T,mutation_BJ,50,0.154136667,16795,1,0614.SB-2,Composite,B8,417TB8,1.401102304,417T,F8,417TF8,1.451402664
+Sims Bayou North,SB,6/14/21,R,K417 wild-type,wild_type,50,0,16795,0,0614.SB-2,Composite,B8,K417 wild-typeB8,0,K417 wild-type,F8,K417 wild-typeF8,26.1067276
+Sims Bayou North,SB,6/14/21,R,417N,mutation_SA,50,0,16795,0,0614.SB-2,Composite,B8,417NB8,0,417N,F8,417NF8,
+Sims Bayou South,SS,6/14/21,R,484K,mutation,50,0,16055,0,0614.SS-1,Composite,G8,484KG8,0,484K,F9,484KF9,
+Sims Bayou South,SS,6/14/21,R,E484 wild-type,wild_type,50,0.322473429,16055,2,0614.SS-1,Composite,G8,E484 wild-typeG8,2.931283474,E484 wild-type,F9,E484 wild-typeF9,219.1751099
+Sims Bayou South,SS,6/14/21,R,417T,mutation_BJ,50,0,16055,0,0614.SS-1,Composite,G8,417TG8,0,417T,F9,417TF9,0
+Sims Bayou South,SS,6/14/21,R,K417 wild-type,wild_type,50,0.161231679,16055,1,0614.SS-1,Composite,G8,K417 wild-typeG8,1.465595961,K417 wild-type,F9,K417 wild-typeF9,458.8137817
+Sims Bayou South,SS,6/14/21,R,417N,mutation_SA,50,0,16055,0,0614.SS-1,Composite,G8,417NG8,0,417N,F9,417NF9,
+Sims Bayou South,SS,6/14/21,R,484K,mutation,50,0,16989,0,0614.SS-2,Composite,H8,484KH8,0,484K,F10,484KF10,0
+Sims Bayou South,SS,6/14/21,R,E484 wild-type,wild_type,50,0,16989,0,0614.SS-2,Composite,H8,E484 wild-typeH8,0,E484 wild-type,F10,E484 wild-typeF10,23.18549347
+Sims Bayou South,SS,6/14/21,R,417T,mutation_BJ,50,0,16989,0,0614.SS-2,Composite,H8,417TH8,0,417T,F10,417TF10,0
+Sims Bayou South,SS,6/14/21,R,K417 wild-type,wild_type,50,0,16989,0,0614.SS-2,Composite,H8,K417 wild-typeH8,0,K417 wild-type,F10,K417 wild-typeF10,103.7392273
+Sims Bayou South,SS,6/14/21,R,417N,mutation_SA,50,0,16989,0,0614.SS-2,Composite,H8,417NH8,0,417N,F10,417NF10,
+Southeast,SE,6/14/21,R,484K,mutation,50,0,17937,0,0614.SE-1,Composite,C8,484KC8,0,484K,F11,484KF11,
+Southeast,SE,6/14/21,R,E484 wild-type,wild_type,50,2.888138774,17937,20,0614.SE-1,Composite,C8,E484 wild-typeC8,26.25318146,E484 wild-type,F11,E484 wild-typeF11,
+Southeast,SE,6/14/21,R,417T,mutation_BJ,50,0,17937,0,0614.SE-1,Composite,C8,417TC8,0,417T,F11,417TF11,
+Southeast,SE,6/14/21,R,K417 wild-type,wild_type,50,4.91175468,17937,34,0614.SE-1,Composite,C8,K417 wild-typeC8,44.64785004,K417 wild-type,F11,K417 wild-typeF11,
+Southeast,SE,6/14/21,R,417N,mutation_SA,50,0,17937,0,0614.SE-1,Composite,C8,417NC8,0,417N,F11,417NF11,58.02570724
+Southeast,SE,6/14/21,R,484K,mutation,50,0,16445,0,0614.SE-2,Composite,D8,484KD8,0,484K,F12,484KF12,
+Southeast,SE,6/14/21,R,E484 wild-type,wild_type,50,2.519675738,16445,16,0614.SE-2,Composite,D8,E484 wild-typeD8,22.90385246,E484 wild-type,F12,E484 wild-typeF12,
+Southeast,SE,6/14/21,R,417T,mutation_BJ,50,0,16445,0,0614.SE-2,Composite,D8,417TD8,0,417T,F12,417TF12,
+Southeast,SE,6/14/21,R,K417 wild-type,wild_type,50,4.41104314,16445,28,0614.SE-2,Composite,D8,K417 wild-typeD8,40.09638214,K417 wild-type,F12,K417 wild-typeF12,
+Southeast,SE,6/14/21,R,417N,mutation_SA,50,0,16445,0,0614.SE-2,Composite,D8,417ND8,0,417N,F12,417NF12,
+Southwest,SW,6/14/21,R,484K,mutation,50,0,11684,0,0614.SW-1,Composite,A9,484KA9,0,484K,G1,484KG1,
+Southwest,SW,6/14/21,R,E484 wild-type,wild_type,50,0.886926242,11684,4,0614.SW-1,Composite,A9,E484 wild-typeA9,8.062159538,E484 wild-type,G1,E484 wild-typeG1,38.83428574
+Southwest,SW,6/14/21,R,417T,mutation_BJ,50,0.222216948,11684,1,0614.SW-1,Composite,A9,417TA9,2.019952059,417T,G1,417TG1,
+Southwest,SW,6/14/21,R,K417 wild-type,wild_type,50,5.548281612,11684,25,0614.SW-1,Composite,A9,K417 wild-typeA9,50.43387985,K417 wild-type,G1,K417 wild-typeG1,51.3303566
+Southwest,SW,6/14/21,R,417N,mutation_SA,50,0,11684,0,0614.SW-1,Composite,A9,417NA9,0,417N,G1,417NG1,
+Southwest,SW,6/14/21,R,484K,mutation,50,0,16909,0,0614.SW-2,Composite,B9,484KB9,0,484K,G2,484KG2,
+Southwest,SW,6/14/21,R,E484 wild-type,wild_type,50,0.918720212,16909,6,0614.SW-2,Composite,B9,E484 wild-typeB9,8.351166725,E484 wild-type,G2,E484 wild-typeG2,2.696162701
+Southwest,SW,6/14/21,R,417T,mutation_BJ,50,0,16909,0,0614.SW-2,Composite,B9,417TB9,0,417T,G2,417TG2,
+Southwest,SW,6/14/21,R,K417 wild-type,wild_type,50,3.370235934,16909,22,0614.SW-2,Composite,B9,K417 wild-typeB9,30.63544464,K417 wild-type,G2,K417 wild-typeG2,5.392634392
+Southwest,SW,6/14/21,R,417N,mutation_SA,50,0,16909,0,0614.SW-2,Composite,B9,417NB9,0,417N,G2,417NG2,
+Tidwell Timbers,TT,6/14/21,R,484K,mutation,50,0,14622,0,0614.TT-1,Composite,E9,484KE9,0,484K,G3,484KG3,
+Tidwell Timbers,TT,6/14/21,R,E484 wild-type,wild_type,50,27.61229125,14622,155,0614.TT-1,Composite,E9,E484 wild-typeE9,250.9957275,E484 wild-type,G3,E484 wild-typeG3,2.811496258
+Tidwell Timbers,TT,6/14/21,R,417T,mutation_BJ,50,0,14622,0,0614.TT-1,Composite,E9,417TE9,0,417T,G3,417TG3,
+Tidwell Timbers,TT,6/14/21,R,K417 wild-type,wild_type,50,65.49865253,14622,365,0614.TT-1,Composite,E9,K417 wild-typeE9,595.3827515,K417 wild-type,G3,K417 wild-typeG3,4.21737051
+Tidwell Timbers,TT,6/14/21,R,417N,mutation_SA,50,0,14622,0,0614.TT-1,Composite,E9,417NE9,0,417N,G3,417NG3,
+Tidwell Timbers,TT,6/14/21,R,484K,mutation,50,0,15654,0,0614.TT-2,Composite,F9,484KF9,0,484K,G4,484KG4,
+Tidwell Timbers,TT,6/14/21,R,E484 wild-type,wild_type,50,24.11167326,15654,145,0614.TT-2,Composite,F9,E484 wild-typeF9,219.1751099,E484 wild-type,G4,E484 wild-typeG4,
+Tidwell Timbers,TT,6/14/21,R,417T,mutation_BJ,50,0,15654,0,0614.TT-2,Composite,F9,417TF9,0,417T,G4,417TG4,6.619146347
+Tidwell Timbers,TT,6/14/21,R,K417 wild-type,wild_type,50,50.47456344,15654,302,0614.TT-2,Composite,F9,K417 wild-typeF9,458.8137817,K417 wild-type,G4,K417 wild-typeG4,28.11852455
+Tidwell Timbers,TT,6/14/21,R,417N,mutation_SA,50,0,15654,0,0614.TT-2,Composite,F9,417NF9,0,417N,G4,417NG4,
+Turkey Creek,TC,6/14/21,R,484K,mutation,50,0,15002,0,0614.TC-1,Composite,C9,484KC9,0,484K,G5,484KG5,
+Turkey Creek,TC,6/14/21,R,E484 wild-type,wild_type,50,0.517854176,15002,3,0614.TC-1,Composite,C9,E484 wild-typeC9,4.707294464,E484 wild-type,G5,E484 wild-typeG5,
+Turkey Creek,TC,6/14/21,R,417T,mutation_BJ,50,0.518268904,15002,3,0614.TC-1,Composite,C9,417TC9,4.711064339,417T,G5,417TG5,0
+Turkey Creek,TC,6/14/21,R,K417 wild-type,wild_type,50,2.417539842,15002,14,0614.TC-1,Composite,C9,K417 wild-typeC9,21.97543716,K417 wild-type,G5,K417 wild-typeG5,0
+Turkey Creek,TC,6/14/21,R,417N,mutation_SA,50,0,15002,0,0614.TC-1,Composite,C9,417NC9,0,417N,G5,417NG5,
+Turkey Creek,TC,6/14/21,R,484K,mutation,50,0,16758,0,0614.TC-2,Composite,D9,484KD9,0,484K,G6,484KG6,1.859077334
+Turkey Creek,TC,6/14/21,R,E484 wild-type,wild_type,50,0,16758,0,0614.TC-2,Composite,D9,E484 wild-typeD9,0,E484 wild-type,G6,E484 wild-typeG6,7.416677952
+Turkey Creek,TC,6/14/21,R,417T,mutation_BJ,50,0.463901652,16758,3,0614.TC-2,Composite,D9,417TD9,4.216866016,417T,G6,417TG6,14.87673283
+Turkey Creek,TC,6/14/21,R,K417 wild-type,wild_type,50,2.009640432,16758,13,0614.TC-2,Composite,D9,K417 wild-typeD9,18.26763153,K417 wild-type,G6,K417 wild-typeG6,77.99196625
+Turkey Creek,TC,6/14/21,R,417N,mutation_SA,50,0,16758,0,0614.TC-2,Composite,D9,417ND9,0,417N,G6,417NG6,
+Upper Brays,UB,6/14/21,R,484K,mutation,50,0,15733,0,0614.UB-1,Composite,G9,484KG9,0,484K,G7,484KG7,0
+Upper Brays,UB,6/14/21,R,E484 wild-type,wild_type,50,0.987346783,15733,6,0614.UB-1,Composite,G9,E484 wild-typeG9,8.974982262,E484 wild-type,G7,E484 wild-typeG7,7.261491776
+Upper Brays,UB,6/14/21,R,417T,mutation_BJ,50,0,15733,0,0614.UB-1,Composite,G9,417TG9,0,417T,G7,417TG7,0
+Upper Brays,UB,6/14/21,R,K417 wild-type,wild_type,50,4.610843889,15733,28,0614.UB-1,Composite,G9,K417 wild-typeG9,41.91257095,K417 wild-type,G7,K417 wild-typeG7,15.97824097
+Upper Brays,UB,6/14/21,R,417N,mutation_SA,50,0,15733,0,0614.UB-1,Composite,G9,417NG9,0,417N,G7,417NG7,
+Upper Brays,UB,6/14/21,R,484K,mutation,50,0,0,0,0614.UB-2,Composite,H9,484KH9,0,484K,G8,484KG8,
+Upper Brays,UB,6/14/21,R,E484 wild-type,wild_type,50,0,0,0,0614.UB-2,Composite,H9,E484 wild-typeH9,0,E484 wild-type,G8,E484 wild-typeG8,2.931283474
+Upper Brays,UB,6/14/21,R,417T,mutation_BJ,50,0,0,0,0614.UB-2,Composite,H9,417TH9,0,417T,G8,417TG8,0
+Upper Brays,UB,6/14/21,R,K417 wild-type,wild_type,50,0,0,0,0614.UB-2,Composite,H9,K417 wild-typeH9,0,K417 wild-type,G8,K417 wild-typeG8,1.465595961
+Upper Brays,UB,6/14/21,R,417N,mutation_SA,50,0,0,0,0614.UB-2,Composite,H9,417NH9,0,417N,G8,417NG8,
+W.C.I.D. # 111,111,6/14/21,R,484K,mutation,50,0,17212,0,0614.111-1,Composite,E1,484KE1,0,484K,G9,484KG9,
+W.C.I.D. # 111,111,6/14/21,R,E484 wild-type,wild_type,50,1.655288,17212,11,0614.111-1,Composite,E1,E484 wild-typeE1,15.04656792,E484 wild-type,G9,E484 wild-typeG9,8.974982262
+W.C.I.D. # 111,111,6/14/21,R,417T,mutation_BJ,50,0,17212,0,0614.111-1,Composite,E1,417TE1,0,417T,G9,417TG9,0
+W.C.I.D. # 111,111,6/14/21,R,K417 wild-type,wild_type,50,1.203740732,17212,8,0614.111-1,Composite,E1,K417 wild-typeE1,10.94200325,K417 wild-type,G9,K417 wild-typeG9,41.91257095
+W.C.I.D. # 111,111,6/14/21,R,417N,mutation_SA,50,0,17212,0,0614.111-1,Composite,E1,417NE1,0,417N,G9,417NG9,
+W.C.I.D. # 111,111,6/14/21,R,484K,mutation,50,0,16935,0,0614.111-2,Composite,F1,484KF1,0,484K,G10,484KG10,3.003307581
+W.C.I.D. # 111,111,6/14/21,R,E484 wild-type,wild_type,50,0.305842042,16935,2,0614.111-2,Composite,F1,E484 wild-typeF1,2.78010416,E484 wild-type,G10,E484 wild-typeG10,6.003549576
+W.C.I.D. # 111,111,6/14/21,R,417T,mutation_BJ,50,0,16935,0,0614.111-2,Composite,F1,417TF1,0,417T,G10,417TG10,7.508987904
+W.C.I.D. # 111,111,6/14/21,R,K417 wild-type,wild_type,50,1.070605279,16935,7,0614.111-2,Composite,F1,K417 wild-typeF1,9.731801987,K417 wild-type,G10,K417 wild-typeG10,16.51344872
+W.C.I.D. # 111,111,6/14/21,R,417N,mutation_SA,50,0,16935,0,0614.111-2,Composite,F1,417NF1,0,417N,G10,417NG10,
+W.C.I.D. # 47,47,6/14/21,R,484K,mutation,50,0,16481,0,0614.47-1,Composite,C2,484KC2,0,484K,G11,484KG11,
+W.C.I.D. # 47,47,6/14/21,R,E484 wild-type,wild_type,50,0.314213917,16481,2,0614.47-1,Composite,C2,E484 wild-typeC2,2.85620451,E484 wild-type,G11,E484 wild-typeG11,
+W.C.I.D. # 47,47,6/14/21,R,417T,mutation_BJ,50,0,16481,0,0614.47-1,Composite,C2,417TC2,0,417T,G11,417TG11,
+W.C.I.D. # 47,47,6/14/21,R,K417 wild-type,wild_type,50,1.728648636,16481,11,0614.47-1,Composite,C2,K417 wild-typeC2,15.7134161,K417 wild-type,G11,K417 wild-typeG11,
+W.C.I.D. # 47,47,6/14/21,R,417N,mutation_SA,50,0,16481,0,0614.47-1,Composite,C2,417NC2,0,417N,G11,417NG11,
+W.C.I.D. # 47,47,6/14/21,R,484K,mutation,50,0,15569,0,0614.47-2,Composite,D2,484KD2,0,484K,G12,484KG12,
+W.C.I.D. # 47,47,6/14/21,R,E484 wild-type,wild_type,50,1.164302574,15569,7,0614.47-2,Composite,D2,E484 wild-typeD2,10.5835104,E484 wild-type,G12,E484 wild-typeG12,
+W.C.I.D. # 47,47,6/14/21,R,417T,mutation_BJ,50,0,15569,0,0614.47-2,Composite,D2,417TD2,0,417T,G12,417TG12,
+W.C.I.D. # 47,47,6/14/21,R,K417 wild-type,wild_type,50,3.327969173,15569,20,0614.47-2,Composite,D2,K417 wild-typeD2,30.25123978,K417 wild-type,G12,K417 wild-typeG12,
+W.C.I.D. # 47,47,6/14/21,R,417N,mutation_SA,50,0,15569,0,0614.47-2,Composite,D2,417ND2,0,417N,G12,417NG12,
+W.C.I.D. #76,76,6/14/21,R,484K,mutation,50,0,17456,0,0614.76-1,Composite,G2,484KG2,0,484K,H1,484KH1,
+W.C.I.D. #76,76,6/14/21,R,E484 wild-type,wild_type,50,0.296607558,17456,2,0614.76-1,Composite,G2,E484 wild-typeG2,2.696162701,E484 wild-type,H1,E484 wild-typeH1,26.07137299
+W.C.I.D. #76,76,6/14/21,R,417T,mutation_BJ,50,0,17456,0,0614.76-1,Composite,G2,417TG2,0,417T,H1,417TH1,
+W.C.I.D. #76,76,6/14/21,R,K417 wild-type,wild_type,50,0.593249108,17456,4,0614.76-1,Composite,G2,K417 wild-typeG2,5.392634392,K417 wild-type,H1,K417 wild-typeH1,57.67015457
+W.C.I.D. #76,76,6/14/21,R,417N,mutation_SA,50,0,17456,0,0614.76-1,Composite,G2,417NG2,0,417N,H1,417NH1,
+W.C.I.D. #76,76,6/14/21,R,484K,mutation,50,0,16524,0,0614.76-2,Composite,H2,484KH2,0,484K,H2,484KH2,
+W.C.I.D. #76,76,6/14/21,R,E484 wild-type,wild_type,50,0.470079762,16524,3,0614.76-2,Composite,H2,E484 wild-typeH2,4.273025036,E484 wild-type,H2,E484 wild-typeH2,4.273025036
+W.C.I.D. #76,76,6/14/21,R,417T,mutation_BJ,50,0,16524,0,0614.76-2,Composite,H2,417TH2,0,417T,H2,417TH2,
+W.C.I.D. #76,76,6/14/21,R,K417 wild-type,wild_type,50,0.626791953,16524,4,0614.76-2,Composite,H2,K417 wild-typeH2,5.697538853,K417 wild-type,H2,K417 wild-typeH2,5.697538853
+W.C.I.D. #76,76,6/14/21,R,417N,mutation_SA,50,0,16524,0,0614.76-2,Composite,H2,417NH2,0,417N,H2,417NH2,
+West District,WD,6/14/21,R,484K,mutation,50,0,16566,0,0614.WD-1,Composite,C10,484KC10,0,484K,H3,484KH3,
+West District,WD,6/14/21,R,E484 wild-type,wild_type,50,0.468887617,16566,3,0614.WD-1,Composite,C10,E484 wild-typeC10,4.262188435,E484 wild-type,H3,E484 wild-typeH3,0
+West District,WD,6/14/21,R,417T,mutation_BJ,50,0.15646593,16566,1,0614.WD-1,Composite,C10,417TC10,1.422275305,417T,H3,417TH3,
+West District,WD,6/14/21,R,K417 wild-type,wild_type,50,2.814600727,16566,18,0614.WD-1,Composite,C10,K417 wild-typeC10,25.58472061,K417 wild-type,H3,K417 wild-typeH3,6.476400375
+West District,WD,6/14/21,R,417N,mutation_SA,50,0,16566,0,0614.WD-1,Composite,C10,417NC10,0,417N,H3,417NH3,
+West District,WD,6/14/21,R,484K,mutation,50,0.158187068,16378,1,0614.WD-2,Composite,D10,484KD10,1.437920451,484K,H4,484KH4,
+West District,WD,6/14/21,R,E484 wild-type,wild_type,50,0.474271365,16378,3,0614.WD-2,Composite,D10,E484 wild-typeD10,4.311126709,E484 wild-type,H4,E484 wild-typeH4,
+West District,WD,6/14/21,R,417T,mutation_BJ,50,0,16378,0,0614.WD-2,Composite,D10,417TD10,0,417T,H4,417TH4,4.539874077
+West District,WD,6/14/21,R,K417 wild-type,wild_type,50,1.739420014,16378,11,0614.WD-2,Composite,D10,K417 wild-typeD10,15.81132793,K417 wild-type,H4,K417 wild-typeH4,15.12950897
+West District,WD,6/14/21,R,417N,mutation_SA,50,0,16378,0,0614.WD-2,Composite,D10,417ND10,0,417N,H4,417NH4,
+West Lake Houston,WL,6/14/21,R,484K,mutation,50,0,16635,0,0614.WL-1,Composite,E10,484KE10,0,484K,H5,484KH5,
+West Lake Houston,WL,6/14/21,R,E484 wild-type,wild_type,50,4.205515309,16635,27,0614.WL-1,Composite,E10,E484 wild-typeE10,38.22813416,E484 wild-type,H5,E484 wild-typeH5,11058.9082
+West Lake Houston,WL,6/14/21,R,417T,mutation_BJ,50,0,16635,0,0614.WL-1,Composite,E10,417TE10,0,417T,H5,417TH5,0
+West Lake Houston,WL,6/14/21,R,K417 wild-type,wild_type,50,12.48070913,16635,80,0614.WL-1,Composite,E10,K417 wild-typeE10,113.449646,K417 wild-type,H5,K417 wild-typeH5,7.089521408
+West Lake Houston,WL,6/14/21,R,417N,mutation_SA,50,0,16635,0,0614.WL-1,Composite,E10,417NE10,0,417N,H5,417NH5,
+West Lake Houston,WL,6/14/21,R,484K,mutation,50,0,15240,0,0614.WL-2,Composite,F10,484KF10,0,484K,H6,484KH6,3.065521479
+West Lake Houston,WL,6/14/21,R,E484 wild-type,wild_type,50,2.550659348,15240,15,0614.WL-2,Composite,F10,E484 wild-typeF10,23.18549347,E484 wild-type,H6,E484 wild-typeH6,10.6913681
+West Lake Houston,WL,6/14/21,R,417T,mutation_BJ,50,0,15240,0,0614.WL-2,Composite,F10,417TF10,0,417T,H6,417TH6,21.46704483
+West Lake Houston,WL,6/14/21,R,K417 wild-type,wild_type,50,11.41245625,15240,67,0614.WL-2,Composite,F10,K417 wild-typeF10,103.7392273,K417 wild-type,H6,K417 wild-typeH6,105.5990219
+West Lake Houston,WL,6/14/21,R,417N,mutation_SA,50,0,15240,0,0614.WL-2,Composite,F10,417NF10,0,417N,H6,417NH6,
+Westway,WW,6/14/21,R,484K,mutation,50,0,15672,0,0614.WW-1,Composite,A11,484KA11,0,484K,H7,484KH7,0
+Westway,WW,6/14/21,R,E484 wild-type,wild_type,50,1.15701667,15672,7,0614.WW-1,Composite,A11,E484 wild-typeA11,10.51728153,E484 wild-type,H7,E484 wild-typeH7,1.491327047
+Westway,WW,6/14/21,R,417T,mutation_BJ,50,0.331836959,15672,2,0614.WW-1,Composite,A11,417TA11,3.016397953,417T,H7,417TH7,0
+Westway,WW,6/14/21,R,K417 wild-type,wild_type,50,10.26590177,15672,62,0614.WW-1,Composite,A11,K417 wild-typeA11,93.31704712,K417 wild-type,H7,K417 wild-typeH7,10.44127464
+Westway,WW,6/14/21,R,417N,mutation_SA,50,0,15672,0,0614.WW-1,Composite,A11,417NA11,0,417N,H7,417NH7,
+Westway,WW,6/14/21,R,484K,mutation,50,0,15971,0,0614.WW-2,Composite,B11,484KB11,0,484K,H8,484KH8,
+Westway,WW,6/14/21,R,E484 wild-type,wild_type,50,2.433481416,15971,15,0614.WW-2,Composite,B11,E484 wild-typeB11,22.12034607,E484 wild-type,H8,E484 wild-typeH8,0
+Westway,WW,6/14/21,R,417T,mutation_BJ,50,0.162558128,15971,1,0614.WW-2,Composite,B11,417TB11,1.477653384,417T,H8,417TH8,0
+Westway,WW,6/14/21,R,K417 wild-type,wild_type,50,5.194195452,15971,32,0614.WW-2,Composite,B11,K417 wild-typeB11,47.21523666,K417 wild-type,H8,K417 wild-typeH8,0
+Westway,WW,6/14/21,R,417N,mutation_SA,50,0,15971,0,0614.WW-2,Composite,B11,417NB11,0,417N,H8,417NH8,
+White Oak,WO,6/14/21,R,484K,mutation,50,0.330396874,15685,2,0614.WO-1,Composite,G10,484KG10,3.003307581,484K,H9,484KH9,
+White Oak,WO,6/14/21,R,E484 wild-type,wild_type,50,0.660456499,15685,4,0614.WO-1,Composite,G10,E484 wild-typeG10,6.003549576,E484 wild-type,H9,E484 wild-typeH9,
+White Oak,WO,6/14/21,R,417T,mutation_BJ,50,0.826071277,15685,5,0614.WO-1,Composite,G10,417TG10,7.508987904,417T,H9,417TH9,
+White Oak,WO,6/14/21,R,K417 wild-type,wild_type,50,1.816661025,15685,11,0614.WO-1,Composite,G10,K417 wild-typeG10,16.51344872,K417 wild-type,H9,K417 wild-typeH9,
+White Oak,WO,6/14/21,R,417N,mutation_SA,50,0,15685,0,0614.WO-1,Composite,G10,417NG10,0,417N,H9,417NH9,
+White Oak,WO,6/14/21,R,484K,mutation,50,0.425098254,18290,3,0614.WO-2,Composite,H10,484KH10,3.864143133,484K,H10,484KH10,3.864143133
+White Oak,WO,6/14/21,R,E484 wild-type,wild_type,50,0.566534057,18290,4,0614.WO-2,Composite,H10,E484 wild-typeH10,5.149794579,E484 wild-type,H10,E484 wild-typeH10,5.149794579
+White Oak,WO,6/14/21,R,417T,mutation_BJ,50,0.992004575,18290,7,0614.WO-2,Composite,H10,417TH10,9.017321587,417T,H10,417TH10,9.017321587
+White Oak,WO,6/14/21,R,K417 wild-type,wild_type,50,2.125142458,18290,15,0614.WO-2,Composite,H10,K417 wild-typeH10,19.31754494,K417 wild-type,H10,K417 wild-typeH10,19.31754494
+White Oak,WO,6/14/21,R,417N,mutation_SA,50,0,18290,0,0614.WO-2,Composite,H10,417NH10,0,417N,H10,417NH10,
+Willowbrook,WB,6/14/21,R,484K,mutation,50,0,9938,0,0614.WB-1,Composite,A10,484KA10,0,484K,H11,484KH11,
+Willowbrook,WB,6/14/21,R,E484 wild-type,wild_type,50,0,9938,0,0614.WB-1,Composite,A10,E484 wild-typeA10,0,E484 wild-type,H11,E484 wild-typeH11,
+Willowbrook,WB,6/14/21,R,417T,mutation_BJ,50,0,9938,0,0614.WB-1,Composite,A10,417TA10,0,417T,H11,417TH11,
+Willowbrook,WB,6/14/21,R,K417 wild-type,wild_type,50,0,9938,0,0614.WB-1,Composite,A10,K417 wild-typeA10,0,K417 wild-type,H11,K417 wild-typeH11,
+Willowbrook,WB,6/14/21,R,417N,mutation_SA,50,0,9938,0,0614.WB-1,Composite,A10,417NA10,0,417N,H11,417NH11,
+Willowbrook,WB,6/14/21,R,484K,mutation,50,0.150813889,17179,1,0614.WB-2,Composite,B10,484KB10,1.370898247,484K,H12,484KH12,
+Willowbrook,WB,6/14/21,R,E484 wild-type,wild_type,50,0.753542561,17179,5,0614.WB-2,Composite,B10,E484 wild-typeB10,6.849701881,E484 wild-type,H12,E484 wild-typeH12,
+Willowbrook,WB,6/14/21,R,417T,mutation_BJ,50,0.150813889,17179,1,0614.WB-2,Composite,B10,417TB10,1.370898247,417T,H12,417TH12,
+Willowbrook,WB,6/14/21,R,K417 wild-type,wild_type,50,1.959667268,17179,13,0614.WB-2,Composite,B10,K417 wild-typeB10,17.81337547,K417 wild-type,H12,K417 wild-typeH12,
+Willowbrook,WB,6/14/21,R,417N,mutation_SA,50,0,17179,0,0614.WB-2,Composite,B10,417NB10,0,417N,H12,417NH12,
