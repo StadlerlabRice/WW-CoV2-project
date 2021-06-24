@@ -17,10 +17,11 @@
 
 # Loading pre-requisites ----
 
-# Loading libraries, functions and user inputs
+# Loading libraries, functions and user inputs; 
+# use only if running this script independently
 
 # source('./inputs_for_analysis.R') # Source the file with user inputs
-source('./0-general_functions_main.R') # Source the general_functions file
+# source('./0-general_functions_main.R') # Source the general_functions file
 
 
 
@@ -52,6 +53,8 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   
   # Polishing ----
   
+  # collect variables for combined operations (copies and Poisson confidence intervals)
+  variables_per_uL_RNA <-  c('Copies_per_uL_RNA', 'PoissonConfMax_per_uL_RNA', 'PoissonConfMin_per_uL_RNA')
   
   # Load desired qPCR result sheet and columns
   bring_results <- fl %>% 
@@ -67,7 +70,9 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
     
     # Adding different template volumes for each target for division
     left_join(template_volume_ddpcr) %>% # join array of template volume - different for N1,N2 and BCOV2
-    mutate('Copies_per_uL_RNA' = CopiesPer20uLWell/ template_vol) %>%  
+    mutate('Copies_per_uL_RNA' = CopiesPer20uLWell/ template_vol, # template_vol is the ul of RNA per 20 ul well
+           'PoissonConfMax_per_uL_RNA' = PoissonConfMax * 20 / template_vol,   # converting Poisson confidence intervals into copies/ul RNA units
+           'PoissonConfMin_per_uL_RNA' = PoissonConfMin * 20 / template_vol) %>%
     
     select(`Sample_name`, Copies_per_uL_RNA, Target, everything())
   
@@ -85,17 +90,17 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
     mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
     
     mutate(backup_copies_per.ul.rna_if.undiluted = Copies_per_uL_RNA) %>%  # taking a backup of the copy number column before doing calculations for dilution factors
-    mutate(across(Copies_per_uL_RNA, 
+    mutate(across(any_of(variables_per_uL_RNA), 
                   ~ if_else(str_detect(Target, 'BCoV') & !str_detect(Sample_name, 'NTC'), 
                             .x * RNA_dilution_factor_BCoV, 
                             .x))
     ) %>% # Correcting for template dilution in case of BCoV ddPCRs (excluding NTC wells)
     mutate_cond(str_detect(Sample_name, 'Vaccine') & str_detect(Target, 'BCoV'), 
-                across(Copies_per_uL_RNA, ~ .x * Vaccine_additional_RNA_dilution_factor_BCoV)) %>%  # Correcting for BCoV Vaccine with a higher dilution
+                across(any_of(variables_per_uL_RNA), ~ .x * Vaccine_additional_RNA_dilution_factor_BCoV)) %>%  # Correcting for BCoV Vaccine with a higher dilution
     
     # Ad-hoc corrections for errors in making plate - sample dilutions etc.
     mutate_cond(str_detect(`Well Position`, adhoc_dilution_wells), # Regex of wells to manipulate
-                across(Copies_per_uL_RNA, ~ . / 50) # dilution corrections or other changes
+                across(any_of(variables_per_uL_RNA), ~ . / 50) # dilution corrections or other changes
     ) %>% 
     
     # Adding tag to target for baylor smaples
@@ -108,7 +113,11 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   # Append LOD information ----
   
   final_data_with_LODs <- complete_LOD_table(polished_results)%>% 
-    select(1:6, AcceptedDroplets, PositiveDroplets, Positivity, LimitOfDet, Threshold, any_of('variant_status'), everything()) # Bring important columns to begining 
+    select(1:6, AcceptedDroplets, PositiveDroplets, # Bring important columns to beginning 
+           Positivity, LimitOfDet, Threshold, 
+           any_of('variant_status'), 
+           PoissonConfMax_per_uL_RNA, PoissonConfMin_per_uL_RNA, 
+           everything()) 
   
   # Data output ----
   

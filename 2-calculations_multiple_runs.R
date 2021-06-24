@@ -22,7 +22,7 @@ source('./1-processing_functions.R') # Source the file with the ddPCR and qPCR n
 # running function to attach samples names to data. Attached data is ALSO saved to sheet : "qPCR data dump"
 list_quant_data <- map(read_these_sheets, 
                            ~ process_ddpcr(.x) %>% 
-                             select(1:13))
+                             select(1:15))
 
 # Acquire all the pieces of the data : read saved raw qPCR results from a google sheet -- Obsolete
 # list_quant_data2 <- map(read_these_sheets, 
@@ -133,6 +133,9 @@ processed_quant_data <- meta.attached_quant_data %>%
   mutate(Copies_Per_Liter_WW = Copies_per_uL_RNA *(1e6/300) * (elution_volume/Filtered_WW_vol), # Chemagic concentration factor = 300 
          Detection_Limit = as.numeric(LimitOfDet * (1e6/300) * (elution_volume/Filtered_WW_vol) ),  # Chemagic concentration factor = 300 
          
+         PoissonConfMax_Per_Liter_WW = PoissonConfMax_per_uL_RNA *(1e6/300) * (elution_volume/Filtered_WW_vol),  # Poisson confidence intervals in copies/L WW
+         PoissonConfMin_Per_Liter_WW = PoissonConfMin_per_uL_RNA *(1e6/300) * (elution_volume/Filtered_WW_vol),
+         
          # conditional calculations reg surrogate spiked virus
          # Calculations for Surrogate_virus_input_per.L.WW (input) and Percentage_recovery (output/input * 100)
          Surrogate_virus_input_per.L.WW = spiking_virus_vaccine_stock_conc * spike_virus_volume / (Received_WW_vol * 1e-3), 
@@ -207,11 +210,14 @@ presentable_data <- processed_quant_data %>%
   # Selecting column order
   select(Facility, WWTP, Date, Lab, Target_Name, 
          `Received_WW_vol`, Filtered_WW_vol, 
-         Copies_per_uL_RNA, Copies_Per_Liter_WW, 
+         Copies_per_uL_RNA, 
+         PoissonConfMax_per_uL_RNA, PoissonConfMin_per_uL_RNA, # 95% confidence intervals
+         Copies_Per_Liter_WW, 
          Ct, AcceptedDroplets, PositiveDroplets, Sample_ID, 
          Detection_Limit, Positivity, 
          Sample_Type, Surrogate_virus_input_per.L.WW, `Percentage_recovery_BCoV`, 
-         Comments, any_of('variant_status'), 'Well Position') %>%
+         Comments, any_of('variant_status'), 'Well Position',
+         PoissonConfMax_Per_Liter_WW, PoissonConfMin_Per_Liter_WW) %>%
   
   mutate_at('Target_Name', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2'))) %>% 
   mutate_at('Target_Name', ~str_remove(., '/Baylor')) %>% 
@@ -290,10 +296,13 @@ if(HHD_data_output)
       
       # Otherwise proceed below  
         # rename to format that HHD/Kathy needs
-      rename(., 'Copies_per_uL' = Copies_per_uL_RNA, 
+      rename(., 'Copies_per_uL' = Copies_per_uL_RNA, # remove 'RNA' from the names
+             'PoissonConfMax_per_uL' = PoissonConfMax_per_uL_RNA,
+             'PoissonConfMin_per_uL' = PoissonConfMin_per_uL_RNA,
+             
              'Recovery_Rate' = `Percentage_recovery_BCoV`) %>%
           
-          select(-contains('Vol'), -Surrogate_virus_input_per.L.WW, -PositiveDroplets, -'Well Position') 
+          select(-contains('Vol'), -Surrogate_virus_input_per.L.WW, -'Well Position') 
       }
     }
   
@@ -316,7 +325,7 @@ if(HHD_data_output)
   # Write data if not empty
   if(present_manhole_samples %>% plyr::empty() %>% !.){
     check_ok_and_write(present_manhole_samples, sheeturls$HHD_data, str_c(title_name, ' -manhole')) # save results to a google sheet, ask for overwrite
-    write_csv(present_manhole_samples, path = str_c('excel files/Weekly data to HHD/', title_name, ' -manhole.csv'), na = '') # output CSV file
+    write_csv(present_manhole_samples, str_c('excel files/Weekly data to HHD/', title_name, ' -manhole.csv'), na = '') # output CSV file
   }
   
   
