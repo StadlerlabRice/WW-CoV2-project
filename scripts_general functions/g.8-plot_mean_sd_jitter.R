@@ -29,8 +29,10 @@ plot_mean_sd_jitter <- function(.data = presentable_data,
                                     if('WWTP' %in% colnames(.)) str_detect(WWTP, WWTP_fltr_var, negate = exclude_WWTP) else TRUE, 
                                     str_detect(Target_Name, target_filter_var))
   
+  mean_y_var_str <- expr(!!str_c('mean_', deparse(enexpr(y_var)) ) ) # make a string to use mean_{{y_var}} in regular functions
   
-  # filtering data to be plotted by user inputs
+  
+  # filtering data to be plotted by user inputs : ---- OBSOLETE ; do not use
   if(long_format) # use long format if not plotting Copy #s - ex. Recovery, % recovery etc.
   { # If data is in long_format, multiple columns to be plotted simultaneously will be put into the same column..
     # .. using pivot_longer() before feeding data into this function. This is a special case. Useful when copies/L is ..
@@ -39,7 +41,7 @@ plot_mean_sd_jitter <- function(.data = presentable_data,
     .data_to_plot <- filter(.dat_filtered, Measurement == measure_var)
     
     if(ascending_order) .data_to_plot %<>% mutate_at('WWTP', as.character) %>% 
-      arrange(`mean`) %>% 
+      arrange(`mean`) %>% # this will not work, there is not column named 'mean' anymore
       mutate_at('WWTP', as_factor)
     
     y_var <- sym('value') # default y variable is value
@@ -54,17 +56,18 @@ plot_mean_sd_jitter <- function(.data = presentable_data,
       mutate( "mean_{{y_var}}" := mean({{y_var}}) ) %>% 
       
     {if(ascending_order) 
-      {mutate(., across('WWTP', as.character)) %>% 
-      arrange(`mean`) %>% 
-      mutate_at('WWTP', as_factor)} else .
+      { ungroup(.) %>% # temporarily ungroup so that x_var can be changed
+        mutate(., across('WWTP', as.character)) %>%  # make x_var a character so that it can be factorized again in order
+        arrange(across( any_of(mean_y_var_str) )) %>% 
+        mutate_at('WWTP', as_factor) %>% # make WWTP factor again, this time it will be in ascending order of mean_y_var
+        group_by({{x_var}}, {{colour_var}}, across(any_of(unique_columns_to_incl))) 
+      } else .  # group again
     } 
     
   }
   
   # Exit with a useful message if data is empty
   if(plyr::empty(.data_to_plot)) return('Data is empty, nothing to plot')  
-  
-  mean_y_var_str <- expr(!!str_c('mean_', deparse(enexpr(y_var)) ) )
   
   # plotting
   plt1 <- .data_to_plot %>% ggplot(aes(x = {{x_var}}, y = {{y_var}}, colour = {{colour_var}})) +
