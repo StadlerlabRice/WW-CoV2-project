@@ -129,7 +129,7 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   
   
   # Saving vaccine data into Vaccines sheet in data dump: For easy book keeping
-  vaccine_data <- final_data_with_LODs %>% filter(str_detect(Sample_name, 'Vaccine|Vaccineb|Vacboil') & !str_detect(Target, '^N.')) %>%
+  vaccine_data <- final_data_with_LODs %>% filter(str_detect(Sample_name, 'Vaccine|Vaccineb|Vacboil|stdVac') & !str_detect(Target, '^N.')) %>%
     mutate('Prepared on' = '',
            Week = str_extract(flnm, '[:digit:]{3,4}') %>% unlist() %>% str_c(collapse = ', '),
            Vaccine_ID = assay_variable, 
