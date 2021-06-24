@@ -36,7 +36,7 @@ check_ok_and_write <- function(data, sheet_URL, title_name)
   if (write_ok == 1) {
     tryCatch({ R.utils::withTimeout({write_sheet(data, sheet_URL, sheet=title_name)}, 
                                           substitute = FALSE,
-                                          timeout = 10, # 10 second timeout
+                                          timeout = 20, # 10 second timeout
                                           onTimeout = "warning")},
              warning = function(e) 
              {cat('Sheet was not written due to timeout. Manually copy the excel file from excel files/Archive/Data dump files')
@@ -126,7 +126,9 @@ append_LOD_info <- function(fl, targ) {
   }
   
   # Calculate the LOB
-  limit_blank <- mean(negative_controls$Copies_per_uL_RNA, na.rm = TRUE) + (1.6 * sd(negative_controls$Copies_per_uL_RNA, na.rm = TRUE))
+  limit_blank <- mean(negative_controls$Copies_per_uL_RNA, na.rm = TRUE) + 
+    (1.6 * sd(negative_controls$Copies_per_uL_RNA, na.rm = TRUE))
+  
   # Calculate the LOD
   LOD <- three_copies + limit_blank
   
