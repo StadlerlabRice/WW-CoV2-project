@@ -20,12 +20,17 @@ get_template_for <- function(bait, sheet_url = sheeturls$templates)
 { # Looking for WWx or Stdx - example WW21 or Std7 within the filename; Assumes plate spans from row B to N (1 row below the matching ID)
   
   # Finding the plate to be read
-  plate_names_row <- read_sheet(sheet_url, sheet = 'Plate layouts', range = 'C:C', col_types = 'c')
+  plate_names_row <- read_sheet(sheet_url, sheet = 'Plate layouts', 
+                                range = 'C:C', col_types = 'c', 
+                                col_names = FALSE)
+  
   m_row <- plate_names_row %>% unlist() %>% as.character() %>% 
     # find the row with standard beginings matching the filename
     str_detect(., str_c('^', bait %>% str_match('^(WW|Std|dd.WW)[:alnum:]*') %>% .[1]) ) %>% 
-    which() + 1
-  range_to_get <- str_c('B', m_row + 1, ':N', m_row + 9)
+    which() + 1 # returns the row number where '<>' is supposed to be found
+  
+  range_to_get <- str_c('B', m_row + 1, ':N', m_row + 9) # extrapolate to where the grid is
+     # IMPORTANT : FIRST ROW SHOULD BE EMPTY LINE!!
   
   # Eror message and terminate if plate ID is not unique
   if(length(m_row) > 1) stop( str_c('Plate ID of :', bait, 'repeats in', paste0(m_row, collapse = ' & '), 'row numbers. Please fix and re-run the script', sep = ' '))
