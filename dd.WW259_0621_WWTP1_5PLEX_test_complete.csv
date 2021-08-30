@@ -1,0 +1,481 @@
+Facility,WWTP,Date,Lab,Target_Name,Received_WW_vol,Filtered_WW_vol,Copies_per_uL_RNA,PoissonConfMax_per_uL_RNA,PoissonConfMin_per_uL_RNA,Copies_Per_Liter_WW,Ct,AcceptedDroplets,PositiveDroplets,Sample_ID,Detection_Limit,Positivity,Sample_Type,Surrogate_virus_input_per.L.WW,Percentage_recovery_BCoV,Comments,Well Position,PoissonConfMax_Per_Liter_WW,PoissonConfMin_Per_Liter_WW
+0621/Blank,Blank,06/21/21,R,484K,,50,0,0.41,0,,,18921,0,0621.Blank-3,,Negative,Composite,,,,C1,,
+0621/Blank,Blank,06/21/21,R,E484 wild-type,,50,0.14,0.65,0.01,,,18921,1,0621.Blank-3,,Negative,Composite,,,,C1,,
+0621/Blank,Blank,06/21/21,R,417T,,50,0,0.41,0,,,18921,0,0621.Blank-3,,Negative,Composite,,,,C1,,
+0621/Blank,Blank,06/21/21,R,K417 wild-type,,50,0,0.41,0,,,18921,0,0621.Blank-3,,Negative,Composite,,,,C1,,
+0621/Blank,Blank,06/21/21,R,417N,,50,0,0.41,0,,,18921,0,0621.Blank-3,,Negative,Composite,,,,C1,,
+0621/Blank,Blank,06/21/21,R,484K,,50,0,0.4,0,,,19484,0,0621.Blank-4,,Negative,Composite,,,,D1,,
+0621/Blank,Blank,06/21/21,R,E484 wild-type,,50,0,0.4,0,,,19484,0,0621.Blank-4,,Negative,Composite,,,,D1,,
+0621/Blank,Blank,06/21/21,R,417T,,50,0,0.4,0,,,19484,0,0621.Blank-4,,Negative,Composite,,,,D1,,
+0621/Blank,Blank,06/21/21,R,K417 wild-type,,50,0,0.4,0,,,19484,0,0621.Blank-4,,Negative,Composite,,,,D1,,
+0621/Blank,Blank,06/21/21,R,417N,,50,0,0.4,0,,,19484,0,0621.Blank-4,,Negative,Composite,,,,D1,,
+0621/DI,DI,06/21/21,R,484K,,50,0,0.44,0,0,,17573,0,0621.DI-3,1315.39,Negative,Composite,,,,A1,1471.09,0
+0621/DI,DI,06/21/21,R,E484 wild-type,,50,0,0.44,0,0,,17573,0,0621.DI-3,1322.73,Negative,Composite,,,,A1,1471.09,0
+0621/DI,DI,06/21/21,R,417T,,50,0,0.44,0,0,,17573,0,0621.DI-3,1615.98,Negative,Composite,,,,A1,1471.09,0
+0621/DI,DI,06/21/21,R,K417 wild-type,,50,0,0.44,0,0,,17573,0,0621.DI-3,2333.33,Negative,Composite,,,,A1,1471.09,0
+0621/DI,DI,06/21/21,R,417N,,50,0,0.44,0,0,,17573,0,0621.DI-3,1559.48,Negative,Composite,,,,A1,1471.09,0
+0621/DI,DI,06/21/21,R,484K,,50,0,0.46,0,0,,16773,0,0621.DI-4,1315.39,Negative,Composite,,,,B1,1541.27,0
+0621/DI,DI,06/21/21,R,E484 wild-type,,50,0,0.46,0,0,,16773,0,0621.DI-4,1322.73,Negative,Composite,,,,B1,1541.27,0
+0621/DI,DI,06/21/21,R,417T,,50,0,0.46,0,0,,16773,0,0621.DI-4,1615.98,Negative,Composite,,,,B1,1541.27,0
+0621/DI,DI,06/21/21,R,K417 wild-type,,50,0,0.46,0,0,,16773,0,0621.DI-4,2333.33,Negative,Composite,,,,B1,1541.27,0
+0621/DI,DI,06/21/21,R,417N,,50,0,0.46,0,0,,16773,0,0621.DI-4,1559.48,Negative,Composite,,,,B1,1541.27,0
+0623/NTC,NTC,06/23/21,R,484K,,50,,,,,,15478,0,0623.NTC-1,,,Composite,,,,A12,,
+0623/NTC,NTC,06/23/21,R,E484 wild-type,,50,,,,,,15478,0,0623.NTC-1,,,Composite,,,,A12,,
+0623/NTC,NTC,06/23/21,R,417T,,50,,,,,,15478,0,0623.NTC-1,,,Composite,,,,A12,,
+0623/NTC,NTC,06/23/21,R,K417 wild-type,,50,,,,,,15478,0,0623.NTC-1,,,Composite,,,,A12,,
+0623/NTC,NTC,06/23/21,R,417N,,50,,,,,,15478,0,0623.NTC-1,,,Composite,,,,A12,,
+0623/NTC,NTC,06/23/21,R,484K,,50,,,,,,17320,0,0623.NTC-2,,,Composite,,,,B12,,
+0623/NTC,NTC,06/23/21,R,E484 wild-type,,50,,,,,,17320,0,0623.NTC-2,,,Composite,,,,B12,,
+0623/NTC,NTC,06/23/21,R,417T,,50,,,,,,17320,0,0623.NTC-2,,,Composite,,,,B12,,
+0623/NTC,NTC,06/23/21,R,K417 wild-type,,50,,,,,,17320,0,0623.NTC-2,,,Composite,,,,B12,,
+0623/NTC,NTC,06/23/21,R,417N,,50,,,,,,17320,0,0623.NTC-2,,,Composite,,,,B12,,
+0623/NTC,NTC,06/23/21,R,484K,,50,,,,,,18980,0,0623.NTC-3,,,Composite,,,,C12,,
+0623/NTC,NTC,06/23/21,R,E484 wild-type,,50,,,,,,18980,0,0623.NTC-3,,,Composite,,,,C12,,
+0623/NTC,NTC,06/23/21,R,417T,,50,,,,,,18980,0,0623.NTC-3,,,Composite,,,,C12,,
+0623/NTC,NTC,06/23/21,R,K417 wild-type,,50,,,,,,18980,0,0623.NTC-3,,,Composite,,,,C12,,
+0623/NTC,NTC,06/23/21,R,417N,,50,,,,,,18980,0,0623.NTC-3,,,Composite,,,,C12,,
+0623/NTC,NTC,06/23/21,R,484K,,50,,,,,,18243,0,0623.NTC-4,,,Composite,,,,D12,,
+0623/NTC,NTC,06/23/21,R,E484 wild-type,,50,,,,,,18243,0,0623.NTC-4,,,Composite,,,,D12,,
+0623/NTC,NTC,06/23/21,R,417T,,50,,,,,,18243,0,0623.NTC-4,,,Composite,,,,D12,,
+0623/NTC,NTC,06/23/21,R,K417 wild-type,,50,,,,,,18243,0,0623.NTC-4,,,Composite,,,,D12,,
+0623/NTC,NTC,06/23/21,R,417N,,50,,,,,,18243,0,0623.NTC-4,,,Composite,,,,D12,,
+0623/NTC,NTC,06/23/21,R,484K,,50,,,,,,17759,0,0623.NTC-5,,,Composite,,,,E12,,
+0623/NTC,NTC,06/23/21,R,E484 wild-type,,50,,,,,,17759,0,0623.NTC-5,,,Composite,,,,E12,,
+0623/NTC,NTC,06/23/21,R,417T,,50,,,,,,17759,0,0623.NTC-5,,,Composite,,,,E12,,
+0623/NTC,NTC,06/23/21,R,K417 wild-type,,50,,,,,,17759,0,0623.NTC-5,,,Composite,,,,E12,,
+0623/NTC,NTC,06/23/21,R,417N,,50,,,,,,17759,0,0623.NTC-5,,,Composite,,,,E12,,
+0623/NTC,NTC,06/23/21,R,484K,,50,,,,,,17966,0,0623.NTC-6,,,Composite,,,,F12,,
+0623/NTC,NTC,06/23/21,R,E484 wild-type,,50,,,,,,17966,0,0623.NTC-6,,,Composite,,,,F12,,
+0623/NTC,NTC,06/23/21,R,417T,,50,,,,,,17966,0,0623.NTC-6,,,Composite,,,,F12,,
+0623/NTC,NTC,06/23/21,R,K417 wild-type,,50,,,,,,17966,0,0623.NTC-6,,,Composite,,,,F12,,
+0623/NTC,NTC,06/23/21,R,417N,,50,,,,,,17966,0,0623.NTC-6,,,Composite,,,,F12,,
+0623/NTC,NTC,06/23/21,R,484K,,50,,,,,,19146,0,0623.NTC-7,,,Composite,,,,G12,,
+0623/NTC,NTC,06/23/21,R,E484 wild-type,,50,,,,,,19146,0,0623.NTC-7,,,Composite,,,,G12,,
+0623/NTC,NTC,06/23/21,R,417T,,50,,,,,,19146,0,0623.NTC-7,,,Composite,,,,G12,,
+0623/NTC,NTC,06/23/21,R,K417 wild-type,,50,,,,,,19146,0,0623.NTC-7,,,Composite,,,,G12,,
+0623/NTC,NTC,06/23/21,R,417N,,50,,,,,,19146,0,0623.NTC-7,,,Composite,,,,G12,,
+0623/NTC,NTC,06/23/21,R,484K,,50,,,,,,18251,0,0623.NTC-8,,,Composite,,,,H12,,
+0623/NTC,NTC,06/23/21,R,E484 wild-type,,50,,,,,,18251,0,0623.NTC-8,,,Composite,,,,H12,,
+0623/NTC,NTC,06/23/21,R,417T,,50,,,,,,18251,0,0623.NTC-8,,,Composite,,,,H12,,
+0623/NTC,NTC,06/23/21,R,K417 wild-type,,50,,,,,,18251,0,0623.NTC-8,,,Composite,,,,H12,,
+0623/NTC,NTC,06/23/21,R,417N,,50,,,,,,18251,0,0623.NTC-8,,,Composite,,,,H12,,
+0623/stdBJ,stdBJ,06/23/21,R,484K,,50,,,,,,15723,0,0623.stdBJ-1,,,Composite,,,,C11,,
+0623/stdBJ,stdBJ,06/23/21,R,E484 wild-type,,50,,,,,,15723,0,0623.stdBJ-1,,,Composite,,,,C11,,
+0623/stdBJ,stdBJ,06/23/21,R,417T,,50,,,,,,15723,0,0623.stdBJ-1,,,Composite,,,,C11,,
+0623/stdBJ,stdBJ,06/23/21,R,K417 wild-type,,50,,,,,,15723,0,0623.stdBJ-1,,,Composite,,,,C11,,
+0623/stdBJ,stdBJ,06/23/21,R,417N,,50,,,,,,15723,0,0623.stdBJ-1,,,Composite,,,,C11,,
+0623/stdBJ,stdBJ,06/23/21,R,484K,,50,,,,,,17278,0,0623.stdBJ-2,,,Composite,,,,D11,,
+0623/stdBJ,stdBJ,06/23/21,R,E484 wild-type,,50,,,,,,17278,0,0623.stdBJ-2,,,Composite,,,,D11,,
+0623/stdBJ,stdBJ,06/23/21,R,417T,,50,,,,,,17278,0,0623.stdBJ-2,,,Composite,,,,D11,,
+0623/stdBJ,stdBJ,06/23/21,R,K417 wild-type,,50,,,,,,17278,0,0623.stdBJ-2,,,Composite,,,,D11,,
+0623/stdBJ,stdBJ,06/23/21,R,417N,,50,,,,,,17278,0,0623.stdBJ-2,,,Composite,,,,D11,,
+0623/stdMix,stdMix,06/23/21,R,484K,,50,,,,,,19344,0,0623.stdMix-1,,,Composite,,,,G11,,
+0623/stdMix,stdMix,06/23/21,R,E484 wild-type,,50,,,,,,19344,0,0623.stdMix-1,,,Composite,,,,G11,,
+0623/stdMix,stdMix,06/23/21,R,417T,,50,,,,,,19344,0,0623.stdMix-1,,,Composite,,,,G11,,
+0623/stdMix,stdMix,06/23/21,R,K417 wild-type,,50,,,,,,19344,0,0623.stdMix-1,,,Composite,,,,G11,,
+0623/stdMix,stdMix,06/23/21,R,417N,,50,,,,,,19344,0,0623.stdMix-1,,,Composite,,,,G11,,
+0623/stdMix,stdMix,06/23/21,R,484K,,50,,,,,,13523,0,0623.stdMix-2,,,Composite,,,,H11,,
+0623/stdMix,stdMix,06/23/21,R,E484 wild-type,,50,,,,,,13523,0,0623.stdMix-2,,,Composite,,,,H11,,
+0623/stdMix,stdMix,06/23/21,R,417T,,50,,,,,,13523,0,0623.stdMix-2,,,Composite,,,,H11,,
+0623/stdMix,stdMix,06/23/21,R,K417 wild-type,,50,,,,,,13523,0,0623.stdMix-2,,,Composite,,,,H11,,
+0623/stdMix,stdMix,06/23/21,R,417N,,50,,,,,,13523,0,0623.stdMix-2,,,Composite,,,,H11,,
+0623/stdSA,stdSA,06/23/21,R,484K,,50,,,,,,18066,0,0623.stdSA-1,,,Composite,,,,E11,,
+0623/stdSA,stdSA,06/23/21,R,E484 wild-type,,50,,,,,,18066,0,0623.stdSA-1,,,Composite,,,,E11,,
+0623/stdSA,stdSA,06/23/21,R,417T,,50,,,,,,18066,0,0623.stdSA-1,,,Composite,,,,E11,,
+0623/stdSA,stdSA,06/23/21,R,K417 wild-type,,50,,,,,,18066,0,0623.stdSA-1,,,Composite,,,,E11,,
+0623/stdSA,stdSA,06/23/21,R,417N,,50,10.06,12.65,7.85,,,18066,68,0623.stdSA-1,,Positive,Composite,,,,E11,,
+0623/stdSA,stdSA,06/23/21,R,484K,,50,,,,,,19000,0,0623.stdSA-2,,,Composite,,,,F11,,
+0623/stdSA,stdSA,06/23/21,R,E484 wild-type,,50,,,,,,19000,0,0623.stdSA-2,,,Composite,,,,F11,,
+0623/stdSA,stdSA,06/23/21,R,417T,,50,,,,,,19000,0,0623.stdSA-2,,,Composite,,,,F11,,
+0623/stdSA,stdSA,06/23/21,R,K417 wild-type,,50,,,,,,19000,0,0623.stdSA-2,,,Composite,,,,F11,,
+0623/stdSA,stdSA,06/23/21,R,417N,,50,8.58,10.93,6.6,,,19000,61,0623.stdSA-2,,Positive,Composite,,,,F11,,
+69th Street,69,06/21/21,R,484K,,50,0.13,0.62,0.01,435.26,,19830,1,0621.69-1,1315.39,Negative,Composite,,,,E2,2078.99,18.28
+69th Street,69,06/21/21,R,E484 wild-type,,50,0.39,1.04,0.09,1305.44,,19830,3,0621.69-1,1322.73,Negative,Composite,,,,E2,3460.29,309.81
+69th Street,69,06/21/21,R,417T,,50,0,0.39,0,0,,19830,0,0621.69-1,1615.98,Negative,Composite,,,,E2,1304.16,0
+69th Street,69,06/21/21,R,K417 wild-type,,50,0.78,1.6,0.31,2611.08,,19830,6,0621.69-1,2333.33,Positive,Composite,,,,E2,5337.9,1022.58
+69th Street,69,06/21/21,R,417N,,50,0,0.39,0,0,,19830,0,0621.69-1,1559.48,Negative,Composite,,,,E2,1304.16,0
+69th Street,69,06/21/21,R,484K,,50,0,0.4,0,0,,19589,0,0621.69-2,1315.39,Negative,Composite,,,,F2,1320.42,0
+69th Street,69,06/21/21,R,E484 wild-type,,50,0.4,1.05,0.09,1321.57,,19589,3,0621.69-2,1322.73,Negative,Composite,,,,F2,3503.05,313.64
+69th Street,69,06/21/21,R,417T,,50,0,0.4,0,0,,19589,0,0621.69-2,1615.98,Negative,Composite,,,,F2,1320.42,0
+69th Street,69,06/21/21,R,K417 wild-type,,50,0.93,1.8,0.39,3083.99,,19589,7,0621.69-2,2333.33,Positive,Composite,,,,F2,6006.86,1310.12
+69th Street,69,06/21/21,R,417N,,50,0,0.4,0,0,,19589,0,0621.69-2,1559.48,Negative,Composite,,,,F2,1320.42,0
+Almeda Sims,AS,06/21/21,R,484K,,50,0,0.48,0,0,,16197,0,0621.AS-1,1315.39,Negative,Composite,,,,A3,1597.47,0
+Almeda Sims,AS,06/21/21,R,E484 wild-type,,50,0,0.48,0,0,,16197,0,0621.AS-1,1322.73,Negative,Composite,,,,A3,1596.58,0
+Almeda Sims,AS,06/21/21,R,417T,,50,0,0.48,0,0,,16197,0,0621.AS-1,1615.98,Negative,Composite,,,,A3,1597.47,0
+Almeda Sims,AS,06/21/21,R,K417 wild-type,,50,1.44,2.61,0.69,4797.03,,16197,9,0621.AS-1,2333.33,Positive,Composite,,,,A3,8692.04,2287.32
+Almeda Sims,AS,06/21/21,R,417N,,50,0,0.48,0,0,,16197,0,0621.AS-1,1559.48,Negative,Composite,,,,A3,1597.47,0
+Almeda Sims,AS,06/21/21,R,484K,,50,0,0.37,0,0,,21088,0,0621.AS-2,1315.39,Negative,Composite,,,,B3,1228.71,0
+Almeda Sims,AS,06/21/21,R,E484 wild-type,,50,0.49,1.16,0.15,1638.95,,21088,4,0621.AS-2,1322.73,Positive,Composite,,,,B3,3864.74,494.52
+Almeda Sims,AS,06/21/21,R,417T,,50,0,0.37,0,0,,21088,0,0621.AS-2,1615.98,Negative,Composite,,,,B3,1228.71,0
+Almeda Sims,AS,06/21/21,R,K417 wild-type,,50,2.21,3.41,1.34,7377.74,,21088,18,0621.AS-2,2333.33,Positive,Composite,,,,B3,11353.68,4460.73
+Almeda Sims,AS,06/21/21,R,417N,,50,0,0.37,0,0,,21088,0,0621.AS-2,1559.48,Negative,Composite,,,,B3,1228.71,0
+Beltway,BW,06/21/21,R,484K,,50,0,0.41,0,0,,19336,0,0621.BW-1,1315.39,Negative,Composite,,,,C3,1355.67,0
+Beltway,BW,06/21/21,R,E484 wild-type,,50,6.64,8.68,4.94,22121.1,,19336,49,0621.BW-1,1322.73,Positive,Composite,,,,C3,28930.46,16477.09
+Beltway,BW,06/21/21,R,417T,,50,18.39,21.49,15.3,61315.76,,19336,136,0621.BW-1,1615.98,Positive,Composite,,,,C3,71627.19,51016.63
+Beltway,BW,06/21/21,R,K417 wild-type,,50,2.84,4.24,1.79,9473.53,,19336,21,0621.BW-1,2333.33,Positive,Composite,,,,C3,14147.81,5964.4
+Beltway,BW,06/21/21,R,417N,,50,0,0.41,0,0,,19336,0,0621.BW-1,1559.48,Negative,Composite,,,,C3,1355.67,0
+Beltway,BW,06/21/21,R,484K,,50,0,0.42,0,0,,18669,0,0621.BW-2,1315.39,Negative,Composite,,,,D3,1403.52,0
+Beltway,BW,06/21/21,R,E484 wild-type,,50,5.33,7.22,3.81,17773.13,,18669,38,0621.BW-2,1322.73,Positive,Composite,,,,D3,24062.37,12690.96
+Beltway,BW,06/21/21,R,417T,,50,20.99,24.36,17.64,69979.17,,18669,150,0621.BW-2,1615.98,Positive,Composite,,,,D3,81185.47,58787.4
+Beltway,BW,06/21/21,R,K417 wild-type,,50,1.26,2.29,0.6,4206.12,,18669,9,0621.BW-2,2333.33,Positive,Composite,,,,D3,7621.13,2005.6
+Beltway,BW,06/21/21,R,417N,,50,0,0.42,0,0,,18669,0,0621.BW-2,1559.48,Negative,Composite,,,,D3,1403.52,0
+Cedar Bayou,CD,06/21/21,R,484K,,50,0,0.38,0,0,,20638,0,0621.CD-1,1315.39,Negative,Composite,,,,G3,1252.83,0
+Cedar Bayou,CD,06/21/21,R,E484 wild-type,,50,0,0.38,0,0,,20638,0,0621.CD-1,1322.73,Negative,Composite,,,,G3,1252.77,0
+Cedar Bayou,CD,06/21/21,R,417T,,50,0,0.38,0,0,,20638,0,0621.CD-1,1615.98,Negative,Composite,,,,G3,1252.83,0
+Cedar Bayou,CD,06/21/21,R,K417 wild-type,,50,0.13,0.6,0.01,418.13,,20638,1,0621.CD-1,2333.33,Negative,Composite,,,,G3,1997.16,17.56
+Cedar Bayou,CD,06/21/21,R,417N,,50,0,0.38,0,0,,20638,0,0621.CD-1,1559.48,Negative,Composite,,,,G3,1252.83,0
+Cedar Bayou,CD,06/21/21,R,484K,,50,0,0.38,0,0,,20651,0,0621.CD-2,1315.39,Negative,Composite,,,,H3,1251.92,0
+Cedar Bayou,CD,06/21/21,R,E484 wild-type,,50,0,0.38,0,0,,20651,0,0621.CD-2,1322.73,Negative,Composite,,,,H3,1251.86,0
+Cedar Bayou,CD,06/21/21,R,417T,,50,0,0.38,0,0,,20651,0,0621.CD-2,1615.98,Negative,Composite,,,,H3,1251.92,0
+Cedar Bayou,CD,06/21/21,R,K417 wild-type,,50,0.13,0.6,0.01,417.82,,20651,1,0621.CD-2,2333.33,Negative,Composite,,,,H3,1995.71,17.55
+Cedar Bayou,CD,06/21/21,R,417N,,50,0,0.38,0,0,,20651,0,0621.CD-2,1559.48,Negative,Composite,,,,H3,1251.92,0
+Chocolate Bayou,CB,06/21/21,R,484K,,50,0,0.4,0,0,,19670,0,0621.CB-1,1315.39,Negative,Composite,,,,E3,1317.66,0
+Chocolate Bayou,CB,06/21/21,R,E484 wild-type,,50,1.84,2.99,1.03,6143.03,,19670,14,0621.CB-1,1322.73,Positive,Composite,,,,E3,9974.11,3447.46
+Chocolate Bayou,CB,06/21/21,R,417T,,50,0,0.4,0,0,,19670,0,0621.CB-1,1615.98,Negative,Composite,,,,E3,1317.66,0
+Chocolate Bayou,CB,06/21/21,R,K417 wild-type,,50,6.06,7.99,4.47,20200.7,,19670,46,0621.CB-1,2333.33,Positive,Composite,,,,E3,26637.08,14897.83
+Chocolate Bayou,CB,06/21/21,R,417N,,50,0,0.4,0,0,,19670,0,0621.CB-1,1559.48,Negative,Composite,,,,E3,1317.66,0
+Chocolate Bayou,CB,06/21/21,R,484K,,50,0,0.41,0,0,,19057,0,0621.CB-2,1315.39,Negative,Composite,,,,F3,1358.02,0
+Chocolate Bayou,CB,06/21/21,R,E484 wild-type,,50,0.95,1.85,0.4,3170.44,,19057,7,0621.CB-2,1322.73,Positive,Composite,,,,F3,6175.28,1346.84
+Chocolate Bayou,CB,06/21/21,R,417T,,50,0,0.41,0,0,,19057,0,0621.CB-2,1615.98,Negative,Composite,,,,F3,1358.02,0
+Chocolate Bayou,CB,06/21/21,R,K417 wild-type,,50,1.77,2.92,0.97,5888.89,,19057,13,0621.CB-2,2333.33,Positive,Composite,,,,F3,9725.63,3225.26
+Chocolate Bayou,CB,06/21/21,R,417N,,50,0,0.41,0,0,,19057,0,0621.CB-2,1559.48,Negative,Composite,,,,F3,1358.02,0
+Clinton Park,CP,06/21/21,R,484K,,50,0,0.46,0,0,,16843,0,0621.CP-1,1315.39,Negative,Composite,,,,A4,1534.77,0
+Clinton Park,CP,06/21/21,R,E484 wild-type,,50,0,0.46,0,0,,16843,0,0621.CP-1,1322.73,Negative,Composite,,,,A4,1534.77,0
+Clinton Park,CP,06/21/21,R,417T,,50,0,0.46,0,0,,16843,0,0621.CP-1,1615.98,Negative,Composite,,,,A4,1534.77,0
+Clinton Park,CP,06/21/21,R,K417 wild-type,,50,0,0.46,0,0,,16843,0,0621.CP-1,2333.33,Negative,Composite,,,,A4,1534.77,0
+Clinton Park,CP,06/21/21,R,417N,,50,0,0.46,0,0,,16843,0,0621.CP-1,1559.48,Negative,Composite,,,,A4,1534.77,0
+Clinton Park,CP,06/21/21,R,484K,,50,0,0.47,0,0,,16580,0,0621.CP-2,1315.39,Negative,Composite,,,,B4,1560.25,0
+Clinton Park,CP,06/21/21,R,E484 wild-type,,50,0,0.47,0,0,,16580,0,0621.CP-2,1322.73,Negative,Composite,,,,B4,1560.25,0
+Clinton Park,CP,06/21/21,R,417T,,50,0,0.47,0,0,,16580,0,0621.CP-2,1615.98,Negative,Composite,,,,B4,1560.25,0
+Clinton Park,CP,06/21/21,R,K417 wild-type,,50,0,0.47,0,0,,16580,0,0621.CP-2,2333.33,Negative,Composite,,,,B4,1560.25,0
+Clinton Park,CP,06/21/21,R,417N,,50,0,0.47,0,0,,16580,0,0621.CP-2,1559.48,Negative,Composite,,,,B4,1560.25,0
+Easthaven,EH,06/21/21,R,484K,,50,1.55,2.72,0.77,5152.25,,16809,10,0621.EH-1,1315.39,Positive,Composite,,,,C4,9077.25,2564.92
+Easthaven,EH,06/21/21,R,E484 wild-type,,50,0.15,0.74,0.01,514.81,,16809,1,0621.EH-1,1322.73,Negative,Composite,,,,C4,2459.01,21.62
+Easthaven,EH,06/21/21,R,417T,,50,3.56,5.22,2.29,11854.79,,16809,23,0621.EH-1,1615.98,Positive,Composite,,,,C4,17409.98,7631.07
+Easthaven,EH,06/21/21,R,K417 wild-type,,50,5.88,7.95,4.2,19584.42,,16809,38,0621.EH-1,2333.33,Positive,Composite,,,,C4,26515.59,13983.9
+Easthaven,EH,06/21/21,R,417N,,50,0,0.46,0,0,,16809,0,0621.EH-1,1559.48,Negative,Composite,,,,C4,1545.97,0
+Easthaven,EH,06/21/21,R,484K,,50,2.08,3.38,1.17,6933.26,,17489,14,0621.EH-2,1315.39,Positive,Composite,,,,D4,11257.48,3890.85
+Easthaven,EH,06/21/21,R,E484 wild-type,,50,0.15,0.71,0.01,494.11,,17489,1,0621.EH-2,1322.73,Negative,Composite,,,,D4,2360.14,20.75
+Easthaven,EH,06/21/21,R,417T,,50,2.82,4.3,1.73,9410.77,,17489,19,0621.EH-2,1615.98,Positive,Composite,,,,D4,14327.78,5773.53
+Easthaven,EH,06/21/21,R,K417 wild-type,,50,8.31,10.69,6.32,27713.97,,17489,56,0621.EH-2,2333.33,Positive,Composite,,,,D4,35649.12,21057.47
+Easthaven,EH,06/21/21,R,417N,,50,0,0.45,0,0,,17489,0,0621.EH-2,1559.48,Negative,Composite,,,,D4,1485.29,0
+F.W.S.D. # 23,23,06/21/21,R,484K,,50,0,0.38,0,0,,20201,0,0621.23-1,1315.39,Negative,Composite,,,,A2,1281.47,0
+F.W.S.D. # 23,23,06/21/21,R,E484 wild-type,,50,0.77,1.57,0.3,2562.86,,20201,6,0621.23-1,1322.73,Positive,Composite,,,,A2,5239.3,1003.7
+F.W.S.D. # 23,23,06/21/21,R,417T,,50,0,0.38,0,0,,20201,0,0621.23-1,1615.98,Negative,Composite,,,,A2,1281.47,0
+F.W.S.D. # 23,23,06/21/21,R,K417 wild-type,,50,3.33,4.79,2.21,11111.24,,20201,26,0621.23-1,2333.33,Positive,Composite,,,,A2,15968.36,7357.03
+F.W.S.D. # 23,23,06/21/21,R,417N,,50,0,0.38,0,0,,20201,0,0621.23-1,1559.48,Negative,Composite,,,,A2,1281.47,0
+F.W.S.D. # 23,23,06/21/21,R,484K,,50,0.12,0.58,0.01,405.19,,21329,1,0621.23-2,1315.39,Negative,Composite,,,,B2,1935.35,17.02
+F.W.S.D. # 23,23,06/21/21,R,E484 wild-type,,50,0.97,1.82,0.44,3236.71,,21329,8,0621.23-2,1322.73,Positive,Composite,,,,B2,6061.33,1465.27
+F.W.S.D. # 23,23,06/21/21,R,417T,,50,0,0.36,0,0,,21329,0,0621.23-2,1615.98,Negative,Composite,,,,B2,1214.06,0
+F.W.S.D. # 23,23,06/21/21,R,K417 wild-type,,50,3.76,5.26,2.59,12549.02,,21329,31,0621.23-2,2333.33,Positive,Composite,,,,B2,17519.43,8622.86
+F.W.S.D. # 23,23,06/21/21,R,417N,,50,0,0.36,0,0,,21329,0,0621.23-2,1559.48,Negative,Composite,,,,B2,1214.06,0
+Forest Cove,FC,06/21/21,R,484K,,50,0,0.42,0,0,,18550,0,0621.FC-1,1315.39,Negative,Composite,,,,E4,1395.26,0
+Forest Cove,FC,06/21/21,R,E484 wild-type,,50,0,0.42,0,0,,18550,0,0621.FC-1,1322.73,Negative,Composite,,,,E4,1394.88,0
+Forest Cove,FC,06/21/21,R,417T,,50,0,0.42,0,0,,18550,0,0621.FC-1,1615.98,Negative,Composite,,,,E4,1395.26,0
+Forest Cove,FC,06/21/21,R,K417 wild-type,,50,0.7,1.52,0.25,2328.03,,18550,5,0621.FC-1,2333.33,Negative,Composite,,,,E4,5059.61,818.46
+Forest Cove,FC,06/21/21,R,417N,,50,0,0.42,0,0,,18550,0,0621.FC-1,1559.48,Negative,Composite,,,,E4,1395.26,0
+Forest Cove,FC,06/21/21,R,484K,,50,0,0.5,0,0,,15526,0,0621.FC-2,1315.39,Negative,Composite,,,,F4,1666.9,0
+Forest Cove,FC,06/21/21,R,E484 wild-type,,50,0,0.5,0,0,,15526,0,0621.FC-2,1322.73,Negative,Composite,,,,F4,1666.04,0
+Forest Cove,FC,06/21/21,R,417T,,50,0,0.5,0,0,,15526,0,0621.FC-2,1615.98,Negative,Composite,,,,F4,1666.9,0
+Forest Cove,FC,06/21/21,R,K417 wild-type,,50,1.33,2.5,0.6,4449.43,,15526,8,0621.FC-2,2333.33,Positive,Composite,,,,F4,8332.88,2014.2
+Forest Cove,FC,06/21/21,R,417N,,50,0,0.5,0,0,,15526,0,0621.FC-2,1559.48,Negative,Composite,,,,F4,1666.9,0
+Greenridge,GR,06/21/21,R,484K,,50,0,0.46,0,0,,17036,0,0621.GR-1,1315.39,Negative,Composite,,,,G4,1520.86,0
+Greenridge,GR,06/21/21,R,E484 wild-type,,50,0,0.46,0,0,,17036,0,0621.GR-1,1322.73,Negative,Composite,,,,G4,1519.08,0
+Greenridge,GR,06/21/21,R,417T,,50,0,0.46,0,0,,17036,0,0621.GR-1,1615.98,Negative,Composite,,,,G4,1520.86,0
+Greenridge,GR,06/21/21,R,K417 wild-type,,50,3.04,4.59,1.89,10145.77,,17036,20,0621.GR-1,2333.33,Positive,Composite,,,,G4,15293.72,6308.76
+Greenridge,GR,06/21/21,R,417N,,50,0,0.46,0,0,,17036,0,0621.GR-1,1559.48,Negative,Composite,,,,G4,1520.86,0
+Greenridge,GR,06/21/21,R,484K,,50,0,0.46,0,0,,16964,0,0621.GR-2,1315.39,Negative,Composite,,,,H4,1526.79,0
+Greenridge,GR,06/21/21,R,E484 wild-type,,50,1.07,2.08,0.45,3562.64,,16964,7,0621.GR-2,1322.73,Positive,Composite,,,,H4,6939.35,1513.43
+Greenridge,GR,06/21/21,R,417T,,50,0.15,0.73,0.01,509.58,,16964,1,0621.GR-2,1615.98,Negative,Composite,,,,H4,2434.03,21.4
+Greenridge,GR,06/21/21,R,K417 wild-type,,50,3.51,5.16,2.26,11711.36,,16964,23,0621.GR-2,2333.33,Positive,Composite,,,,H4,17199.27,7538.76
+Greenridge,GR,06/21/21,R,417N,,50,0,0.46,0,0,,16964,0,0621.GR-2,1559.48,Negative,Composite,,,,H4,1526.88,0
+Homestead,HO,06/21/21,R,484K,,50,0,0.49,0,0,,15955,0,0621.HO-1,1315.39,Negative,Composite,,,,A5,1620.4,0
+Homestead,HO,06/21/21,R,E484 wild-type,,50,0,0.49,0,0,,15955,0,0621.HO-1,1322.73,Negative,Composite,,,,A5,1620.2,0
+Homestead,HO,06/21/21,R,417T,,50,0,0.49,0,0,,15955,0,0621.HO-1,1615.98,Negative,Composite,,,,A5,1620.4,0
+Homestead,HO,06/21/21,R,K417 wild-type,,50,0.32,1.04,0.05,1081.54,,15955,2,0621.HO-1,2333.33,Negative,Composite,,,,A5,3464.65,163.84
+Homestead,HO,06/21/21,R,417N,,50,0,0.49,0,0,,15955,0,0621.HO-1,1559.48,Negative,Composite,,,,A5,1620.4,0
+Homestead,HO,06/21/21,R,484K,,50,0,0.45,0,0,,17425,0,0621.HO-2,1315.39,Negative,Composite,,,,B5,1484.7,0
+Homestead,HO,06/21/21,R,E484 wild-type,,50,0.59,1.4,0.18,1981.73,,17425,4,0621.HO-2,1322.73,Positive,Composite,,,,B5,4673.15,597.94
+Homestead,HO,06/21/21,R,417T,,50,0,0.45,0,0,,17425,0,0621.HO-2,1615.98,Negative,Composite,,,,B5,1484.7,0
+Homestead,HO,06/21/21,R,K417 wild-type,,50,0.15,0.71,0.01,495.39,,17425,1,0621.HO-2,2333.33,Negative,Composite,,,,B5,2366.24,20.81
+Homestead,HO,06/21/21,R,417N,,50,0,0.45,0,0,,17425,0,0621.HO-2,1559.48,Negative,Composite,,,,B5,1484.7,0
+Imperial Valley,IV,06/21/21,R,484K,,50,0.27,0.87,0.04,903.21,,19144,2,0621.IV-1,1315.39,Negative,Composite,,,,E5,2893.31,136.83
+Imperial Valley,IV,06/21/21,R,E484 wild-type,,50,1.89,3.08,1.06,6313.54,,19144,14,0621.IV-1,1322.73,Positive,Composite,,,,E5,10251.02,3543.13
+Imperial Valley,IV,06/21/21,R,417T,,50,0.27,0.87,0.04,903.21,,19144,2,0621.IV-1,1615.98,Negative,Composite,,,,E5,2893.31,136.83
+Imperial Valley,IV,06/21/21,R,K417 wild-type,,50,4.06,5.7,2.77,13534.68,,19144,30,0621.IV-1,2333.33,Positive,Composite,,,,E5,18995.16,9238.27
+Imperial Valley,IV,06/21/21,R,417N,,50,0,0.41,0,0,,19144,0,0621.IV-1,1559.48,Negative,Composite,,,,E5,1353.25,0
+Imperial Valley,IV,06/21/21,R,484K,,50,0.39,1.05,0.09,1315.39,,19723,3,0621.IV-2,1315.39,Positive,Composite,,,,F5,3486.67,312.17
+Imperial Valley,IV,06/21/21,R,E484 wild-type,,50,1.45,2.49,0.75,4817.48,,19723,11,0621.IV-2,1322.73,Positive,Composite,,,,F5,8283.79,2487.24
+Imperial Valley,IV,06/21/21,R,417T,,50,0.13,0.63,0.01,438.44,,19723,1,0621.IV-2,1615.98,Negative,Composite,,,,F5,2094.2,18.41
+Imperial Valley,IV,06/21/21,R,K417 wild-type,,50,3.55,5.07,2.37,11829.53,,19723,27,0621.IV-2,2333.33,Positive,Composite,,,,F5,16891.83,7897.7
+Imperial Valley,IV,06/21/21,R,417N,,50,0,0.39,0,0,,19723,0,0621.IV-2,1559.48,Negative,Composite,,,,F5,1313.91,0
+Intercontinental Airport,IA,06/21/21,R,484K,,50,0.15,0.72,0.01,499.03,,17332,1,0621.IA-1,1315.39,Negative,Composite,,,,C5,2383.62,20.96
+Intercontinental Airport,IA,06/21/21,R,E484 wild-type,,50,2.54,3.96,1.51,8470.74,,17332,17,0621.IA-1,1322.73,Positive,Composite,,,,C5,13190.06,5040.09
+Intercontinental Airport,IA,06/21/21,R,417T,,50,0.9,1.84,0.35,2994.6,,17332,6,0621.IA-1,1615.98,Positive,Composite,,,,C5,6122.08,1172.76
+Intercontinental Airport,IA,06/21/21,R,K417 wild-type,,50,5.38,7.35,3.81,17947.9,,17332,36,0621.IA-1,2333.33,Positive,Composite,,,,C5,24492.71,12690.28
+Intercontinental Airport,IA,06/21/21,R,417N,,50,0,0.45,0,0,,17332,0,0621.IA-1,1559.48,Negative,Composite,,,,C5,1495.78,0
+Intercontinental Airport,IA,06/21/21,R,484K,,50,0.55,1.29,0.17,1827.66,,18930,4,0621.IA-2,1315.39,Positive,Composite,,,,D5,4309.78,551.45
+Intercontinental Airport,IA,06/21/21,R,E484 wild-type,,50,1.51,2.59,0.78,5023,,18930,11,0621.IA-2,1322.73,Positive,Composite,,,,D5,8637.25,2593.33
+Intercontinental Airport,IA,06/21/21,R,417T,,50,1.1,2.05,0.5,3655.7,,18930,8,0621.IA-2,1615.98,Positive,Composite,,,,D5,6846.11,1654.93
+Intercontinental Airport,IA,06/21/21,R,K417 wild-type,,50,2.6,3.96,1.6,8677.92,,18930,19,0621.IA-2,2333.33,Positive,Composite,,,,D5,13211.72,5324.01
+Intercontinental Airport,IA,06/21/21,R,417N,,50,0,0.41,0,0,,18930,0,0621.IA-2,1559.48,Negative,Composite,,,,D5,1369.53,0
+Keegans Bayou,KB,06/21/21,R,484K,,50,0.14,0.65,0.01,452.56,,19076,1,0621.KB-1,1315.39,Negative,Composite,,,,G5,2161.66,19.01
+Keegans Bayou,KB,06/21/21,R,E484 wild-type,,50,0.14,0.65,0.01,452.33,,19076,1,0621.KB-1,1322.73,Negative,Composite,,,,G5,2160.53,19
+Keegans Bayou,KB,06/21/21,R,417T,,50,0,0.41,0,0,,19076,0,0621.KB-1,1615.98,Negative,Composite,,,,G5,1355.95,0
+Keegans Bayou,KB,06/21/21,R,K417 wild-type,,50,1.36,2.39,0.68,4524.33,,19076,10,0621.KB-1,2333.33,Positive,Composite,,,,G5,7970.75,2252.37
+Keegans Bayou,KB,06/21/21,R,417N,,50,0,0.41,0,0,,19076,0,0621.KB-1,1559.48,Negative,Composite,,,,G5,1356.02,0
+Keegans Bayou,KB,06/21/21,R,484K,,50,0,0.38,0,0,,20281,0,0621.KB-2,1315.39,Negative,Composite,,,,H5,1275.02,0
+Keegans Bayou,KB,06/21/21,R,E484 wild-type,,50,0.38,1.01,0.09,1276.34,,20281,3,0621.KB-2,1322.73,Negative,Composite,,,,H5,3383.15,302.9
+Keegans Bayou,KB,06/21/21,R,417T,,50,0,0.38,0,0,,20281,0,0621.KB-2,1615.98,Negative,Composite,,,,H5,1275.02,0
+Keegans Bayou,KB,06/21/21,R,K417 wild-type,,50,0.64,1.39,0.22,2127.35,,20281,5,0621.KB-2,2333.33,Negative,Composite,,,,H5,4623.39,747.91
+Keegans Bayou,KB,06/21/21,R,417N,,50,0,0.38,0,0,,20281,0,0621.KB-2,1559.48,Negative,Composite,,,,H5,1275.02,0
+Kingwood Central,KW,06/21/21,R,484K,,50,0.25,0.82,0.04,849.33,,20382,2,0621.KW-1,1315.39,Negative,Composite,,,,A6,2720.69,128.67
+Kingwood Central,KW,06/21/21,R,E484 wild-type,,50,1.65,2.73,0.91,5510.18,,20382,13,0621.KW-1,1322.73,Positive,Composite,,,,A6,9100.04,3017.87
+Kingwood Central,KW,06/21/21,R,417T,,50,0.51,1.2,0.15,1698.74,,20382,4,0621.KW-1,1615.98,Positive,Composite,,,,A6,4005.73,512.56
+Kingwood Central,KW,06/21/21,R,K417 wild-type,,50,5.47,7.28,3.99,18239.41,,20382,43,0621.KW-1,2333.33,Positive,Composite,,,,A6,24268.59,13304.6
+Kingwood Central,KW,06/21/21,R,417N,,50,0,0.38,0,0,,20382,0,0621.KW-1,1559.48,Negative,Composite,,,,A6,1272.63,0
+Kingwood Central,KW,06/21/21,R,484K,,50,0.27,0.87,0.04,905.72,,19148,2,0621.KW-2,1315.39,Negative,Composite,,,,B6,2901.36,137.21
+Kingwood Central,KW,06/21/21,R,E484 wild-type,,50,1.08,2.03,0.49,3616.43,,19148,8,0621.KW-2,1322.73,Positive,Composite,,,,B6,6772.56,1637.15
+Kingwood Central,KW,06/21/21,R,417T,,50,1.22,2.22,0.58,4076.5,,19148,9,0621.KW-2,1615.98,Positive,Composite,,,,B6,7386.22,1943.8
+Kingwood Central,KW,06/21/21,R,K417 wild-type,,50,6.38,8.39,4.72,21268.28,,19148,47,0621.KW-2,2333.33,Positive,Composite,,,,B6,27965.51,15738.91
+Kingwood Central,KW,06/21/21,R,417N,,50,0,0.41,0,0,,19148,0,0621.KW-2,1559.48,Negative,Composite,,,,B6,1357.52,0
+Kingwood West,KWW,06/21/21,R,484K,,50,0,0.41,0,0,,18997,0,0621.KWW-1,1315.39,Negative,Composite,,,,C6,1364.04,0
+Kingwood West,KWW,06/21/21,R,E484 wild-type,,50,0.27,0.87,0.04,909.97,,18997,2,0621.KWW-1,1322.73,Negative,Composite,,,,C6,2914.98,137.85
+Kingwood West,KWW,06/21/21,R,417T,,50,0.14,0.65,0.01,455.26,,18997,1,0621.KWW-1,1615.98,Negative,Composite,,,,C6,2174.55,19.12
+Kingwood West,KWW,06/21/21,R,K417 wild-type,,50,1.64,2.76,0.87,5461.28,,18997,12,0621.KWW-1,2333.33,Positive,Composite,,,,C6,9191.95,2909.97
+Kingwood West,KWW,06/21/21,R,417N,,50,0,0.41,0,0,,18997,0,0621.KWW-1,1559.48,Negative,Composite,,,,C6,1364.11,0
+Kingwood West,KWW,06/21/21,R,484K,,50,0.29,0.93,0.04,970.79,,17817,2,0621.KWW-2,1315.39,Negative,Composite,,,,D6,3109.84,147.07
+Kingwood West,KWW,06/21/21,R,E484 wild-type,,50,0.29,0.93,0.04,970.41,,17817,2,0621.KWW-2,1322.73,Negative,Composite,,,,D6,3108.62,147.01
+Kingwood West,KWW,06/21/21,R,417T,,50,0.29,0.93,0.04,970.79,,17817,2,0621.KWW-2,1615.98,Negative,Composite,,,,D6,3109.84,147.07
+Kingwood West,KWW,06/21/21,R,K417 wild-type,,50,1.46,2.57,0.72,4853.15,,17817,10,0621.KWW-2,2333.33,Positive,Composite,,,,D6,8550.18,2416.04
+Kingwood West,KWW,06/21/21,R,417N,,50,0,0.44,0,0,,17817,0,0621.KWW-2,1559.48,Negative,Composite,,,,D6,1454.54,0
+M.U.D. # 203,203,06/21/21,R,484K,,50,0,0.43,0,0,,17908,0,0621.203-1,1315.39,Negative,Composite,,,,G1,1448.1,0
+M.U.D. # 203,203,06/21/21,R,E484 wild-type,,50,0.58,1.36,0.17,1927.71,,17908,4,0621.203-1,1322.73,Positive,Composite,,,,G1,4545.74,581.64
+M.U.D. # 203,203,06/21/21,R,417T,,50,0,0.43,0,0,,17908,0,0621.203-1,1615.98,Negative,Composite,,,,G1,1448.1,0
+M.U.D. # 203,203,06/21/21,R,K417 wild-type,,50,7.24,9.44,5.41,24127.35,,17908,50,0621.203-1,2333.33,Positive,Composite,,,,G1,31473.52,18027.37
+M.U.D. # 203,203,06/21/21,R,417N,,50,0,0.43,0,0,,17908,0,0621.203-1,1559.48,Negative,Composite,,,,G1,1448.1,0
+M.U.D. # 203,203,06/21/21,R,484K,,50,0,0.41,0,0,,19213,0,0621.203-2,1315.39,Negative,Composite,,,,H1,1350.5,0
+M.U.D. # 203,203,06/21/21,R,E484 wild-type,,50,0.67,1.46,0.24,2245.74,,19213,5,0621.203-2,1322.73,Positive,Composite,,,,H1,4880.73,789.53
+M.U.D. # 203,203,06/21/21,R,417T,,50,0,0.41,0,0,,19213,0,0621.203-2,1615.98,Negative,Composite,,,,H1,1350.5,0
+M.U.D. # 203,203,06/21/21,R,K417 wild-type,,50,9.18,11.54,7.16,30592.23,,19213,68,0621.203-2,2333.33,Positive,Composite,,,,H1,38478.76,23868.39
+M.U.D. # 203,203,06/21/21,R,417N,,50,0,0.41,0,0,,19213,0,0621.203-2,1559.48,Negative,Composite,,,,H1,1350.5,0
+Metro Central,MC,06/21/21,R,484K,,50,0,0.42,0,0,,18493,0,0621.MC-1,1315.39,Negative,Composite,,,,E6,1398.5,0
+Metro Central,MC,06/21/21,R,E484 wild-type,,50,0.42,1.11,0.1,1400.14,,18493,3,0621.MC-1,1322.73,Positive,Composite,,,,E6,3711.34,332.28
+Metro Central,MC,06/21/21,R,417T,,50,0,0.42,0,0,,18493,0,0621.MC-1,1615.98,Negative,Composite,,,,E6,1398.5,0
+Metro Central,MC,06/21/21,R,K417 wild-type,,50,0,0.42,0,0,,18493,0,0621.MC-1,2333.33,Negative,Composite,,,,E6,1398.28,0
+Metro Central,MC,06/21/21,R,417N,,50,0,0.42,0,0,,18493,0,0621.MC-1,1559.48,Negative,Composite,,,,E6,1398.5,0
+Metro Central,MC,06/21/21,R,484K,,50,0,0.39,0,0,,19857,0,0621.MC-2,1315.39,Negative,Composite,,,,F6,1302.06,0
+Metro Central,MC,06/21/21,R,E484 wild-type,,50,0,0.39,0,0,,19857,0,0621.MC-2,1322.73,Negative,Composite,,,,F6,1302.06,0
+Metro Central,MC,06/21/21,R,417T,,50,0,0.39,0,0,,19857,0,0621.MC-2,1615.98,Negative,Composite,,,,F6,1302.06,0
+Metro Central,MC,06/21/21,R,K417 wild-type,,50,0,0.39,0,0,,19857,0,0621.MC-2,2333.33,Negative,Composite,,,,F6,1302.06,0
+Metro Central,MC,06/21/21,R,417N,,50,0,0.39,0,0,,19857,0,0621.MC-2,1559.48,Negative,Composite,,,,F6,1302.06,0
+Northbelt,NO,06/21/21,R,484K,,50,0.6,1.42,0.18,2011.06,,17493,4,0621.NO-1,1315.39,Positive,Composite,,,,C7,4742.33,606.79
+Northbelt,NO,06/21/21,R,E484 wild-type,,50,16.52,19.6,13.45,55083.27,,17493,111,0621.NO-1,1322.73,Positive,Composite,,,,C7,65336.8,44841.93
+Northbelt,NO,06/21/21,R,417T,,50,0.6,1.42,0.18,2011.06,,17493,4,0621.NO-1,1615.98,Positive,Composite,,,,C7,4742.33,606.79
+Northbelt,NO,06/21/21,R,K417 wild-type,,50,34.21,38.64,29.78,114028.52,,17493,229,0621.NO-1,2333.33,Positive,Composite,,,,C7,128810.3,99272.01
+Northbelt,NO,06/21/21,R,417N,,50,0.45,1.2,0.11,1508.52,,17493,3,0621.NO-1,1559.48,Negative,Composite,,,,C7,3998.65,358
+Northbelt,NO,06/21/21,R,484K,,50,0.97,1.97,0.38,3219.4,,16349,6,0621.NO-2,1315.39,Positive,Composite,,,,D7,6581.73,1260.79
+Northbelt,NO,06/21/21,R,E484 wild-type,,50,14.48,17.68,11.7,48273.75,,16349,91,0621.NO-2,1322.73,Positive,Composite,,,,D7,58929.78,38993.78
+Northbelt,NO,06/21/21,R,417T,,50,1.61,2.84,0.8,5366.33,,16349,10,0621.NO-2,1615.98,Positive,Composite,,,,D7,9454.5,2671.48
+Northbelt,NO,06/21/21,R,K417 wild-type,,50,31.45,35.85,27.07,104847.4,,16349,197,0621.NO-2,2333.33,Positive,Composite,,,,D7,119501.26,90218.39
+Northbelt,NO,06/21/21,R,417N,,50,0.48,1.28,0.11,1610.45,,16349,3,0621.NO-2,1559.48,Positive,Composite,,,,D7,4268.89,382.19
+Northeast,NE,06/21/21,R,484K,,50,0.13,0.64,0.01,449.1,,19247,1,0621.NE-1,1315.39,Negative,Composite,,,,G6,2145.12,18.86
+Northeast,NE,06/21/21,R,E484 wild-type,,50,1.21,2.19,0.58,4037.28,,19247,9,0621.NE-1,1322.73,Positive,Composite,,,,G6,7315.15,1925.1
+Northeast,NE,06/21/21,R,417T,,50,0.27,0.86,0.04,898.23,,19247,2,0621.NE-1,1615.98,Negative,Composite,,,,G6,2877.34,136.08
+Northeast,NE,06/21/21,R,K417 wild-type,,50,3.5,5.03,2.32,11668.42,,19247,26,0621.NE-1,2333.33,Positive,Composite,,,,G6,16769.34,7725.87
+Northeast,NE,06/21/21,R,417N,,50,0,0.4,0,0,,19247,0,0621.NE-1,1559.48,Negative,Composite,,,,G6,1345.72,0
+Northeast,NE,06/21/21,R,484K,,50,0,0.38,0,0,,20237,0,0621.NE-2,1315.39,Negative,Composite,,,,H6,1279.63,0
+Northeast,NE,06/21/21,R,E484 wild-type,,50,1.54,2.58,0.82,5119.14,,20237,12,0621.NE-2,1322.73,Positive,Composite,,,,H6,8615.97,2727.7
+Northeast,NE,06/21/21,R,417T,,50,0.13,0.61,0.01,427.09,,20237,1,0621.NE-2,1615.98,Negative,Composite,,,,H6,2039.98,17.94
+Northeast,NE,06/21/21,R,K417 wild-type,,50,2.94,4.32,1.9,9814.35,,20237,23,0621.NE-2,2333.33,Positive,Composite,,,,H6,14412.58,6317.88
+Northeast,NE,06/21/21,R,417N,,50,0,0.38,0,0,,20237,0,0621.NE-2,1559.48,Negative,Composite,,,,H6,1279.69,0
+Northgate,NG,06/21/21,R,484K,,50,0.6,1.41,0.18,1992.25,,17373,4,0621.NG-1,1315.39,Positive,Composite,,,,A7,4697.97,601.11
+Northgate,NG,06/21/21,R,E484 wild-type,,50,0.89,1.83,0.35,2981.84,,17373,6,0621.NG-1,1322.73,Positive,Composite,,,,A7,6095.98,1167.76
+Northgate,NG,06/21/21,R,417T,,50,0.6,1.41,0.18,1992.25,,17373,4,0621.NG-1,1615.98,Positive,Composite,,,,A7,4697.97,601.11
+Northgate,NG,06/21/21,R,K417 wild-type,,50,6.42,8.54,4.68,21392.65,,17373,43,0621.NG-1,2333.33,Positive,Composite,,,,A7,28465.87,15603.93
+Northgate,NG,06/21/21,R,417N,,50,0.15,0.71,0.01,498.19,,17373,1,0621.NG-1,1559.48,Negative,Composite,,,,A7,2379.63,20.92
+Northgate,NG,06/21/21,R,484K,,50,0.15,0.71,0.01,493.32,,17555,1,0621.NG-2,1315.39,Negative,Composite,,,,B7,2356.36,20.72
+Northgate,NG,06/21/21,R,E484 wild-type,,50,1.33,2.41,0.63,4427.99,,17555,9,0621.NG-2,1322.73,Positive,Composite,,,,B7,8023.23,2111.38
+Northgate,NG,06/21/21,R,417T,,50,0.3,0.95,0.04,986.67,,17555,2,0621.NG-2,1615.98,Negative,Composite,,,,B7,3160.71,149.47
+Northgate,NG,06/21/21,R,K417 wild-type,,50,7.83,10.14,5.9,26108.73,,17555,53,0621.NG-2,2333.33,Positive,Composite,,,,B7,33811.11,19679.14
+Northgate,NG,06/21/21,R,417N,,50,0,0.44,0,0,,17555,0,0621.NG-2,1559.48,Negative,Composite,,,,B7,1478.33,0
+Northwest,NW,06/21/21,R,484K,,50,0,0.4,0,0,,19321,0,0621.NW-1,1315.39,Negative,Composite,,,,E7,1338.33,0
+Northwest,NW,06/21/21,R,E484 wild-type,,50,0.13,0.64,0.01,446.66,,19321,1,0621.NW-1,1322.73,Negative,Composite,,,,E7,2133.45,18.76
+Northwest,NW,06/21/21,R,417T,,50,0.13,0.64,0.01,446.68,,19321,1,0621.NW-1,1615.98,Negative,Composite,,,,E7,2133.56,18.76
+Northwest,NW,06/21/21,R,K417 wild-type,,50,0.27,0.86,0.04,893.34,,19321,2,0621.NW-1,2333.33,Negative,Composite,,,,E7,2861.7,135.34
+Northwest,NW,06/21/21,R,417N,,50,0,0.4,0,0,,19321,0,0621.NW-1,1559.48,Negative,Composite,,,,E7,1338.4,0
+Northwest,NW,06/21/21,R,484K,,50,0,0.46,0,0,,16792,0,0621.NW-2,1315.39,Negative,Composite,,,,F7,1539.8,0
+Northwest,NW,06/21/21,R,E484 wild-type,,50,0,0.46,0,0,,16792,0,0621.NW-2,1322.73,Negative,Composite,,,,F7,1539.8,0
+Northwest,NW,06/21/21,R,417T,,50,0,0.46,0,0,,16792,0,0621.NW-2,1615.98,Negative,Composite,,,,F7,1539.8,0
+Northwest,NW,06/21/21,R,K417 wild-type,,50,0,0.46,0,0,,16792,0,0621.NW-2,2333.33,Negative,Composite,,,,F7,1539.8,0
+Northwest,NW,06/21/21,R,417N,,50,0,0.46,0,0,,16792,0,0621.NW-2,1559.48,Negative,Composite,,,,F7,1539.8,0
+Park Ten,PT,06/21/21,R,484K,,50,0.13,0.64,0.01,444.84,,19432,1,0621.PT-1,1315.39,Negative,Composite,,,,G7,2124.76,18.68
+Park Ten,PT,06/21/21,R,E484 wild-type,,50,0.53,1.26,0.16,1776.38,,19432,4,0621.PT-1,1322.73,Positive,Composite,,,,G7,4188.85,535.99
+Park Ten,PT,06/21/21,R,417T,,50,0,0.4,0,0,,19432,0,0621.PT-1,1615.98,Negative,Composite,,,,G7,1332.81,0
+Park Ten,PT,06/21/21,R,K417 wild-type,,50,4.53,6.24,3.17,15110.93,,19432,34,0621.PT-1,2333.33,Positive,Composite,,,,G7,20797.27,10571.32
+Park Ten,PT,06/21/21,R,417N,,50,0,0.4,0,0,,19432,0,0621.PT-1,1559.48,Negative,Composite,,,,G7,1332.88,0
+Park Ten,PT,06/21/21,R,484K,,50,0,0.42,0,0,,18518,0,0621.PT-2,1315.39,Negative,Composite,,,,H7,1398.13,0
+Park Ten,PT,06/21/21,R,E484 wild-type,,50,0.42,1.11,0.1,1397.95,,18518,3,0621.PT-2,1322.73,Positive,Composite,,,,H7,3705.53,331.76
+Park Ten,PT,06/21/21,R,417T,,50,0,0.42,0,0,,18518,0,0621.PT-2,1615.98,Negative,Composite,,,,H7,1398.13,0
+Park Ten,PT,06/21/21,R,K417 wild-type,,50,3.64,5.23,2.41,12123.1,,18518,26,0621.PT-2,2333.33,Positive,Composite,,,,H7,17422.98,8026.85
+Park Ten,PT,06/21/21,R,417N,,50,0,0.42,0,0,,18518,0,0621.PT-2,1559.48,Negative,Composite,,,,H7,1398.13,0
+Sagemont,SG,06/21/21,R,484K,,50,0.26,0.84,0.04,877.31,,19712,2,0621.SG-1,1315.39,Negative,Composite,,,,E8,2810.33,132.91
+Sagemont,SG,06/21/21,R,E484 wild-type,,50,1.31,2.31,0.65,4380.08,,19712,10,0621.SG-1,1322.73,Positive,Composite,,,,E8,7716.57,2180.57
+Sagemont,SG,06/21/21,R,417T,,50,0,0.39,0,0,,19712,0,0621.SG-1,1615.98,Negative,Composite,,,,E8,1314.24,0
+Sagemont,SG,06/21/21,R,K417 wild-type,,50,4.21,5.84,2.91,14024.1,,19712,32,0621.SG-1,2333.33,Positive,Composite,,,,E8,19481.69,9696.99
+Sagemont,SG,06/21/21,R,417N,,50,0,0.39,0,0,,19712,0,0621.SG-1,1559.48,Negative,Composite,,,,E8,1314.37,0
+Sagemont,SG,06/21/21,R,484K,,50,0.14,0.65,0.01,451.62,,19154,1,0621.SG-2,1315.39,Negative,Composite,,,,F8,2157.13,18.97
+Sagemont,SG,06/21/21,R,E484 wild-type,,50,0.54,1.28,0.16,1803.59,,19154,4,0621.SG-2,1322.73,Positive,Composite,,,,F8,4253.01,544.19
+Sagemont,SG,06/21/21,R,417T,,50,0.14,0.65,0.01,451.62,,19154,1,0621.SG-2,1615.98,Negative,Composite,,,,F8,2157.13,18.97
+Sagemont,SG,06/21/21,R,K417 wild-type,,50,4.2,5.86,2.88,13987.66,,19154,31,0621.SG-2,2333.33,Positive,Composite,,,,F8,19528.53,9611.14
+Sagemont,SG,06/21/21,R,417N,,50,0,0.41,0,0,,19154,0,0621.SG-2,1559.48,Negative,Composite,,,,F8,1353.25,0
+Sims Bayou North,SB,06/21/21,R,484K,,50,0,0.42,0,0,,18425,0,0621.SB-1,1315.39,Negative,Composite,,,,A8,1403.21,0
+Sims Bayou North,SB,06/21/21,R,E484 wild-type,,50,0,0.42,0,0,,18425,0,0621.SB-1,1322.73,Negative,Composite,,,,A8,1403.36,0
+Sims Bayou North,SB,06/21/21,R,417T,,50,0.56,1.33,0.17,1873.5,,18425,4,0621.SB-1,1615.98,Positive,Composite,,,,A8,4417.89,565.28
+Sims Bayou North,SB,06/21/21,R,K417 wild-type,,50,0.28,0.9,0.04,936.8,,18425,2,0621.SB-1,2333.33,Negative,Composite,,,,A8,3000.93,141.92
+Sims Bayou North,SB,06/21/21,R,417N,,50,0,0.42,0,0,,18425,0,0621.SB-1,1559.48,Negative,Composite,,,,A8,1403.52,0
+Sims Bayou North,SB,06/21/21,R,484K,,50,0,0.4,0,0,,19612,0,0621.SB-2,1315.39,Negative,Composite,,,,B8,1318.53,0
+Sims Bayou North,SB,06/21/21,R,E484 wild-type,,50,0,0.4,0,0,,19612,0,0621.SB-2,1322.73,Negative,Composite,,,,B8,1318.4,0
+Sims Bayou North,SB,06/21/21,R,417T,,50,0,0.4,0,0,,19612,0,0621.SB-2,1615.98,Negative,Composite,,,,B8,1318.53,0
+Sims Bayou North,SB,06/21/21,R,K417 wild-type,,50,0.26,0.85,0.04,880.08,,19612,2,0621.SB-2,2333.33,Negative,Composite,,,,B8,2819.22,133.33
+Sims Bayou North,SB,06/21/21,R,417N,,50,0,0.4,0,0,,19612,0,0621.SB-2,1559.48,Negative,Composite,,,,B8,1318.53,0
+Sims Bayou South,SS,06/21/21,R,484K,,50,0,0.41,0,0,,18693,0,0621.SS-1,1315.39,Negative,Composite,,,,G8,1383.01,0
+Sims Bayou South,SS,06/21/21,R,E484 wild-type,,50,0.14,0.66,0.01,461.57,,18693,1,0621.SS-1,1322.73,Negative,Composite,,,,G8,2204.68,19.39
+Sims Bayou South,SS,06/21/21,R,417T,,50,0,0.41,0,0,,18693,0,0621.SS-1,1615.98,Negative,Composite,,,,G8,1383.01,0
+Sims Bayou South,SS,06/21/21,R,K417 wild-type,,50,0,0.41,0,0,,18693,0,0621.SS-1,2333.33,Negative,Composite,,,,G8,1382.94,0
+Sims Bayou South,SS,06/21/21,R,417N,,50,0,0.41,0,0,,18693,0,0621.SS-1,1559.48,Negative,Composite,,,,G8,1383.01,0
+Sims Bayou South,SS,06/21/21,R,484K,,50,0.13,0.61,0.01,427.92,,20166,1,0621.SS-2,1315.39,Negative,Composite,,,,H8,2043.92,17.97
+Sims Bayou South,SS,06/21/21,R,E484 wild-type,,50,0,0.38,0,0,,20166,0,0621.SS-2,1322.73,Negative,Composite,,,,H8,1282.1,0
+Sims Bayou South,SS,06/21/21,R,417T,,50,0.13,0.61,0.01,427.92,,20166,1,0621.SS-2,1615.98,Negative,Composite,,,,H8,2043.92,17.97
+Sims Bayou South,SS,06/21/21,R,K417 wild-type,,50,0.13,0.61,0.01,427.92,,20166,1,0621.SS-2,2333.33,Negative,Composite,,,,H8,2043.92,17.97
+Sims Bayou South,SS,06/21/21,R,417N,,50,0,0.38,0,0,,20166,0,0621.SS-2,1559.48,Negative,Composite,,,,H8,1282.17,0
+Southeast,SE,06/21/21,R,484K,,50,0,0.42,0,0,,18564,0,0621.SE-1,1315.39,Negative,Composite,,,,C8,1396.77,0
+Southeast,SE,06/21/21,R,E484 wild-type,,50,1.54,2.64,0.79,5118.35,,18564,11,0621.SE-1,1322.73,Positive,Composite,,,,C8,8801.26,2642.55
+Southeast,SE,06/21/21,R,417T,,50,0.28,0.9,0.04,932.39,,18564,2,0621.SE-1,1615.98,Negative,Composite,,,,C8,2986.82,141.25
+Southeast,SE,06/21/21,R,K417 wild-type,,50,4.89,6.7,3.44,16296.22,,18564,35,0621.SE-1,2333.33,Positive,Composite,,,,C8,22331.3,11462.81
+Southeast,SE,06/21/21,R,417N,,50,0,0.42,0,0,,18564,0,0621.SE-1,1559.48,Negative,Composite,,,,C8,1396.92,0
+Southeast,SE,06/21/21,R,484K,,50,0,0.39,0,0,,20016,0,0621.SE-2,1315.39,Negative,Composite,,,,D8,1295.34,0
+Southeast,SE,06/21/21,R,E484 wild-type,,50,1.42,2.45,0.73,4745.22,,20016,11,0621.SE-2,1322.73,Positive,Composite,,,,D8,8159.5,2449.93
+Southeast,SE,06/21/21,R,417T,,50,0.13,0.62,0.01,432.33,,20016,1,0621.SE-2,1615.98,Negative,Composite,,,,D8,2065.02,18.16
+Southeast,SE,06/21/21,R,K417 wild-type,,50,5.57,7.41,4.06,18564.34,,20016,43,0621.SE-2,2333.33,Positive,Composite,,,,D8,24701.08,13541.55
+Southeast,SE,06/21/21,R,417N,,50,0,0.39,0,0,,20016,0,0621.SE-2,1559.48,Negative,Composite,,,,D8,1295.4,0
+Southwest,SW,06/21/21,R,484K,,50,0.16,0.75,0.01,521.25,,16598,1,0621.SW-1,1315.39,Negative,Composite,,,,A9,2489.77,21.89
+Southwest,SW,06/21/21,R,E484 wild-type,,50,1.09,2.13,0.46,3641.26,,16598,7,0621.SW-1,1322.73,Positive,Composite,,,,A9,7092.52,1546.83
+Southwest,SW,06/21/21,R,417T,,50,0.31,1,0.05,1042.53,,16598,2,0621.SW-1,1615.98,Negative,Composite,,,,A9,3339.67,157.94
+Southwest,SW,06/21/21,R,K417 wild-type,,50,5.94,8.04,4.24,19785.35,,16598,38,0621.SW-1,2333.33,Positive,Composite,,,,A9,26787.73,14127.32
+Southwest,SW,06/21/21,R,417N,,50,0,0.47,0,0,,16598,0,0621.SW-1,1559.48,Negative,Composite,,,,A9,1561.94,0
+Southwest,SW,06/21/21,R,484K,,50,0.15,0.74,0.01,516.04,,16761,1,0621.SW-2,1315.39,Negative,Composite,,,,B9,2464.9,21.67
+Southwest,SW,06/21/21,R,E484 wild-type,,50,1.7,2.92,0.88,5667.31,,16761,11,0621.SW-2,1322.73,Positive,Composite,,,,B9,9745.44,2925.93
+Southwest,SW,06/21/21,R,417T,,50,0.15,0.74,0.01,516.04,,16761,1,0621.SW-2,1615.98,Negative,Composite,,,,B9,2464.9,21.67
+Southwest,SW,06/21/21,R,K417 wild-type,,50,4.02,5.78,2.66,13401.47,,16761,26,0621.SW-2,2333.33,Positive,Composite,,,,B9,19260.84,8873.05
+Southwest,SW,06/21/21,R,417N,,50,0,0.46,0,0,,16761,0,0621.SW-2,1559.48,Negative,Composite,,,,B9,1546.34,0
+Tidwell Timbers,TT,06/21/21,R,484K,,50,0,0.4,0,0,,19248,0,0621.TT-1,1315.39,Negative,Composite,,,,E9,1345.23,0
+Tidwell Timbers,TT,06/21/21,R,E484 wild-type,,50,1.08,2.02,0.49,3587.48,,19248,8,0621.TT-1,1322.73,Positive,Composite,,,,E9,6718.33,1624.05
+Tidwell Timbers,TT,06/21/21,R,417T,,50,0,0.4,0,0,,19248,0,0621.TT-1,1615.98,Negative,Composite,,,,E9,1345.23,0
+Tidwell Timbers,TT,06/21/21,R,K417 wild-type,,50,2.96,4.38,1.89,9869.17,,19248,22,0621.TT-1,2333.33,Positive,Composite,,,,E9,14610.84,6285.81
+Tidwell Timbers,TT,06/21/21,R,417N,,50,0,0.4,0,0,,19248,0,0621.TT-1,1559.48,Negative,Composite,,,,E9,1345.23,0
+Tidwell Timbers,TT,06/21/21,R,484K,,50,0,0.42,0,0,,18410,0,0621.TT-2,1315.39,Negative,Composite,,,,F9,1405.88,0
+Tidwell Timbers,TT,06/21/21,R,E484 wild-type,,50,1.55,2.66,0.8,5156.73,,18410,11,0621.TT-2,1322.73,Positive,Composite,,,,F9,8867.27,2662.37
+Tidwell Timbers,TT,06/21/21,R,417T,,50,0,0.42,0,0,,18410,0,0621.TT-2,1615.98,Negative,Composite,,,,F9,1405.88,0
+Tidwell Timbers,TT,06/21/21,R,K417 wild-type,,50,2.11,3.37,1.21,7032.68,,18410,15,0621.TT-2,2333.33,Positive,Composite,,,,F9,11245.65,4032.77
+Tidwell Timbers,TT,06/21/21,R,417N,,50,0,0.42,0,0,,18410,0,0621.TT-2,1559.48,Negative,Composite,,,,F9,1405.88,0
+Turkey Creek,TC,06/21/21,R,484K,,50,0,0.41,0,0,,18737,0,0621.TC-1,1315.39,Negative,Composite,,,,C9,1381.17,0
+Turkey Creek,TC,06/21/21,R,E484 wild-type,,50,0.97,1.88,0.41,3224.96,,18737,7,0621.TC-1,1322.73,Positive,Composite,,,,C9,6281.49,1370
+Turkey Creek,TC,06/21/21,R,417T,,50,0.14,0.66,0.01,460.98,,18737,1,0621.TC-1,1615.98,Negative,Composite,,,,C9,2201.86,19.36
+Turkey Creek,TC,06/21/21,R,K417 wild-type,,50,1.66,2.79,0.88,5529.24,,18737,12,0621.TC-1,2333.33,Positive,Composite,,,,C9,9306.36,2946.18
+Turkey Creek,TC,06/21/21,R,417N,,50,0,0.41,0,0,,18737,0,0621.TC-1,1559.48,Negative,Composite,,,,C9,1381.24,0
+Turkey Creek,TC,06/21/21,R,484K,,50,0,0.41,0,0,,19165,0,0621.TC-2,1315.39,Negative,Composite,,,,D9,1352.33,0
+Turkey Creek,TC,06/21/21,R,E484 wild-type,,50,0.81,1.66,0.32,2705.66,,19165,6,0621.TC-2,1322.73,Positive,Composite,,,,D9,5531.28,1059.62
+Turkey Creek,TC,06/21/21,R,417T,,50,0.27,0.87,0.04,902.74,,19165,2,0621.TC-2,1615.98,Negative,Composite,,,,D9,2891.8,136.76
+Turkey Creek,TC,06/21/21,R,K417 wild-type,,50,2.71,4.08,1.68,9022.17,,19165,20,0621.TC-2,2333.33,Positive,Composite,,,,D9,13599.57,5610.23
+Turkey Creek,TC,06/21/21,R,417N,,50,0,0.41,0,0,,19165,0,0621.TC-2,1559.48,Negative,Composite,,,,D9,1352.48,0
+Upper Brays,UB,06/21/21,R,484K,,50,0.51,1.2,0.15,1700.91,,20339,4,0621.UB-1,1315.39,Positive,Composite,,,,G9,4010.86,513.21
+Upper Brays,UB,06/21/21,R,E484 wild-type,,50,1.15,2.08,0.55,3820.37,,20339,9,0621.UB-1,1322.73,Positive,Composite,,,,G9,6922.05,1821.68
+Upper Brays,UB,06/21/21,R,417T,,50,0.51,1.2,0.15,1700.91,,20339,4,0621.UB-1,1615.98,Positive,Composite,,,,G9,4010.86,513.21
+Upper Brays,UB,06/21/21,R,K417 wild-type,,50,5.1,6.85,3.67,16992.38,,20339,40,0621.UB-1,2333.33,Positive,Composite,,,,G9,22837.41,12243.46
+Upper Brays,UB,06/21/21,R,417N,,50,0,0.38,0,0,,20339,0,0621.UB-1,1559.48,Negative,Composite,,,,G9,1274.39,0
+Upper Brays,UB,06/21/21,R,484K,,50,0.13,0.64,0.01,447.49,,19321,1,0621.UB-2,1315.39,Negative,Composite,,,,H9,2137.44,18.79
+Upper Brays,UB,06/21/21,R,E484 wild-type,,50,1.74,2.88,0.95,5808.98,,19321,13,0621.UB-2,1322.73,Positive,Composite,,,,H9,9593.62,3181.5
+Upper Brays,UB,06/21/21,R,417T,,50,0,0.4,0,0,,19321,0,0621.UB-2,1615.98,Negative,Composite,,,,H9,1340.76,0
+Upper Brays,UB,06/21/21,R,K417 wild-type,,50,4.29,5.96,2.97,14306.07,,19321,32,0621.UB-2,2333.33,Positive,Composite,,,,H9,19873.51,9891.9
+Upper Brays,UB,06/21/21,R,417N,,50,0,0.4,0,0,,19321,0,0621.UB-2,1559.48,Negative,Composite,,,,H9,1340.83,0
+W.C.I.D. # 111,111,06/21/21,R,484K,,50,0,0.43,0,0,,18164,0,0621.111-1,1315.39,Negative,Composite,,,,E1,1424.56,0
+W.C.I.D. # 111,111,06/21/21,R,E484 wild-type,,50,0.29,0.91,0.04,950.79,,18164,2,0621.111-1,1322.73,Negative,Composite,,,,E1,3045.74,144.04
+W.C.I.D. # 111,111,06/21/21,R,417T,,50,0,0.43,0,0,,18164,0,0621.111-1,1615.98,Negative,Composite,,,,E1,1424.56,0
+W.C.I.D. # 111,111,06/21/21,R,K417 wild-type,,50,0.14,0.68,0.01,475.38,,18164,1,0621.111-1,2333.33,Negative,Composite,,,,E1,2270.66,19.97
+W.C.I.D. # 111,111,06/21/21,R,417N,,50,0,0.43,0,0,,18164,0,0621.111-1,1559.48,Negative,Composite,,,,E1,1424.56,0
+W.C.I.D. # 111,111,06/21/21,R,484K,,50,0,0.4,0,0,,19474,0,0621.111-2,1315.39,Negative,Composite,,,,F1,1329.31,0
+W.C.I.D. # 111,111,06/21/21,R,E484 wild-type,,50,0.27,0.85,0.04,887.1,,19474,2,0621.111-2,1322.73,Negative,Composite,,,,F1,2841.69,134.39
+W.C.I.D. # 111,111,06/21/21,R,417T,,50,0,0.4,0,0,,19474,0,0621.111-2,1615.98,Negative,Composite,,,,F1,1329.31,0
+W.C.I.D. # 111,111,06/21/21,R,K417 wild-type,,50,0.8,1.63,0.31,2661.56,,19474,6,0621.111-2,2333.33,Positive,Composite,,,,F1,5441.11,1042.35
+W.C.I.D. # 111,111,06/21/21,R,417N,,50,0,0.4,0,0,,19474,0,0621.111-2,1559.48,Negative,Composite,,,,F1,1329.31,0
+W.C.I.D. # 47,47,06/21/21,R,484K,,50,0.13,0.61,0.01,428.94,,20186,1,0621.47-1,1315.39,Negative,Composite,,,,C2,2048.8,18.01
+W.C.I.D. # 47,47,06/21/21,R,E484 wild-type,,50,0.38,1.02,0.09,1282.8,,20186,3,0621.47-1,1322.73,Negative,Composite,,,,C2,3400.26,304.43
+W.C.I.D. # 47,47,06/21/21,R,417T,,50,0,0.39,0,0,,20186,0,0621.47-1,1615.98,Negative,Composite,,,,C2,1285.23,0
+W.C.I.D. # 47,47,06/21/21,R,K417 wild-type,,50,8.09,10.27,6.25,26978.87,,20186,63,0621.47-1,2333.33,Positive,Composite,,,,C2,34225.28,20838.69
+W.C.I.D. # 47,47,06/21/21,R,417N,,50,0,0.39,0,0,,20186,0,0621.47-1,1559.48,Negative,Composite,,,,C2,1285.23,0
+W.C.I.D. # 47,47,06/21/21,R,484K,,50,0,0.39,0,0,,19957,0,0621.47-2,1315.39,Negative,Composite,,,,D2,1299.44,0
+W.C.I.D. # 47,47,06/21/21,R,E484 wild-type,,50,0,0.39,0,0,,19957,0,0621.47-2,1322.73,Negative,Composite,,,,D2,1295.34,0
+W.C.I.D. # 47,47,06/21/21,R,417T,,50,0,0.39,0,0,,19957,0,0621.47-2,1615.98,Negative,Composite,,,,D2,1299.44,0
+W.C.I.D. # 47,47,06/21/21,R,K417 wild-type,,50,8.18,10.38,6.32,27279.47,,19957,63,0621.47-2,2333.33,Positive,Composite,,,,D2,34606.79,21070.79
+W.C.I.D. # 47,47,06/21/21,R,417N,,50,0,0.39,0,0,,19957,0,0621.47-2,1559.48,Negative,Composite,,,,D2,1299.44,0
+W.C.I.D. #76,76,06/21/21,R,484K,,50,0,0.38,0,0,,20656,0,0621.76-1,1315.39,Negative,Composite,,,,G2,1252.35,0
+W.C.I.D. #76,76,06/21/21,R,E484 wild-type,,50,0.38,1,0.09,1253.11,,20656,3,0621.76-1,1322.73,Negative,Composite,,,,G2,3321.56,297.39
+W.C.I.D. #76,76,06/21/21,R,417T,,50,0,0.38,0,0,,20656,0,0621.76-1,1615.98,Negative,Composite,,,,G2,1252.35,0
+W.C.I.D. #76,76,06/21/21,R,K417 wild-type,,50,1.75,2.85,0.98,5849.4,,20656,14,0621.76-1,2333.33,Positive,Composite,,,,G2,9497.26,3282.7
+W.C.I.D. #76,76,06/21/21,R,417N,,50,0,0.38,0,0,,20656,0,0621.76-1,1559.48,Negative,Composite,,,,G2,1252.35,0
+W.C.I.D. #76,76,06/21/21,R,484K,,50,0,0.36,0,0,,21332,0,0621.76-2,1315.39,Negative,Composite,,,,H2,1212.74,0
+W.C.I.D. #76,76,06/21/21,R,E484 wild-type,,50,0.12,0.58,0.01,404.66,,21332,1,0621.76-2,1322.73,Negative,Composite,,,,H2,1932.8,17
+W.C.I.D. #76,76,06/21/21,R,417T,,50,0,0.36,0,0,,21332,0,0621.76-2,1615.98,Negative,Composite,,,,H2,1212.74,0
+W.C.I.D. #76,76,06/21/21,R,K417 wild-type,,50,0.73,1.49,0.29,2428.22,,21332,6,0621.76-2,2333.33,Positive,Composite,,,,H2,4964,950.97
+W.C.I.D. #76,76,06/21/21,R,417N,,50,0,0.36,0,0,,21332,0,0621.76-2,1559.48,Negative,Composite,,,,H2,1212.74,0
+West District,WD,06/21/21,R,484K,,50,1.85,3.01,1.04,6177.91,,19574,14,0621.WD-1,1315.39,Positive,Composite,,,,C10,10030.75,3467.03
+West District,WD,06/21/21,R,E484 wild-type,,50,0.53,1.25,0.16,1766.11,,19574,4,0621.WD-1,1322.73,Positive,Composite,,,,C10,4164.63,532.89
+West District,WD,06/21/21,R,417T,,50,2.91,4.31,1.86,9710.13,,19574,22,0621.WD-1,1615.98,Positive,Composite,,,,C10,14375.32,6184.53
+West District,WD,06/21/21,R,K417 wild-type,,50,1.19,2.16,0.57,3974.26,,19574,9,0621.WD-1,2333.33,Positive,Composite,,,,C10,7200.94,1895.05
+West District,WD,06/21/21,R,417N,,50,0,0.4,0,0,,19574,0,0621.WD-1,1559.48,Negative,Composite,,,,C10,1323.53,0
+West District,WD,06/21/21,R,484K,,50,0.64,1.4,0.23,2143.09,,20171,5,0621.WD-2,1315.39,Positive,Composite,,,,D10,4657.62,753.45
+West District,WD,06/21/21,R,E484 wild-type,,50,0.39,1.02,0.09,1285.35,,20171,3,0621.WD-2,1322.73,Negative,Composite,,,,D10,3407.01,305.04
+West District,WD,06/21/21,R,417T,,50,2.32,3.56,1.4,7717.63,,20171,18,0621.WD-2,1615.98,Positive,Composite,,,,D10,11876.86,4666.2
+West District,WD,06/21/21,R,K417 wild-type,,50,3.34,4.81,2.21,11146.03,,20171,26,0621.WD-2,2333.33,Positive,Composite,,,,D10,16018.36,7380.06
+West District,WD,06/21/21,R,417N,,50,0,0.39,0,0,,20171,0,0621.WD-2,1559.48,Negative,Composite,,,,D10,1285.35,0
+West Lake Houston,WL,06/21/21,R,484K,,50,0,0.4,0,0,,19714,0,0621.WL-1,1315.39,Negative,Composite,,,,E10,1318.67,0
+West Lake Houston,WL,06/21/21,R,E484 wild-type,,50,1.19,2.15,0.57,3952.41,,19714,9,0621.WL-1,1322.73,Positive,Composite,,,,E10,7161.34,1884.63
+West Lake Houston,WL,06/21/21,R,417T,,50,0,0.4,0,0,,19714,0,0621.WL-1,1615.98,Negative,Composite,,,,E10,1318.67,0
+West Lake Houston,WL,06/21/21,R,K417 wild-type,,50,5.93,7.85,4.36,19780.18,,19714,45,0621.WL-1,2333.33,Positive,Composite,,,,E10,26158.62,14536.21
+West Lake Houston,WL,06/21/21,R,417N,,50,4.09,5.71,2.81,13632.59,,19714,31,0621.WL-1,1559.48,Positive,Composite,,,,E10,19032.66,9367.23
+West Lake Houston,WL,06/21/21,R,484K,,50,0,0.46,0,0,,16778,0,0621.WL-2,1315.39,Negative,Composite,,,,F10,1547.08,0
+West Lake Houston,WL,06/21/21,R,E484 wild-type,,50,0.62,1.46,0.19,2062.01,,16778,4,0621.WL-2,1322.73,Positive,Composite,,,,F10,4862.49,622.16
+West Lake Houston,WL,06/21/21,R,417T,,50,0,0.46,0,0,,16778,0,0621.WL-2,1615.98,Negative,Composite,,,,F10,1547.08,0
+West Lake Houston,WL,06/21/21,R,K417 wild-type,,50,4.02,5.78,2.66,13411.88,,16778,26,0621.WL-2,2333.33,Positive,Composite,,,,F10,19275.82,8879.95
+West Lake Houston,WL,06/21/21,R,417N,,50,3.71,5.41,2.42,12383.16,,16778,24,0621.WL-2,1559.48,Positive,Composite,,,,F10,18047.67,8051.16
+Westway,WW,06/21/21,R,484K,,50,0,0.45,0,0,,17273,0,0621.WW-1,1315.39,Negative,Composite,,,,A11,1500.03,0
+Westway,WW,06/21/21,R,E484 wild-type,,50,1.65,2.84,0.85,5498.22,,17273,11,0621.WW-1,1322.73,Positive,Composite,,,,A11,9454.6,2838.64
+Westway,WW,06/21/21,R,417T,,50,0,0.45,0,0,,17273,0,0621.WW-1,1615.98,Negative,Composite,,,,A11,1500.03,0
+Westway,WW,06/21/21,R,K417 wild-type,,50,3.9,5.61,2.58,13001.43,,17273,26,0621.WW-1,2333.33,Positive,Composite,,,,A11,18685.72,8608.26
+Westway,WW,06/21/21,R,417N,,50,0,0.45,0,0,,17273,0,0621.WW-1,1559.48,Negative,Composite,,,,A11,1500.03,0
+Westway,WW,06/21/21,R,484K,,50,0,0.54,0,0,,14413,0,0621.WW-2,1315.39,Negative,Composite,,,,B11,1797.42,0
+Westway,WW,06/21/21,R,E484 wild-type,,50,2.52,4.08,1.41,8385.47,,14413,14,0621.WW-2,1322.73,Positive,Composite,,,,B11,13616.14,4705.64
+Westway,WW,06/21/21,R,417T,,50,0,0.54,0,0,,14413,0,0621.WW-2,1615.98,Negative,Composite,,,,B11,1797.42,0
+Westway,WW,06/21/21,R,K417 wild-type,,50,4.49,6.5,2.95,14979.78,,14413,25,0621.WW-2,2333.33,Positive,Composite,,,,B11,21676.35,9830.99
+Westway,WW,06/21/21,R,417N,,50,0,0.54,0,0,,14413,0,0621.WW-2,1559.48,Negative,Composite,,,,B11,1797.42,0
+White Oak,WO,06/21/21,R,484K,,50,0,0.41,0,0,,18866,0,0621.WO-1,1315.39,Negative,Composite,,,,G10,1372.08,0
+White Oak,WO,06/21/21,R,E484 wild-type,,50,0.69,1.49,0.24,2288.27,,18866,5,0621.WO-1,1322.73,Positive,Composite,,,,G10,4973.18,804.49
+White Oak,WO,06/21/21,R,417T,,50,0.96,1.87,0.41,3206.12,,18866,7,0621.WO-1,1615.98,Positive,Composite,,,,G10,6244.8,1362
+White Oak,WO,06/21/21,R,K417 wild-type,,50,2.47,3.8,1.49,8240.6,,18866,18,0621.WO-1,2333.33,Positive,Composite,,,,G10,12681.89,4982.33
+White Oak,WO,06/21/21,R,417N,,50,0,0.41,0,0,,18866,0,0621.WO-1,1559.48,Negative,Composite,,,,G10,1372.59,0
+White Oak,WO,06/21/21,R,484K,,50,0.14,0.66,0.01,460.81,,18759,1,0621.WO-2,1315.39,Negative,Composite,,,,H10,2201.03,19.35
+White Oak,WO,06/21/21,R,E484 wild-type,,50,0.41,1.1,0.1,1381.9,,18759,3,0621.WO-2,1322.73,Positive,Composite,,,,H10,3662.99,327.95
+White Oak,WO,06/21/21,R,417T,,50,0.83,1.7,0.32,2765.21,,18759,6,0621.WO-2,1615.98,Positive,Composite,,,,H10,5653.03,1082.93
+White Oak,WO,06/21/21,R,K417 wild-type,,50,1.8,2.97,0.98,5989.85,,18759,13,0621.WO-2,2333.33,Positive,Composite,,,,H10,9892.39,3280.54
+White Oak,WO,06/21/21,R,417N,,50,0,0.41,0,0,,18759,0,0621.WO-2,1559.48,Negative,Composite,,,,H10,1381.09,0
+Willowbrook,WB,06/21/21,R,484K,,50,0.16,0.77,0.01,538.63,,16021,1,0621.WB-1,1315.39,Negative,Composite,,,,A10,2572.78,22.62
+Willowbrook,WB,06/21/21,R,E484 wild-type,,50,0,0.48,0,0,,16021,0,0621.WB-1,1322.73,Negative,Composite,,,,A10,1613.93,0
+Willowbrook,WB,06/21/21,R,417T,,50,0.48,1.29,0.12,1615.98,,16021,3,0621.WB-1,1615.98,Positive,Composite,,,,A10,4283.55,383.5
+Willowbrook,WB,06/21/21,R,K417 wild-type,,50,0.32,1.04,0.05,1077.35,,16021,2,0621.WB-1,2333.33,Negative,Composite,,,,A10,3451.24,163.21
+Willowbrook,WB,06/21/21,R,417N,,50,0,0.48,0,0,,16021,0,0621.WB-1,1559.48,Negative,Composite,,,,A10,1614.13,0
+Willowbrook,WB,06/21/21,R,484K,,50,0.49,1.15,0.15,1619.95,,21319,4,0621.WB-2,1315.39,Positive,Composite,,,,B10,3819.92,488.79
+Willowbrook,WB,06/21/21,R,E484 wild-type,,50,0.61,1.32,0.21,2024.8,,21319,5,0621.WB-2,1322.73,Positive,Composite,,,,B10,4400.49,711.86
+Willowbrook,WB,06/21/21,R,417T,,50,0.12,0.58,0.01,404.96,,21319,1,0621.WB-2,1615.98,Negative,Composite,,,,B10,1934.26,17.01
+Willowbrook,WB,06/21/21,R,K417 wild-type,,50,0.49,1.15,0.15,1619.8,,21319,4,0621.WB-2,2333.33,Negative,Composite,,,,B10,3819.57,488.74
+Willowbrook,WB,06/21/21,R,417N,,50,0,0.36,0,0,,21319,0,0621.WB-2,1559.48,Negative,Composite,,,,B10,1213.6,0

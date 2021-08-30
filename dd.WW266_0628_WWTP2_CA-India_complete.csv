@@ -1,0 +1,385 @@
+Facility,WWTP,Date,Lab,Target_Name,Received_WW_vol,Filtered_WW_vol,Copies_per_uL_RNA,PoissonConfMax_per_uL_RNA,PoissonConfMin_per_uL_RNA,Copies_Per_Liter_WW,Ct,AcceptedDroplets,PositiveDroplets,Sample_ID,Detection_Limit,Positivity,Sample_Type,Surrogate_virus_input_per.L.WW,Percentage_recovery_BCoV,Comments,Well Position,PoissonConfMax_Per_Liter_WW,PoissonConfMin_Per_Liter_WW
+0628/Blank,Blank,06/28/21,R,L452R,,,0,0.41,0,,,18862,0,0628.Blank-3,,Negative,Composite,,,,C1,,
+0628/Blank,Blank,06/28/21,R,E484Q,,,0,0.41,0,,,18862,0,0628.Blank-3,,Negative,Composite,,,,C1,,
+0628/Blank,Blank,06/28/21,R,L452wt,,,0,0.41,0,,,18862,0,0628.Blank-3,,Negative,Composite,,,,C1,,
+0628/Blank,Blank,06/28/21,R,E484wt,,,0,0.41,0,,,18862,0,0628.Blank-3,,Negative,Composite,,,,C1,,
+0628/Blank,Blank,06/28/21,R,L452R,,,0,0.41,0,,,18950,0,0628.Blank-4,,Negative,Composite,,,,D1,,
+0628/Blank,Blank,06/28/21,R,E484Q,,,0,0.41,0,,,18950,0,0628.Blank-4,,Negative,Composite,,,,D1,,
+0628/Blank,Blank,06/28/21,R,L452wt,,,0,0.41,0,,,18950,0,0628.Blank-4,,Negative,Composite,,,,D1,,
+0628/Blank,Blank,06/28/21,R,E484wt,,,0,0.41,0,,,18950,0,0628.Blank-4,,Negative,Composite,,,,D1,,
+0628/DI,DI,06/28/21,R,L452R,,50,0,0.48,0,0,,16007,0,0628.DI-3,1395.61,Negative,Composite,,,,A1,1614.93,0
+0628/DI,DI,06/28/21,R,E484Q,,50,0,0.48,0,0,,16007,0,0628.DI-3,2333.33,Negative,Composite,,,,A1,1614.93,0
+0628/DI,DI,06/28/21,R,L452wt,,50,0,0.48,0,0,,16007,0,0628.DI-3,1417.07,Negative,Composite,,,,A1,1614.93,0
+0628/DI,DI,06/28/21,R,E484wt,,50,0,0.48,0,0,,16007,0,0628.DI-3,1424.46,Negative,Composite,,,,A1,1614.93,0
+0628/DI,DI,06/28/21,R,L452R,,50,0,0.44,0,0,,17765,0,0628.DI-4,1395.61,Negative,Composite,,,,B1,1455.11,0
+0628/DI,DI,06/28/21,R,E484Q,,50,0,0.44,0,0,,17765,0,0628.DI-4,2333.33,Negative,Composite,,,,B1,1455.11,0
+0628/DI,DI,06/28/21,R,L452wt,,50,0,0.44,0,0,,17765,0,0628.DI-4,1417.07,Negative,Composite,,,,B1,1455.11,0
+0628/DI,DI,06/28/21,R,E484wt,,50,0,0.44,0,0,,17765,0,0628.DI-4,1424.46,Negative,Composite,,,,B1,1455.11,0
+0630/India,India,06/30/21,R,L452R,,,30.76,34.83,26.68,,,18638,219,0630.India-1,,Positive,Composite,,,,A12,,
+0630/India,India,06/30/21,R,E484Q,,,30.76,34.83,26.68,,,18638,219,0630.India-1,,Positive,Composite,,,,A12,,
+0630/India,India,06/30/21,R,L452wt,,,0,0.42,0,,,18638,0,0630.India-1,,Negative,Composite,,,,A12,,
+0630/India,India,06/30/21,R,E484wt,,,0,0.42,0,,,18638,0,0630.India-1,,Negative,Composite,,,,A12,,
+0630/India,India,06/30/21,R,L452R,,,31.98,35.89,28.07,,,20997,257,0630.India-2,,Positive,Composite,,,,B12,,
+0630/India,India,06/30/21,R,E484Q,,,31.98,35.89,28.07,,,20997,257,0630.India-2,,Positive,Composite,,,,B12,,
+0630/India,India,06/30/21,R,L452wt,,,0,0.38,0,,,20997,0,0630.India-2,,Negative,Composite,,,,B12,,
+0630/India,India,06/30/21,R,E484wt,,,0,0.38,0,,,20997,0,0630.India-2,,Negative,Composite,,,,B12,,
+0630/NTC,NTC,06/30/21,R,L452R,,,0,0.46,0,,,16723,0,0630.NTC-1,,Negative,Composite,,,,C12,,
+0630/NTC,NTC,06/30/21,R,E484Q,,,0,0.46,0,,,16723,0,0630.NTC-1,,Negative,Composite,,,,C12,,
+0630/NTC,NTC,06/30/21,R,L452wt,,,0,0.46,0,,,16723,0,0630.NTC-1,,Negative,Composite,,,,C12,,
+0630/NTC,NTC,06/30/21,R,E484wt,,,0,0.46,0,,,16723,0,0630.NTC-1,,Negative,Composite,,,,C12,,
+0630/NTC,NTC,06/30/21,R,L452R,,,0,0.37,0,,,20984,0,0630.NTC-2,,Negative,Composite,,,,D12,,
+0630/NTC,NTC,06/30/21,R,E484Q,,,0,0.37,0,,,20984,0,0630.NTC-2,,Negative,Composite,,,,D12,,
+0630/NTC,NTC,06/30/21,R,L452wt,,,0,0.37,0,,,20984,0,0630.NTC-2,,Negative,Composite,,,,D12,,
+0630/NTC,NTC,06/30/21,R,E484wt,,,0,0.37,0,,,20984,0,0630.NTC-2,,Negative,Composite,,,,D12,,
+0630/NTC,NTC,06/30/21,R,L452R,,,0,0.43,0,,,18164,0,0630.NTC-3,,Negative,Composite,,,,E12,,
+0630/NTC,NTC,06/30/21,R,E484Q,,,0,0.43,0,,,18164,0,0630.NTC-3,,Negative,Composite,,,,E12,,
+0630/NTC,NTC,06/30/21,R,L452wt,,,0,0.43,0,,,18164,0,0630.NTC-3,,Negative,Composite,,,,E12,,
+0630/NTC,NTC,06/30/21,R,E484wt,,,0,0.43,0,,,18164,0,0630.NTC-3,,Negative,Composite,,,,E12,,
+0630/NTC,NTC,06/30/21,R,L452R,,,0,0.4,0,,,19192,0,0630.NTC-4,,Negative,Composite,,,,F12,,
+0630/NTC,NTC,06/30/21,R,E484Q,,,0,0.4,0,,,19192,0,0630.NTC-4,,Negative,Composite,,,,F12,,
+0630/NTC,NTC,06/30/21,R,L452wt,,,0,0.4,0,,,19192,0,0630.NTC-4,,Negative,Composite,,,,F12,,
+0630/NTC,NTC,06/30/21,R,E484wt,,,0,0.4,0,,,19192,0,0630.NTC-4,,Negative,Composite,,,,F12,,
+0630/NTC,NTC,06/30/21,R,L452R,,,0,0.4,0,,,19194,0,0630.NTC-5,,Negative,Composite,,,,G12,,
+0630/NTC,NTC,06/30/21,R,E484Q,,,0,0.4,0,,,19194,0,0630.NTC-5,,Negative,Composite,,,,G12,,
+0630/NTC,NTC,06/30/21,R,L452wt,,,0,0.4,0,,,19194,0,0630.NTC-5,,Negative,Composite,,,,G12,,
+0630/NTC,NTC,06/30/21,R,E484wt,,,0,0.4,0,,,19194,0,0630.NTC-5,,Negative,Composite,,,,G12,,
+0630/NTC,NTC,06/30/21,R,L452R,,,0,0.42,0,,,18570,0,0630.NTC-6,,Negative,Composite,,,,H12,,
+0630/NTC,NTC,06/30/21,R,E484Q,,,0,0.42,0,,,18570,0,0630.NTC-6,,Negative,Composite,,,,H12,,
+0630/NTC,NTC,06/30/21,R,L452wt,,,0,0.42,0,,,18570,0,0630.NTC-6,,Negative,Composite,,,,H12,,
+0630/NTC,NTC,06/30/21,R,E484wt,,,0,0.42,0,,,18570,0,0630.NTC-6,,Negative,Composite,,,,H12,,
+0630/stdCA,stdCA,06/30/21,R,L452R,,,86.79,94.23,79.37,,,15980,524,0630.stdCA-1,,Positive,Composite,,,,E11,,
+0630/stdCA,stdCA,06/30/21,R,E484Q,,,0,0.5,0,,,15980,0,0630.stdCA-1,,Negative,Composite,,,,E11,,
+0630/stdCA,stdCA,06/30/21,R,L452wt,,,0,0.5,0,,,15980,0,0630.stdCA-1,,Negative,Composite,,,,E11,,
+0630/stdCA,stdCA,06/30/21,R,E484wt,,,86.79,94.23,79.37,,,15980,524,0630.stdCA-1,,Positive,Composite,,,,E11,,
+0630/stdCA,stdCA,06/30/21,R,L452R,,,88.37,95.35,81.41,,,18493,617,0630.stdCA-2,,Positive,Composite,,,,F11,,
+0630/stdCA,stdCA,06/30/21,R,E484Q,,,0,0.44,0,,,18493,0,0630.stdCA-2,,Negative,Composite,,,,F11,,
+0630/stdCA,stdCA,06/30/21,R,L452wt,,,0,0.44,0,,,18493,0,0630.stdCA-2,,Negative,Composite,,,,F11,,
+0630/stdCA,stdCA,06/30/21,R,E484wt,,,88.37,95.35,81.41,,,18493,617,0630.stdCA-2,,Positive,Composite,,,,F11,,
+0630/stdMix,stdMix,06/30/21,R,L452R,,,76.97,83.85,70.1,,,16878,482,0630.stdMix-1,,Positive,Composite,,,,G11,,
+0630/stdMix,stdMix,06/30/21,R,E484Q,,,40.84,45.87,35.83,,,16878,254,0630.stdMix-1,,Positive,Composite,,,,G11,,
+0630/stdMix,stdMix,06/30/21,R,L452wt,,,35.25,39.93,30.59,,,16878,219,0630.stdMix-1,,Positive,Composite,,,,G11,,
+0630/stdMix,stdMix,06/30/21,R,E484wt,,,71.45,78.09,64.84,,,16878,447,0630.stdMix-1,,Positive,Composite,,,,G11,,
+0630/stdMix,stdMix,06/30/21,R,L452R,,,76.24,82.61,69.88,,,19485,551,0630.stdMix-2,,Positive,Composite,,,,H11,,
+0630/stdMix,stdMix,06/30/21,R,E484Q,,,41.23,45.94,36.54,,,19485,296,0630.stdMix-2,,Positive,Composite,,,,H11,,
+0630/stdMix,stdMix,06/30/21,R,L452wt,,,29.6,33.59,25.62,,,19485,212,0630.stdMix-2,,Positive,Composite,,,,H11,,
+0630/stdMix,stdMix,06/30/21,R,E484wt,,,64.76,70.64,58.89,,,19485,467,0630.stdMix-2,,Positive,Composite,,,,H11,,
+0630/stdWHC,stdWHC,06/30/21,R,L452R,,,0,0.4,0,,,19740,0,0630.stdWHC-1,,Negative,Composite,,,,C11,,
+0630/stdWHC,stdWHC,06/30/21,R,E484Q,,,0,0.4,0,,,19740,0,0630.stdWHC-1,,Negative,Composite,,,,C11,,
+0630/stdWHC,stdWHC,06/30/21,R,L452wt,,,60.64,66.22,55.08,,,19740,455,0630.stdWHC-1,,Positive,Composite,,,,C11,,
+0630/stdWHC,stdWHC,06/30/21,R,E484wt,,,60.64,66.22,55.08,,,19740,455,0630.stdWHC-1,,Positive,Composite,,,,C11,,
+0630/stdWHC,stdWHC,06/30/21,R,L452R,,,0,0.44,0,,,18311,0,0630.stdWHC-2,,Negative,Composite,,,,D11,,
+0630/stdWHC,stdWHC,06/30/21,R,E484Q,,,0,0.44,0,,,18311,0,0630.stdWHC-2,,Negative,Composite,,,,D11,,
+0630/stdWHC,stdWHC,06/30/21,R,L452wt,,,65.22,71.24,59.22,,,18311,453,0630.stdWHC-2,,Positive,Composite,,,,D11,,
+0630/stdWHC,stdWHC,06/30/21,R,E484wt,,,65.22,71.24,59.22,,,18311,453,0630.stdWHC-2,,Positive,Composite,,,,D11,,
+69th Street,69,06/28/21,R,L452R,,50,0,0.42,0,0,,18460,0,0628.69-1,1395.61,Negative,Composite,,,,E2,1400.4,0
+69th Street,69,06/28/21,R,E484Q,,50,0,0.42,0,0,,18460,0,0628.69-1,2333.33,Negative,Composite,,,,E2,1400.4,0
+69th Street,69,06/28/21,R,L452wt,,50,0,0.42,0,0,,18460,0,0628.69-1,1417.07,Negative,Composite,,,,E2,1400.4,0
+69th Street,69,06/28/21,R,E484wt,,50,0,0.42,0,0,,18460,0,0628.69-1,1424.46,Negative,Composite,,,,E2,1400.4,0
+69th Street,69,06/28/21,R,L452R,,50,0.38,1,0.09,1259.57,,20550,3,0628.69-2,1395.61,Negative,Composite,,,,F2,3338.69,298.92
+69th Street,69,06/28/21,R,E484Q,,50,0,0.38,0,0,,20550,0,0628.69-2,2333.33,Negative,Composite,,,,F2,1258.08,0
+69th Street,69,06/28/21,R,L452wt,,50,0,0.38,0,0,,20550,0,0628.69-2,1417.07,Negative,Composite,,,,F2,1258.08,0
+69th Street,69,06/28/21,R,E484wt,,50,0,0.38,0,0,,20550,0,0628.69-2,1424.46,Negative,Composite,,,,F2,1258.08,0
+Almeda Sims,AS,06/28/21,R,L452R,,50,0.27,0.88,0.04,915.23,,18858,2,0628.AS-1,1395.61,Negative,Composite,,,,A3,2931.84,138.65
+Almeda Sims,AS,06/28/21,R,E484Q,,50,0,0.41,0,0,,18858,0,0628.AS-1,2333.33,Negative,Composite,,,,A3,1371.2,0
+Almeda Sims,AS,06/28/21,R,L452wt,,50,0.55,1.29,0.17,1830.37,,18858,4,0628.AS-1,1417.07,Positive,Composite,,,,A3,4316.18,552.27
+Almeda Sims,AS,06/28/21,R,E484wt,,50,0.41,1.09,0.1,1372.74,,18858,3,0628.AS-1,1424.46,Negative,Composite,,,,A3,3638.7,325.78
+Almeda Sims,AS,06/28/21,R,L452R,,50,0,0.37,0,0,,21009,0,0628.AS-2,1395.61,Negative,Composite,,,,B3,1230.88,0
+Almeda Sims,AS,06/28/21,R,E484Q,,50,0,0.37,0,0,,21009,0,0628.AS-2,2333.33,Negative,Composite,,,,B3,1230.88,0
+Almeda Sims,AS,06/28/21,R,L452wt,,50,0.12,0.59,0.01,410.8,,21009,1,0628.AS-2,1417.07,Negative,Composite,,,,B3,1962.17,17.25
+Almeda Sims,AS,06/28/21,R,E484wt,,50,0.12,0.59,0.01,410.8,,21009,1,0628.AS-2,1424.46,Negative,Composite,,,,B3,1962.17,17.25
+Beltway,BW,06/28/21,R,L452R,,50,0.13,0.63,0.01,439.09,,19720,1,0628.BW-1,1395.61,Negative,Composite,,,,C3,2097.29,18.44
+Beltway,BW,06/28/21,R,E484Q,,50,0,0.39,0,0,,19720,0,0628.BW-1,2333.33,Negative,Composite,,,,C3,1315.65,0
+Beltway,BW,06/28/21,R,L452wt,,50,7.76,9.92,5.94,25868.12,,19720,59,0628.BW-1,1417.07,Positive,Composite,,,,C3,33066.67,19801.88
+Beltway,BW,06/28/21,R,E484wt,,50,6.97,9.03,5.25,23233.92,,19720,53,0628.BW-1,1424.46,Positive,Composite,,,,C3,30086.72,17513.01
+Beltway,BW,06/28/21,R,L452R,,50,0.14,0.69,0.01,480.44,,18012,1,0628.BW-2,1395.61,Negative,Composite,,,,D3,2294.81,20.18
+Beltway,BW,06/28/21,R,E484Q,,50,0,0.43,0,0,,18012,0,0628.BW-2,2333.33,Negative,Composite,,,,D3,1439.55,0
+Beltway,BW,06/28/21,R,L452wt,,50,6.05,8.07,4.39,20155.36,,18012,42,0628.BW-2,1417.07,Positive,Composite,,,,D3,26905.93,14643.47
+Beltway,BW,06/28/21,R,E484wt,,50,5.61,7.57,4.03,18714.13,,18012,39,0628.BW-2,1424.46,Positive,Composite,,,,D3,25242.91,13423.99
+Cedar Bayou,CD,06/28/21,R,L452R,,50,1.15,2.15,0.52,3825.71,,18052,8,0628.CD-1,1395.61,Positive,Composite,,,,G3,7164.55,1731.88
+Cedar Bayou,CD,06/28/21,R,E484Q,,50,0,0.43,0,0,,18052,0,0628.CD-1,2333.33,Negative,Composite,,,,G3,1433.16,0
+Cedar Bayou,CD,06/28/21,R,L452wt,,50,0.72,1.56,0.25,2391.27,,18052,5,0628.CD-1,1417.07,Positive,Composite,,,,G3,5197.07,840.69
+Cedar Bayou,CD,06/28/21,R,E484wt,,50,0.72,1.56,0.25,2391.27,,18052,5,0628.CD-1,1424.46,Positive,Composite,,,,G3,5197.07,840.69
+Cedar Bayou,CD,06/28/21,R,L452R,,50,1,1.96,0.43,3346.66,,18051,7,0628.CD-2,1395.61,Positive,Composite,,,,H3,6518.58,1421.69
+Cedar Bayou,CD,06/28/21,R,E484Q,,50,0,0.43,0,0,,18051,0,0628.CD-2,2333.33,Negative,Composite,,,,H3,1432.77,0
+Cedar Bayou,CD,06/28/21,R,L452wt,,50,0,0.43,0,0,,18051,0,0628.CD-2,1417.07,Negative,Composite,,,,H3,1432.77,0
+Cedar Bayou,CD,06/28/21,R,E484wt,,50,0,0.43,0,0,,18051,0,0628.CD-2,1424.46,Negative,Composite,,,,H3,1432.77,0
+Chocolate Bayou,CB,06/28/21,R,L452R,,50,1.51,2.59,0.78,5025.92,,18890,11,0628.CB-1,1395.61,Positive,Composite,,,,E3,8642.28,2594.84
+Chocolate Bayou,CB,06/28/21,R,E484Q,,50,0,0.41,0,0,,18890,0,0628.CB-1,2333.33,Negative,Composite,,,,E3,1369.39,0
+Chocolate Bayou,CB,06/28/21,R,L452wt,,50,0.27,0.88,0.04,914.02,,18890,2,0628.CB-1,1417.07,Negative,Composite,,,,E3,2927.95,138.47
+Chocolate Bayou,CB,06/28/21,R,E484wt,,50,0.14,0.65,0.01,457,,18890,1,0628.CB-1,1424.46,Negative,Composite,,,,E3,2182.84,19.19
+Chocolate Bayou,CB,06/28/21,R,L452R,,50,0.68,1.47,0.24,2256.78,,19117,5,0628.CB-2,1395.61,Positive,Composite,,,,F3,4904.74,793.42
+Chocolate Bayou,CB,06/28/21,R,E484Q,,50,0,0.41,0,0,,19117,0,0628.CB-2,2333.33,Negative,Composite,,,,F3,1352.55,0
+Chocolate Bayou,CB,06/28/21,R,L452wt,,50,0,0.41,0,0,,19117,0,0628.CB-2,1417.07,Negative,Composite,,,,F3,1352.55,0
+Chocolate Bayou,CB,06/28/21,R,E484wt,,50,0,0.41,0,0,,19117,0,0628.CB-2,1424.46,Negative,Composite,,,,F3,1352.55,0
+Clinton Park,CP,06/28/21,R,L452R,,50,0,0.42,0,0,,18514,0,0628.CP-1,1395.61,Negative,Composite,,,,A4,1396.31,0
+Clinton Park,CP,06/28/21,R,E484Q,,50,0,0.42,0,0,,18514,0,0628.CP-1,2333.33,Negative,Composite,,,,A4,1396.31,0
+Clinton Park,CP,06/28/21,R,L452wt,,50,0,0.42,0,0,,18514,0,0628.CP-1,1417.07,Negative,Composite,,,,A4,1396.31,0
+Clinton Park,CP,06/28/21,R,E484wt,,50,0,0.42,0,0,,18514,0,0628.CP-1,1424.46,Negative,Composite,,,,A4,1396.31,0
+Clinton Park,CP,06/28/21,R,L452R,,50,0,0.44,0,0,,17818,0,0628.CP-2,1395.61,Negative,Composite,,,,B4,1450.86,0
+Clinton Park,CP,06/28/21,R,E484Q,,50,0,0.44,0,0,,17818,0,0628.CP-2,2333.33,Negative,Composite,,,,B4,1450.86,0
+Clinton Park,CP,06/28/21,R,L452wt,,50,0,0.44,0,0,,17818,0,0628.CP-2,1417.07,Negative,Composite,,,,B4,1450.86,0
+Clinton Park,CP,06/28/21,R,E484wt,,50,0,0.44,0,0,,17818,0,0628.CP-2,1424.46,Negative,Composite,,,,B4,1450.86,0
+Easthaven,EH,06/28/21,R,L452R,,50,0,0.37,0,0,,20916,0,0628.EH-1,1395.61,Negative,Composite,,,,C4,1236.77,0
+Easthaven,EH,06/28/21,R,E484Q,,50,0,0.37,0,0,,20916,0,0628.EH-1,2333.33,Negative,Composite,,,,C4,1236.77,0
+Easthaven,EH,06/28/21,R,L452wt,,50,0,0.37,0,0,,20916,0,0628.EH-1,1417.07,Negative,Composite,,,,C4,1236.77,0
+Easthaven,EH,06/28/21,R,E484wt,,50,0,0.37,0,0,,20916,0,0628.EH-1,1424.46,Negative,Composite,,,,C4,1236.77,0
+Easthaven,EH,06/28/21,R,L452R,,50,0.13,0.63,0.01,436.8,,19801,1,0628.EH-2,1395.61,Negative,Composite,,,,D4,2086.36,18.35
+Easthaven,EH,06/28/21,R,E484Q,,50,0,0.39,0,0,,19801,0,0628.EH-2,2333.33,Negative,Composite,,,,D4,1308.78,0
+Easthaven,EH,06/28/21,R,L452wt,,50,0,0.39,0,0,,19801,0,0628.EH-2,1417.07,Negative,Composite,,,,D4,1308.78,0
+Easthaven,EH,06/28/21,R,E484wt,,50,0,0.39,0,0,,19801,0,0628.EH-2,1424.46,Negative,Composite,,,,D4,1308.78,0
+F.W.S.D. # 23,23,06/28/21,R,L452R,,50,0,0.46,0,0,,16861,0,0628.23-1,1395.61,Negative,Composite,,,,A2,1533.5,0
+F.W.S.D. # 23,23,06/28/21,R,E484Q,,50,0,0.46,0,0,,16861,0,0628.23-1,2333.33,Negative,Composite,,,,A2,1533.5,0
+F.W.S.D. # 23,23,06/28/21,R,L452wt,,50,0.46,1.22,0.11,1535.27,,16861,3,0628.23-1,1417.07,Positive,Composite,,,,A2,4069.58,364.35
+F.W.S.D. # 23,23,06/28/21,R,E484wt,,50,0.46,1.22,0.11,1535.27,,16861,3,0628.23-1,1424.46,Positive,Composite,,,,A2,4069.58,364.35
+F.W.S.D. # 23,23,06/28/21,R,L452R,,50,0,0.39,0,0,,19886,0,0628.23-2,1395.61,Negative,Composite,,,,B2,1299.96,0
+F.W.S.D. # 23,23,06/28/21,R,E484Q,,50,0,0.39,0,0,,19886,0,0628.23-2,2333.33,Negative,Composite,,,,B2,1299.96,0
+F.W.S.D. # 23,23,06/28/21,R,L452wt,,50,0,0.39,0,0,,19886,0,0628.23-2,1417.07,Negative,Composite,,,,B2,1299.96,0
+F.W.S.D. # 23,23,06/28/21,R,E484wt,,50,0,0.39,0,0,,19886,0,0628.23-2,1424.46,Negative,Composite,,,,B2,1299.96,0
+Forest Cove,FC,06/28/21,R,L452R,,50,0,0.39,0,0,,20015,0,0628.FC-1,1395.61,Negative,Composite,,,,E4,1291.58,0
+Forest Cove,FC,06/28/21,R,E484Q,,50,0,0.39,0,0,,20015,0,0628.FC-1,2333.33,Negative,Composite,,,,E4,1291.58,0
+Forest Cove,FC,06/28/21,R,L452wt,,50,0.13,0.62,0.01,431.06,,20015,1,0628.FC-1,1417.07,Negative,Composite,,,,E4,2058.94,18.1
+Forest Cove,FC,06/28/21,R,E484wt,,50,0.13,0.62,0.01,431.06,,20015,1,0628.FC-1,1424.46,Negative,Composite,,,,E4,2058.94,18.1
+Forest Cove,FC,06/28/21,R,L452R,,50,0,0.39,0,0,,19882,0,0628.FC-2,1395.61,Negative,Composite,,,,F4,1301.08,0
+Forest Cove,FC,06/28/21,R,E484Q,,50,0,0.39,0,0,,19882,0,0628.FC-2,2333.33,Negative,Composite,,,,F4,1301.08,0
+Forest Cove,FC,06/28/21,R,L452wt,,50,0.13,0.62,0.01,434.23,,19882,1,0628.FC-2,1417.07,Negative,Composite,,,,F4,2074.07,18.24
+Forest Cove,FC,06/28/21,R,E484wt,,50,0.13,0.62,0.01,434.23,,19882,1,0628.FC-2,1424.46,Negative,Composite,,,,F4,2074.07,18.24
+Greenridge,GR,06/28/21,R,L452R,,50,0.14,0.65,0.01,456.61,,18908,1,0628.GR-1,1395.61,Negative,Composite,,,,G4,2181,19.18
+Greenridge,GR,06/28/21,R,E484Q,,50,0,0.41,0,0,,18908,0,0628.GR-1,2333.33,Negative,Composite,,,,G4,1368.15,0
+Greenridge,GR,06/28/21,R,L452wt,,50,0.41,1.09,0.1,1369.76,,18908,3,0628.GR-1,1417.07,Negative,Composite,,,,G4,3630.8,325.07
+Greenridge,GR,06/28/21,R,E484wt,,50,0.14,0.65,0.01,456.56,,18908,1,0628.GR-1,1424.46,Negative,Composite,,,,G4,2180.76,19.18
+Greenridge,GR,06/28/21,R,L452R,,50,0.77,1.56,0.3,2550.24,,20341,6,0628.GR-2,1395.61,Positive,Composite,,,,H4,5213.49,998.75
+Greenridge,GR,06/28/21,R,E484Q,,50,0,0.38,0,0,,20341,0,0628.GR-2,2333.33,Negative,Composite,,,,H4,1273.7,0
+Greenridge,GR,06/28/21,R,L452wt,,50,0.38,1.01,0.09,1275.21,,20341,3,0628.GR-2,1417.07,Negative,Composite,,,,H4,3380.15,302.63
+Greenridge,GR,06/28/21,R,E484wt,,50,0.13,0.61,0.01,425.05,,20341,1,0628.GR-2,1424.46,Negative,Composite,,,,H4,2030.23,17.85
+Homestead,HO,06/28/21,R,L452R,,50,1.13,2.12,0.51,3772.39,,18302,8,0628.HO-1,1395.61,Positive,Composite,,,,A5,7064.67,1707.74
+Homestead,HO,06/28/21,R,E484Q,,50,0,0.42,0,0,,18302,0,0628.HO-1,2333.33,Negative,Composite,,,,A5,1413.18,0
+Homestead,HO,06/28/21,R,L452wt,,50,0.14,0.68,0.01,471.64,,18302,1,0628.HO-1,1417.07,Negative,Composite,,,,A5,2252.78,19.81
+Homestead,HO,06/28/21,R,E484wt,,50,0.14,0.68,0.01,471.64,,18302,1,0628.HO-1,1424.46,Negative,Composite,,,,A5,2252.78,19.81
+Homestead,HO,06/28/21,R,L452R,,50,0.5,1.18,0.15,1664.41,,20743,4,0628.HO-2,1395.61,Positive,Composite,,,,B5,3924.77,502.2
+Homestead,HO,06/28/21,R,E484Q,,50,0,0.37,0,0,,20743,0,0628.HO-2,2333.33,Negative,Composite,,,,B5,1246.85,0
+Homestead,HO,06/28/21,R,L452wt,,50,0.62,1.36,0.22,2080.46,,20743,5,0628.HO-2,1417.07,Positive,Composite,,,,B5,4521.47,731.43
+Homestead,HO,06/28/21,R,E484wt,,50,0.25,0.8,0.04,832.12,,20743,2,0628.HO-2,1424.46,Negative,Composite,,,,B5,2665.57,126.06
+Imperial Valley,IV,06/28/21,R,L452R,,50,0.13,0.63,0.01,438.58,,19745,1,0628.IV-1,1395.61,Negative,Composite,,,,E5,2094.84,18.42
+Imperial Valley,IV,06/28/21,R,E484Q,,50,0,0.39,0,0,,19745,0,0628.IV-1,2333.33,Negative,Composite,,,,E5,1314.11,0
+Imperial Valley,IV,06/28/21,R,L452wt,,50,0.26,0.84,0.04,877.13,,19745,2,0628.IV-1,1417.07,Negative,Composite,,,,E5,2809.76,132.88
+Imperial Valley,IV,06/28/21,R,E484wt,,50,0,0.39,0,0,,19745,0,0628.IV-1,1424.46,Negative,Composite,,,,E5,1313.97,0
+Imperial Valley,IV,06/28/21,R,L452R,,50,0,0.36,0,0,,21529,0,0628.IV-2,1395.61,Negative,Composite,,,,F5,1204.89,0
+Imperial Valley,IV,06/28/21,R,E484Q,,50,0,0.36,0,0,,21529,0,0628.IV-2,2333.33,Negative,Composite,,,,F5,1204.89,0
+Imperial Valley,IV,06/28/21,R,L452wt,,50,0.24,0.77,0.04,804.24,,21529,2,0628.IV-2,1417.07,Negative,Composite,,,,F5,2576.24,121.84
+Imperial Valley,IV,06/28/21,R,E484wt,,50,0.24,0.77,0.04,804.24,,21529,2,0628.IV-2,1424.46,Negative,Composite,,,,F5,2576.24,121.84
+Intercontinental Airport,IA,06/28/21,R,L452R,,50,0.41,1.08,0.1,1363.13,,19043,3,0628.IA-1,1395.61,Negative,Composite,,,,C5,3613.21,323.5
+Intercontinental Airport,IA,06/28/21,R,E484Q,,50,0,0.41,0,0,,19043,0,0628.IA-1,2333.33,Negative,Composite,,,,C5,1361.52,0
+Intercontinental Airport,IA,06/28/21,R,L452wt,,50,0.14,0.65,0.01,454.4,,19043,1,0628.IA-1,1417.07,Negative,Composite,,,,C5,2170.43,19.08
+Intercontinental Airport,IA,06/28/21,R,E484wt,,50,0,0.41,0,0,,19043,0,0628.IA-1,1424.46,Negative,Composite,,,,C5,1361.45,0
+Intercontinental Airport,IA,06/28/21,R,L452R,,50,0.49,1.17,0.15,1649.06,,20937,4,0628.IA-2,1395.61,Positive,Composite,,,,D5,3888.57,497.57
+Intercontinental Airport,IA,06/28/21,R,E484Q,,50,0,0.37,0,0,,20937,0,0628.IA-2,2333.33,Negative,Composite,,,,D5,1235.35,0
+Intercontinental Airport,IA,06/28/21,R,L452wt,,50,0.12,0.59,0.01,412.29,,20937,1,0628.IA-2,1417.07,Negative,Composite,,,,D5,1969.29,17.32
+Intercontinental Airport,IA,06/28/21,R,E484wt,,50,0,0.37,0,0,,20937,0,0628.IA-2,1424.46,Negative,Composite,,,,D5,1235.29,0
+Keegans Bayou,KB,06/28/21,R,L452R,,50,0.93,1.82,0.4,3115.65,,19434,7,0628.KB-1,1395.61,Positive,Composite,,,,G5,6068.54,1323.57
+Keegans Bayou,KB,06/28/21,R,E484Q,,50,0,0.4,0,0,,19434,0,0628.KB-1,2333.33,Negative,Composite,,,,G5,1333.84,0
+Keegans Bayou,KB,06/28/21,R,L452wt,,50,0.4,1.06,0.1,1335.42,,19434,3,0628.KB-1,1417.07,Negative,Composite,,,,G5,3539.75,316.92
+Keegans Bayou,KB,06/28/21,R,E484wt,,50,0,0.4,0,0,,19434,0,0628.KB-1,1424.46,Negative,Composite,,,,G5,1333.63,0
+Keegans Bayou,KB,06/28/21,R,L452R,,50,0.59,1.29,0.21,1971.76,,21893,5,0628.KB-2,1395.61,Positive,Composite,,,,H5,4285.22,693.22
+Keegans Bayou,KB,06/28/21,R,E484Q,,50,0,0.35,0,0,,21893,0,0628.KB-2,2333.33,Negative,Composite,,,,H5,1181.7,0
+Keegans Bayou,KB,06/28/21,R,L452wt,,50,0.47,1.12,0.14,1577.45,,21893,4,0628.KB-2,1417.07,Positive,Composite,,,,H5,3719.69,475.96
+Keegans Bayou,KB,06/28/21,R,E484wt,,50,0,0.35,0,0,,21893,0,0628.KB-2,1424.46,Negative,Composite,,,,H5,1181.48,0
+Kingwood Central,KW,06/28/21,R,L452R,,50,0,0.4,0,0,,19585,0,0628.KW-1,1395.61,Negative,Composite,,,,A6,1323.12,0
+Kingwood Central,KW,06/28/21,R,E484Q,,50,0,0.4,0,0,,19585,0,0628.KW-1,2333.33,Negative,Composite,,,,A6,1323.12,0
+Kingwood Central,KW,06/28/21,R,L452wt,,50,0,0.4,0,0,,19585,0,0628.KW-1,1417.07,Negative,Composite,,,,A6,1323.12,0
+Kingwood Central,KW,06/28/21,R,E484wt,,50,0,0.4,0,0,,19585,0,0628.KW-1,1424.46,Negative,Composite,,,,A6,1323.12,0
+Kingwood Central,KW,06/28/21,R,L452R,,50,0,0.39,0,0,,19801,0,0628.KW-2,1395.61,Negative,Composite,,,,B6,1313.57,0
+Kingwood Central,KW,06/28/21,R,E484Q,,50,0,0.39,0,0,,19801,0,0628.KW-2,2333.33,Negative,Composite,,,,B6,1313.57,0
+Kingwood Central,KW,06/28/21,R,L452wt,,50,3.02,4.44,1.95,10077.52,,19801,23,0628.KW-2,1417.07,Positive,Composite,,,,B6,14799.16,6487.26
+Kingwood Central,KW,06/28/21,R,E484wt,,50,2.89,4.28,1.84,9639.12,,19801,22,0628.KW-2,1424.46,Positive,Composite,,,,B6,14270.17,6139.31
+Kingwood West,KWW,06/28/21,R,L452R,,50,0,0.39,0,0,,19754,0,0628.KWW-1,1395.61,Negative,Composite,,,,C6,1311.37,0
+Kingwood West,KWW,06/28/21,R,E484Q,,50,0,0.39,0,0,,19754,0,0628.KWW-1,2333.33,Negative,Composite,,,,C6,1311.37,0
+Kingwood West,KWW,06/28/21,R,L452wt,,50,0.79,1.61,0.31,2625.65,,19754,6,0628.KWW-1,1417.07,Positive,Composite,,,,C6,5367.68,1028.28
+Kingwood West,KWW,06/28/21,R,E484wt,,50,0.79,1.61,0.31,2625.65,,19754,6,0628.KWW-1,1424.46,Positive,Composite,,,,C6,5367.68,1028.28
+Kingwood West,KWW,06/28/21,R,L452R,,50,0,0.41,0,0,,19078,0,0628.KWW-2,1395.61,Negative,Composite,,,,D6,1358.23,0
+Kingwood West,KWW,06/28/21,R,E484Q,,50,0,0.41,0,0,,19078,0,0628.KWW-2,2333.33,Negative,Composite,,,,D6,1358.23,0
+Kingwood West,KWW,06/28/21,R,L452wt,,50,0,0.41,0,0,,19078,0,0628.KWW-2,1417.07,Negative,Composite,,,,D6,1358.23,0
+Kingwood West,KWW,06/28/21,R,E484wt,,50,0,0.41,0,0,,19078,0,0628.KWW-2,1424.46,Negative,Composite,,,,D6,1358.23,0
+M.U.D. # 203,203,06/28/21,R,L452R,,50,0,0.38,0,0,,20492,0,0628.203-1,1395.61,Negative,Composite,,,,G1,1261.7,0
+M.U.D. # 203,203,06/28/21,R,E484Q,,50,0,0.38,0,0,,20492,0,0628.203-1,2333.33,Negative,Composite,,,,G1,1261.7,0
+M.U.D. # 203,203,06/28/21,R,L452wt,,50,0.51,1.19,0.15,1684.23,,20492,4,0628.203-1,1417.07,Positive,Composite,,,,G1,3971.51,508.18
+M.U.D. # 203,203,06/28/21,R,E484wt,,50,0.51,1.19,0.15,1684.23,,20492,4,0628.203-1,1424.46,Positive,Composite,,,,G1,3971.51,508.18
+M.U.D. # 203,203,06/28/21,R,L452R,,50,0,0.39,0,0,,19947,0,0628.203-2,1395.61,Negative,Composite,,,,H1,1296.25,0
+M.U.D. # 203,203,06/28/21,R,E484Q,,50,0,0.39,0,0,,19947,0,0628.203-2,2333.33,Negative,Composite,,,,H1,1296.25,0
+M.U.D. # 203,203,06/28/21,R,L452wt,,50,0.52,1.22,0.16,1730.34,,19947,4,0628.203-2,1417.07,Positive,Composite,,,,H1,4080.25,522.09
+M.U.D. # 203,203,06/28/21,R,E484wt,,50,0.52,1.22,0.16,1730.34,,19947,4,0628.203-2,1424.46,Positive,Composite,,,,H1,4080.25,522.09
+Metro Central,MC,06/28/21,R,L452R,,50,0,0.48,0,0,,16324,0,0628.MC-1,1395.61,Negative,Composite,,,,E6,1583.77,0
+Metro Central,MC,06/28/21,R,E484Q,,50,0,0.48,0,0,,16324,0,0628.MC-1,2333.33,Negative,Composite,,,,E6,1583.77,0
+Metro Central,MC,06/28/21,R,L452wt,,50,0,0.48,0,0,,16324,0,0628.MC-1,1417.07,Negative,Composite,,,,E6,1583.77,0
+Metro Central,MC,06/28/21,R,E484wt,,50,0,0.48,0,0,,16324,0,0628.MC-1,1424.46,Negative,Composite,,,,E6,1583.77,0
+Metro Central,MC,06/28/21,R,L452R,,50,0,0.41,0,0,,19080,0,0628.MC-2,1395.61,Negative,Composite,,,,F6,1355.03,0
+Metro Central,MC,06/28/21,R,E484Q,,50,0,0.41,0,0,,19080,0,0628.MC-2,2333.33,Negative,Composite,,,,F6,1355.03,0
+Metro Central,MC,06/28/21,R,L452wt,,50,0,0.41,0,0,,19080,0,0628.MC-2,1417.07,Negative,Composite,,,,F6,1355.03,0
+Metro Central,MC,06/28/21,R,E484wt,,50,0,0.41,0,0,,19080,0,0628.MC-2,1424.46,Negative,Composite,,,,F6,1355.03,0
+Northbelt,NO,06/28/21,R,L452R,,50,2.71,4.13,1.66,9032.24,,18235,19,0628.NO-1,1395.61,Positive,Composite,,,,C7,13751.3,5541.35
+Northbelt,NO,06/28/21,R,E484Q,,50,0,0.43,0,0,,18235,0,0628.NO-1,2333.33,Negative,Composite,,,,C7,1425.1,0
+Northbelt,NO,06/28/21,R,L452wt,,50,1.28,2.33,0.61,4279.61,,18235,9,0628.NO-1,1417.07,Positive,Composite,,,,C7,7754.31,2040.63
+Northbelt,NO,06/28/21,R,E484wt,,50,1.14,2.14,0.52,3803.99,,18235,8,0628.NO-1,1424.46,Positive,Composite,,,,C7,7123.87,1722.05
+Northbelt,NO,06/28/21,R,L452R,,50,1.84,2.94,1.05,6119.48,,21282,15,0628.NO-2,1395.61,Positive,Composite,,,,D7,9785.09,3509.2
+Northbelt,NO,06/28/21,R,E484Q,,50,0,0.37,0,0,,21282,0,0628.NO-2,2333.33,Negative,Composite,,,,D7,1222.79,0
+Northbelt,NO,06/28/21,R,L452wt,,50,0.98,1.83,0.44,3264.26,,21282,8,0628.NO-2,1417.07,Positive,Composite,,,,D7,6112.94,1477.74
+Northbelt,NO,06/28/21,R,E484wt,,50,0.86,1.67,0.36,2856.16,,21282,7,0628.NO-2,1424.46,Positive,Composite,,,,D7,5563.05,1213.35
+Northeast,NE,06/28/21,R,L452R,,50,0.28,0.89,0.04,924.06,,18674,2,0628.NE-1,1395.61,Negative,Composite,,,,G6,2960.1,139.99
+Northeast,NE,06/28/21,R,E484Q,,50,0,0.42,0,0,,18674,0,0628.NE-1,2333.33,Negative,Composite,,,,G6,1384.42,0
+Northeast,NE,06/28/21,R,L452wt,,50,0,0.42,0,0,,18674,0,0628.NE-1,1417.07,Negative,Composite,,,,G6,1384.42,0
+Northeast,NE,06/28/21,R,E484wt,,50,0,0.42,0,0,,18674,0,0628.NE-1,1424.46,Negative,Composite,,,,G6,1384.42,0
+Northeast,NE,06/28/21,R,L452R,,50,0.26,0.83,0.04,861.32,,20043,2,0628.NE-2,1395.61,Negative,Composite,,,,H6,2759.12,130.49
+Northeast,NE,06/28/21,R,E484Q,,50,0,0.39,0,0,,20043,0,0628.NE-2,2333.33,Negative,Composite,,,,H6,1290.42,0
+Northeast,NE,06/28/21,R,L452wt,,50,0.26,0.83,0.04,861.32,,20043,2,0628.NE-2,1417.07,Negative,Composite,,,,H6,2759.12,130.49
+Northeast,NE,06/28/21,R,E484wt,,50,0.13,0.62,0.01,430.65,,20043,1,0628.NE-2,1424.46,Negative,Composite,,,,H6,2056.98,18.09
+Northgate,NG,06/28/21,R,L452R,,50,0.45,1.19,0.11,1492.77,,17363,3,0628.NG-1,1395.61,Positive,Composite,,,,A7,3956.9,354.26
+Northgate,NG,06/28/21,R,E484Q,,50,0,0.45,0,0,,17363,0,0628.NG-1,2333.33,Negative,Composite,,,,A7,1491.04,0
+Northgate,NG,06/28/21,R,L452wt,,50,0.45,1.19,0.11,1492.77,,17363,3,0628.NG-1,1417.07,Positive,Composite,,,,A7,3956.9,354.26
+Northgate,NG,06/28/21,R,E484wt,,50,0.3,0.96,0.05,995.15,,17363,2,0628.NG-1,1424.46,Negative,Composite,,,,A7,3187.87,150.76
+Northgate,NG,06/28/21,R,L452R,,50,0.64,1.4,0.23,2143.09,,20145,5,0628.NG-2,1395.61,Positive,Composite,,,,B7,4657.62,753.45
+Northgate,NG,06/28/21,R,E484Q,,50,0,0.39,0,0,,20145,0,0628.NG-2,2333.33,Negative,Composite,,,,B7,1284.4,0
+Northgate,NG,06/28/21,R,L452wt,,50,0.64,1.4,0.23,2143.09,,20145,5,0628.NG-2,1417.07,Positive,Composite,,,,B7,4657.62,753.45
+Northgate,NG,06/28/21,R,E484wt,,50,0.51,1.21,0.16,1714.43,,20145,4,0628.NG-2,1424.46,Positive,Composite,,,,B7,4042.75,517.29
+Northwest,NW,06/28/21,R,L452R,,50,0,0.4,0,0,,19389,0,0628.NW-1,1395.61,Negative,Composite,,,,E7,1333.36,0
+Northwest,NW,06/28/21,R,E484Q,,50,0,0.4,0,0,,19389,0,0628.NW-1,2333.33,Negative,Composite,,,,E7,1333.36,0
+Northwest,NW,06/28/21,R,L452wt,,50,0,0.4,0,0,,19389,0,0628.NW-1,1417.07,Negative,Composite,,,,E7,1333.36,0
+Northwest,NW,06/28/21,R,E484wt,,50,0,0.4,0,0,,19389,0,0628.NW-1,1424.46,Negative,Composite,,,,E7,1333.36,0
+Northwest,NW,06/28/21,R,L452R,,50,0.13,0.61,0.01,427.07,,20209,1,0628.NW-2,1395.61,Negative,Composite,,,,F7,2039.88,17.94
+Northwest,NW,06/28/21,R,E484Q,,50,0,0.38,0,0,,20209,0,0628.NW-2,2333.33,Negative,Composite,,,,F7,1279.63,0
+Northwest,NW,06/28/21,R,L452wt,,50,0.26,0.82,0.04,854.12,,20209,2,0628.NW-2,1417.07,Negative,Composite,,,,F7,2736.04,129.39
+Northwest,NW,06/28/21,R,E484wt,,50,0.26,0.82,0.04,854.12,,20209,2,0628.NW-2,1424.46,Negative,Composite,,,,F7,2736.04,129.39
+Park Ten,PT,06/28/21,R,L452R,,50,0.76,1.56,0.3,2535.75,,20497,6,0628.PT-1,1395.61,Positive,Composite,,,,G7,5183.86,993.08
+Park Ten,PT,06/28/21,R,E484Q,,50,0,0.38,0,0,,20497,0,0628.PT-1,2333.33,Negative,Composite,,,,G7,1266.46,0
+Park Ten,PT,06/28/21,R,L452wt,,50,0.13,0.61,0.01,422.68,,20497,1,0628.PT-1,1417.07,Negative,Composite,,,,G7,2018.89,17.75
+Park Ten,PT,06/28/21,R,E484wt,,50,0.13,0.61,0.01,422.68,,20497,1,0628.PT-1,1424.46,Negative,Composite,,,,G7,2018.89,17.75
+Park Ten,PT,06/28/21,R,L452R,,50,0.79,1.71,0.28,2626.72,,16512,5,0628.PT-2,1395.61,Positive,Composite,,,,H7,5708.88,923.46
+Park Ten,PT,06/28/21,R,E484Q,,50,0,0.47,0,0,,16512,0,0628.PT-2,2333.33,Negative,Composite,,,,H7,1574.31,0
+Park Ten,PT,06/28/21,R,L452wt,,50,0.32,1.01,0.05,1050.78,,16512,2,0628.PT-2,1417.07,Negative,Composite,,,,H7,3366.11,159.19
+Park Ten,PT,06/28/21,R,E484wt,,50,0.32,1.01,0.05,1050.78,,16512,2,0628.PT-2,1424.46,Negative,Composite,,,,H7,3366.11,159.19
+Sagemont,SG,06/28/21,R,L452R,,50,1.67,2.76,0.92,5577.59,,20216,13,0628.SG-1,1395.61,Positive,Composite,,,,E8,9211.39,3054.78
+Sagemont,SG,06/28/21,R,E484Q,,50,0,0.39,0,0,,20216,0,0628.SG-1,2333.33,Negative,Composite,,,,E8,1285.93,0
+Sagemont,SG,06/28/21,R,L452wt,,50,0.9,1.76,0.38,3003.76,,20216,7,0628.SG-1,1417.07,Positive,Composite,,,,E8,5850.58,1276.04
+Sagemont,SG,06/28/21,R,E484wt,,50,0.77,1.58,0.3,2574.59,,20216,6,0628.SG-1,1424.46,Positive,Composite,,,,E8,5263.28,1008.29
+Sagemont,SG,06/28/21,R,L452R,,50,1.78,2.94,0.98,5936.58,,18935,13,0628.SG-2,1395.61,Positive,Composite,,,,F8,9804.41,3251.37
+Sagemont,SG,06/28/21,R,E484Q,,50,0,0.41,0,0,,18935,0,0628.SG-2,2333.33,Negative,Composite,,,,F8,1368.73,0
+Sagemont,SG,06/28/21,R,L452wt,,50,0.41,1.09,0.1,1370.34,,18935,3,0628.SG-2,1417.07,Negative,Composite,,,,F8,3632.34,325.21
+Sagemont,SG,06/28/21,R,E484wt,,50,0.41,1.09,0.1,1370.34,,18935,3,0628.SG-2,1424.46,Negative,Composite,,,,F8,3632.34,325.21
+Sims Bayou North,SB,06/28/21,R,L452R,,50,0.14,0.65,0.01,452.14,,19089,1,0628.SB-1,1395.61,Negative,Composite,,,,A8,2159.62,18.99
+Sims Bayou North,SB,06/28/21,R,E484Q,,50,0,0.41,0,0,,19089,0,0628.SB-1,2333.33,Negative,Composite,,,,A8,1354.74,0
+Sims Bayou North,SB,06/28/21,R,L452wt,,50,0,0.41,0,0,,19089,0,0628.SB-1,1417.07,Negative,Composite,,,,A8,1354.74,0
+Sims Bayou North,SB,06/28/21,R,E484wt,,50,0,0.41,0,0,,19089,0,0628.SB-1,1424.46,Negative,Composite,,,,A8,1354.74,0
+Sims Bayou North,SB,06/28/21,R,L452R,,50,0,0.39,0,0,,19706,0,0628.SB-2,1395.61,Negative,Composite,,,,B8,1312.11,0
+Sims Bayou North,SB,06/28/21,R,E484Q,,50,0,0.39,0,0,,19706,0,0628.SB-2,2333.33,Negative,Composite,,,,B8,1312.11,0
+Sims Bayou North,SB,06/28/21,R,L452wt,,50,0,0.39,0,0,,19706,0,0628.SB-2,1417.07,Negative,Composite,,,,B8,1312.11,0
+Sims Bayou North,SB,06/28/21,R,E484wt,,50,0,0.39,0,0,,19706,0,0628.SB-2,1424.46,Negative,Composite,,,,B8,1312.11,0
+Sims Bayou South,SS,06/28/21,R,L452R,,50,0,0.4,0,0,,19187,0,0628.SS-1,1395.61,Negative,Composite,,,,G8,1347.68,0
+Sims Bayou South,SS,06/28/21,R,E484Q,,50,0,0.4,0,0,,19187,0,0628.SS-1,2333.33,Negative,Composite,,,,G8,1347.68,0
+Sims Bayou South,SS,06/28/21,R,L452wt,,50,0,0.4,0,0,,19187,0,0628.SS-1,1417.07,Negative,Composite,,,,G8,1347.68,0
+Sims Bayou South,SS,06/28/21,R,E484wt,,50,0,0.4,0,0,,19187,0,0628.SS-1,1424.46,Negative,Composite,,,,G8,1347.68,0
+Sims Bayou South,SS,06/28/21,R,L452R,,50,0,0.39,0,0,,20122,0,0628.SS-2,1395.61,Negative,Composite,,,,H8,1285.48,0
+Sims Bayou South,SS,06/28/21,R,E484Q,,50,0,0.39,0,0,,20122,0,0628.SS-2,2333.33,Negative,Composite,,,,H8,1285.48,0
+Sims Bayou South,SS,06/28/21,R,L452wt,,50,0,0.39,0,0,,20122,0,0628.SS-2,1417.07,Negative,Composite,,,,H8,1285.48,0
+Sims Bayou South,SS,06/28/21,R,E484wt,,50,0,0.39,0,0,,20122,0,0628.SS-2,1424.46,Negative,Composite,,,,H8,1285.48,0
+Southeast,SE,06/28/21,R,L452R,,50,0.56,1.32,0.17,1866.71,,18525,4,0628.SE-1,1395.61,Positive,Composite,,,,C8,4401.87,563.24
+Southeast,SE,06/28/21,R,E484Q,,50,0,0.42,0,0,,18525,0,0628.SE-1,2333.33,Negative,Composite,,,,C8,1398.43,0
+Southeast,SE,06/28/21,R,L452wt,,50,0.84,1.72,0.33,2799.91,,18525,6,0628.SE-1,1417.07,Positive,Composite,,,,C8,5723.98,1096.52
+Southeast,SE,06/28/21,R,E484wt,,50,0.42,1.11,0.1,1399.84,,18525,3,0628.SE-1,1424.46,Negative,Composite,,,,C8,3710.54,332.21
+Southeast,SE,06/28/21,R,L452R,,50,1.21,2.19,0.58,4029.32,,19290,9,0628.SE-2,1395.61,Positive,Composite,,,,D8,7300.73,1921.3
+Southeast,SE,06/28/21,R,E484Q,,50,0,0.4,0,0,,19290,0,0628.SE-2,2333.33,Negative,Composite,,,,D8,1341.73,0
+Southeast,SE,06/28/21,R,L452wt,,50,0.94,1.83,0.4,3134.08,,19290,7,0628.SE-2,1417.07,Positive,Composite,,,,D8,6104.45,1331.4
+Southeast,SE,06/28/21,R,E484wt,,50,0.13,0.64,0.01,447.66,,19290,1,0628.SE-2,1424.46,Negative,Composite,,,,D8,2138.21,18.8
+Southwest,SW,06/28/21,R,L452R,,50,0.28,0.9,0.04,936.54,,18444,2,0628.SW-1,1395.61,Negative,Composite,,,,A9,3000.11,141.88
+Southwest,SW,06/28/21,R,E484Q,,50,0,0.42,0,0,,18444,0,0628.SW-1,2333.33,Negative,Composite,,,,A9,1403.13,0
+Southwest,SW,06/28/21,R,L452wt,,50,0.14,0.67,0.01,468.29,,18444,1,0628.SW-1,1417.07,Negative,Composite,,,,A9,2236.76,19.67
+Southwest,SW,06/28/21,R,E484wt,,50,0.14,0.67,0.01,468.29,,18444,1,0628.SW-1,1424.46,Negative,Composite,,,,A9,2236.76,19.67
+Southwest,SW,06/28/21,R,L452R,,50,0.13,0.6,0.01,420.37,,20527,1,0628.SW-2,1395.61,Negative,Composite,,,,B9,2007.87,17.66
+Southwest,SW,06/28/21,R,E484Q,,50,0,0.38,0,0,,20527,0,0628.SW-2,2333.33,Negative,Composite,,,,B9,1259.55,0
+Southwest,SW,06/28/21,R,L452wt,,50,0.13,0.6,0.01,420.37,,20527,1,0628.SW-2,1417.07,Negative,Composite,,,,B9,2007.87,17.66
+Southwest,SW,06/28/21,R,E484wt,,50,0.13,0.6,0.01,420.37,,20527,1,0628.SW-2,1424.46,Negative,Composite,,,,B9,2007.87,17.66
+Tidwell Timbers,TT,06/28/21,R,L452R,,50,0,0.39,0,0,,20090,0,0628.TT-1,1395.61,Negative,Composite,,,,E9,1286.89,0
+Tidwell Timbers,TT,06/28/21,R,E484Q,,50,0,0.39,0,0,,20090,0,0628.TT-1,2333.33,Negative,Composite,,,,E9,1286.89,0
+Tidwell Timbers,TT,06/28/21,R,L452wt,,50,0,0.39,0,0,,20090,0,0628.TT-1,1417.07,Negative,Composite,,,,E9,1286.89,0
+Tidwell Timbers,TT,06/28/21,R,E484wt,,50,0,0.39,0,0,,20090,0,0628.TT-1,1424.46,Negative,Composite,,,,E9,1286.89,0
+Tidwell Timbers,TT,06/28/21,R,L452R,,50,0,0.37,0,0,,20885,0,0628.TT-2,1395.61,Negative,Composite,,,,F9,1237.78,0
+Tidwell Timbers,TT,06/28/21,R,E484Q,,50,0,0.37,0,0,,20885,0,0628.TT-2,2333.33,Negative,Composite,,,,F9,1237.78,0
+Tidwell Timbers,TT,06/28/21,R,L452wt,,50,0,0.37,0,0,,20885,0,0628.TT-2,1417.07,Negative,Composite,,,,F9,1237.78,0
+Tidwell Timbers,TT,06/28/21,R,E484wt,,50,0,0.37,0,0,,20885,0,0628.TT-2,1424.46,Negative,Composite,,,,F9,1237.78,0
+Turkey Creek,TC,06/28/21,R,L452R,,50,0,0.4,0,0,,19530,0,0628.TC-1,1395.61,Negative,Composite,,,,C9,1323.66,0
+Turkey Creek,TC,06/28/21,R,E484Q,,50,0,0.4,0,0,,19530,0,0628.TC-1,2333.33,Negative,Composite,,,,C9,1323.66,0
+Turkey Creek,TC,06/28/21,R,L452wt,,50,0.13,0.63,0.01,441.77,,19530,1,0628.TC-1,1417.07,Negative,Composite,,,,C9,2110.07,18.55
+Turkey Creek,TC,06/28/21,R,E484wt,,50,0.13,0.63,0.01,441.77,,19530,1,0628.TC-1,1424.46,Negative,Composite,,,,C9,2110.07,18.55
+Turkey Creek,TC,06/28/21,R,L452R,,50,0.14,0.64,0.01,450.08,,19181,1,0628.TC-2,1395.61,Negative,Composite,,,,D9,2149.82,18.9
+Turkey Creek,TC,06/28/21,R,E484Q,,50,0,0.4,0,0,,19181,0,0628.TC-2,2333.33,Negative,Composite,,,,D9,1348.59,0
+Turkey Creek,TC,06/28/21,R,L452wt,,50,0.14,0.64,0.01,450.08,,19181,1,0628.TC-2,1417.07,Negative,Composite,,,,D9,2149.82,18.9
+Turkey Creek,TC,06/28/21,R,E484wt,,50,0,0.4,0,0,,19181,0,0628.TC-2,1424.46,Negative,Composite,,,,D9,1348.52,0
+Upper Brays,UB,06/28/21,R,L452R,,50,0.62,1.35,0.22,2073.46,,20886,5,0628.UB-1,1395.61,Positive,Composite,,,,G9,4506.26,728.97
+Upper Brays,UB,06/28/21,R,E484Q,,50,0,0.37,0,0,,20886,0,0628.UB-1,2333.33,Negative,Composite,,,,G9,1242.65,0
+Upper Brays,UB,06/28/21,R,L452wt,,50,1.12,2.03,0.53,3731.69,,20886,9,0628.UB-1,1417.07,Positive,Composite,,,,G9,6761.34,1779.4
+Upper Brays,UB,06/28/21,R,E484wt,,50,1.12,2.03,0.53,3731.69,,20886,9,0628.UB-1,1424.46,Positive,Composite,,,,G9,6761.34,1779.4
+Upper Brays,UB,06/28/21,R,L452R,,50,0.53,1.25,0.16,1762.77,,19597,4,0628.UB-2,1395.61,Positive,Composite,,,,H9,4156.75,531.88
+Upper Brays,UB,06/28/21,R,E484Q,,50,0,0.4,0,0,,19597,0,0628.UB-2,2333.33,Negative,Composite,,,,H9,1320.55,0
+Upper Brays,UB,06/28/21,R,L452wt,,50,1.06,1.98,0.48,3525.19,,19597,8,0628.UB-2,1417.07,Positive,Composite,,,,H9,6601.65,1595.85
+Upper Brays,UB,06/28/21,R,E484wt,,50,1.06,1.98,0.48,3525.19,,19597,8,0628.UB-2,1424.46,Positive,Composite,,,,H9,6601.65,1595.85
+W.C.I.D. # 111,111,06/28/21,R,L452R,,50,0,0.42,0,0,,18493,0,0628.111-1,1395.61,Negative,Composite,,,,E1,1399.11,0
+W.C.I.D. # 111,111,06/28/21,R,E484Q,,50,0,0.42,0,0,,18493,0,0628.111-1,2333.33,Negative,Composite,,,,E1,1399.11,0
+W.C.I.D. # 111,111,06/28/21,R,L452wt,,50,0.42,1.11,0.1,1400.75,,18493,3,0628.111-1,1417.07,Negative,Composite,,,,E1,3712.95,332.42
+W.C.I.D. # 111,111,06/28/21,R,E484wt,,50,0.42,1.11,0.1,1400.75,,18493,3,0628.111-1,1424.46,Negative,Composite,,,,E1,3712.95,332.42
+W.C.I.D. # 111,111,06/28/21,R,L452R,,50,0.14,0.69,0.01,479.66,,17993,1,0628.111-2,1395.61,Negative,Composite,,,,F1,2291.11,20.15
+W.C.I.D. # 111,111,06/28/21,R,E484Q,,50,0,0.43,0,0,,17993,0,0628.111-2,2333.33,Negative,Composite,,,,F1,1437.23,0
+W.C.I.D. # 111,111,06/28/21,R,L452wt,,50,0.43,1.14,0.1,1438.83,,17993,3,0628.111-2,1417.07,Positive,Composite,,,,F1,3813.9,341.46
+W.C.I.D. # 111,111,06/28/21,R,E484wt,,50,0.58,1.36,0.17,1918.49,,17993,4,0628.111-2,1424.46,Positive,Composite,,,,F1,4524,578.86
+W.C.I.D. # 47,47,06/28/21,R,L452R,,50,0.13,0.62,0.01,431.15,,20015,1,0628.47-1,1395.61,Negative,Composite,,,,C2,2059.35,18.11
+W.C.I.D. # 47,47,06/28/21,R,E484Q,,50,0,0.39,0,0,,20015,0,0628.47-1,2333.33,Negative,Composite,,,,C2,1291.84,0
+W.C.I.D. # 47,47,06/28/21,R,L452wt,,50,0,0.39,0,0,,20015,0,0628.47-1,1417.07,Negative,Composite,,,,C2,1291.84,0
+W.C.I.D. # 47,47,06/28/21,R,E484wt,,50,0,0.39,0,0,,20015,0,0628.47-1,1424.46,Negative,Composite,,,,C2,1291.84,0
+W.C.I.D. # 47,47,06/28/21,R,L452R,,50,0,0.37,0,0,,21061,0,0628.47-2,1395.61,Negative,Composite,,,,D2,1227.61,0
+W.C.I.D. # 47,47,06/28/21,R,E484Q,,50,0,0.37,0,0,,21061,0,0628.47-2,2333.33,Negative,Composite,,,,D2,1227.61,0
+W.C.I.D. # 47,47,06/28/21,R,L452wt,,50,0.49,1.16,0.15,1638.72,,21061,4,0628.47-2,1417.07,Positive,Composite,,,,D2,3864.19,494.45
+W.C.I.D. # 47,47,06/28/21,R,E484wt,,50,0.49,1.16,0.15,1638.72,,21061,4,0628.47-2,1424.46,Positive,Composite,,,,D2,3864.19,494.45
+W.C.I.D. #76,76,06/28/21,R,L452R,,50,0,0.4,0,0,,19418,0,0628.76-1,1395.61,Negative,Composite,,,,G2,1331.57,0
+W.C.I.D. #76,76,06/28/21,R,E484Q,,50,0,0.4,0,0,,19418,0,0628.76-1,2333.33,Negative,Composite,,,,G2,1331.57,0
+W.C.I.D. #76,76,06/28/21,R,L452wt,,50,0.13,0.64,0.01,444.4,,19418,1,0628.76-1,1417.07,Negative,Composite,,,,G2,2122.68,18.66
+W.C.I.D. #76,76,06/28/21,R,E484wt,,50,0,0.4,0,0,,19418,0,0628.76-1,1424.46,Negative,Composite,,,,G2,1331.5,0
+W.C.I.D. #76,76,06/28/21,R,L452R,,50,0,0.38,0,0,,20245,0,0628.76-2,1395.61,Negative,Composite,,,,H2,1277.6,0
+W.C.I.D. #76,76,06/28/21,R,E484Q,,50,0,0.38,0,0,,20245,0,0628.76-2,2333.33,Negative,Composite,,,,H2,1277.6,0
+W.C.I.D. #76,76,06/28/21,R,L452wt,,50,0,0.38,0,0,,20245,0,0628.76-2,1417.07,Negative,Composite,,,,H2,1277.6,0
+W.C.I.D. #76,76,06/28/21,R,E484wt,,50,0,0.38,0,0,,20245,0,0628.76-2,1424.46,Negative,Composite,,,,H2,1277.6,0
+West District,WD,06/28/21,R,L452R,,50,0.16,0.77,0.01,538.42,,16027,1,0628.WD-1,1395.61,Negative,Composite,,,,C10,2571.82,22.61
+West District,WD,06/28/21,R,E484Q,,50,0,0.48,0,0,,16027,0,0628.WD-1,2333.33,Negative,Composite,,,,C10,1613.32,0
+West District,WD,06/28/21,R,L452wt,,50,0.32,1.03,0.05,1076.82,,16027,2,0628.WD-1,1417.07,Negative,Composite,,,,C10,3449.52,163.13
+West District,WD,06/28/21,R,E484wt,,50,0,0.48,0,0,,16027,0,0628.WD-1,1424.46,Negative,Composite,,,,C10,1613.12,0
+West District,WD,06/28/21,R,L452R,,50,0.71,1.55,0.25,2373.24,,18181,5,0628.WD-2,1395.61,Positive,Composite,,,,D10,5157.89,834.36
+West District,WD,06/28/21,R,E484Q,,50,0,0.43,0,0,,18181,0,0628.WD-2,2333.33,Negative,Composite,,,,D10,1422.36,0
+West District,WD,06/28/21,R,L452wt,,50,0.14,0.68,0.01,474.7,,18181,1,0628.WD-2,1417.07,Negative,Composite,,,,D10,2267.41,19.94
+West District,WD,06/28/21,R,E484wt,,50,0.14,0.68,0.01,474.7,,18181,1,0628.WD-2,1424.46,Negative,Composite,,,,D10,2267.41,19.94
+West Lake Houston,WL,06/28/21,R,L452R,,50,0.59,1.4,0.18,1980.25,,17599,4,0628.WL-1,1395.61,Positive,Composite,,,,E10,4669.66,597.49
+West Lake Houston,WL,06/28/21,R,E484Q,,50,0,0.45,0,0,,17599,0,0628.WL-1,2333.33,Negative,Composite,,,,E10,1483.5,0
+West Lake Houston,WL,06/28/21,R,L452wt,,50,0,0.45,0,0,,17599,0,0628.WL-1,1417.07,Negative,Composite,,,,E10,1483.5,0
+West Lake Houston,WL,06/28/21,R,E484wt,,50,0,0.45,0,0,,17599,0,0628.WL-1,1424.46,Negative,Composite,,,,E10,1483.5,0
+West Lake Houston,WL,06/28/21,R,L452R,,50,1.17,2.2,0.53,3913.56,,17707,8,0628.WL-2,1395.61,Positive,Composite,,,,F10,7329.11,1771.65
+West Lake Houston,WL,06/28/21,R,E484Q,,50,0,0.44,0,0,,17707,0,0628.WL-2,2333.33,Negative,Composite,,,,F10,1466.09,0
+West Lake Houston,WL,06/28/21,R,L452wt,,50,0.44,1.17,0.1,1467.79,,17707,3,0628.WL-2,1417.07,Positive,Composite,,,,F10,3890.69,348.33
+West Lake Houston,WL,06/28/21,R,E484wt,,50,0.44,1.17,0.1,1467.79,,17707,3,0628.WL-2,1424.46,Positive,Composite,,,,F10,3890.69,348.33
+Westway,WW,06/28/21,R,L452R,,50,0.14,0.68,0.01,476.17,,18126,1,0628.WW-1,1395.61,Negative,Composite,,,,A11,2274.42,20
+Westway,WW,06/28/21,R,E484Q,,50,0,0.43,0,0,,18126,0,0628.WW-1,2333.33,Negative,Composite,,,,A11,1426.76,0
+Westway,WW,06/28/21,R,L452wt,,50,0.14,0.68,0.01,476.17,,18126,1,0628.WW-1,1417.07,Negative,Composite,,,,A11,2274.42,20
+Westway,WW,06/28/21,R,E484wt,,50,0.14,0.68,0.01,476.17,,18126,1,0628.WW-1,1424.46,Negative,Composite,,,,A11,2274.42,20
+Westway,WW,06/28/21,R,L452R,,50,0.44,1.17,0.1,1466.96,,17694,3,0628.WW-2,1395.61,Positive,Composite,,,,B11,3888.49,348.14
+Westway,WW,06/28/21,R,E484Q,,50,0,0.44,0,0,,17694,0,0628.WW-2,2333.33,Negative,Composite,,,,B11,1465.26,0
+Westway,WW,06/28/21,R,L452wt,,50,0.88,1.8,0.34,2933.68,,17694,6,0628.WW-2,1417.07,Positive,Composite,,,,B11,5997.5,1148.9
+Westway,WW,06/28/21,R,E484wt,,50,0.88,1.8,0.34,2933.68,,17694,6,0628.WW-2,1424.46,Positive,Composite,,,,B11,5997.5,1148.9
+White Oak,WO,06/28/21,R,L452R,,50,1.34,2.42,0.64,4452.88,,17577,9,0628.WO-1,1395.61,Positive,Composite,,,,G10,8068.33,2123.24
+White Oak,WO,06/28/21,R,E484Q,,50,0,0.44,0,0,,17577,0,0628.WO-1,2333.33,Negative,Composite,,,,G10,1482.82,0
+White Oak,WO,06/28/21,R,L452wt,,50,0.45,1.18,0.11,1484.55,,17577,3,0628.WO-1,1417.07,Positive,Composite,,,,G10,3935.11,352.31
+White Oak,WO,06/28/21,R,E484wt,,50,0.15,0.71,0.01,494.82,,17577,1,0628.WO-1,1424.46,Negative,Composite,,,,G10,2363.52,20.78
+White Oak,WO,06/28/21,R,L452R,,50,0.8,1.75,0.28,2677.25,,16255,5,0628.WO-2,1395.61,Positive,Composite,,,,H10,5818.73,941.23
+White Oak,WO,06/28/21,R,E484Q,,50,0,0.48,0,0,,16255,0,0628.WO-2,2333.33,Negative,Composite,,,,H10,1604.61,0
+White Oak,WO,06/28/21,R,L452wt,,50,0,0.48,0,0,,16255,0,0628.WO-2,1417.07,Negative,Composite,,,,H10,1604.61,0
+White Oak,WO,06/28/21,R,E484wt,,50,0,0.48,0,0,,16255,0,0628.WO-2,1424.46,Negative,Composite,,,,H10,1604.61,0
+Willowbrook,WB,06/28/21,R,L452R,,50,3.39,4.98,2.18,11312.11,,17562,23,0628.WB-1,1395.61,Positive,Composite,,,,A10,16612.75,7281.82
+Willowbrook,WB,06/28/21,R,E484Q,,50,0,0.44,0,0,,17562,0,0628.WB-1,2333.33,Negative,Composite,,,,A10,1474.62,0
+Willowbrook,WB,06/28/21,R,L452wt,,50,0.59,1.39,0.18,1968.39,,17562,4,0628.WB-1,1417.07,Positive,Composite,,,,A10,4641.69,593.91
+Willowbrook,WB,06/28/21,R,E484wt,,50,0.59,1.39,0.18,1968.39,,17562,4,0628.WB-1,1424.46,Positive,Composite,,,,A10,4641.69,593.91
+Willowbrook,WB,06/28/21,R,L452R,,50,3.42,5.06,2.18,11399.64,,16726,22,0628.WB-2,1395.61,Positive,Composite,,,,B10,16877.34,7260.34
+Willowbrook,WB,06/28/21,R,E484Q,,50,0,0.47,0,0,,16726,0,0628.WB-2,2333.33,Negative,Composite,,,,B10,1553.59,0
+Willowbrook,WB,06/28/21,R,L452wt,,50,0,0.47,0,0,,16726,0,0628.WB-2,1417.07,Negative,Composite,,,,B10,1553.59,0
+Willowbrook,WB,06/28/21,R,E484wt,,50,0,0.47,0,0,,16726,0,0628.WB-2,1424.46,Negative,Composite,,,,B10,1553.59,0
