@@ -438,7 +438,6 @@ minimal_label_columns <- c('Target_Name', 'Sample_name', 'WWTP') # for scatter p
 
 # Plotting into html -----------------------------------------------------------------------
 
-
 # calling r markdown file
 rmarkdown::render('2.1-make_html_plots.rmd', output_file = str_c('./qPCR analysis/', title_name, '.html'))
 
@@ -450,4 +449,4 @@ rmarkdown::render('2.1-make_html_plots.rmd', output_file = str_c('./qPCR analysi
 
 # Output data - including controls
 #check_ok_and_write(presentable_data, sheeturls$complete_data, title_name) # save results to a google sheet, ask for overwrite
-write_csv(presentable_data, "dd.WW306_0826_LS2_N1N2_complete.csv", na = '') # save results to local drive as .csv
+write_csv(presentable_data, "dd.WW341_1012_SCHOOLS_FLUAB_complete.csv", na = '') # save results to local drive as .csv

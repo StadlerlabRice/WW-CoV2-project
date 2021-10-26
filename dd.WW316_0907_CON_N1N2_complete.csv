@@ -1,0 +1,145 @@
+Facility,WWTP,Date,Lab,Target_Name,Received_WW_vol,Filtered_WW_vol,Copies_per_uL_RNA,PoissonConfMax_per_uL_RNA,PoissonConfMin_per_uL_RNA,Copies_Per_Liter_WW,Ct,AcceptedDroplets,PositiveDroplets,Sample_ID,Detection_Limit,Positivity,Sample_Type,Surrogate_virus_input_per.L.WW,Percentage_recovery_BCoV,Comments,Well Position,PoissonConfMax_Per_Liter_WW,PoissonConfMin_Per_Liter_WW
+0908/Blank,Blank,09/08/21,R,SARS CoV-2 N2,,,0,0.62,0,,,12809,0,0908.Blank-1,,Negative,Composite,,,,C1,,
+0908/Blank,Blank,09/08/21,R,SARS CoV-2 N1,,,0.2,0.97,0,,,12809,1,0908.Blank-1,,Negative,Composite,,,,C1,,
+0908/Blank,Blank,09/08/21,R,SARS CoV-2 N2,,,0,0.57,0,,,13405,0,0908.Blank-2,,Negative,Composite,,,,D1,,
+0908/Blank,Blank,09/08/21,R,SARS CoV-2 N1,,,0,0.57,0,,,13405,0,0908.Blank-2,,Negative,Composite,,,,D1,,
+0908/DI,DI,09/08/21,R,SARS CoV-2 N2,,50,0,0.66,0,0,,11822,0,0908.DI-1,1613.33,Negative,Composite,,,,A1,2200,0
+0908/DI,DI,09/08/21,R,SARS CoV-2 N1,,50,0,0.66,0,0,,11822,0,0908.DI-1,1906.67,Negative,Composite,,,,A1,2200,0
+0908/DI,DI,09/08/21,R,SARS CoV-2 N2,,50,0,0.57,0,0,,13387,0,0908.DI-2,1613.33,Negative,Composite,,,,B1,1906.67,0
+0908/DI,DI,09/08/21,R,SARS CoV-2 N1,,50,0,0.57,0,0,,13387,0,0908.DI-2,1906.67,Negative,Composite,,,,B1,1906.67,0
+0909/NTC,NTC,09/09/21,R,SARS CoV-2 N2,,,0,0.64,0,,,12161,0,0909.NTC-1,,Negative,Composite,,,,G9,,
+0909/NTC,NTC,09/09/21,R,SARS CoV-2 N1,,,0,0.64,0,,,12161,0,0909.NTC-1,,Negative,Composite,,,,G9,,
+0909/NTC,NTC,09/09/21,R,SARS CoV-2 N2,,,0,0.86,0,,,9068,0,0909.NTC-2,,Negative,Composite,,,,H9,,
+0909/NTC,NTC,09/09/21,R,SARS CoV-2 N1,,,0,0.86,0,,,9068,0,0909.NTC-2,,Negative,Composite,,,,H9,,
+Afton Oaks,AO,09/08/21,R,SARS CoV-2 N2,,50,0,0.51,0,0,,15252,0,0908.AO-1,1613.33,Negative,Composite,,,,E1,1686.67,0
+Afton Oaks,AO,09/08/21,R,SARS CoV-2 N1,,50,0.18,0.81,0,586.67,,15252,1,0908.AO-1,1906.67,Negative,Composite,,,,E1,2713.33,0
+Afton Oaks,AO,09/08/21,R,SARS CoV-2 N2,,50,0,0.62,0,0,,12764,0,0908.AO-2,1613.33,Negative,Composite,,,,F1,2053.33,0
+Afton Oaks,AO,09/08/21,R,SARS CoV-2 N1,,50,0,0.62,0,0,,12764,0,0908.AO-2,1906.67,Negative,Composite,,,,F1,2053.33,0
+Arden Place,AP,09/08/21,R,SARS CoV-2 N2,,50,0,0.51,0,0,,15342,0,0908.AP-1,1613.33,Negative,Composite,,,,G1,1686.67,0
+Arden Place,AP,09/08/21,R,SARS CoV-2 N1,,50,0,0.51,0,0,,15342,0,0908.AP-1,1906.67,Negative,Composite,,,,G1,1686.67,0
+Arden Place,AP,09/08/21,R,SARS CoV-2 N2,,50,0,0.57,0,0,,13763,0,0908.AP-2,1613.33,Negative,Composite,,,,H1,1906.67,0
+Arden Place,AP,09/08/21,R,SARS CoV-2 N1,,50,0,0.57,0,0,,13763,0,0908.AP-2,1906.67,Negative,Composite,,,,H1,1906.67,0
+Arden Wood,AW,09/08/21,R,SARS CoV-2 N2,,50,0,0.62,0,0,,12647,0,0908.AW-1,1613.33,Negative,Composite,,,,A2,2053.33,0
+Arden Wood,AW,09/08/21,R,SARS CoV-2 N1,,50,0,0.62,0,0,,12647,0,0908.AW-1,1906.67,Negative,Composite,,,,A2,2053.33,0
+Arden Wood,AW,09/08/21,R,SARS CoV-2 N2,,50,0,0.53,0,0,,14988,0,0908.AW-2,1613.33,Negative,Composite,,,,B2,1760,0
+Arden Wood,AW,09/08/21,R,SARS CoV-2 N1,,50,0.18,0.81,0,586.67,,14988,1,0908.AW-2,1906.67,Negative,Composite,,,,B2,2713.33,0
+Bonner El,BONE,09/07/21,R,SARS CoV-2 N2,,50,14.96,18.92,11.66,49866.67,,11900,69,0907.BONE-1,1613.33,Positive,Composite,,,,A7,63066.67,38866.67
+Bonner El,BONE,09/07/21,R,SARS CoV-2 N1,,50,16.06,20.02,12.76,53533.33,,11900,74,0907.BONE-1,1906.67,Positive,Composite,,,,A7,66733.33,42533.33
+Bonner El,BONE,09/07/21,R,SARS CoV-2 N2,,50,11,14.52,8.14,36666.67,,11474,49,0907.BONE-2,1613.33,Positive,Composite,,,,B7,48400,27133.33
+Bonner El,BONE,09/07/21,R,SARS CoV-2 N1,,50,12.98,16.5,9.9,43266.67,,11474,57,0907.BONE-2,1906.67,Positive,Composite,,,,B7,55000,33000
+Brookline El,BROE,09/07/21,R,SARS CoV-2 N2,,50,45.98,52.36,39.6,153266.67,,11244,198,0907.BROE-1,1613.33,Positive,Composite,,,,C7,174533.33,132000
+Brookline El,BROE,09/07/21,R,SARS CoV-2 N1,,50,46.2,52.58,39.82,154000,,11244,199,0907.BROE-1,1906.67,Positive,Composite,,,,C7,175266.67,132733.33
+Brookline El,BROE,09/07/21,R,SARS CoV-2 N2,,50,41.14,47.08,35.42,137133.33,,12339,195,0907.BROE-2,1613.33,Positive,Composite,,,,D7,156933.33,118066.67
+Brookline El,BROE,09/07/21,R,SARS CoV-2 N1,,50,49.28,55.66,43.12,164266.67,,12339,233,0907.BROE-2,1906.67,Positive,Composite,,,,D7,185533.33,143733.33
+Catholic Charities Villa Guadalupe,CCV,09/08/21,R,SARS CoV-2 N2,,50,0.48,1.3,0.11,1613.33,,15869,3,0908.CCV-1,1613.33,Positive,Composite,,,,E2,4326.67,366.67
+Catholic Charities Villa Guadalupe,CCV,09/08/21,R,SARS CoV-2 N1,,50,0.97,2,0.37,3226.67,,15869,6,0908.CCV-1,1906.67,Positive,Composite,,,,E2,6673.33,1246.67
+Catholic Charities Villa Guadalupe,CCV,09/08/21,R,SARS CoV-2 N2,,50,0,0.51,0,0,,15183,0,0908.CCV-2,1613.33,Negative,Composite,,,,F2,1686.67,0
+Catholic Charities Villa Guadalupe,CCV,09/08/21,R,SARS CoV-2 N1,,50,0.33,1.1,0.04,1100,,15183,2,0908.CCV-2,1906.67,Negative,Composite,,,,F2,3666.67,146.67
+Chavez H S,CHVS,09/07/21,R,SARS CoV-2 N2,,50,321.2,341,303.6,1070666.67,,10793,1263,0907.CHVS-1,1613.33,Positive,Composite,,,,E7,1136666.67,1012000
+Chavez H S,CHVS,09/07/21,R,SARS CoV-2 N1,,50,367.4,387.2,349.8,1224666.67,,10793,1432,0907.CHVS-1,1906.67,Positive,Composite,,,,E7,1290666.67,1166000
+Chavez H S,CHVS,09/07/21,R,SARS CoV-2 N2,,50,341,358.6,323.4,1136666.67,,12824,1582,0907.CHVS-2,1613.33,Positive,Composite,,,,F7,1195333.33,1078000
+Chavez H S,CHVS,09/07/21,R,SARS CoV-2 N1,,50,385,402.6,367.4,1283333.33,,12824,1772,0907.CHVS-2,1906.67,Positive,Composite,,,,F7,1342000,1224666.67
+Cornelius El,CORE,09/07/21,R,SARS CoV-2 N2,,50,0,0.57,0,0,,13338,0,0907.CORE-1,1613.33,Negative,Composite,,,,G7,1906.67,0
+Cornelius El,CORE,09/07/21,R,SARS CoV-2 N1,,50,0,0.57,0,0,,13338,0,0907.CORE-1,1906.67,Negative,Composite,,,,G7,1906.67,0
+Cornelius El,CORE,09/07/21,R,SARS CoV-2 N2,,50,0,0.53,0,0,,14710,0,0907.CORE-2,1613.33,Negative,Composite,,,,H7,1760,0
+Cornelius El,CORE,09/07/21,R,SARS CoV-2 N1,,50,0.18,0.84,0,586.67,,14710,1,0907.CORE-2,1906.67,Negative,Composite,,,,H7,2786.67,0
+Covenant House Emergency Crisis Shelter,CHEC,09/08/21,R,SARS CoV-2 N2,,50,4.84,6.82,3.08,16133.33,,14187,26,0908.CHEC-1,1613.33,Positive,Composite,,,,G2,22733.33,10266.67
+Covenant House Emergency Crisis Shelter,CHEC,09/08/21,R,SARS CoV-2 N1,,50,5.28,7.48,3.52,17600,,14187,29,0908.CHEC-1,1906.67,Positive,Composite,,,,G2,24933.33,11733.33
+Covenant House Emergency Crisis Shelter,CHEC,09/08/21,R,SARS CoV-2 N2,,50,4.18,6.16,2.64,13933.33,,12580,20,0908.CHEC-2,1613.33,Positive,Composite,,,,H2,20533.33,8800
+Covenant House Emergency Crisis Shelter,CHEC,09/08/21,R,SARS CoV-2 N1,,50,4.84,7.04,3.08,16133.33,,12580,23,0908.CHEC-2,1906.67,Positive,Composite,,,,H2,23466.67,10266.67
+Crespo El,CREE,09/07/21,R,SARS CoV-2 N2,,50,5.72,8.14,3.96,19066.67,,13012,29,0907.CREE-1,1613.33,Positive,Composite,,,,A8,27133.33,13200
+Crespo El,CREE,09/07/21,R,SARS CoV-2 N1,,50,5.28,7.48,3.52,17600,,13012,26,0907.CREE-1,1906.67,Positive,Composite,,,,A8,24933.33,11733.33
+Crespo El,CREE,09/07/21,R,SARS CoV-2 N2,,50,5.72,8.14,3.96,19066.67,,13505,30,0907.CREE-2,1613.33,Positive,Composite,,,,B8,27133.33,13200
+Crespo El,CREE,09/07/21,R,SARS CoV-2 N1,,50,5.72,8.14,3.96,19066.67,,13505,30,0907.CREE-2,1906.67,Positive,Composite,,,,B8,27133.33,13200
+Focused Care Beechnut,FCB,09/08/21,R,SARS CoV-2 N2,,50,0.42,1.32,0.07,1393.33,,12589,2,0908.FCB-1,1613.33,Negative,Composite,,,,A3,4400,220
+Focused Care Beechnut,FCB,09/08/21,R,SARS CoV-2 N1,,50,0,0.62,0,0,,12589,0,0908.FCB-1,1906.67,Negative,Composite,,,,A3,2053.33,0
+Focused Care Beechnut,FCB,09/08/21,R,SARS CoV-2 N2,,50,0,0.59,0,0,,12931,0,0908.FCB-2,1613.33,Negative,Composite,,,,B3,1980,0
+Focused Care Beechnut,FCB,09/08/21,R,SARS CoV-2 N1,,50,0.2,0.95,0,660,,12931,1,0908.FCB-2,1906.67,Negative,Composite,,,,B3,3153.33,0
+Focused Care of Westwood,FCW,09/08/21,R,SARS CoV-2 N2,,50,0,0.66,0,0,,11570,0,0908.FCW-1,1613.33,Negative,Composite,,,,C3,2200,0
+Focused Care of Westwood,FCW,09/08/21,R,SARS CoV-2 N1,,50,0,0.66,0,0,,11570,0,0908.FCW-1,1906.67,Negative,Composite,,,,C3,2200,0
+Focused Care of Westwood,FCW,09/08/21,R,SARS CoV-2 N2,,50,0,0.59,0,0,,13201,0,0908.FCW-2,1613.33,Negative,Composite,,,,D3,1980,0
+Focused Care of Westwood,FCW,09/08/21,R,SARS CoV-2 N1,,50,0.2,0.95,0,660,,13201,1,0908.FCW-2,1906.67,Negative,Composite,,,,D3,3153.33,0
+Golfcrest El,GOLE,09/07/21,R,SARS CoV-2 N2,,50,0,0.59,0,0,,12824,0,0907.GOLE-1,1613.33,Negative,Composite,,,,C8,1980,0
+Golfcrest El,GOLE,09/07/21,R,SARS CoV-2 N1,,50,0.2,0.97,0,660,,12824,1,0907.GOLE-1,1906.67,Negative,Composite,,,,C8,3226.67,0
+Golfcrest El,GOLE,09/07/21,R,SARS CoV-2 N2,,50,0,0.62,0,0,,12637,0,0907.GOLE-2,1613.33,Negative,Composite,,,,D8,2053.33,0
+Golfcrest El,GOLE,09/07/21,R,SARS CoV-2 N1,,50,0.2,0.97,0,660,,12637,1,0907.GOLE-2,1906.67,Negative,Composite,,,,D8,3226.67,0
+Gregg El,GREE,09/07/21,R,SARS CoV-2 N2,,50,0,0.59,0,0,,12919,0,0907.GREE-1,1613.33,Negative,Composite,,,,E8,1980,0
+Gregg El,GREE,09/07/21,R,SARS CoV-2 N1,,50,0.2,0.97,0,660,,12919,1,0907.GREE-1,1906.67,Negative,Composite,,,,E8,3226.67,0
+Gregg El,GREE,09/07/21,R,SARS CoV-2 N2,,50,0,0.66,0,0,,11851,0,0907.GREE-2,1613.33,Negative,Composite,,,,F8,2200,0
+Gregg El,GREE,09/07/21,R,SARS CoV-2 N1,,50,0,0.66,0,0,,11851,0,0907.GREE-2,1906.67,Negative,Composite,,,,F8,2200,0
+Harris County Jail (Baker),HCJB,09/08/21,R,SARS CoV-2 N2,,50,105.38,113.74,96.8,351266.67,,14674,585,0908.HCJB-1,1613.33,Positive,Composite,,,,E3,379133.33,322666.67
+Harris County Jail (Baker),HCJB,09/08/21,R,SARS CoV-2 N1,,50,124.74,133.98,115.28,415800,,14674,690,0908.HCJB-1,1906.67,Positive,Composite,,,,E3,446600,384266.67
+Harris County Jail (Baker),HCJB,09/08/21,R,SARS CoV-2 N2,,50,110.22,120.12,100.32,367400,,11466,478,0908.HCJB-2,1613.33,Positive,Composite,,,,F3,400400,334400
+Harris County Jail (Baker),HCJB,09/08/21,R,SARS CoV-2 N1,,50,120.34,130.68,110,401133.33,,11466,521,0908.HCJB-2,1906.67,Positive,Composite,,,,F3,435600,366666.67
+Harris County Jail (San Jacinto),HCJS,09/08/21,R,SARS CoV-2 N2,,50,3.52,5.5,1.98,11733.33,,11750,16,0908.HCJS-1,1613.33,Positive,Composite,,,,G3,18333.33,6600
+Harris County Jail (San Jacinto),HCJS,09/08/21,R,SARS CoV-2 N1,,50,7.7,10.56,5.5,25666.67,,11750,35,0908.HCJS-1,1906.67,Positive,Composite,,,,G3,35200,18333.33
+Harris County Jail (San Jacinto),HCJS,09/08/21,R,SARS CoV-2 N2,,50,3.74,5.72,2.2,12466.67,,13233,19,0908.HCJS-2,1613.33,Positive,Composite,,,,H3,19066.67,7333.33
+Harris County Jail (San Jacinto),HCJS,09/08/21,R,SARS CoV-2 N1,,50,5.06,7.26,3.3,16866.67,,13233,26,0908.HCJS-2,1906.67,Positive,Composite,,,,H3,24200,11000
+Hartman Middle,HARM,09/07/21,R,SARS CoV-2 N2,,50,6.82,9.46,4.84,22733.33,,12515,33,0907.HARM-1,1613.33,Positive,Composite,,,,G8,31533.33,16133.33
+Hartman Middle,HARM,09/07/21,R,SARS CoV-2 N1,,50,7.26,9.9,5.06,24200,,12515,35,0907.HARM-1,1906.67,Positive,Composite,,,,G8,33000,16866.67
+Hartman Middle,HARM,09/07/21,R,SARS CoV-2 N2,,50,9.02,11.88,6.82,30066.67,,14295,50,0907.HARM-2,1613.33,Positive,Composite,,,,H8,39600,22733.33
+Hartman Middle,HARM,09/07/21,R,SARS CoV-2 N1,,50,9.46,12.32,7.04,31533.33,,14295,52,0907.HARM-2,1906.67,Positive,Composite,,,,H8,41066.67,23466.67
+Memorial City Health & Rehab,MCHR,09/08/21,R,SARS CoV-2 N2,,50,0,0.57,0,0,,13670,0,0908.MCHR-1,1613.33,Negative,Composite,,,,A4,1906.67,0
+Memorial City Health & Rehab,MCHR,09/08/21,R,SARS CoV-2 N1,,50,0,0.57,0,0,,13670,0,0908.MCHR-1,1906.67,Negative,Composite,,,,A4,1906.67,0
+Memorial City Health & Rehab,MCHR,09/08/21,R,SARS CoV-2 N2,,50,0,0.64,0,0,,12091,0,0908.MCHR-2,1613.33,Negative,Composite,,,,B4,2126.67,0
+Memorial City Health & Rehab,MCHR,09/08/21,R,SARS CoV-2 N1,,50,0,0.64,0,0,,12091,0,0908.MCHR-2,1906.67,Negative,Composite,,,,B4,2126.67,0
+Mission of Yahweh,MOYA,09/08/21,R,SARS CoV-2 N2,,50,0,0.57,0,0,,13505,0,0908.MOYA-1,1613.33,Negative,Composite,,,,C4,1906.67,0
+Mission of Yahweh,MOYA,09/08/21,R,SARS CoV-2 N1,,50,0.2,0.92,0,660,,13505,1,0908.MOYA-1,1906.67,Negative,Composite,,,,C4,3080,0
+Mission of Yahweh,MOYA,09/08/21,R,SARS CoV-2 N2,,50,0,0.55,0,0,,13949,0,0908.MOYA-2,1613.33,Negative,Composite,,,,D4,1833.33,0
+Mission of Yahweh,MOYA,09/08/21,R,SARS CoV-2 N1,,50,0.18,0.88,0,586.67,,13949,1,0908.MOYA-2,1906.67,Negative,Composite,,,,D4,2933.33,0
+Open Door Mission,ODM,09/08/21,R,SARS CoV-2 N2,,50,0.95,2.05,0.33,3153.33,,13731,5,0908.ODM-1,1613.33,Positive,Composite,,,,E4,6820,1100
+Open Door Mission,ODM,09/08/21,R,SARS CoV-2 N1,,50,1.32,2.57,0.55,4400,,13731,7,0908.ODM-1,1906.67,Positive,Composite,,,,E4,8580,1833.33
+Open Door Mission,ODM,09/08/21,R,SARS CoV-2 N2,,50,0.77,1.83,0.24,2566.67,,13299,4,0908.ODM-2,1613.33,Positive,Composite,,,,F4,6086.67,806.67
+Open Door Mission,ODM,09/08/21,R,SARS CoV-2 N1,,50,2.2,3.74,1.1,7333.33,,13299,11,0908.ODM-2,1906.67,Positive,Composite,,,,F4,12466.67,3666.67
+Park Manor at Westchase,PMW,09/08/21,R,SARS CoV-2 N2,,50,0,0.48,0,0,,16237,0,0908.PMW-1,1613.33,Negative,Composite,,,,G4,1613.33,0
+Park Manor at Westchase,PMW,09/08/21,R,SARS CoV-2 N1,,50,0,0.48,0,0,,16237,0,0908.PMW-1,1906.67,Negative,Composite,,,,G4,1613.33,0
+Park Manor at Westchase,PMW,09/08/21,R,SARS CoV-2 N2,,50,0,0.57,0,0,,13746,0,0908.PMW-2,1613.33,Negative,Composite,,,,H4,1906.67,0
+Park Manor at Westchase,PMW,09/08/21,R,SARS CoV-2 N1,,50,0.57,1.5,0.13,1906.67,,13746,3,0908.PMW-2,1906.67,Positive,Composite,,,,H4,4986.67,440
+Park Place El,PARE,09/07/21,R,SARS CoV-2 N2,,50,0,0.97,0,0,,7960,0,0907.PARE-1,1613.33,Negative,Composite,,,,A9,3226.67,0
+Park Place El,PARE,09/07/21,R,SARS CoV-2 N1,,50,0,0.97,0,0,,7960,0,0907.PARE-1,1906.67,Negative,Composite,,,,A9,3226.67,0
+Park Place El,PARE,09/07/21,R,SARS CoV-2 N2,,50,0,0.73,0,0,,10694,0,0907.PARE-2,1613.33,Negative,Composite,,,,B9,2420,0
+Park Place El,PARE,09/07/21,R,SARS CoV-2 N1,,50,0,0.73,0,0,,10694,0,0907.PARE-2,1906.67,Negative,Composite,,,,B9,2420,0
+Patterson El,PATE,09/07/21,R,SARS CoV-2 N2,,50,0,0.66,0,0,,11936,0,0907.PATE-1,1613.33,Negative,Composite,,,,C9,2200,0
+Patterson El,PATE,09/07/21,R,SARS CoV-2 N1,,50,0,0.66,0,0,,11936,0,0907.PATE-1,1906.67,Negative,Composite,,,,C9,2200,0
+Patterson El,PATE,09/07/21,R,SARS CoV-2 N2,,50,0,0.7,0,0,,10880,0,0907.PATE-2,1613.33,Negative,Composite,,,,D9,2346.67,0
+Patterson El,PATE,09/07/21,R,SARS CoV-2 N1,,50,0,0.7,0,0,,10880,0,0907.PATE-2,1906.67,Negative,Composite,,,,D9,2346.67,0
+Recenter Emergency Shelter,RES,09/08/21,R,SARS CoV-2 N2,,50,0.42,1.32,0.07,1393.33,,12613,2,0908.RES-1,1613.33,Negative,Composite,,,,A5,4400,220
+Recenter Emergency Shelter,RES,09/08/21,R,SARS CoV-2 N1,,50,1.43,2.79,0.62,4766.67,,12613,7,0908.RES-1,1906.67,Positive,Composite,,,,A5,9313.33,2053.33
+Recenter Emergency Shelter,RES,09/08/21,R,SARS CoV-2 N2,,50,0.88,2.07,0.26,2933.33,,11840,4,0908.RES-2,1613.33,Positive,Composite,,,,B5,6893.33,880
+Recenter Emergency Shelter,RES,09/08/21,R,SARS CoV-2 N1,,50,0.44,1.41,0.07,1466.67,,11840,2,0908.RES-2,1906.67,Negative,Composite,,,,B5,4693.33,220
+Salvation Army Family Residence,SAFR,09/08/21,R,SARS CoV-2 N2,,50,0,0.64,0,0,,12281,0,0908.SAFR-1,1613.33,Negative,Composite,,,,C5,2126.67,0
+Salvation Army Family Residence,SAFR,09/08/21,R,SARS CoV-2 N1,,50,0,0.64,0,0,,12281,0,0908.SAFR-1,1906.67,Negative,Composite,,,,C5,2126.67,0
+Salvation Army Family Residence,SAFR,09/08/21,R,SARS CoV-2 N2,,50,0,0.64,0,0,,12328,0,0908.SAFR-2,1613.33,Negative,Composite,,,,D5,2126.67,0
+Salvation Army Family Residence,SAFR,09/08/21,R,SARS CoV-2 N1,,50,0.42,1.34,0.07,1393.33,,12328,2,0908.SAFR-2,1906.67,Negative,Composite,,,,D5,4473.33,220
+Seguin El,SEGE,09/07/21,R,SARS CoV-2 N2,,50,0.46,1.45,0.07,1540,,11424,2,0907.SEGE-2,1613.33,Negative,Composite,,,,E9,4840,220
+Seguin El,SEGE,09/07/21,R,SARS CoV-2 N2,,50,0.22,1.03,0,733.33,,12060,1,0907.SEGE-2,1613.33,Negative,Composite,,,,F9,3446.67,0
+Seguin El,SEGE,09/07/21,R,SARS CoV-2 N1,,50,0.46,1.45,0.07,1540,,11424,2,0907.SEGE-2,1906.67,Negative,Composite,,,,E9,4840,220
+Seguin El,SEGE,09/07/21,R,SARS CoV-2 N1,,50,0.44,1.39,0.07,1466.67,,12060,2,0907.SEGE-2,1906.67,Negative,Composite,,,,F9,4620,220
+Sharpview Residence & Rehab,SRRC,09/08/21,R,SARS CoV-2 N2,,50,0,0.66,0,0,,11711,0,0908.SRRC-1,1613.33,Negative,Composite,,,,G5,2200,0
+Sharpview Residence & Rehab,SRRC,09/08/21,R,SARS CoV-2 N1,,50,0,0.66,0,0,,11711,0,0908.SRRC-1,1906.67,Negative,Composite,,,,G5,2200,0
+Sharpview Residence & Rehab,SRRC,09/08/21,R,SARS CoV-2 N2,,50,0,0.64,0,0,,12308,0,0908.SRRC-2,1613.33,Negative,Composite,,,,H5,2126.67,0
+Sharpview Residence & Rehab,SRRC,09/08/21,R,SARS CoV-2 N1,,50,0,0.64,0,0,,12308,0,0908.SRRC-2,1906.67,Negative,Composite,,,,H5,2126.67,0
+Star of Hope,SOH,09/08/21,R,SARS CoV-2 N2,,50,1.06,2.29,0.37,3520,,12286,5,0908.SOH-1,1613.33,Positive,Composite,,,,E5,7626.67,1246.67
+Star of Hope,SOH,09/08/21,R,SARS CoV-2 N1,,50,2.64,4.62,1.54,8800,,12286,13,0908.SOH-1,1906.67,Positive,Composite,,,,E5,15400,5133.33
+Star of Hope,SOH,09/08/21,R,SARS CoV-2 N2,,50,1.54,3.08,0.66,5133.33,,11309,7,0908.SOH-2,1613.33,Positive,Composite,,,,F5,10266.67,2200
+Star of Hope,SOH,09/08/21,R,SARS CoV-2 N1,,50,1.32,2.86,0.44,4400,,11309,6,0908.SOH-2,1906.67,Positive,Composite,,,,F5,9533.33,1466.67
+Star of Hope Women and Family,STHW,09/08/21,R,SARS CoV-2 N2,,50,0,0.68,0,0,,11381,0,0908.STHW-1,1613.33,Negative,Composite,,,,A6,2273.33,0
+Star of Hope Women and Family,STHW,09/08/21,R,SARS CoV-2 N1,,50,0,0.68,0,0,,11381,0,0908.STHW-1,1906.67,Negative,Composite,,,,A6,2273.33,0
+Star of Hope Women and Family,STHW,09/08/21,R,SARS CoV-2 N2,,50,0.24,1.1,0,806.67,,11135,1,0908.STHW-2,1613.33,Negative,Composite,,,,B6,3666.67,0
+Star of Hope Women and Family,STHW,09/08/21,R,SARS CoV-2 N1,,50,0,0.7,0,0,,11135,0,0908.STHW-2,1906.67,Negative,Composite,,,,B6,2346.67,0
+The Bridge Over Troubled Waters,BOTW,09/08/21,R,SARS CoV-2 N2,,50,0,0.53,0,0,,14572,0,0908.BOTW-1,1613.33,Negative,Composite,,,,C2,1760,0
+The Bridge Over Troubled Waters,BOTW,09/08/21,R,SARS CoV-2 N1,,50,0,0.53,0,0,,14572,0,0908.BOTW-1,1906.67,Negative,Composite,,,,C2,1760,0
+The Bridge Over Troubled Waters,BOTW,09/08/21,R,SARS CoV-2 N2,,50,0,0.48,0,0,,15706,0,0908.BOTW-2,1613.33,Negative,Composite,,,,D2,1613.33,0
+The Bridge Over Troubled Waters,BOTW,09/08/21,R,SARS CoV-2 N1,,50,0.15,0.79,0,513.33,,15706,1,0908.BOTW-2,1906.67,Negative,Composite,,,,D2,2640,0
+The Turning Point Center,TUPO,09/08/21,R,SARS CoV-2 N2,,50,104.28,113.52,95.04,347600,,12328,487,0908.TUPO-1,1613.33,Positive,Composite,,,,C6,378400,316800
+The Turning Point Center,TUPO,09/08/21,R,SARS CoV-2 N1,,50,114.62,124.3,104.94,382066.67,,12328,534,0908.TUPO-1,1906.67,Positive,Composite,,,,C6,414333.33,349800
+The Turning Point Center,TUPO,09/08/21,R,SARS CoV-2 N2,,50,85.14,93.28,76.78,283800,,12616,408,0908.TUPO-2,1613.33,Positive,Composite,,,,D6,310933.33,255933.33
+The Turning Point Center,TUPO,09/08/21,R,SARS CoV-2 N1,,50,101.86,110.88,92.84,339533.33,,12616,487,0908.TUPO-2,1906.67,Positive,Composite,,,,D6,369600,309466.67
+The Women's Home,TWH,09/08/21,R,SARS CoV-2 N2,,50,0,0.66,0,0,,11825,0,0908.TWH-1,1613.33,Negative,Composite,,,,E6,2200,0
+The Women's Home,TWH,09/08/21,R,SARS CoV-2 N1,,50,0,0.66,0,0,,11825,0,0908.TWH-1,1906.67,Negative,Composite,,,,E6,2200,0
+The Women's Home,TWH,09/08/21,R,SARS CoV-2 N2,,50,0,0.57,0,0,,13607,0,0908.TWH-2,1613.33,Negative,Composite,,,,F6,1906.67,0
+The Women's Home,TWH,09/08/21,R,SARS CoV-2 N1,,50,0,0.57,0,0,,13607,0,0908.TWH-2,1906.67,Negative,Composite,,,,F6,1906.67,0
+Westchase Health & Rehab,WHR,09/08/21,R,SARS CoV-2 N2,,50,0,0.59,0,0,,13077,0,0908.WHR-1,1613.33,Negative,Composite,,,,G6,1980,0
+Westchase Health & Rehab,WHR,09/08/21,R,SARS CoV-2 N1,,50,0,0.59,0,0,,13077,0,0908.WHR-1,1906.67,Negative,Composite,,,,G6,1980,0
+Westchase Health & Rehab,WHR,09/08/21,R,SARS CoV-2 N2,,50,0,0.55,0,0,,14098,0,0908.WHR-2,1613.33,Negative,Composite,,,,H6,1833.33,0
+Westchase Health & Rehab,WHR,09/08/21,R,SARS CoV-2 N1,,50,0,0.55,0,0,,14098,0,0908.WHR-2,1906.67,Negative,Composite,,,,H6,1833.33,0
