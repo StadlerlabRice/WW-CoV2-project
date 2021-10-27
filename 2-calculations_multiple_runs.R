@@ -302,11 +302,11 @@ if(HHD_data_output)
              
              'Recovery_Rate' = `Percentage_recovery_BCoV`) %>%
           
-          select(-contains('Vol'), -Surrogate_virus_input_per.L.WW, -'Well Position') 
+          select(-contains('Vol'), -Surrogate_virus_input_per.L.WW, -'Well Position', 
+                 -PoissonConfMax_Per_Liter_WW, -PoissonConfMin_Per_Liter_WW, -PoissonConfMax_per_uL, -PoissonConfMin_per_uL) # amended 10/26/21 - removed CIs from HHD data 
       }
     }
   
-      
   present_only_WW <- present_HHD_data %>% 
     filter(WWTP %in% WWTP_symbols) # retain only WWTP data 
   
@@ -449,4 +449,4 @@ rmarkdown::render('2.1-make_html_plots.rmd', output_file = str_c('./qPCR analysi
 
 # Output data - including controls
 #check_ok_and_write(presentable_data, sheeturls$complete_data, title_name) # save results to a google sheet, ask for overwrite
-write_csv(presentable_data, "dd.WW341_1012_SCHOOLS_FLUAB_complete.csv", na = '') # save results to local drive as .csv
+write_csv(presentable_data, "dd.WW341_1012_SCHOOLS_FLUAB_test_complete.csv", na = '') # save results to local drive as .csv
