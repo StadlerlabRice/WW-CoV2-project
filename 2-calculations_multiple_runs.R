@@ -73,10 +73,13 @@ volumes.data_registry <- read_sheet(sheeturls$sample_registry , sheet = 'Concent
         Filtered_WW_vol = `WW volume filtered (ml)`,
          Vaccine_ID = `Stock ID of Spike`,
          'Biobot_id' = `Biobot/other ID`,
-         WW_weight = `Total WW weight measured (kg)`) %>% 
+         WW_weight = `Total WW weight measured (kg)`,
+        Sample_Type = `Grab vs Composite`) %>% 
+  
   mutate('Received_WW_vol' = coalesce(Received_WW_vol, `Total WW volume received (ml)`) ) %>% 
   
-  select(Received_WW_vol, Label_tube,Filtered_WW_vol, Vaccine_ID, `Biobot_id`, WW_weight) %>% # select only the useful columns
+  select(Received_WW_vol, Label_tube,Filtered_WW_vol, Vaccine_ID, `Biobot_id`, WW_weight, Sample_Type) %>% # select only the useful columns
+  
   distinct() %>% # for removing repeated data in early stuff, before 608 (interferes with the merging of volumes for same bottles)
   mutate_at('Label_tube', ~str_remove_all(., " ")) %>% 
   mutate_at('Biobot_id', str_remove,  ' ') %>% 
@@ -197,7 +200,10 @@ presentable_data <- processed_quant_data %>%
            str_extract('[:digit:]{3,4}') %>% # Extract the date component of the sample name
            str_replace('([:digit:]+)([:digit:]{2})', '\\1/\\2/21') ,  # format it as mm/dd/yy
          Lab = 'R', 
-         Sample_Type = 'Composite', Comments = NA) %>% 
+         Comments = NA) %>%  # add new columns asked by HHD
+  
+  # modifying variables..
+  mutate(across(Sample_Type, ~ if_else(is.na (.x), 'unreported', .))) %>% # change blank types in registry into 'unreported'
   mutate(across('Sample_name', as.character) ) %>% # covert sample name into char
   # mutate_at('Facility', ~if_else(. == assay_variable, str_c(Sample_name, '/', assay_variable), .)) %>%
   mutate(Sample_ID = if_else(biological_replicates == ''|is.na(biological_replicates), 
