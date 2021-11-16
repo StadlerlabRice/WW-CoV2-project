@@ -8,7 +8,7 @@ library(ggplot2)
 library(ggpubr)
 
 # read in csv file from local drive. See template for required columns and input data
-df_5PLEX <- read_csv("Documents/R_Files/Variant/Input_files/dd.0614_Rice_WWTP_5PLEX.csv")
+df_5PLEX <- read_csv("scripts_extra/dd.0614_Rice_WWTP_5PLEX.csv")
 
 title <- "0614 Rice WWTP"
 elution_volume <- 50
@@ -16,8 +16,8 @@ elution_volume <- 50
 #---------------------------------------
 
 # convert long data into wide according to type (wild_type, mutation) and removed unnecessary columns
-data_wide_conc5 <- spread(df_5PLEX, Type, Copies_per_uL_RNA)
-data_wide_conc5 <- subset(data_wide_conc5, select = -c(Match_Column, Match_Conc, Target_rawfile, Well_rawfile, Combined, Conc_copies_20uL_rawfile))
+data_wide_conc5 <- spread(df_5PLEX, Type, Copies_per_uL_RNA) %>% 
+  select(-c(Match_Column, Match_Conc, Target_rawfile, Well_rawfile, Combined, Conc_copies_20uL_rawfile))
 
 # subset data by target, remove NA rows, calculate Copies/L WW 
 df_mut_484K <- subset(data_wide_conc5, select = -c(wild_type, mutation_BJ, mutation_SA))

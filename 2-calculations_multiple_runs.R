@@ -313,7 +313,7 @@ if(HHD_data_output)
   # Write data if not empty
   if(present_only_WW %>% plyr::empty() %>% !.){
     check_ok_and_write(present_only_WW, sheeturls$HHD_data, title_name) # save results to a google sheet, ask for overwrite
-    write_csv(present_only_WW, path = str_c('excel files/Weekly data to HHD/', title_name, '.csv'), na = '') # output csv file
+    write_csv(present_only_WW, file = str_c('excel files/Weekly data to HHD/', title_name, '.csv'), na = '') # output csv file
   }
   
   # Inclusive reporting : # This ensures that no sample is missed from the reporting just because it does not exist in the biobot ID sheet
@@ -448,5 +448,7 @@ rmarkdown::render('2.1-make_html_plots.rmd', output_file = str_c('./qPCR analysi
 # errors have been noticed for curl::memory limitation while running from Mac/Camille
 
 # Output data - including controls
-#check_ok_and_write(presentable_data, sheeturls$complete_data, title_name) # save results to a google sheet, ask for overwrite
-write_csv(presentable_data, "dd.WW341_1012_SCHOOLS_FLUAB_test_complete.csv", na = '') # save results to local drive as .csv
+write_csv(present_only_WW, file = str_c('excel files/Complete data/', title_name, '.csv'), na = '') # output csv file of all the data
+
+# save to google sheet, ignore if taking longer than 20 seconds (for Camille's mac problem with google sheets)
+check_ok_and_write(presentable_data, sheeturls$complete_data, title_name) # save results to a google sheet, ask for overwrite
