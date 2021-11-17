@@ -20,7 +20,9 @@ plot_mean_sd_jitter <- function(.data = presentable_data,
                                 
                                 ascending_order = FALSE, 
                                 title_text = title_name, ylabel = 'Genome copies/ul RNA', xlabel = plot_assay_variable, 
-                                facet_style = 'grid')
+                                facet_style = 'grid',
+                                
+                                print_the_plot = TRUE)
 
 { # Convenient handle for repetitive plotting of individual replicates as points, and mean as horizontal bars
   # Specify data format: typically wide vs long which is a special case (specify in long_format = FALSE or TRUE)
@@ -102,6 +104,6 @@ plot_mean_sd_jitter <- function(.data = presentable_data,
     ggtitle(title_text) + ylab(ylabel) #+ xlab(xlabel)
   
   # plt1.formatted <- plt1 %>% format_classic() # clean formatting, removes grey background, change colourscheme
-  print(plt1)
+  if(print_the_plot) print(plt1) else plt1
   
 }
