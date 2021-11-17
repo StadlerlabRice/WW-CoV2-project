@@ -55,7 +55,7 @@ data_dump_renamer <- function(.df)
     
     
     # other columns with extra changes made from old times 
-    mutate(across(Target, ~ str_replace_all(., c('BCoV.*' = 'BCoV', '/Baylor' = '')) ) ) %>% # accounts for BCoV.2 and Baylor runs
+    mutate(across(Target_Name, ~ str_replace_all(., c('BCoV.*' = 'BCoV', '/Baylor' = '')) ) ) %>% # accounts for BCoV.2 and Baylor runs
     mutate('Run_ID' = str_extract(.x, '(?<=dd\\.WW)[:digit:]+'), .before = 1) # Extract the number of the ddPCR run
   
 }
@@ -79,12 +79,12 @@ compl_data_renamer <- function(.df)
     # mutate('Week' = str_match(.x, '^[:digit:]*')) %>% # add a column for the week name (untested)
     
     # backward compatibility (accounting for column name changes)
-    rename('Target' = matches('Target'), 
+    rename('Target_Name' = matches('Target'), 
            'Received_WW_vol' = matches('Received_WW_vol|Original Sample Volume'), # if both old and new names are present, it will throw error
            'Percentage_recovery_BCoV' = matches('Recovery fraction'),
            'Ct' = matches('^CT', ignore.case = T)) %>% 
     
-    mutate_at('Target', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2'))) %>% 
+    mutate_at('Target_Name', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2'))) %>% 
     
     # change variable types
     mutate(across(where(is.list), as.character)) %>% 

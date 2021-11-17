@@ -7,7 +7,7 @@ plot_mean_sd_jitter <- function(.data = presentable_data,
                                 long_format = FALSE,
                                 
                                 measure_var = 'Copy #', 
-                                colour_var = Target, x_var = assay_variable, y_var = Copies_Per_Liter_WW, 
+                                colour_var = Target_Name, x_var = assay_variable, y_var = Copies_Per_Liter_WW, 
                                 facet_var = NULL, 
                                 
                                 unique_columns_to_incl = c('Facility'), # columns to determine uniqueness for calc mean ...
@@ -31,7 +31,7 @@ plot_mean_sd_jitter <- function(.data = presentable_data,
     .data %>% 
     filter(., if('Sample_name' %in% colnames(.)) str_detect(`Sample_name`, sample_filtering_var, negate = exclude_sample) else TRUE, 
            if('WWTP' %in% colnames(.)) str_detect(WWTP, WWTP_filtering_var, negate = exclude_WWTP) else TRUE, 
-           str_detect(Target, target_filter_var))
+           str_detect(Target_Name, target_filter_var))
   
   mean_y_var_str <- expr(!!str_c('mean_', deparse(enexpr(y_var)) ) ) # make a string to use mean_{{y_var}} in regular functions
   

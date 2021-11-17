@@ -19,17 +19,17 @@ extra_categories = 'Std'
 # Data input ----
 
 # Acquire all the pieces of the data : read saved raw qPCR results from a google sheet
-list_rawqpcr <- map(read_these_sheets, 
+list_rawdata <- map(read_these_sheets, 
                     ~ read_sheet(sheeturls$complete_data , sheet = .x) %>%  
                       mutate('Week' = str_extract(.x, '[:digit:]*(?= Rice)')) %>%
                       
                       # backward compatibility (accounting for column name changes)
                       compl_data_renamer) 
 
-rawqpcr <- bind_rows(list_rawqpcr) # bind all the sheets' results into 1 data frame/tibble
+rawdata <- bind_rows(list_rawdata) # bind all the sheets' results into 1 data frame/tibble
 
-results_abs <- rawqpcr %>% filter(!str_detect(Facility, extra_categories)) %>%  # remove unnecessary data
-  filter(!str_detect(Target, 'BRSV')) %>% 
+results_abs <- rawdata %>% filter(!str_detect(Facility, extra_categories)) %>%  # remove unnecessary data
+  filter(!str_detect(Target_Name, 'BRSV')) %>% 
   mutate_at('Week', ~ as_factor(.))
 
 # Plots to html ----
