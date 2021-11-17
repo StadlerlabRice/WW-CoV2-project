@@ -3,11 +3,16 @@
 # plot formatting ---- 
 
 
-# Set theme universally : format as classic, colours = Set1
+# Set theme universally : format as classic, colours = Dark2
 theme_set(theme_classic()) # theme
-scale_colour_discrete <- function(...) { # palette
-  scale_colour_brewer(..., palette="Set1")
+scale_colour_discrete <- function(...) { # palette for colours (outlines, ..)
+  scale_colour_brewer(..., palette="Dark2")
 }
+
+scale_fill_discrete <- function(...) { # palette for fills
+  scale_fill_brewer(..., palette="Dark2")
+}
+
 
 # plot formatting function : format as classic, colours = Set1
 format_classic <- function(plt)
