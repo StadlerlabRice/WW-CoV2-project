@@ -12,71 +12,140 @@ output:
 ```{r setup, include=FALSE}
 
 knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 10, fig.height = 4)
+
+# Return TRUE if percentage recovery data is present
+show_percent_recovery <- 
+  results_abs %>% 
+  filter(!is.na(Percentage_recovery_BCoV)) %>% 
+  {!plyr::empty(.)}
+
+# Return TRUE of BCoV is a listed Target in the data
+show_BCoV <- 'BCoV' %in% results_abs$Target
+
+# Return TRUE of pMMoV is a listed Target in the data
+show_pMMoV <- 'pMMoV' %in% results_abs$Target
+  
 ```
 
-## Percentage Recovery 
-
-### Recovery | Density plot
+`r if(show_percent_recovery){"## Percentage Recovery \n ### Density plot | Recovery "}`
 
 ```{r}
 
-results_abs %>% ggplot(aes(x = Week, y = `Percentage_recovery_BCoV`)) + geom_jitter(width = .1)
+if(show_percent_recovery) {
+  results_abs %>% 
+    filter(!is.na(Percentage_recovery_BCoV)) %>% 
+    ggplot(aes(x = Week, y = Percentage_recovery_BCoV)) + geom_jitter(width = .1)
+}
+
 ```
 
-### Recovery | Violin + Density plot
+`r  if(show_percent_recovery) {"### Violin + Density plot | Recovery"}`
 
 ```{r}
 
-results_abs %>% ggplot(aes(x = Week, y = `Percentage_recovery_BCoV`)) + geom_violin() + geom_jitter(width = .1, alpha = .2)
+if(show_percent_recovery) {
+  results_abs %>% 
+    filter(!is.na(Percentage_recovery_BCoV)) %>% 
+    ggplot(aes(x = Week, y = Percentage_recovery_BCoV)) + 
+    geom_violin(show.legend = F) + 
+    geom_jitter(width = .1, alpha = .2)
+}
+
 ```
 
-### Recovery | Dot plot
+`r  if(show_percent_recovery) {"### Dot plot | Recovery"}`
+
 
 ```{r dots}
 
-nameless <- results_abs %>% select(Week, `Percentage_recovery_BCoV`) %>% drop_na() %>% group_by(Week) %>% arrange(`Percentage_recovery_BCoV`) %>%  mutate(id = row_number()) 
+if(show_percent_recovery) {
+  nameless <- results_abs %>% select(Week, Percentage_recovery_BCoV) %>% drop_na() %>% group_by(Week) %>% arrange(Percentage_recovery_BCoV) %>%  mutate(id = row_number()) 
+  
+  nameless %>% ggplot(aes(x = id, y = Percentage_recovery_BCoV, colour = Week)) + geom_point() + geom_line()
+}
 
-nameless %>% ggplot(aes(x = id, y = `Percentage_recovery_BCoV`, colour = Week)) + geom_point() + geom_line()
 ```
 
 ## Copies/L | Density plots
 
-### Copies/L | Violin + Density plot
+### Copies/L 
 
 ```{r allviolin}
 
-results_abs %>% 
-  ggplot(aes(x = Week, y = `Copies/l WW`, colour = Target)) + geom_jitter(width = .1) + geom_violin()
+den.plt <- 
+{results_abs %>% 
+  ggplot(aes(x = Week, y = Copies_Per_Liter_WW, colour = Target)) + 
+  geom_jitter(width = .1) + 
+  geom_violin(show.legend = F)} %>% 
+  print()
+
+ggplotly(den.plt, tooltip = 'label')
+
 ```
 
-### N1-N2 Copies/L | Violin + Density plot
+### Log Copies/L
+
+```{r logallviolin}
+
+den.plt %>% format_logscale_y() %>% print() %>% 
+  ggplotly(tooltip = 'label')
+
+```
+
+### N1-N2 Copies/L
 
 ```{r n12violin}
 
-den.plt <- results_abs %>% filter(str_detect(Target, 'N1|N2')) %>% 
-  ggplot(aes(x = Week, y = `Copies/l WW`, colour = Target, label = WWTP)) + geom_jitter(width = .1) + geom_violin()
+den.plt_N12 <- results_abs %>% filter(str_detect(Target, 'N1|N2')) %>% 
+  ggplot(aes(x = Week, y = Copies_Per_Liter_WW, colour = Target, label = WWTP)) + geom_jitter(width = .1) + geom_violin(show.legend = F)
 
-print(den.plt)
+print(den.plt_N12)
 
-ggplotly(den.plt, tooltip = 'label')
+ggplotly(den.plt_N12, tooltip = 'label')
+
 ```
 
-### Logscale N1-N2 Copies/L | Violin + Density plot
+### Logscale N1-N2 Copies/L
 
 ```{r logn12violin}
 
-den.plt %>% format_logscale_y() %>% print()
+den.plt_N12 %>% format_logscale_y() %>% print()
+
 ```
+
+
+`r if(show_pMMoV) {"### pMMoV Copies/L"}`
+
+```{r pmmoviolin}
+
+den.plt_pmmov <- results_abs %>% filter(str_detect(Target, 'pMMoV')) %>% 
+  ggplot(aes(x = Week, y = Copies_Per_Liter_WW, colour = Target, label = WWTP)) + geom_jitter(width = .1) #+ geom_violin(show.legend = F)
+
+print(den.plt_pmmov)
+
+ggplotly(den.plt_pmmov, tooltip = 'label')
+
+```
+
+
+`r if(show_pMMoV) {"### Logscale pMMoV Copies/L"}`
+
+```{r logpmmovviolin}
+
+den.plt_pmmov %>% format_logscale_y() %>% print()
+
+```
+
 
 ## Scatter plots (correlations)
 
-## N comparisions | Scatter
+### N comparisions | Scatter
 
 ```{r}
 
-results_wide <- results_abs %>% select(WWTP, Target, Week, `Copies/l WW`) %>% group_by(Week, Target, WWTP) %>% mutate(id = row_number()) %>% unite('WWTP', c('WWTP', id)) %>% pivot_wider(names_from = Target, values_from = `Copies/l WW`) 
+Copies_Per_Liter_WW_wide <- results_abs %>% select(WWTP, Target, Week, Copies_Per_Liter_WW) %>% group_by(Week, Target, WWTP) %>% mutate(id = row_number()) %>% unite('WWTP', c('WWTP', id)) %>% pivot_wider(names_from = Target, values_from = Copies_Per_Liter_WW) 
 
-plt.sctrN <- results_wide %>% ggplot(aes(x = `SARS CoV-2 N1`, y = `SARS CoV-2 N2`, colour = Week)) + geom_point() + geom_smooth(method = 'lm') 
+plt.sctrN <- Copies_Per_Liter_WW_wide %>% ggplot(aes(x = `SARS CoV-2 N1`, y = `SARS CoV-2 N2`, colour = Week)) + geom_point() + geom_smooth(method = 'lm') 
 
 print(plt.sctrN)
 
@@ -89,108 +158,164 @@ plt.sctrN %>% ggplotly(dynamicTicks = T)
 
 ```
 
-## N1 vs BCoV | Scatter
+### N1 vs BCoV | Scatter
 
 ```{r}
 
-results_wide <- results_abs %>% select(WWTP, Target, Week, `Copies/l WW`) %>% group_by(Week, Target, WWTP) %>% mutate(id = row_number()) %>% unite('WWTP', c('WWTP', id)) %>% pivot_wider(names_from = Target, values_from = `Copies/l WW`) 
+Copies_Per_Liter_WW_wide <- results_abs %>% 
+  
+  select(WWTP, Target, Week, Copies_Per_Liter_WW) %>% 
+  group_by(Week, Target, WWTP) %>% 
+  
+  mutate(id = row_number()) %>% 
+  unite('WWTP', c('WWTP', id)) %>% 
+  
+  pivot_wider(names_from = Target, values_from = Copies_Per_Liter_WW) 
 
-plt.sctrNBCOV <- results_wide %>% ggplot(aes(x = `SARS CoV-2 N1`, y = `BCoV_M`, colour = Week)) + geom_point() + geom_smooth(method = 'lm') 
+if('BCoV_M' %in% colnames(Copies_Per_Liter_WW_wide)) {
+  plt.sctrNBCOV <- Copies_Per_Liter_WW_wide %>% 
+    ggplot(aes(x = `SARS CoV-2 N1`, y = `BCoV_M`, colour = Week)) + 
+    geom_point() + 
+    geom_smooth(method = 'lm') 
+  
+  print(plt.sctrNBCOV)
+}
 
-print(plt.sctrNBCOV)
 
 ```
 
-Interactive plot
+
+### N1 vs pMMoV | Scatter
 
 ```{r}
-plt.sctrNBCOV %>% ggplotly(dynamicTicks = T)
+
+if('pMMoV' %in% colnames(Copies_Per_Liter_WW_wide)) {
+  plt.sctrNpMMoV <- Copies_Per_Liter_WW_wide %>% 
+    ggplot(aes(x = `SARS CoV-2 N1`, y = pMMoV, colour = Week)) + 
+    geom_point() + 
+    geom_smooth(method = 'lm') 
+  
+  print(plt.sctrNpMMoV)
+}
+
+```
+
+### Interactive plots
+
+```{r}
+
+if('BCoV_M' %in% colnames(Copies_Per_Liter_WW_wide)) {
+  plt.sctrNBCOV %>% ggplotly(dynamicTicks = T)
+}
+
+if('pMMoV' %in% colnames(Copies_Per_Liter_WW_wide)) {
+  plt.sctrNpMMoV %>% ggplotly(dynamicTicks = T)
+}
+
 
 ```
 
 
-## Timeseries across weeks
+## Timeseries across site
 
-### Weekly timeseries - N1/N2/BcoV
+### Copies/L | Timeseries
 
 ```{r timeseries, fig.width= 16, fig.height= 12}
 
-# Make mean of biological replicates
-results_abs.list <- list(
-  raw.dat = results_abs %>% mutate('Sample_name' = Week), # dummy column - for compatibility with plot_mean_sd_jitter() function
-
-  summ.dat = results_abs %>% select(Facility, WWTP, Target, `Copies/ul RNA`: `Percentage_recovery_BCoV`, Week, -any_of('Bottle')) %>%
-  group_by(Target, Facility, WWTP, Week) %>% summarise_at(c('Copies/l WW'), lst(mean, sd), na.rm = T) %>% 
-    mutate('Sample_name' = Week)
-)
-
-plt_week1 <- plot_mean_sd_jitter(results_abs.list, long_format = F, sample_var = extra_categories, exclude_sample = T, x_var = Week, y_var = `Copies/l WW`, colour_var = Target, ylabel = 'Genome copies/l Wastewater') + geom_line(aes(group = Target)) +
+plt_timeseries_all_targets <- 
+  plot_mean_sd_jitter(results_abs,
+                      sample_filtering_var = extra_categories, exclude_sample = T, 
+                      x_var = Week, y_var = Copies_Per_Liter_WW, colour_var = Target, 
+                      ylabel = 'Genome copies/l Wastewater') + 
+  geom_line(aes(group = Target)) +
   facet_wrap(facets = ~WWTP, scales = 'free_x')
 
-plt_week1 %>% print()
 ```
 
+#### Logscale Copies/L | Timeseries
 
-### Weekly timeseries - N1/N2 
+```{r timeserieslog, fig.width= 16, fig.height= 12}
+
+plt_timeseries_all_targets  %>% 
+  format_logscale_y() %>% 
+  print()
+
+```
+
+### N1/N2 Copies/L | Timeseries
 
 ```{r timeseriesN, fig.width= 16, fig.height= 12}
-only_N12 <- results_abs.list %>% map(filter, str_detect(Target, 'N1|N2'))
 
-plt_week2 <- plot_mean_sd_jitter(only_N12, long_format = F, sample_var = extra_categories, exclude_sample = T, x_var = Week, y_var = `Copies/l WW`, colour_var = Target, ylabel = 'Genome copies/l Wastewater') + geom_line(aes(group = Target)) +
+plt_timeseries_N12 <- 
+  plot_mean_sd_jitter(results_abs,
+                      sample_filtering_var = extra_categories, exclude_sample = T,
+                      target_filter_var = 'N1|N2',
+                      x_var = Week, y_var = Copies_Per_Liter_WW, colour_var = Target, 
+                      ylabel = 'Genome copies/l Wastewater') + 
+  geom_line(aes(group = Target)) +
   facet_wrap(facets = ~WWTP, scales = 'free_x')
 
-plt_week2 %>% print()
 ```
 
-### Logscale timeseries - N1/N2 
+### Logscale N1/N2 Copies/L | Timeseries
 
 ```{r logtimeseriesN, fig.width= 16, fig.height= 12}
 
-plt_week2 %>% format_logscale_y() %>% print()
+plt_timeseries_N12 %>% format_logscale_y() %>% print()
+
 ```
 
-### Weekly timeseries - BCoV 
 
+`r if(show_BCoV) {"### BCoV | Timeseries"}`
+ 
 ```{r timeseriesbcov, fig.width= 16, fig.height= 12}
-only_bcov <- results_abs.list %>% map(filter, str_detect(Target, 'BCoV'))
-
-plt_week3 <- plot_mean_sd_jitter(only_bcov, long_format = F, sample_var = extra_categories, exclude_sample = T, x_var = Week, y_var = `Copies/l WW`, colour_var = Target, ylabel = 'Genome copies/l Wastewater') + geom_line(aes(group = Target)) +
+# if('BCoV' %in% colnames(results_abs)) {
+plt_timeseries_BCoV <- 
+  plot_mean_sd_jitter(results_abs,
+                      sample_filtering_var = extra_categories, exclude_sample = T,
+                      target_filter_var = 'BCoV',
+                      x_var = Week, y_var = Copies_Per_Liter_WW, colour_var = Target, 
+                      ylabel = 'Genome copies/l Wastewater') + 
+  geom_line(aes(group = Target)) +
   facet_wrap(facets = ~WWTP, scales = 'free_x')
+# }
 
-plt_week3 %>% print()
 ```
 
-### Weekly timeseries - Percentage recovery 
+
+`r if(show_percent_recovery) {"### Percentage recovery | Timeseries"}`
 
 ```{r timeseriespercentreco, fig.width= 16, fig.height= 12}
 
-summary_reco <- results_abs %>% select(Facility, WWTP, Target, `Copies/ul RNA`: `Percentage_recovery_BCoV`, Week, -any_of('Bottle')) %>%
-  mutate('Sample_name' = Week) %>% 
-  group_by(`Sample_name`, Target, Facility, WWTP, Week) %>% 
-  summarise_at(c('Percentage_recovery_BCoV'), lst(mean, sd), na.rm = T)
-
-recovery_data.list <- list(summary_reco, results_abs.list$raw.dat) %>% map(filter, str_detect(Target, 'BCoV')) %>% setNames(c('summ.dat', 'raw.dat'))
-
-plt_week3 <- plot_mean_sd_jitter(recovery_data.list, long_format = F, sample_var = extra_categories, exclude_sample = T, x_var = Week, y_var = `Percentage_recovery_BCoV`, colour_var = Target, ylabel = 'Percentage of BCoV copies recovered') + geom_line(aes(group = Target)) + facet_wrap(facets = ~WWTP, scales = 'free_x')
-
-plt_week3 %>% print()
-```
-
-### Copies/person timeseries
-
-```{r normalizedcopiesn, fig.width= 16, fig.height= 12}
-
-summary_normalized <- results_abs %>% select(Facility, WWTP, Target, `Copies/ul RNA`: `Percentage_recovery_BCoV`, Week, `Viral load per capita per day`, -any_of('Bottle')) %>%
-  mutate('Sample_name' = Week) %>% 
-  group_by(`Sample_name`, Target, Facility, WWTP, Week) %>% 
-  summarise_at(c('Viral load per capita per day'), lst(mean, sd), na.rm = T)
-
-normalized_copies_N12 <- list(summary_normalized, results_abs.list$raw.dat) %>% map(filter, str_detect(Target, 'N1|N2')) %>% setNames(c('summ.dat', 'raw.dat'))
-
-plt_week4 <- plot_mean_sd_jitter(normalized_copies_N12, long_format = F, sample_var = extra_categories, exclude_sample = T, x_var = Week, y_var = `Viral load per capita per day`, facet_var = WWTP, colour_var = Target, ylabel = 'Viral load per capita per day', facet_style = 'manual') + geom_line(aes(group = Target)) + facet_wrap(facets = ~WWTP, scales = 'free_x')
-
-plt_week4 %>% print()
-
-plt_week4 %>% format_logscale_y() %>% print()
+if(show_percent_recovery){
+  plt_timeseries_percent.recovery <- 
+    plot_mean_sd_jitter(results_abs,
+                        sample_filtering_var = extra_categories, exclude_sample = T,
+                        target_filter_var = 'BCoV',
+                        x_var = Week, y_var = Percentage_recovery_BCoV, colour_var = Target, 
+                        ylabel = 'Percentage of BCoV copies recovered') + 
+    geom_line(aes(group = Target)) +
+    facet_wrap(facets = ~WWTP, scales = 'free_x')
+}
 
 ```
+
+<!-- This code is obsolete since population, flow rate is no longer retrievable - 16-11-2021; PK -->
+<!-- ### Copies/person timeseries -->
+
+<!-- ```{r normalizedcopiesn, fig.width= 16, fig.height= 12} -->
+
+<!-- summary_normalized <- results_abs %>% select(Facility, WWTP, Target, Copies_per_uL_RNA: Percentage_recovery_BCoV, Week, `Viral load per capita per day`, -any_of('Bottle')) %>% -->
+<!--   mutate('Sample_name' = Week) %>%  -->
+<!--   group_by(`Sample_name`, Target, Facility, WWTP, Week) %>%  -->
+<!--   summarise_at(c('Viral load per capita per day'), lst(mean, sd), na.rm = T) -->
+
+<!-- normalized_copies_N12 <- list(summary_normalized, results_abs.list$raw.dat) %>% map(filter, str_detect(Target, 'N1|N2')) %>% setNames(c('summ.dat', 'raw.dat')) -->
+
+<!-- plt_week4 <- plot_mean_sd_jitter(normalized_copies_N12, long_format = F, sample_var = extra_categories, exclude_sample = T, x_var = Week, y_var = `Viral load per capita per day`, facet_var = WWTP, colour_var = Target, ylabel = 'Viral load per capita per day', facet_style = 'manual') + geom_line(aes(group = Target)) + facet_wrap(facets = ~WWTP, scales = 'free_x') -->
+
+<!-- plt_week4 %>% print() -->
+
+<!-- plt_week4 %>% format_logscale_y() %>% print() -->
+
+<!-- ``` -->

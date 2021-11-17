@@ -7,15 +7,15 @@ plot_mean_sd_jitter <- function(.data = presentable_data,
                                 long_format = FALSE,
                                 
                                 measure_var = 'Copy #', 
-                                colour_var = Target_Name, x_var = assay_variable, y_var = Copies_Per_Liter_WW, 
+                                colour_var = Target, x_var = assay_variable, y_var = Copies_Per_Liter_WW, 
                                 facet_var = NULL, 
                                 
                                 unique_columns_to_incl = c('Facility'), # columns to determine uniqueness for calc mean ...
                                 # ... will automatically include the x_var and colour_var
                                 
                                 # Filtering variables
-                                Sample_fltr_var = '.*', exclude_sample = F, 
-                                WWTP_fltr_var = wwtp_manhole_names, exclude_WWTP = F, 
+                                sample_filtering_var = '.*', exclude_sample = F, 
+                                WWTP_filtering_var = wwtp_manhole_names, exclude_WWTP = F, 
                                 target_filter_var = '.*', 
                                 
                                 ascending_order = FALSE, 
@@ -25,14 +25,18 @@ plot_mean_sd_jitter <- function(.data = presentable_data,
 { # Convenient handle for repetitive plotting of individual replicates as points, and mean as horizontal bars
   # Specify data format: typically wide vs long which is a special case (specify in long_format = FALSE or TRUE)
   
-  .dat_filtered <- .data %>% filter(., if('Sample_name' %in% colnames(.)) str_detect(`Sample_name`, Sample_fltr_var, negate = exclude_sample) else TRUE, 
-                                    if('WWTP' %in% colnames(.)) str_detect(WWTP, WWTP_fltr_var, negate = exclude_WWTP) else TRUE, 
-                                    str_detect(Target_Name, target_filter_var))
+  
+  # filtering data to be plotted by user inputs
+  .dat_filtered <- 
+    .data %>% 
+    filter(., if('Sample_name' %in% colnames(.)) str_detect(`Sample_name`, sample_filtering_var, negate = exclude_sample) else TRUE, 
+           if('WWTP' %in% colnames(.)) str_detect(WWTP, WWTP_filtering_var, negate = exclude_WWTP) else TRUE, 
+           str_detect(Target, target_filter_var))
   
   mean_y_var_str <- expr(!!str_c('mean_', deparse(enexpr(y_var)) ) ) # make a string to use mean_{{y_var}} in regular functions
   
   
-  # filtering data to be plotted by user inputs : ---- OBSOLETE ; do not use
+  # Long format : filtering data to be plotted by user inputs : ---- OBSOLETE ; do not use
   if(long_format) # use long format if not plotting Copy #s - ex. Recovery, % recovery etc.
   { # If data is in long_format, multiple columns to be plotted simultaneously will be put into the same column..
     # .. using pivot_longer() before feeding data into this function. This is a special case. Useful when copies/L is ..
