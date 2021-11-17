@@ -80,13 +80,15 @@ compl_data_renamer <- function(.df)
     
     # backward compatibility (accounting for column name changes)
     rename('Target' = matches('Target'), 
-           'Received_WW_vol' = matches('WW_vol|Original Sample Volume'), # if both old and new names are present, it will throw error
+           'Received_WW_vol' = matches('Received_WW_vol|Original Sample Volume'), # if both old and new names are present, it will throw error
            'Percentage_recovery_BCoV' = matches('Recovery fraction'),
            'Ct' = matches('^CT', ignore.case = T)) %>% 
     
     mutate_at('Target', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2'))) %>% 
     
-    mutate(across(is.list, as.character))
+    # change variable types
+    mutate(across(where(is.list), as.character)) %>% 
+    mutate(across(Date, as.character))
 }
 
 # Usage
