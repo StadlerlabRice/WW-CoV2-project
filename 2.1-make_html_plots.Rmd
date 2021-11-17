@@ -20,12 +20,23 @@ knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 12, fig.he
 
 ## Goal of the analysis
 
-Quantifying CoV2-N1,N2 (multiplexed) and BCoV surrogate spiked into wastewater samples
+Visualizing SARS CoV2-N1,N2 (multiplexed), pepper mild mottle virus (pMMoV) and BCoV surrogate spiked into wastewater samples
 
 ```{r scripts, fig.width = 12}
 
 # Make a string to filter out all regular WWTP and manhole samples to plot separately
 wwtp_manhole_names <- str_c(WWTP_symbols_regex, manhole_symbols_regex, sep = '|')
+
+
+# Return TRUE if percentage recovery data is present
+show_percent_recovery <- 
+  presentable_data %>% 
+  filter(!is.na(Percentage_recovery_BCoV)) %>% 
+  {!plyr::empty(.)}
+
+# Return TRUE of pMMoV is a listed Target in the data
+show_pMMoV <- 'pMMoV' %in% presentable_data$Target_Name
+
 
 # plot individual biological replicates (for quality control)
 # map2(list_rawqpcr, read_these_sheets, ~(plot_biological_replicates(.x, title_text = .y)))
@@ -40,7 +51,10 @@ wwtp_manhole_names <- str_c(WWTP_symbols_regex, manhole_symbols_regex, sep = '|'
 ```{r all_plot}
 # all the plotting functions plot data: "long_processed_minimal" by default
 
-  concWW_plot <- plot_mean_sd_jitter(measure_var = 'Copies_Per_Liter_WW', WWTP_fltr_var = wwtp_manhole_names, x_var = WWTP, ylabel = 'Genome copies/l Wastewater') 
+  concWW_plot <- 
+  plot_mean_sd_jitter(WWTP_filtering_var = wwtp_manhole_names, 
+                      x_var = WWTP, y_var = Copies_Per_Liter_WW, 
+                      ylabel = 'Genome copies/l Wastewater') 
   
   concWW_plot %>% format_logscale_y() %>% print()
   
@@ -51,19 +65,22 @@ wwtp_manhole_names <- str_c(WWTP_symbols_regex, manhole_symbols_regex, sep = '|'
 
 ```{r copiesrna}
 
-  concWW_plot <- plot_mean_sd_jitter(x_var = WWTP, ylabel = 'Genome copies/ul RNA') 
+  concWW_plot <- plot_mean_sd_jitter(x_var = WWTP, y_var = Copies_per_uL_RNA, 
+                                     ylabel = 'Genome copies/ul RNA') 
   
   concWW_plot %>% format_logscale_y() %>% print()
   
 ```
 
 
-### Recovery
-
+## Surrogate viruses
 
 ```{r summarizing_plot}
 
-plot_mean_sd_jitter(measure_var = 'Copies_Per_Liter_WW', target_filter_var = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Genome copies/l Wastewater') %>%  format_logscale_y() %>% print()
+plot_mean_sd_jitter(target_filter_var = 'BCoV|BRSV|pMMoV', 
+                    x_var = WWTP, ylabel = 'Genome copies/l Wastewater') %>%  
+  format_logscale_y() %>% 
+  print()
 
 # old stuff -- not used since BCoV is not being done much..
 # open circles : Copies of surrogate virus spiked in
@@ -72,41 +89,47 @@ plot_mean_sd_jitter(measure_var = 'Copies_Per_Liter_WW', target_filter_var = 'BC
 
 ```
 
-### % recovery
+`r  if(show_percent_recovery) {"### Percentage viral RNA recovery"}`
 
 ```{r percentreco}
 
-
-  percentreco_plt <- plot_mean_sd_jitter(measure_var = 'Percentage_recovery_BCoV', target_filter_var = 'BCoV|BRSV', x_var = WWTP, ylabel = 'Percentage recovery of surrogate virus') 
+if(show_percent_recovery) {
+  percentreco_plt <- 
+    plot_mean_sd_jitter(target_filter_var = 'BCoV|BRSV', 
+                        x_var = WWTP, y_var = Percentage_recovery_BCoV,
+                        ylabel = 'Percentage recovery of surrogate virus') 
   
- percentreco_plt %>% print()
-
- # same plot in logscale y axis  
- percentreco_plt %>% format_logscale_y() %>% print()
+  percentreco_plt %>% print()
   
+  # same plot in logscale y axis  
+  percentreco_plt %>% format_logscale_y() %>% print()
+}
   
 ```
 
-### Controls and additional samples
+## Controls and additional samples
 
 ```{r controls_recos, fig.width= 6}
 
 extra_samples_to_plot <- str_c('Std|Control', '|Vaccine|NTC') %>% str_remove('\\|Std|Std\\|')
 
 # N1/N2 and BCoV plots : Copies/ul RNA
-plot_mean_sd_jitter(WWTP_fltr_var = wwtp_manhole_names, exclude_WWTP = T, x_var = WWTP) %>% format_logscale_y() %>% print()
+plot_mean_sd_jitter(WWTP_filtering_var = wwtp_manhole_names, exclude_WWTP = T, x_var = WWTP) %>% format_logscale_y() %>% print()
 
 
 # Copies/l WW: N1/N2 and BCoV plots
-plot_mean_sd_jitter(measure_var = 'Copies_Per_Liter_WW', WWTP_fltr_var = wwtp_manhole_names, exclude_WWTP = T, x_var = WWTP, ylabel = 'Genome copies/l Wastewater') %>% 
+plot_mean_sd_jitter(WWTP_filtering_var = wwtp_manhole_names, exclude_WWTP = T, 
+                    x_var = WWTP, y_var = Copies_Per_Liter_WW,
+                    ylabel = 'Genome copies/l Wastewater') %>% 
+  
   format_logscale_y() %>% print()
 
 # # recovered vs spiked in plot for extra samples
-# plot_mean_sd_jitter(long_vol_qpcr_summary, long_vol_qpcr_raw, long_format = T, measure_var = 'Recovered', Sample_fltr_var = extra_samples_to_plot, exclude_sample = F, x_var = WWTP, ylabel = 'Genome copies/l Wastewater') %>%
+# plot_mean_sd_jitter(long_vol_qpcr_summary, long_vol_qpcr_raw, long_format = T, measure_var = 'Recovered', Sample_filtering_var = extra_samples_to_plot, exclude_sample = F, x_var = WWTP, ylabel = 'Genome copies/l Wastewater') %>%
 #   format_logscale_y() %>% print()
 
 # % plot for extra samples
-plot_mean_sd_jitter(measure_var = 'Percentage_recovery_BCoV', WWTP_fltr_var = wwtp_manhole_names, exclude_WWTP = T, target_filter_var= 'BCoV|BRSV', x_var = WWTP, ylabel = 'Percentage recovery of surrogate virus') %>% print()
+plot_mean_sd_jitter(measure_var = 'Percentage_recovery_BCoV', WWTP_filtering_var = wwtp_manhole_names, exclude_WWTP = T, target_filter_var= 'BCoV|BRSV', x_var = WWTP, ylabel = 'Percentage recovery of surrogate virus') %>% print()
 
 ```
 
@@ -150,7 +173,6 @@ plot_scatter(processed_quant_data, x_var = N1_multiplex, y_var = N2_multiplex) %
 
 ordered_plt1 <- plot_mean_sd_jitter(x_var = WWTP, ascending_order = TRUE, ylabel = 'Genome copies/l Wastewater')
 
-ordered_plt1 %>% print()
 ordered_plt1 %>% format_logscale_y() %>% print()
 
 ```
@@ -159,18 +181,24 @@ ordered_plt1 %>% format_logscale_y() %>% print()
 
 ```{r orderedrna}
 
-ordered_plt1 <- plot_mean_sd_jitter(x_var = WWTP, ascending_order = T, ylabel = 'Genome copies/ul RNA')
+ordered_plt_rna <- 
+  plot_mean_sd_jitter(x_var = WWTP, y_var = Copies_per_uL_RNA,
+                      ascending_order = T, ylabel = 'Genome copies/ul RNA')
 
-ordered_plt1 %>% print()
-ordered_plt1 %>% format_logscale_y() %>% print()
+ordered_plt_rna %>% format_logscale_y() %>% print()
 
 ```
 
-### % Recovery
+
+`r if(show_percent_recovery) {"### Percentage recovery"}`
 
 ```{r percentRecoverystreamlined}
 
-  recostr_plot <- plot_mean_sd_jitter(x_var = Percentage_recovery_BCoV, ascending_order = T, ylabel = 'Percentage recovery of surrogate')
-  
+if(show_percent_recovery) {
+  recostr_plot <- 
+    plot_mean_sd_jitter(x_var = Percentage_recovery_BCoV, ascending_order = T,
+                        ylabel = 'Percentage recovery of surrogate')
+}
+
 ```
 
