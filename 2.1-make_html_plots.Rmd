@@ -24,10 +24,6 @@ Visualizing SARS CoV2-N1,N2 (multiplexed), pepper mild mottle virus (pMMoV) and 
 
 ```{r scripts, fig.width = 12}
 
-# Make a string to filter out all regular WWTP and manhole samples to plot separately
-wwtp_manhole_names <- str_c(WWTP_symbols_regex, manhole_symbols_regex, sep = '|')
-
-
 # Return TRUE if percentage recovery data is present
 show_percent_recovery <- 
   presentable_data %>% 

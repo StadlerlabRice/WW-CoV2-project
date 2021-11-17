@@ -30,7 +30,8 @@ sheeturls <- list(templates = 'https://docs.google.com/spreadsheets/d/19oRiRcRVS
 
 # calling more funs ----
 
-list_of_general_functions <- c("g.1-reading_files_funs.R",
+list_of_general_functions <- c("g.0-inputs_for_analysis.R",
+                               "g.1-reading_files_funs.R",
                                "g.2-tibble_columns_funs.R",
                                "g.3-B117_and_obsolete_fns.R",
                               

@@ -2,22 +2,41 @@
 # Author: Prashant Kalvapalle;  June 13 2020
 
 
+# WWTP filters ----
+
+# WWTP names etc for filtering data for plots of 2-calcs.. and 3-weekly comparisons
+
+# get all bayou, manhole and WWTP sample names (remain same every week)
+biobot_lookup <- map_df(c('All Bayou', 'All manhole', 'All wastewater'), 
+                        ~ read_sheet(sheeturls$biobot_id , sheet = .x, range = 'A:C', col_types = 'ccc') %>% 
+                          rename('WWTP' = contains('SYMBOL', ignore.case = T), 
+                                 'Facility' = matches('FACILITY NAME', ignore.case = T),
+                                 'Type' = 'Facility Type') %>% 
+                          mutate(WWTP = as.character(WWTP) %>% str_remove(' '), # convert to char and removed spaces
+                                 'assay_variable' = WWTP))
+
+# List of all WWTPs
+WWTP_symbols <- biobot_lookup %>%
+  filter(Type == 'Wastewater') %>% 
+  pull(WWTP) # this vector of all WWTP abbreviations (symbols) is good for exact matching 
+
+# combine the list of WWTPs into 1 string, separated by the OR symbol "|"
+WWTP_symbols_regex <- WWTP_symbols %>% 
+  paste(collapse = "|") # this single char with all WWTP names is for regex string matching (approx) : Use with caution
+
+# list all manhole names (for regex matching)
+manhole_symbols_regex <- biobot_lookup %>%
+  filter(!str_detect(Type, 'Wastewater|Bayou')) %>% 
+  pull(WWTP) %>% 
+  paste(collapse = "|")
+
+
+# Make a string to filter out all regular WWTP and manhole samples to plot separately
+wwtp_manhole_names <- str_c(WWTP_symbols_regex, manhole_symbols_regex, sep = '|')
+
+
 # User inputs ----
-# choose file name, title for plots and experiment mode (file name starts in the same directory as Rproject) 
-# Sample naming guide for plate template: in google sheet 'enter cell address of experiment name' (check 'plate_template_raw' for link)
-# BCoV-608_A.2; ignore-facet_(x axis variable).biological replicate (BCoV is ignored, only for pipetting reference, actual target is taken from the qPCR results)
-# If code fails, first thing: check the number of lines to skip before the data begins and tally with the code (including the headings)
-
-# choose file name, in the same directory as Rproject; ignore this if running the function by providing filename as it's input
-flnm.here <- 'WW36_720_BCoV_Std19'  # set the filename (if running through this file; uncomment the function call in the end)
-
-std_par <- tibble(                       # Input the slope and intercept from standard curve of various primer pairs/targets here - Target should match Target field (provided in excel sheet - Sample input reference.csv) 
-  Target = c('BRSV_N', 'BCoV_M', 'N1_CoV2', 'N2_CoV2', 'N1_multiplex',  'N2_multiplex', 'pMMoV_Vgp1'),
-  Slope =  c(-3.61,    -3.33,    -2.98,     -3.12,     -3.08,           -3.06,           -3.13),
-  y_intercept = c(38,  34.55,       39,        40,        38,              37,              35.87) # values for various targets
-)
-template_volume_qpcr <- 4 # ul template volume in qPCR reaction
-
+# deleted obsolete ones from here.. 
 
 # Other parameters ----
 
@@ -25,6 +44,9 @@ template_volume_qpcr <- 4 # ul template volume in qPCR reaction
 # plot_assay_variable <- 'Sample' # printed on the x axis of the graph
 
 # inclusion exclusion variables
-plot_select_facet <- '' # Options ('' or 'something') ; filters a particular template name to plot 
+# plot_select_facet <- '' # Options ('' or 'something') ; filters a particular template name to plot 
+
 # plot_exclude_facet <- '^none' # Regex pattern: 'Controls2', '^MHT*', '^none; exclude categories for plotting; ex: Controls etc.: filters based on `Sample Name`: works only in assay mode
-plot_exclude_assay_variable <- '^none' # Regex pattern: '^N', '^none' or ''; exclude assay_variables for plotting; ex: no template control etc.: filters based on assay_variable: works only in assay mode
+# plot_exclude_assay_variable <- '^none' # Regex pattern: '^N', '^none' or ''; exclude assay_variables for plotting; ex: no template control etc.: filters based on assay_variable: works only in assay mode
+
+

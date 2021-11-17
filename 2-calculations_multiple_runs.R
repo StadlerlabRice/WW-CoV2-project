@@ -42,29 +42,6 @@ quant_data <- bind_rows(list_quant_data) %>%
 
 # Load metadata ----------------------------------------------------------------------
 
-# get all bayou, manhole and WWTP sample names (remain same every week)
-biobot_lookup <- map_df(c('All Bayou', 'All manhole', 'All wastewater'), 
-                        ~ read_sheet(sheeturls$biobot_id , sheet = .x, range = 'A:C', col_types = 'ccc') %>% 
-                          rename('WWTP' = contains('SYMBOL', ignore.case = T), 
-                                 'Facility' = matches('FACILITY NAME', ignore.case = T),
-                                 'Type' = 'Facility Type') %>% 
-                          mutate(WWTP = as.character(WWTP) %>% str_remove(' '), # convert to char and removed spaces
-                                 'assay_variable' = WWTP))
-
-# List of all WWTPs
-WWTP_symbols <- biobot_lookup %>%
-  filter(Type == 'Wastewater') %>% 
-  pull(WWTP) # this vector of all WWTP abbreviations (symbols) is good for exact matching 
-
-# combine the list of WWTPs into 1 string, separated by the OR symbol "|"
-WWTP_symbols_regex <- WWTP_symbols %>% 
-  paste(collapse = "|") # this single char with all WWTP names is for regex string matching (approx) : Use with caution
-
-# list all manhole names (for regex matching)
-manhole_symbols_regex <- biobot_lookup %>%
-  filter(!str_detect(Type, 'Wastewater|Bayou')) %>% 
-  pull(WWTP) %>% 
-  paste(collapse = "|")
 
 # Get volumes data from google sheet : "Sample registry"
 volumes.data_registry <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrated samples') %>% 
