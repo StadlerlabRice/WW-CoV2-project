@@ -9,6 +9,10 @@ output:
     toc_float: TRUE
 ---
 
+**Description of plots:**
+Light, smaller points show the individual replicates and the dark larger point show the mean
+
+
 ```{r setup, include=FALSE}
 
 knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 10, fig.height = 4)
@@ -143,8 +147,6 @@ den.plt_pmmov %>% format_logscale_y() %>% print()
 
 ```{r}
 
-Copies_Per_Liter_WW_wide <- results_abs %>% select(WWTP, Target_Name, Week, Copies_Per_Liter_WW) %>% group_by(Week, Target_Name, WWTP) %>% mutate(id = row_number()) %>% unite('WWTP', c('WWTP', id)) %>% pivot_wider(names_from = Target_Name, values_from = Copies_Per_Liter_WW) 
-
 plt.sctrN <- Copies_Per_Liter_WW_wide %>% ggplot(aes(x = `SARS CoV-2 N1`, y = `SARS CoV-2 N2`, colour = Week)) + geom_point() + geom_smooth(method = 'lm') 
 
 print(plt.sctrN)
@@ -223,12 +225,15 @@ if('pMMoV' %in% colnames(Copies_Per_Liter_WW_wide)) {
 ```{r timeseries, fig.width= 16, fig.height= 12}
 
 plt_timeseries_all_targets <- 
-  plot_mean_sd_jitter(results_abs,
+  {plot_mean_sd_jitter(results_abs,
                       sample_filtering_var = extra_categories, exclude_sample = T, 
                       x_var = Week, y_var = Copies_Per_Liter_WW, colour_var = Target_Name, 
-                      ylabel = 'Genome copies/l Wastewater') + 
-  geom_line(aes(group = Target_Name)) +
-  facet_wrap(facets = ~WWTP, scales = 'free_x')
+                      ylabel = 'Genome copies/l Wastewater',
+                      print_the_plot = FALSE) + 
+      # connect the mean points iwth lines       
+      geom_line(aes(group = Target_Name, y = mean_Copies_Per_Liter_WW)) +
+      facet_wrap(facets = ~WWTP, scales = 'free_x')} %>% 
+  print()
 
 ```
 
@@ -251,8 +256,9 @@ plt_timeseries_N12 <-
                       sample_filtering_var = extra_categories, exclude_sample = T,
                       target_filter_var = 'N1|N2',
                       x_var = Week, y_var = Copies_Per_Liter_WW, colour_var = Target_Name, 
-                      ylabel = 'Genome copies/l Wastewater') + 
-  geom_line(aes(group = Target_Name)) +
+                      ylabel = 'Genome copies/l Wastewater',
+                      print_the_plot = FALSE) + 
+  geom_line(aes(group = Target_Name, y = mean_Copies_Per_Liter_WW)) +
   facet_wrap(facets = ~WWTP, scales = 'free_x')
 
 ```
@@ -275,10 +281,40 @@ plt_timeseries_BCoV <-
                       sample_filtering_var = extra_categories, exclude_sample = T,
                       target_filter_var = 'BCoV',
                       x_var = Week, y_var = Copies_Per_Liter_WW, colour_var = Target_Name, 
-                      ylabel = 'Genome copies/l Wastewater') + 
-  geom_line(aes(group = Target_Name)) +
+                      ylabel = 'Genome copies/l Wastewater',
+                      print_the_plot = FALSE) + 
+  geom_line(aes(group = Target_Name, y = mean_Copies_Per_Liter_WW)) +
   facet_wrap(facets = ~WWTP, scales = 'free_x')
 # }
+
+```
+
+
+`r if(show_pMMoV) {"### pMMoV | Timeseries"}`
+ 
+```{r timeseriespmmov, fig.width= 16, fig.height= 12}
+# if('BCoV' %in% colnames(results_abs)) {
+plt_timeseries_pMMoV <- 
+  {plot_mean_sd_jitter(results_abs,
+                      sample_filtering_var = extra_categories, exclude_sample = T,
+                      target_filter_var = 'pMMoV',
+                      x_var = Week, y_var = Copies_Per_Liter_WW, colour_var = Target_Name, 
+                      ylabel = 'Genome copies/l Wastewater',
+                      print_the_plot = FALSE) + 
+      # connect the mean points iwth lines
+      geom_line(aes(group = Target_Name, y = mean_Copies_Per_Liter_WW)) + 
+      facet_wrap(facets = ~WWTP, scales = 'free_x')} %>% 
+  print()
+# }
+
+```
+
+`r if(show_pMMoV) {"### Log pMMoV copies/L | Timeseries"}`
+
+```{r timeserieslogpmmov, fig.width= 16, fig.height= 12}
+
+plt_timeseries_pMMoV %>% format_logscale_y() %>% print()
+
 
 ```
 
@@ -293,8 +329,9 @@ if(show_percent_recovery){
                         sample_filtering_var = extra_categories, exclude_sample = T,
                         target_filter_var = 'BCoV',
                         x_var = Week, y_var = Percentage_recovery_BCoV, colour_var = Target_Name, 
-                        ylabel = 'Percentage of BCoV copies recovered') + 
-    geom_line(aes(group = Target_Name)) +
+                        ylabel = 'Percentage of BCoV copies recovered',
+                      print_the_plot = FALSE) + 
+    geom_line(aes(group = Target_Name, y = mean_Copies_Per_Liter_WW)) +
     facet_wrap(facets = ~WWTP, scales = 'free_x')
 }
 
@@ -312,7 +349,7 @@ if(show_percent_recovery){
 
 <!-- normalized_copies_N12 <- list(summary_normalized, results_abs.list$raw.dat) %>% map(filter, str_detect(Target_Name, 'N1|N2')) %>% setNames(c('summ.dat', 'raw.dat')) -->
 
-<!-- plt_week4 <- plot_mean_sd_jitter(normalized_copies_N12, long_format = F, sample_var = extra_categories, exclude_sample = T, x_var = Week, y_var = `Viral load per capita per day`, facet_var = WWTP, colour_var = Target_Name, ylabel = 'Viral load per capita per day', facet_style = 'manual') + geom_line(aes(group = Target_Name)) + facet_wrap(facets = ~WWTP, scales = 'free_x') -->
+<!-- plt_week4 <- plot_mean_sd_jitter(normalized_copies_N12, long_format = F, sample_var = extra_categories, exclude_sample = T, x_var = Week, y_var = `Viral load per capita per day`, facet_var = WWTP, colour_var = Target_Name, ylabel = 'Viral load per capita per day', facet_style = 'manual') + geom_line(aes(group = Target_Name, y = mean_Copies_Per_Liter_WW)) + facet_wrap(facets = ~WWTP, scales = 'free_x') -->
 
 <!-- plt_week4 %>% print() -->
 
