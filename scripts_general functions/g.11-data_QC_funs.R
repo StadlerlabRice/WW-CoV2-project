@@ -37,3 +37,17 @@ stat_mode_vector <- function(x)
   y <- table(x) # find the frequency table of the vector : named vector with frequency
   names(y)[which(y == max(y))] %>% as.numeric() # report elements which repeat the maximum number of times
 }
+
+
+# check the datatypes of all columns in a dataframe
+
+show_column.types <- function(.data)
+{ map_df(.data, class)}
+
+# check which entries (rows) are causing a list-column scenario in a data frame
+
+show_multiples_list.columns_in_data.frame <- function(.data) # provide the data frame where list columns are being seen
+{ # returns the ROWS where any COLUMN has a list with 2 or more entries
+  filter(.data, 
+         if_any( .fns = ~ map(.data$.x, length) > 1)) 
+}
