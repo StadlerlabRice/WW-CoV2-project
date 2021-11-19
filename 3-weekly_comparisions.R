@@ -88,3 +88,7 @@ rmarkdown::render('3.1-Weekly_comparison plots.rmd',
 # optional save command for specific plots
 # ggsave( str_c('qPCR analysis/Extra graphs/', title_name, '.pdf'),
 #         plot = plt_timeseries_pMMoV, width = 8, height = 6)
+
+# optional output csv files
+write_csv(results_abs, 
+          file = str_c('excel files/Archive/Weekly-', title_name, '.csv'), col_names = TRUE)
