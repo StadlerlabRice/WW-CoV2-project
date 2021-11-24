@@ -20,7 +20,10 @@ plot_mean_sd_jitter <- function(.data = presentable_data,
                                 
                                 ascending_order = FALSE, 
                                 title_text = title_name, ylabel = 'Genome copies/ul RNA', xlabel = plot_assay_variable, 
+                                
+                                # additional aesthetics
                                 facet_style = 'grid',
+                                show_LOD = FALSE,
                                 
                                 print_the_plot = TRUE)
 
