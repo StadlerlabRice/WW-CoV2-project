@@ -67,7 +67,13 @@ manhole_symbols_regex <- biobot_lookup %>%
   paste(collapse = "|")
 
 # Get volumes data from google sheet : "Sample registry"
-volumes.data_registry <- read_sheet(sheeturls$sample_registry , sheet = 'Concentrated samples') %>% 
+volumes.data_registry <- 
+  read_sheet(sheeturls$sample_registry , 
+             sheet = 'Concentrated samples',
+             range = 'B:J', # specify range
+             col_types = 'ccccnnn-n') %>% # pre-specify column types
+  
+  # rename col names
   rename('Received_WW_vol' = `Total WW vol measured (ml)`, 
          'Label_tube' = `Label on tube`, 
         Filtered_WW_vol = `WW volume filtered (ml)`,
