@@ -2,9 +2,23 @@
 Takes excel file output from qPCR and ddPCR, attaches the sample names and makes neat plots with appropriate labels and calculations using metadata from other google sheets'
 
 ## Git organization
+Here's a handy guide to simple git commands : [git the simple guide](https://rogerdudler.github.io/git-guide/)
 1. WW_master is the default/master branch of this project
-2. Any changes should be made in a different side branch and pushed to the remote. Then submit a pull request and then merge it on github 
+2. Any experimental changes should be made in a different side branch and pushed to the remote. Then submit a pull request and then merge it on github 
   *This is to ensure that there are no conflicts if someone changed the master while you were working on a side branch*
+
+## Script-functions organization
+If you are looking to run subsets of these scripts to plot specific data (sub)sets, please familiarize yourself with the code organization and how the plotting functions are being called, and the default values.
+1. The main functions are written in these scripts, divided up by their tasks
+	- `0-general_functions_main.R` : Essential - loads all packages, all smaller functions (see point 2 below)
+	- `1-processing_functions.R` : first step in processing ddPCR/qPCR data (is called by `2-calc..` script)
+	- `2-calculations_multiple_runs.R` : **Main function for ddPCR data processing** - this is the only script you should run for processing raw data to handoff to HHD - single or small sets of runs done in a day/week
+	- `3-weekly_comparisions.R` : Run this for comparing data across ddPCR runs/weeks etc as a metaanalysis with plotting
+	- `2.1-make_html_plots.Rmd` : plotting multiple graphs into a html file - for single run/sets of runs (called by `2-calc..` script)
+	- `3.1-weekly_comparison plots.Rmd` : plotting multiple graphs into a html file - for the weekly comparisons (called by `3-weekly..` script)
+2. Minor tasks (_lots of them_) are modularized into functions, and written in multiple `.R` files in the `scripts_general functions` folder
+	- If you are ever looking for a specific function called by the program _(for debugging specific errors and such)_, and are confused which general_function script it is in: open `git bash` or `Terminal` in linux/mac and type `grep -r "plot_mean_sd" *.R` ; replace `plot_mean_sd` with the function/code snippet you are looking for. _This will search all the `.R` files in the current folder for this specific text._ 
+	- There are a couple of **custom plotting functions** using ggplot2 that do most of the plotting in the `.Rmd` scripts. The main advantage of these functions is that I put in defaults for frequently used kinds of plots so you can make many different plots with slight variants in the x_axis variable : `x_var`, y_axis variable = `y_var`, colour_variable = `colour_var`... quite easily with less repetitive code. **Definitely look through the arguments list of the plotting functions before using them/to troubleshoot for unexpected plotting errors.**
 
 ## Readme step by step guide
 ### Current workflow for COVID data analysis
@@ -48,7 +62,6 @@ a. Check that the DI water sample has a unique name and doesn't match with previ
 #### Directory map
 If you are running this set of scripts for the first time, all essential directories should be loaded by git automatically. If running additional functions, make sure that you mimic the directory structures mentioned below. These directories should exist in the folder in which the Rprojct file + all the scripts exist
 - qPCR analysis/Standards *only if running qPCR files with standards on them* (saving plot with standard curves)
-- require *WWTP_All_Results.csv* file (only if running 3-weekly_comparisions.R)
 
 #### Source data files
 Source data and metada is in google sheets, ask Prashant/Camille Mccall for access
