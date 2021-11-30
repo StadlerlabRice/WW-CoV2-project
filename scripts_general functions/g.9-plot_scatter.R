@@ -1,24 +1,52 @@
 
 # Scatter plot with a linear regression fit and equation
-# Almost generalized: Only need to make it work with grouping_var - accounting for NULL and presence of a variable...
 
-plot_scatter <- function(.data = processed_quant_data, 
-                         x_var = N1_multiplex, y_var = N2_multiplex, colour_var = NULL, shape_var = NULL,
-                         grouping_var = NULL, # CURRENTLY ONLY WORKS FOR NULL GROUP
-                         already_pivoted_data = 'no',
-                         title_text = title_name,
-                         
-                         show_y.equals.x_line = 'yes',
-                         text_for_equation = 'Rsquare', # choice: "Rsquare" or "full equation"
-                         measure_var = 'Copies_Per_Liter_WW',
-                         text_cols = minimal_label_columns,
-                         sample_var = str_c(samples_to_remove, '|NTC|Vaccine'), 
-                         exclude_sample = T)
+# currently plots x vs y for two different targets 
+# -- can be generalized to correlate other types as well - Ex: Maxwell vs chemagic
+# Almost generalized: Only need to make it work with grouping_var 
+# - accounting for NULL and presence of a variable...
+
+
+plot_scatter <- 
+  function(.data = processed_quant_data, # data to be plotted
+           
+           # Key variables to plot (after the data is pivoted into wide format)
+           x_var = `SARS CoV-2 N1`, # make this variable as the x-axis
+           y_var = `SARS CoV-2 N2`, # ..
+           colour_var = NULL, # Colour points/lines by this variable
+           shape_var = NULL, # Shape points by this variable
+           
+           # grouping_variables : If you want regressions within subsets of data
+           grouping_var = NULL, # CURRENTLY ONLY WORKS FOR NULL GROUP ; work in progress
+           # this is a little complex to calculate regressions on, but if you don't need the equation use the
+           # base plotting function after pivoting_wide the data yourself
+           
+           
+           # pivoting data into wide format
+           # If data is already in wide format with targets in each column
+           already_pivoted_data = 'no',
+           
+           # These variables will do the pivot_wider
+           measure_var = 'Copies_Per_Liter_WW', # this is the value that will be plotted across variables
+           text_cols = minimal_label_columns,
+           
+           # Plot labels and text
+           title_text = title_name,
+           
+           show_y.equals.x_line = 'yes',
+           text_for_equation = 'Rsquare', # choice: "Rsquare" or "full equation"
+           
+           
+           # filtering variables
+           sample_filtering_var = str_c(samples_to_remove, '|NTC|Vaccine'), # filtering Sample_name column
+           exclude_sample = T,
+           WWTP_filtering_var = '.*', exclude_WWTP = F # filtering the WWTP column
+  )
 
 { # Convenient handle for repetitive plotting in the same format; 
   
   
-  # Preliminaries
+  # Preliminaries ----
   
   
   # convert column names (target names) into string
@@ -27,19 +55,41 @@ plot_scatter <- function(.data = processed_quant_data,
   
   modx <- function(x) x # unimplemented feature: modifier in case this function gets transformed variables
   
+  
+  # check and pivot data ----
   if(already_pivoted_data == 'no')
   {  # filtering data for plotting according to function inputs
     .data_for_plot <- .data %>% 
-      select(all_of(text_cols), biological_replicates, all_of(measure_var)) %>% 
-      filter(str_detect(`Sample_name`, sample_var, negate = exclude_sample)) %>% # account for missing var
+      
+      # select relevant columns - need to ensure samples don't repeat
+      select(all_of(text_cols), any_of('biological_replicates'), all_of(measure_var)) %>% 
+      
+      # subsetting data with filter
+      filter(
+        .,
+        
+        # filter Sample_name column
+        if('Sample_name' %in% colnames(.)) { # filtering only if the column exists
+          str_detect(`Sample_name`, sample_filtering_var, negate = exclude_sample) }else TRUE,
+        
+        # filter WWTP column
+        if('WWTP' %in% colnames(.)) {
+          str_detect(WWTP, WWTP_filtering_var, negate = exclude_WWTP)} else TRUE 
+        
+      ) %>% # Useful to remove NTCs/STDs etc that could be non-unique and cause problems
+      
+      
+      # pivoting data into wide format - put targets next to each other
       pivot_wider(names_from = 'Target_Name', values_from = all_of(measure_var)) %>% # Target can be generalized?
-      ungroup() # why did you ungroup - for the lm ..?
+      ungroup() # Needs to be ungroup so that linear regression works for all samples together
+  
   } else .data_for_plot <- .data #%>%  # direct carrying of data to next steps
-  # {if(!is.null(grouping_var)) group_by(., {{grouping_var}}) else . } # DISABLED FOR CHECKING IF PLOTLY RUNS (GROUPS NOT WORKING RIGHT NOW
+  # {if(!is.null(grouping_var)) group_by(., {{grouping_var}}) else . } 
+  # DISABLED FOR CHECKING IF PLOTLY RUNS (GROUPS NOT WORKING RIGHT NOW
   
   
   
-  # error handling
+  # error handling ----
   
   # If plotting transformations of variables : Not fully implemented yet
   if(enexpr(x_var) %>% is.call()) {checkx <-  enexpr(x_var)[2] %>% paste(); }# modx <- eval(enexpr(x_var)[1])}
@@ -64,13 +114,16 @@ Check if x_var and y_var are present in .data')
   
   
   
-  # For linear regression data
+  # Linear regression ----
   
   # Making linear regression formula (source: https://stackoverflow.com/a/50054285/9049673)
   fmla <- new_formula(enexpr(y_var), enexpr(x_var))
   
   # Max and ranges for plotting
-  xyeq <- .data_for_plot %>% summarise(across(where(is.numeric), max, na.rm = T)) %>% select(all_of(c(checkx, checky))) %>% min() %>% {.*0.9} %>% modx()
+  xyeq <- .data_for_plot %>% 
+    summarise(across(where(is.numeric), max, na.rm = T)) %>% 
+    select(all_of(c(checkx, checky))) %>% min() %>% {.*0.9} %>% 
+    modx()
   
   # linear regression equation
   lin_reg_eqn <- .data_for_plot %>% mutate(across(all_of(c(checkx, checky)), ~if_else(.x == 0, NaN, .x))) %>% 
@@ -79,7 +132,7 @@ Check if x_var and y_var are present in .data')
   
   
   
-  # plotting part
+  # plotting part ----
   
   plt1 <- .data_for_plot %>% 
     ggplot(aes(x = {{x_var}}, y =  {{y_var}} )) +
@@ -88,7 +141,9 @@ Check if x_var and y_var are present in .data')
     # linear regression
     geom_smooth(method = 'lm') + # .. , mapping = aes(group = {{grouping_var}})  # DISABLED GROUPS 
     geom_text(data = . %>% summarise(across(where(is.numeric), max, na.rm = T) ),
-              # mapping = aes(group = {{grouping_var}}), # DISABLED FOR CHECKING IF PLOTLY RUNS (GROUPS NOT WORKING RIGHT NOW)
+              # mapping = aes(group = {{grouping_var}}), 
+              # DISABLED FOR CHECKING IF PLOTLY RUNS (GROUPS NOT WORKING RIGHT NOW)
+              
               label = lin_reg_eqn, parse = TRUE, show.legend = F, hjust = 'inward', nudge_x = -5) +
     
     # Dummy y = x line
