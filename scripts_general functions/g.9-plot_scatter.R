@@ -17,10 +17,8 @@ plot_scatter <-
            shape_var = NULL, # Shape points by this variable
            
            # grouping_variables : If you want regressions within subsets of data
-           grouping_var = NULL, # CURRENTLY ONLY WORKS FOR NULL GROUP ; work in progress
-           # this is a little complex to calculate regressions on, but if you don't need the equation use the
-           # base plotting function after pivoting_wide the data yourself
-           
+           grouping_var = NULL, # Does linear regression within each group
+            
            
            # pivoting data into wide format
            # If data is already in wide format with targets in each column
@@ -57,7 +55,7 @@ plot_scatter <-
   
   
   # check and pivot data ----
-  if(already_pivoted_data == 'no')
+  {if(already_pivoted_data == 'no')
   {  # filtering data for plotting according to function inputs
     .data_for_plot <- .data %>% 
       
@@ -83,8 +81,13 @@ plot_scatter <-
       pivot_wider(names_from = 'Target_Name', values_from = all_of(measure_var)) %>% # Target can be generalized?
       ungroup() # Needs to be ungroup so that linear regression works for all samples together
   
-  } else .data_for_plot <- .data #%>%  # direct carrying of data to next steps
-  # {if(!is.null(grouping_var)) group_by(., {{grouping_var}}) else . } 
+  } else .data_for_plot <- .data } %>%  # direct carrying of data to next steps
+    
+    # {if(!is.null(grouping_var)) group_by(., {{grouping_var}}) else . } 
+    # is.null will evaluate it, so it doesn't work this way
+    
+    group_by(., {{grouping_var}})  
+    
   # DISABLED FOR CHECKING IF PLOTLY RUNS (GROUPS NOT WORKING RIGHT NOW
   
   
@@ -126,7 +129,9 @@ Check if x_var and y_var are present in .data')
     modx()
   
   # linear regression equation
-  lin_reg_eqn <- .data_for_plot %>% mutate(across(all_of(c(checkx, checky)), ~if_else(.x == 0, NaN, .x))) %>% 
+  lin_reg_eqn <- .data_for_plot %>% 
+    mutate(across(all_of(c(checkx, checky)), ~if_else(.x == 0, NaN, .x))) %>% 
+    
     lm(fmla, data = ., na.action = na.exclude) %>% lm_eqn(., trig = text_for_equation)
   
   
@@ -139,10 +144,12 @@ Check if x_var and y_var are present in .data')
     geom_point(size = 2, mapping = aes(colour = {{colour_var}}, shape = {{shape_var}})) +
     
     # linear regression
-    geom_smooth(method = 'lm') + # .. , mapping = aes(group = {{grouping_var}})  # DISABLED GROUPS 
+    geom_smooth(method = 'lm', 
+                mapping = aes(group = {{grouping_var}}, # does linear regression within group
+                              colour = as.factor({{grouping_var}}))) +  # plot as discrete colours
+    
     geom_text(data = . %>% summarise(across(where(is.numeric), max, na.rm = T) ),
-              # mapping = aes(group = {{grouping_var}}), 
-              # DISABLED FOR CHECKING IF PLOTLY RUNS (GROUPS NOT WORKING RIGHT NOW)
+              mapping = aes(group = {{grouping_var}}),
               
               label = lin_reg_eqn, parse = TRUE, show.legend = F, hjust = 'inward', nudge_x = -5) +
     
