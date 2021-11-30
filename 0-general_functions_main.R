@@ -70,16 +70,27 @@ y_namr_test <- list( 'a2' = expression(paste('this is a ', mu, 'L')),
 
 
 # test ggplot
-a_plt <- ggplot(a, aes(a1, a2, colour = a3)) + 
-  geom_point() + 
-  geom_line() + 
+a_plt <- ggplot(a, aes(a1, a2, colour = a3)) +
+  geom_point() +
+  geom_line() +
   ylab(y_namr_test[['a4']])
 
 
 # this is a dummy function to provide an environment to test quosures, unquoting and things like that
-dumfun <- function(a, var_a = a2, var_b = a3, c_var = 'a1', d_var = NULL)
+dumfun <- function(.data = a, var_a = a2, var_b = a3, 
+                   var_c = NULL, d_var = NULL)
 {   
-  d_var %<>% {if(is.null(.)) expr(c(!!var_a, !!var_b)) else .}
+  print('in dubfun') # to set breakpoint
   
-  a %>% select(!!d_var)
+  ## testing if c(..1, ..2) can be done using quosures
+  # create a new variable using quosures
+  d_var %<>% {if(is.null(.)) expr(c(enexpr(var_a), enexpr(var_b))) else .}
+  
+  # use the new variable to subset data
+  select(.data, !!d_var)
+  
+  
+  ## check if null can be differentiated from a variable without eval
+  is.null(var_a)
+  # Seems like group_by just works with !!enexpr(var_c) if NULL or otherwise!
 }
