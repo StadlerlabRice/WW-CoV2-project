@@ -45,23 +45,23 @@ quant_data <- bind_rows(list_quant_data) %>%
 
 # Get volumes data from google sheet : "Sample registry"
 volumes.data_registry <- 
-  read_sheet(sheeturls$sample_registry , 
-             sheet = 'Concentrated samples',
-             range = 'B:J', # specify range
-             col_types = 'ccccnnn-n') %>% # pre-specify column types
+  range_speedread(ss = sheeturls$sample_registry,  # this is 20x faster than read_sheet!
+                  sheet = 'Concentrated samples',
+                  range = 'B:I', # specify range to read
+                  col_types = 'ccccnnnc')  %>% # pre-specify column types within the range
   
   # rename col names
-  rename('Received_WW_vol' = `Total WW vol measured (ml)`, 
+  rename('Received_WW_vol' = `Total WW volume received (ml)`, 
          'Label_tube' = `Label on tube`, 
         Filtered_WW_vol = `WW volume filtered (ml)`,
          Vaccine_ID = `Stock ID of Spike`,
          'Biobot_id' = `Biobot/other ID`,
          WW_weight = `Total WW weight measured (kg)`,
-        Sample_Type = `Grab vs Composite`) %>% 
+        Sample_Type = `Grab vs Composite`,
+        No_of_Hours_Missed = `HHD Notes (# of samples missed/hours)`) %>% 
   
-  mutate('Received_WW_vol' = coalesce(Received_WW_vol, `Total WW volume received (ml)`) ) %>% 
-  
-  select(Received_WW_vol, Label_tube,Filtered_WW_vol, Vaccine_ID, `Biobot_id`, WW_weight, Sample_Type) %>% # select only the useful columns
+  select(Received_WW_vol, Label_tube,Filtered_WW_vol, Vaccine_ID, 
+         `Biobot_id`, WW_weight, Sample_Type, No_of_Hours_Missed) %>% # select only the useful columns
   
   distinct() %>% # for removing repeated data in early stuff, before 608 (interferes with the merging of volumes for same bottles)
   mutate_at('Label_tube', ~str_remove_all(., " ")) %>% 
@@ -119,7 +119,8 @@ processed_quant_data <- meta.attached_quant_data %>%
   mutate(Copies_Per_Liter_WW = Copies_per_uL_RNA *(1e6/300) * (elution_volume/Filtered_WW_vol), # Chemagic concentration factor = 300 
          Detection_Limit = as.numeric(LimitOfDet * (1e6/300) * (elution_volume/Filtered_WW_vol) ),  # Chemagic concentration factor = 300 
          
-         PoissonConfMax_Per_Liter_WW = PoissonConfMax_per_uL_RNA *(1e6/300) * (elution_volume/Filtered_WW_vol),  # Poisson confidence intervals in copies/L WW
+         # Poisson confidence intervals in copies/L WW
+         PoissonConfMax_Per_Liter_WW = PoissonConfMax_per_uL_RNA *(1e6/300) * (elution_volume/Filtered_WW_vol),  
          PoissonConfMin_Per_Liter_WW = PoissonConfMin_per_uL_RNA *(1e6/300) * (elution_volume/Filtered_WW_vol),
          
          # conditional calculations reg surrogate spiked virus
@@ -253,7 +254,8 @@ missing_values_sample_registry <- presentable_data %>%
 
 if(missing_values_sample_registry %>% plyr::empty() %>% !.) 
   {View(missing_values_sample_registry)
-  proceed_with_errors_key <- menu(c('Yes', 'No'), title = 'Missing values identified in the sample registry : WW volume extracted (ml) / Filtered_ww_vol in this table,
+  proceed_with_errors_key <- menu(c('Yes', 'No'), 
+  title = 'Missing values identified in the sample registry : WW volume extracted (ml) / Filtered_ww_vol in this table,
 check the data output in the console and choose if you wish to continue processing data, by assuming 50 ml default')
 
   if(proceed_with_errors_key == 2) stop("Cancel selected, script aborted.")
@@ -291,8 +293,9 @@ if(HHD_data_output)
              
              'Recovery_Rate' = `Percentage_recovery_BCoV`) %>%
           
+          # amended 10/26/21 - removed CIs from HHD data
           select(-contains('Vol'), -Surrogate_virus_input_per.L.WW, -'Well Position', 
-                 -PoissonConfMax_Per_Liter_WW, -PoissonConfMin_Per_Liter_WW, -PoissonConfMax_per_uL, -PoissonConfMin_per_uL) # amended 10/26/21 - removed CIs from HHD data 
+                 -PoissonConfMax_Per_Liter_WW, -PoissonConfMin_Per_Liter_WW, -PoissonConfMax_per_uL, -PoissonConfMin_per_uL)  
       }
     }
   
@@ -313,7 +316,9 @@ if(HHD_data_output)
   
   # Write data if not empty
   if(present_manhole_samples %>% plyr::empty() %>% !.){
-    check_ok_and_write(present_manhole_samples, sheeturls$HHD_data, str_c(title_name, ' -manhole')) # save results to a google sheet, ask for overwrite
+    
+    # save results to a google sheet, ask for overwrite
+    check_ok_and_write(present_manhole_samples, sheeturls$HHD_data, str_c(title_name, ' -manhole')) 
     write_csv(present_manhole_samples, str_c('excel files/Weekly data to HHD/', title_name, ' -manhole.csv'), na = '') # output CSV file
   }
   
@@ -393,42 +398,16 @@ df_run_log <- t(run_log) %>% as_tibble(.name_repair = 'unique') %>%  # Transpose
 # Attach run log to the same sheet as the input
 sheet_append(ss = sheeturls$user_inputs, data = df_run_log, title_name)
 
-# Summary and long_format ------------------------------------
-# # For ease of plotting data with mean and standard deviations
-# 
-# 
-# # Extract minimal columns from processed data (good for running averages and std deviations for plotting)
-# processed_minimal = list( raw.dat = processed_quant_data %>% 
-#                             select(all_of(minimal_label_columns), where(is.numeric), -matches('vol')) %>% 
-#                             rename(Percentage.recovery.BCoV = 'Percentage_recovery_BCoV')) # removing underscores to enable adding mean, sd prefixes in summarize
-# # Group by all the text columns and calculate mean and standard deviation for biological replicates
-# processed_minimal$summ.dat <- processed_minimal$raw.dat %>% 
-#   group_by_at(all_of(minimal_label_columns)) %>% 
-#   summarize_all(.funs = lst(mean, sd), na.rm = T)
-# 
-# # Convert the above minimal data into long format (convenient for plotting multiple data types on the same plot)
-# long_processed_minimal <- processed_minimal %>% map(pivot_longer, cols = where(is.numeric),
-#                                                     names_to = 'Measurement', values_to = 'value')                                                   
-# long_processed_minimal$summ.dat %<>% separate(Measurement, into = c('Measurement','val'),"_") %>% 
-#   pivot_wider(names_from = val, values_from = value) # Seperate mean and variance and group by variable of measurement
-# 
-# # Adding back the underscore in columns (ex: Percentage_recovery_BCoV)
-# processed_minimal %<>% map( ~ rename(.x, Percentage_recovery_BCoV = contains('Percentage.recovery.BCoV')))
-# long_processed_minimal %<>% map(
-#   ~ mutate(.x, across (Measurement,
-#                        ~ str_replace(.x, 'Percentage.recovery.BCoV', 'Percentage_recovery_BCoV')
-#   )
-#   )
-# )
+
+# Plotting into html -----------------------------------------------------------------------
 
 # Designating columns to maintain constant when pivoting for scatter plots
 minimal_label_columns <- c('Target_Name', 'Sample_name', 'WWTP') # for scatter plots
 
 
-# Plotting into html -----------------------------------------------------------------------
-
 # calling r markdown file
-rmarkdown::render('2.1-make_html_plots.rmd', output_file = str_c('./qPCR analysis/', title_name, '.html'))
+rmarkdown::render('2.1-make_html_plots.rmd', 
+                  output_file = str_c('./qPCR analysis/', title_name, '.html'))
 
 
 # Complete data output ----
@@ -437,7 +416,9 @@ rmarkdown::render('2.1-make_html_plots.rmd', output_file = str_c('./qPCR analysi
 # errors have been noticed for curl::memory limitation while running from Mac/Camille
 
 # Output data - including controls
-write_csv(present_only_WW, file = str_c('excel files/Complete data/', title_name, '.csv'), na = '') # output csv file of all the data
+write_csv(present_only_WW, 
+          file = str_c('excel files/Complete data/', title_name, '.csv'), 
+          na = '') # output csv file of all the data
 
 # save to google sheet, ignore if taking longer than 20 seconds (for Camille's mac problem with google sheets)
 check_ok_and_write(presentable_data, sheeturls$complete_data, title_name) # save results to a google sheet, ask for overwrite
