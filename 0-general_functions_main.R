@@ -13,6 +13,9 @@ library(rlang) # for special non standard evaluation purposes (for PK..)
 library(lubridate) # for dates
 library(plotly) # for interactive plots
 
+# pre-authorize googlesheets4 authentication (stored in cache..)
+options(gargle_oauth_email = TRUE) 
+# reference: https://gargle.r-lib.org/articles/non-interactive-auth.html#provide-a-token-or-pre-authorize-token-discovery
 
 # google sheets ----
 sheeturls <- list(templates = 'https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=478762118',
