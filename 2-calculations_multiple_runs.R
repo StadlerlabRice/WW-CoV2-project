@@ -181,8 +181,8 @@ presentable_data <- processed_quant_data %>%
   
   # Adding new variables, modifying existing variables
   mutate(Date = Sample_name %>% 
-           str_extract('[:digit:]{3,4}') %>% # Extract the date component of the sample name
-           str_replace('([:digit:]+)([:digit:]{2})', '\\1/\\2/21') ,  # format it as mm/dd/yy
+           str_extract('[:digit:]{6}') %>% # Extract the date component of the sample name : 6 digits 'mmddyy'
+           str_replace('([:digit:]{2})([:digit:]{2})([:digit:]{2})', '\\1/\\2/\\3') ,  # format it as mm/dd/yy
          Lab = 'R', 
          Comments = NA) %>%  # add new columns asked by HHD
   
