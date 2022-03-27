@@ -3,8 +3,12 @@
 
 # currently plots x vs y for two different targets 
 # -- can be generalized to correlate other types as well - Ex: Maxwell vs chemagic
-# Almost generalized: Only need to make it work with grouping_var 
-# - accounting for NULL and presence of a variable...
+
+# Almost generalized: grouping_var enabled for NULL and any single variable
+# - fixed a bug with grouped data in xyeq - not tested in this repo
+# - lm eqns is the only bottleneck
+# - Need to make and space out equations for each group..
+
 
 
 plot_scatter <- 
@@ -86,11 +90,8 @@ plot_scatter <-
     # {if(!is.null(grouping_var)) group_by(., {{grouping_var}}) else . } 
     # is.null will evaluate it, so it doesn't work this way
     
-    group_by(., {{grouping_var}})  
+    group_by(., {{grouping_var}})  # works even when NULL
     
-  # DISABLED FOR CHECKING IF PLOTLY RUNS (GROUPS NOT WORKING RIGHT NOW
-  
-  
   
   # error handling ----
   
@@ -119,14 +120,18 @@ Check if x_var and y_var are present in .data')
   
   # Linear regression ----
   
-  # Making linear regression formula (source: https://stackoverflow.com/a/50054285/9049673)
+  # Making linear regression formula (wrapper below this script)
   fmla <- new_formula(enexpr(y_var), enexpr(x_var))
   
   # Max and ranges for plotting
+  # determine the optimal values for drawing y == x line
   xyeq <- .data_for_plot %>% 
-    summarise(across(where(is.numeric), max, na.rm = T)) %>% 
-    select(all_of(c(checkx, checky))) %>% min() %>% {.*0.9} %>% 
+    summarise(across(where(is.numeric), max, na.rm = T)) %>% # identify the maximum values among y and x axis
+    
+    ungroup() %>% # need to ungroup data in case it was grouped so that the 'select' works
+    select(all_of(c(checkx, checky))) %>% min() %>% {.*0.9} %>% # record 90% of the min among the y and x axes
     modx()
+  
   
   # linear regression equation
   lin_reg_eqn <- .data_for_plot %>% 
@@ -162,3 +167,14 @@ Check if x_var and y_var are present in .data')
     ggtitle(title_text, subtitle = measure_var)
 }
 
+
+# formula function ----
+
+# wrapper for making formula (y ~ x)
+# Making linear regression formula (source: https://stackoverflow.com/a/50054285/9049673)
+
+new_formula <- function(y1, x1)
+{
+  flma <- as.formula(paste(substitute(y1), "~", substitute(x1)))  
+  
+}
