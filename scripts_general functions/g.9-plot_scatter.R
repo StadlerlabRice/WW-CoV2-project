@@ -121,7 +121,10 @@ Check if x_var and y_var are present in .data')
   # Linear regression ----
   
   # Making linear regression formula (wrapper below this script)
-  fmla <- new_formula(enexpr(y_var), enexpr(x_var))
+  fmla <- as.formula(paste(substitute(y_var), # make a formula y ~ x
+                           '~',
+                           substitute(x_var),
+                           collapse = ' '))
   
   # Max and ranges for plotting
   # determine the optimal values for drawing y == x line
