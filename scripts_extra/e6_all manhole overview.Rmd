@@ -1,0 +1,49 @@
+---
+author: "Prashant Kalvapalle"
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+output: 
+  html_document:
+  theme: flatly
+toc: TRUE
+toc_float: TRUE
+---
+  
+  ---
+  title: `r title_name`
+---
+  
+  ```{r setup, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 12, fig.height = 4)
+
+```
+
+## Goal of the analysis
+
+Visualizing SARS CoV2-N1,N2 in manhole samples till 7-April-22
+
+## Linear plot 
+
+Y axis in units of copies per litre of WW
+
+```{r all_plot}
+
+pltbox
+
+plotly::ggplotly(pltbox, dynamicTicks = TRUE)
+
+```
+
+
+## Log scale y axis
+
+```{r copiesrna}
+
+pltbox_logy <- pltbox %>% 
+  format_logscale_y() %>% 
+  print()
+
+plotly::ggplotly(pltbox_logy, dynamicTicks = TRUE)
+
+```
+
