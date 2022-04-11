@@ -17,7 +17,7 @@ Here is the relevant metadata from Rebecca. `C:\Users\new\Box Sync\Stadler lab\D
 
 I would like to plot the following in box and whisker plots (exclude “negatives” and only plot Rice data):
 
-1. [ ] Schools grouped by “Grade_Level” (from HISD_school_list_clean)
+1. [x] Schools grouped by “Grade_Level” (from HISD_school_list_clean)
 2. [ ] Schools individually, ordered by enrollment on x-axis from largest to smallest
 3. [ ] Lift stations (all combined) vs WWTPs (all combined) —> from March 2021 to present
 4. [ ] Lift stations individually, ordered by population size on x axis from largest to smallest (pop size in “Rice_LS_All_Results”)

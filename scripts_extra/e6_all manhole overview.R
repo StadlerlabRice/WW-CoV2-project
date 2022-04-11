@@ -9,7 +9,7 @@ source('./0-general_functions_main.R') # Source the general_functions file
 title_name <- 'Overview Manholes_7-April-22'
   
 # Load file
-manhole_data <- read_xlsx('excel files/Wastewater Surveillance Manhole Report 03282022.xlsx')
+manhole_data <- read_xlsx('excel files/boxplots_for_LS_7-4-22/Wastewater Surveillance Manhole Report 03282022.xlsx')
 
 # View data
 # view(manhole_data)
@@ -27,7 +27,7 @@ manhole_rice.data <-
                values_to = 'Copies_per_litre')
 
 # function to label on plots
-give.n <- function(x){
+give.n <- function(x){ # Copied from stackoverflow.. 
   return(c(y = mean(x), label = length(x)))
 }
 
