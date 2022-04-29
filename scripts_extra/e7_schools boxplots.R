@@ -6,19 +6,25 @@
 source('./0-general_functions_main.R') # Source the general_functions file
 
 
-title_name <- 'Schools by enrollment_7-April-22'
+title_name <- 'Schools ordered by enrollment_7-April-22'
 
-# Load file
+# Load files ----
 all_data <- read_xlsx('excel files/boxplots_for_LS_7-4-22/Wastewater Surveillance manhole Report 03282022.xlsx')
 
-school_metadata <- read_xlsx('excel files/boxplots_for_LS_7-4-22/HISD_school_list_clean.xlsx') %>% 
-  
-  # join to get shortened name of the schools as listed in the data file
-  right_join(read_xlsx('excel files/boxplots_for_LS_7-4-22/Wastewater Schools in PCR testing program - SCHOOL ID - 02142022.xlsx'),
-             by = 'school_id')
+# school_metadata <- read_xlsx('excel files/boxplots_for_LS_7-4-22/HISD_school_list_clean.xlsx') %>% 
+#   
+#   # join to get shortened name of the schools as listed in the data file
+#   right_join(read_xlsx('excel files/boxplots_for_LS_7-4-22/Wastewater Schools in PCR testing program - SCHOOL ID - 02142022.xlsx'),
+#              by = 'school_id')
+
+# loading the custom generated file with school names and symbols
+school_metadata <- read_csv('excel files/boxplots_for_LS_7-4-22/schools_metadata.csv')
 
 # View data
 # view(school_data)
+
+
+# polishing ----
 
 # filter rice only data that is positive or inconclusive
 school_rice.data <- 
@@ -35,6 +41,8 @@ school_rice.data <-
   
   # Order by enrollment
   arrange(Enrollment_as_Oct2019) %>% 
+  mutate(across(c('Facility', 'Symbol'), # freeze the order of samples 
+                ~ fct_inorder(.x))) %>% 
 
   pivot_longer(cols = starts_with('Rep'),
                names_to = 'Replicate',
@@ -47,7 +55,9 @@ give.n <- function(x){
 }
 
 
-# make plot
+# Plots ----
+
+# make box and dot plot
 plt.general <- 
   {ggplot(school_rice.data,
           aes(x = Replicate, y = Copies_per_litre,
@@ -81,15 +91,16 @@ plt.general <-
   print()
 
 
-# Each school - ordered by enrollment 
-plt.eachschool <- 
+# Each school - by enrollment 
+plt.eachschoolenrollment <- 
   {ggplot(school_rice.data,
           aes(x = Enrollment_as_Oct2019, y = Copies_per_litre,
               fill = Replicate,
               label = Facility)) + 
       
       # boxplot
-      # geom_boxplot(outlier.shape = NA, alpha = .6) +
+      # geom_boxplot(mapping = aes(colour = NA),
+      #              outlier.shape = NA, alpha = .4) +
       
       # points, black outline, semi transparent, position matches the boxplot, scattered along x-axis for visual 
       geom_point(shape = 21,
@@ -114,11 +125,44 @@ plt.eachschool <-
   
   print()
 
+
+# plot by each school - ordered by enrollment
+plt.eachschool <- 
+  {ggplot(school_rice.data,
+          aes(x = Copies_per_litre, y = Symbol,
+              colour = Replicate,
+              label = Facility)) + 
+      
+      # points, black outline, semi transparent, position matches the boxplot, scattered along x-axis for visual 
+      geom_point(alpha = 0.4) + 
+      
+      # annotations
+      annotation_logticks(sides = 'b') +  # tick marks to indicate log y axis
+      
+      geom_text(aes(x = 3e2, label = Enrollment_as_Oct2019),
+                colour = 'grey',
+                show.legend = F) + 
+      
+      ggtitle('School data by enrollment : till 7th April, 2022',
+              subtitle = 'School enrollment as of Oct2019 shown on the left') +
+      
+      theme(legend.position = 'top')
+    
+  } %>% 
+  
+  format_logscale_x() %>%
+  
+  print()
+
+
 # Save plots ----
 
 ggsave(str_c('qPCR analysis/', title_name, '.png'),
-       width = 10, height = 8)
+       width = 6, height = 8)
 
 
 # save plots into html file
-# Abandoned
+# calling r markdown file -- Abandoned for now
+rmarkdown::render('scripts_extra/e6_all school overview.Rmd', 
+                  output_file = str_c('./qPCR analysis/', title_name, '.html'))
+

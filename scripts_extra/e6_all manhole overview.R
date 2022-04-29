@@ -1,4 +1,6 @@
 # Plotting all manhole samples from collated data sheet
+# as a boxplot; categorized by the type of Facility : school, Jail, Shelter, Nursing home 
+
 # Prashant
 # 7 April 2022
 
