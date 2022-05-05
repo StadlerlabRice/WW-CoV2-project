@@ -65,6 +65,8 @@ map(str_c('./scripts_general functions/', list_of_general_functions),
 # dummy test tibble
 # test tibble with numeric, char and a factor
 a <- tibble(a1 = 1:6, a2 = 6:1, a3 = rep(c('a', 'b'),3), a4 = as_factor(5:10))
+ab <- tibble(a1 = rep(1:5, 2), 
+             a2 = c(2 * 1:5, 3 * 1:5), a3 = rep(c('a', 'b'), each = 5))
 
 
 # expression to test on plotting
