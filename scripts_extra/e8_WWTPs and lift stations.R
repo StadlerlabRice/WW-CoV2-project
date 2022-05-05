@@ -438,9 +438,9 @@ plot_LS_time.series <- function(.df)
       scale_size_identity() # ensures line thickness follows weights above
     
     
-  } %>% 
+  } #%>% 
     
-    print() # show plot
+    # print() # show plot
   
 }
 
@@ -455,5 +455,5 @@ ggsave(str_c('qPCR analysis/', 'Lift stations by name_7-April-22', '.png'),
 # save plots into html file
 # calling r markdown file -- Abandoned for now
 rmarkdown::render('scripts_extra/e8_html_plots_timeseries.Rmd', 
-                  output_file = str_c('../qPCR analysis/', 'Timeseries:Liftstations_7-April-22', '.html'))
+                  output_file = str_c('../qPCR analysis/', 'Timeseries-Liftstations_7-April-22', '.html'))
 

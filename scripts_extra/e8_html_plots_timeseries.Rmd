@@ -27,7 +27,7 @@ Y axis in units of copies per litre of WW
 
 ```{r all_plot}
 
-all_plts <- map2(LS_WW_avg_nest$data, # map the plot for each primary wwtp
+map2(LS_WW_avg_nest$data, # map the plot for each primary wwtp
                  LS_WW_avg_nest$Primary_WWTP, # this is used for labelling the plots
   
     ~ plot_LS_time.series(.x) + 
@@ -45,3 +45,10 @@ all_plts <- map2(LS_WW_avg_nest$data, # map the plot for each primary wwtp
 
 ```
 
+```{r testing}
+
+tst <- LS_WW_avg_nest$data[[1]]
+
+plot_LS_time.series(tst) + scale_colour_viridis_d()
+
+```
