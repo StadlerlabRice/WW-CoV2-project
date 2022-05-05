@@ -95,3 +95,33 @@ compl_data_renamer <- function(.df)
 # Acquire all the pieces of the data : read saved raw qPCR results from a google sheet
 # list_rawqpcr <- map(read_these_sheets, ~ read_sheet(sheeturls$complete_data , sheet = .x) %>% 
 #                       compl_data_renamer) 
+
+
+# Rename Lift station abbreviations ----
+
+# Some Lift stations have different abbreviations before they were standardized;
+# This function will change them all to as they are in the Biobot Sample IDs sheet/All manhole subsheet
+# https://docs.google.com/spreadsheets/d/1ghb_GjTS4yMFbzb65NskAlm-2Gb5M4SNYi4FHE4YVyI/edit#gid=122083893
+
+rename_old_LS_abbrs <- function(.vector)
+{
+  str_replace_all(.vector,
+                  
+                  # List the abbreviations to be changed as show below 
+                  # c('old_abbreviations' = 'new_abbreviations', ... ) (old abbrv is a REGEX)
+                  c('ALIEC' = 'ALIEF',
+                    'SPOL' = 'SPO1',
+                    'WESTH|Westhollow' = 'WHW',
+                    'SCOTT' = 'SCOTT1',
+                    'Worem' = 'WEOR',
+                    'BISSA' = 'BISS4',
+                    'RICH1|Richmond' = 'RICH',
+                    'WCID$' = 'WCID78',
+                    'Woodw' = 'WWAY',
+                    'nELDR' = 'NELD',
+                    'StellaLink' = 'STEL',
+                    'Westpark' = 'WPAR',
+                    'CLN' = 'CLN2')
+                  )
+  
+}
