@@ -1,0 +1,47 @@
+---
+author: "Prashant Kalvapalle"
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+output: 
+  html_document:
+  theme: flatly
+toc: TRUE
+toc_float: TRUE
+title: "Timeseries:Liftstations_7-April-22"
+---
+  
+```{r setup, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 12, fig.height = 4)
+
+```
+
+## Goal of the analysis
+
+Visualizing timeseries of SARS CoV2-N1,N2 in Lift station samples, in comparison to their primary wastewater treatment plant. Data for N1, N2 and both replicate samples have been averaged before plotting.
+
+Dates: March 2021 till 7-April-22
+
+## Timeseries plots - Static
+
+Y axis in units of copies per litre of WW
+
+```{r all_plot}
+
+all_plts <- map2(LS_WW_avg_nest$data, # map the plot for each primary wwtp
+                 LS_WW_avg_nest$Primary_WWTP, # this is used for labelling the plots
+  
+    ~ plot_LS_time.series(.x) + 
+      
+      # for 69 and Sims Bayou that have many LS, change the colour scheme that can accomodate > 8 colours
+      {if(str_detect(.$abbr_primary_wwtp %>% unique(), 'SB-merg|69')) scale_colour_viridis_d()} +
+      
+      # Add plot title
+      ggtitle(.y)
+      
+)
+
+
+# plotly::ggplotly(pltbox, dynamicTicks = TRUE)
+
+```
+
