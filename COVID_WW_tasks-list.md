@@ -21,6 +21,15 @@ I would like to plot the following in box and whisker plots (exclude “negative
 2. [x] Schools individually, ordered by enrollment on x-axis from largest to smallest
 3. [x] Lift stations (all combined) vs WWTPs (all combined) —> from **March 2021** to present
 4. [x]  Lift stations individually, ordered by population size on x axis from largest to smallest (pop size in “Rice_LS_All_Results”)
-5. [ ] WWTPs individually, ordered by population size on x axis from largest to smallest (pop size in “Rice_WWTP_All_Results”), March 2021 - present :: *Plot w abbreviated names too*
+5. [x] WWTPs individually, ordered by population size on x axis from largest to smallest (pop size in “Rice_WWTP_All_Results”), March 2021 - present :: *Plot w abbreviated names too*
 	- Show median; Vertical plot ; ALso filter by only N1_replicate1 
-6. [ ] Lift stations nested within WWTPs (so each LS individually, next to the corresponding WWTP that it feeds into. The information about which LS feeds into which WWTP (Primary_WWTP) is in the “LS Facility Name Master List” spreadsheet.
+6. [x] Lift stations nested within WWTPs (so each LS individually, next to the corresponding WWTP that it feeds into. The information about which LS feeds into wsshich WWTP (Primary_WWTP) is in the “LS Facility Name Master List” spreadsheet.
+	- Need SIMS BAYOU matched to both north and south
+	- How do we plot this?
+	- How to regex match 
+7. [ ] I'd like to see these last set of plots as a time series. So: concentration (y) vs. time (x) with each source WWTP and its feeding lift stations on the same plot. Only plot average for each date (can do just N2 or average all N1 and N2). Connect the averages for each date with a line for each site. If the value is below the LOD, put a circle or shade it differently.
+	- How do you show multiple colours with independent legend for each facet?
+	- Make independent plots using a for loop.. and save into a .html.. 
+
+- [x] Attach abbreviations -- from Biobot google sheet?
+- [x] CHange CLN to CLN2 in Lift station data ; and 13 others..

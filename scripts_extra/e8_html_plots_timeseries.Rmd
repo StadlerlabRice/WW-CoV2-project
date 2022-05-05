@@ -33,7 +33,7 @@ all_plts <- map2(LS_WW_avg_nest$data, # map the plot for each primary wwtp
     ~ plot_LS_time.series(.x) + 
       
       # for 69 and Sims Bayou that have many LS, change the colour scheme that can accomodate > 8 colours
-      {if(str_detect(.$abbr_primary_wwtp %>% unique(), 'SB-merg|69')) scale_colour_viridis_d()} +
+      {if(str_detect(.$abbr_primary_wwtp %>% unique(), 'SB-merg|69')) scale_colour_viridis_d() else NULL} +
       
       # Add plot title
       ggtitle(.y)
