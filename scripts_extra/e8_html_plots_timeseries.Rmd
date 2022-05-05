@@ -27,23 +27,52 @@ Y axis in units of copies per litre of WW
 
 ```{r all_plot}
 
-map2(LS_WW_avg_nest$data, # map the plot for each primary wwtp
-                 LS_WW_avg_nest$Primary_WWTP, # this is used for labelling the plots
+all_plots <- 
+  LS_WW_avg_nest %>% 
   
-    ~ plot_LS_time.series(.x) + 
-      
-      # for 69 and Sims Bayou that have many LS, change the colour scheme that can accomodate > 8 colours
-      {if(str_detect(.$abbr_primary_wwtp %>% unique(), 'SB-merg|69')) scale_colour_viridis_d() else NULL} +
-      
-      # Add plot title
-      ggtitle(.y)
-      
-)
+  mutate(
+    plots = map2(data, # map the plot for each primary wwtp
+                 Primary_WWTP, # this is used for labelling the plots
+                 
+                 ~ {plot_LS_time.series(.x) + 
+                   
+                   # for locations that have many LS, change the colour scheme that can accomodate > 8 colours
+                   # 69 and Sims Bayou, and southwest..
+                   {if( (.$Facility %>% unique() %>% length) > 8) scale_colour_viridis_d() else NULL} +
+                   
+                   # Add plot title
+                   ggtitle(.y)} %>% 
+                   
+                   # print the plot
+                   print()
+                 )
+        ) %>% 
+  
+  select(-data) # remove the data, to avoid redundancy and too much storage
 
 
 # plotly::ggplotly(pltbox, dynamicTicks = TRUE)
 
 ```
+
+## Interactive plots
+
+```{r interactive_all}
+
+large_wwtp_plots <- filter(all_plots, str_detect(Primary_WWTP, '69|SOUTHWEST|SIMS BAYOU'))
+
+ggplotly(large_wwtp_plots$plots[[1]], dynamicTicks = TRUE)
+ggplotly(large_wwtp_plots$plots[[2]], dynamicTicks = TRUE)
+ggplotly(large_wwtp_plots$plots[[3]], dynamicTicks = TRUE)
+
+# vectorized ggplotly does not work, only shows the static plot
+# map(large_wwtp_plots$plots,
+#       ~ ggplotly(.x, dynamicTicks = TRUE) %>% 
+#       print())
+
+
+```
+
 
 ```{r testing}
 
