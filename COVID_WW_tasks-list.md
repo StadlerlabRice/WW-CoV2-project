@@ -34,13 +34,21 @@ I would like to plot the following in box and whisker plots (exclude “negative
 - [x] Attach abbreviations -- from Biobot google sheet?
 - [x] CHange CLN to CLN2 in Lift station data ; and 13 others..
 
-
+---
 # Plots updated for Lauren: 22/6/22
 
 1. Setup R-scripts for weekly analysis :: Friday morning (24/6/22)
-2. Plot changes: Avg N12, replicates
+2. Recreate plots, average all N1 and N2 measurements (N12, replicates) to reduce visual clutter
+_Plot all samples independant of LOD, maybe indicate LOD location(s) if useful.._
+- [x] For plot with elementary, middle, and highschool:  School data by dots--enrollment, bars--grade
+	 - Get rid of Elem/Secondary  
+	 - Order the grade levels : youngest to oldest  
 
---- Something about imputing data below the LOD? -- someone is giving imputed data, which we will work on later with the same pipeline/plots
--   School data by dots--enrollment, bars--grade (remove "elementary/secondary" etc. ; order the grade levels)
--   Plot the school by grade --bars ; for influenza data too : Wastewa Flu surveillance manhole report 05092022 -- for flu only use infA (Rep1,2_A) since B's are 0
--   Plot SARS COV2 and FLU on the same data : in two distributions
+For flu data, only use Influenza A results (Rep1_A and Rep2_A)  
+> Wastewater Flu surveillance manhole report 05092022
+- Create plot of flu data organized by grade level  
+- Create boxplot of all SARS CoV 2 and flu data
+-   Plot SARS COV2 and FLU - two distributions side by side
+
+----------
+Recreate plots, average all N1 and N2 measurements  

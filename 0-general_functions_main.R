@@ -30,6 +30,11 @@ sheeturls <- list(templates = 'https://docs.google.com/spreadsheets/d/19oRiRcRVS
                   HHD_data = 'https://docs.google.com/spreadsheets/d/1dBESjgWSFsOBodFFpYNhWIOAQ2a3wvoLkrn12V_rFck/edit#gid=0' 
 )
 
+# pre-authorization for google sheets: Works if there is only 1 cached account (after first access)
+gs4_auth(email = TRUE) # reference: https://googlesheets4.tidyverse.org/reference/gs4_auth.html
+
+# Convenience function for plotting directory and .png suffix for adhoc plots
+plot_as <- function(plt_name, ...)  str_c('qPCR analysis/', plt_name, ..., '.png')
 
 # calling more funs ----
 
