@@ -27,9 +27,20 @@ I would like to plot the following in box and whisker plots (exclude “negative
 	- Need SIMS BAYOU matched to both north and south
 	- How do we plot this?
 	- How to regex match 
-7. [ ] I'd like to see these last set of plots as a time series. So: concentration (y) vs. time (x) with each source WWTP and its feeding lift stations on the same plot. Only plot average for each date (can do just N2 or average all N1 and N2). Connect the averages for each date with a line for each site. If the value is below the LOD, put a circle or shade it differently.
+7. [x] I'd like to see these last set of plots as a time series. So: concentration (y) vs. time (x) with each source WWTP and its feeding lift stations on the same plot. Only plot average for each date (can do just N2 or average all N1 and N2). Connect the averages for each date with a line for each site. If the value is below the LOD, put a circle or shade it differently.
 	- How do you show multiple colours with independent legend for each facet?
 	- Make independent plots using a for loop.. and save into a .html.. 
 
 - [x] Attach abbreviations -- from Biobot google sheet?
 - [x] CHange CLN to CLN2 in Lift station data ; and 13 others..
+
+
+# Plots updated for Lauren: 22/6/22
+
+1. Setup R-scripts for weekly analysis :: Friday morning (24/6/22)
+2. Plot changes: Avg N12, replicates
+
+--- Something about imputing data below the LOD? -- someone is giving imputed data, which we will work on later with the same pipeline/plots
+-   School data by dots--enrollment, bars--grade (remove "elementary/secondary" etc. ; order the grade levels)
+-   Plot the school by grade --bars ; for influenza data too : Wastewa Flu surveillance manhole report 05092022 -- for flu only use infA (Rep1,2_A) since B's are 0
+-   Plot SARS COV2 and FLU on the same data : in two distributions
