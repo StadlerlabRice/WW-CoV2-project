@@ -45,7 +45,7 @@ school_rice.data <-
   arrange(Enrollment_as_Oct2019) %>% 
   mutate(across(c('Facility', 'Symbol'), # freeze the order of samples 
                 ~ fct_inorder(.x))) %>% 
- 
+  
   # Collect all replicates and N1-N2 under the same column
   pivot_longer(cols = starts_with('Rep'),
                names_to = 'Replicate',
@@ -58,11 +58,11 @@ school_rice.data <-
 school_averaged <- 
   group_by(school_rice.data, across(-c(Copies_per_litre, Replicate))) %>% 
   summarize(across(Copies_per_litre, mean, na.rm = TRUE)) # takes the mean of stuff
-  
-  # group_by(Facility, Date) %>% 
-  # mutate(across(Copies_per_litre, mean, na.rm = TRUE)) %>% 
-  # select(-Replicate)
-  
+
+# group_by(Facility, Date) %>% 
+# mutate(across(Copies_per_litre, mean, na.rm = TRUE)) %>% 
+# select(-Replicate)
+
 
 # function to label the number of data points on the plot
 # Copied from stackoverflow : https://stackoverflow.com/a/31140454/9049673
@@ -130,7 +130,7 @@ plt.avg <-
       # text labels for number of points
       stat_summary(fun.data = give.n, geom = 'text',
                    position = position_dodge2(width = .75)) +
-
+      
       # annotations
       annotation_logticks(sides = 'l') +  # tick marks to indicate log y axis
       
@@ -191,7 +191,7 @@ plt.eachschool <-
               label = Facility)) + 
       
       # points, black outline, semi transparent, position matches the boxplot, scattered along x-axis for visual 
-      geom_point(alpha = 0.4, colour = '#e41a1c') + # colour points light red
+      geom_point(alpha = 0.4, colour = '#e41a1c') + 
       
       # annotations
       annotation_logticks(sides = 'b') +  # tick marks to indicate log y axis
