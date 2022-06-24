@@ -35,6 +35,7 @@ I would like to plot the following in box and whisker plots (exclude “negative
 - [x] CHange CLN to CLN2 in Lift station data ; and 13 others..
 
 ---
+
 # Plots updated for Lauren: 22/6/22
 
 1. Setup R-scripts for weekly analysis :: Friday morning (24/6/22)
@@ -48,7 +49,10 @@ For flu data, only use Influenza A results (Rep1_A and Rep2_A)
 > Wastewater Flu surveillance manhole report 05092022
 - Create plot of flu data organized by grade level  
 - Create boxplot of all SARS CoV 2 and flu data
--   Plot SARS COV2 and FLU - two distributions side by side
+- Plot SARS COV2 and FLU - two distributions side by side : only schools 
 
 ----------
-Recreate plots, average all N1 and N2 measurements  
+Recreate plots, average all N1 and N2 measurements --
+- What about the inconclusive cases when few replicates are below LOD or just 0s?
+	- I feel like excluding 0s from the averages but letting the below LOD be ; since LOD is not stored and I'm feeling lazy
+- 
