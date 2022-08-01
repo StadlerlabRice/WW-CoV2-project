@@ -271,7 +271,7 @@ check the data output in the console and choose if you wish to continue processi
 
 
 
-# HHD special output ----
+# HHD data output ----
 
 
 # switch for output to sheet sent to HHD
@@ -415,8 +415,8 @@ rmarkdown::render('2.1-make_html_plots.rmd',
 # This has been moved to the end to avoid stopping the script in the event of errors
 # errors have been noticed for curl::memory limitation while running from Mac/Camille
 
-# Output data - including controls
-write_csv(present_only_WW, 
+# Output all data - including controls
+write_csv(presentable_data, 
           file = str_c('excel files/Complete data/', title_name, '.csv'), 
           na = '') # output csv file of all the data
 

@@ -2,14 +2,22 @@
 1. Do the y-axis renaming thing (like plate_reader plotting) to take col names to meaningful long names using a lookup list -- to prevent errors from manually passing the name in //but will make it less usable outside the pipeline?
 
 
-# 16-11-21 - covid tasks
-
-_(in branch: grab_composite_assignment)_ 1. Add sample registry new column : grab vs composite
-(done) 2. Make the code plot stuff -- focus on pMMoV data -- + Kyle
+# Covid tasks
+16-11-21
+- [x] _(in branch: grab_composite_assignment)_ 1. Add sample registry new column : grab vs composite
+- [x] (done) 2. Make the code plot stuff -- focus on pMMoV data -- + Kyle
 
 _(optional)_ --
-(done) 3. Clean up the github to ignore csv / xlsx files
-(done) 4. Update the code to output in specific places .. I'm tired of maintaining this, let's ignore this since I'm not the one using the script regularly
+- [x] (done) 3. Clean up the github to ignore csv / xlsx files
+- [x] (done) 4. Update the code to output in specific places .. 
+	- I'm tired of maintaining this, let's ignore this since I'm not the one using the script regularly
+
+## Bugs
+- [ ] Fixed with `^DI$`. As for the E sample issue, it's been a recurring issue for some time. I just always copy paste it from the complete data sheet and fix the formatting manually. Most recently it would've occurred on plate 561 with 063022 EDDI. It also happens with EDIM, but that's a school sample so we haven't had it in a while
+
+## Features
+- [ ] Add the default volume for new targets so they don't need to be accounted for in the ddPCR template volume sheet : `1-processing_functions.R` lines 72-77. Or make a default entry in the same sheet for folks to know about
+	- Where should the name entered match to- the template sheet or the ddPCR well?
 
 # 9-4-22 - plotting tasks for Lauren
 
