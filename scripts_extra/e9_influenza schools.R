@@ -1,4 +1,6 @@
-# Plotting school samples by grade and enrollment from collated data sheet
+# Plotting Infuenza signal for school samples mimics the plots of e7 (CoV2 signal)
+# includes plots by grade and enrollment from collated data sheet
+
 # Prashant
 # 11 April 2022
 

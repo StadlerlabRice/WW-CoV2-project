@@ -1,4 +1,6 @@
-# Plotting school samples by grade and enrollment from collated data sheet
+# Plotting the relative signal from liftstations vs their primary WWTPs: from different data sheets
+# Also includes plots of all LS and WWTP in differtent styles
+
 # Prashant
 # 11 April 2022
 
