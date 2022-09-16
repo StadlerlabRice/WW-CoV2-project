@@ -47,21 +47,29 @@ quant_data <- bind_rows(list_quant_data) %>%
 volumes.data_registry <- 
   range_speedread(ss = sheeturls$sample_registry,  # this is 20x faster than read_sheet!
                   sheet = 'Concentrated samples',
-                  range = 'B:I', # specify range to read
-                  col_types = 'ccccnnnc')  %>% # pre-specify column types within the range
+                  range = 'A:K', # specify range to read
+                  col_types = 'ccnccnnncnn')  %>% # pre-specify column types within the range
   
   # rename col names
-  rename('Received_WW_vol' = `Total WW volume received (ml)`, 
-         'Label_tube' = `Label on tube`, 
-        Filtered_WW_vol = `WW volume filtered (ml)`,
-         Vaccine_ID = `Stock ID of Spike`,
+  rename('Label_tube' = `Label on tube`, 
          'Biobot_id' = `Biobot/other ID`,
-         WW_weight = `Total WW weight measured (kg)`,
-        Sample_Type = `Grab vs Composite`,
-        No_of_Hours_Missed = `HHD Notes (# of samples missed/hours)`) %>% 
+         Filtered_WW_vol = `WW volume filtered (ml)`,
+         
+         Sample_Type = `Grab vs Composite`,
+         No_of_Hours_Missed = `HHD Notes (# of samples missed/hours)`, 
+         
+         # applicable only for pellet extractions (centrifuged solids)
+         pellet_mass = 'Mass of Pellet (g)', # skipping the previous column (Tube + Pellet mass)
+         dry_mass_percent = '% dry mass',
+         
+         # spiking relevant data
+         Vaccine_ID = `Stock ID of Spike`,
+         'Received_WW_vol' = `Total WW volume received (ml)`, 
+         WW_weight = `Total WW weight measured (kg)`) %>% 
   
-  select(Received_WW_vol, Label_tube,Filtered_WW_vol, Vaccine_ID, 
-         `Biobot_id`, WW_weight, Sample_Type, No_of_Hours_Missed) %>% # select only the useful columns
+  select(Received_WW_vol, Label_tube, Filtered_WW_vol, Vaccine_ID, 
+         `Biobot_id`, pellet_mass, dry_mass_percent, 
+         WW_weight, Sample_Type, No_of_Hours_Missed) %>% # select only the useful columns
   
   distinct() %>% # for removing repeated data in early stuff, before 608 (interferes with the merging of volumes for same bottles)
   mutate_at('Label_tube', ~str_remove_all(., " ")) %>% 

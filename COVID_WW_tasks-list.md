@@ -13,11 +13,19 @@ _(optional)_ --
 	- I'm tired of maintaining this, let's ignore this since I'm not the one using the script regularly
 
 ## Bugs
-- [ ] Fixed with `^DI$`. As for the E sample issue, it's been a recurring issue for some time. I just always copy paste it from the complete data sheet and fix the formatting manually. Most recently it would've occurred on plate 561 with 063022 EDDI. It also happens with EDIM, but that's a school sample so we haven't had it in a while
+- [x] Fixed with `^DI$` clashing with samples containing `DI` in them. As for the E sample issue, it's been a recurring issue for some time. I just always copy paste it from the complete data sheet and fix the formatting manually. Most recently it would've occurred on plate 561 with 063022 EDDI. It also happens with EDIM, but that's a school sample so we haven't had it in a while
 
 ## Features
 - [ ] Add the default volume for new targets so they don't need to be accounted for in the ddPCR template volume sheet : `1-processing_functions.R` lines 72-77. Or make a default entry in the same sheet for folks to know about
-	- Where should the name entered match to- the template sheet or the ddPCR well?
+	- Where should the name entered match to- the template sheet or the ddPCR well
+- [ ] Incorporate solids mass and calculate copies/g : 
+	- What is the formula? ` (copies/uL WW*50)/(pellet mass in g * dry mass %) to calculate the copies/g`
+	- is this tube weight 3.382 g always constant? - can put it in the R code/the user inputs sheet
+- [ ] Save time and memory by reading only the relevant rows in the sample registry? _read last 300 or so rows? and then read older ones if needed/ look for the plate ID match. How can you read the header + few other rows below without reading twice and joining.._
+- [x] Make the code robust to new columns in the sample registry -- _Loading specific columns only, tell users to add new columns only after a certain column.._
+
+## Streamlining
+- [ ] Collapse the spiking/vaccine processing into separate functions so the code is more consise
 
 # 9-4-22 - plotting tasks for Lauren
 
