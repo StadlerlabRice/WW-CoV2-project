@@ -96,7 +96,8 @@ volumes.data_registry <-
 week_name <- str_extract(title_name, '[:digit:]{6}')
 if(pellets_present) 
 {pellet_weight_data <- read_sheet(sheeturls$pellet_weights, sheet = str_c('Pellets ', week_name),
-                                      col_types = '-c---n------n')} # get the Tube Label, pellet_mass and dry_mass_fraction
+                                      col_types = '-c---n------n') %>% # get the Tube Label, pellet_mass and dry_mass_fraction
+  mutate(across(Label_tube, ~str_remove(., ' ') )) } # remove spaces from the Sample_name
 
 
 # Vaccine spike concentrations
@@ -119,6 +120,9 @@ meta.attached_quant_data <- quant_data %>%
   
   left_join(biobot_lookup) %>%  # join biobot_IDs
   
+  # for pellet data : attach weights
+  {if(pellets_present) left_join(., pellet_weight_data, by = 'Label_tube')} %>% 
+  
   # clean up controls etc. that don't appear in biobot_lookup
   mutate(across('WWTP', ~if_else(str_detect(., '^X')|is.na(.), assay_variable, .)), # wwtp == assay_var
          across('Facility', ~if_else(str_detect(., '^X')|is.na(.), str_c(Sample_name, '/', assay_variable), .)) ) %>% 
@@ -126,6 +130,10 @@ meta.attached_quant_data <- quant_data %>%
   
   rename(Target_Name = Target) # rename to match the final output desired by HHD
 
+
+# Detect for spiking : look for Vaccine_ID
+spiking_present <- meta.attached_quant_data$Vaccine_ID %>% is.na() %>% all() %>% {!.} # if no vaccine ID is detected then absent
+# use this later to streamline code
 
 # Calculations ----
 
@@ -139,11 +147,14 @@ processed_quant_data <- meta.attached_quant_data %>%
          
          # Poisson confidence intervals in copies/L WW
          PoissonConfMax_Per_Liter_WW = PoissonConfMax_per_uL_RNA *(1e6/300) * (elution_volume/Filtered_WW_vol),  
-         PoissonConfMin_Per_Liter_WW = PoissonConfMin_per_uL_RNA *(1e6/300) * (elution_volume/Filtered_WW_vol),
+         PoissonConfMin_Per_Liter_WW = PoissonConfMin_per_uL_RNA *(1e6/300) * (elution_volume/Filtered_WW_vol)) %>% 
+  
+  # calculations for pellet - dividing by mass
+  {if(pellets_present) mutate(., Copies_Per_g_pellet = Copies_per_uL_RNA * 50/pellet_wet_mass * dry_mass_fraction)} %>% 
          
-         # conditional calculations reg surrogate spiked virus
-         # Calculations for Surrogate_virus_input_per.L.WW (input) and Percentage_recovery (output/input * 100)
-         Surrogate_virus_input_per.L.WW = spiking_virus_vaccine_stock_conc * spike_virus_volume / (Received_WW_vol * 1e-3), 
+  # conditional calculations reg surrogate spiked virus
+  # Calculations for Surrogate_virus_input_per.L.WW (input) and Percentage_recovery (output/input * 100)
+  mutate(Surrogate_virus_input_per.L.WW = spiking_virus_vaccine_stock_conc * spike_virus_volume / (Received_WW_vol * 1e-3), 
          Percentage_recovery_BCoV = 100 * Copies_Per_Liter_WW/Surrogate_virus_input_per.L.WW) %>% 
   
   # (source for chemagic conc. factor calculations : Google sheet below
@@ -220,7 +231,7 @@ presentable_data <- processed_quant_data %>%
          `Received_WW_vol`, Filtered_WW_vol, 
          Copies_per_uL_RNA, 
          PoissonConfMax_per_uL_RNA, PoissonConfMin_per_uL_RNA, # 95% confidence intervals
-         Copies_Per_Liter_WW, 
+         Copies_Per_Liter_WW, any_of('Copies_Per_g_pellet'), 
          Ct, AcceptedDroplets, PositiveDroplets, Sample_ID, 
          Detection_Limit, Positivity, 
          Sample_Type, Surrogate_virus_input_per.L.WW, `Percentage_recovery_BCoV`, 
