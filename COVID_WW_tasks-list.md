@@ -14,7 +14,7 @@ _(optional)_ --
 
 ## Bugs
 - [x] Fixed with `^DI$` clashing with samples containing `DI` in them. As for the E sample issue, it's been a recurring issue for some time. I just always copy paste it from the complete data sheet and fix the formatting manually. Most recently it would've occurred on plate 561 with 063022 EDDI. It also happens with EDIM, but that's a school sample so we haven't had it in a while
-- [ ] What could cause the LOD to be higher on one plate than another even if both plates have 0 droplets in NTCs? Seems like the lift station MPX plates LOD is off for some reason? _Kyle, 16-9-22_
+- [ ] What could cause the LOD to be higher on one plate than another even if both plates have 0 droplets in NTCs? Seems like the lift station MPX plates LOD is off for some reason? _Kyle, 16-9-22_ `091222 Rice WWTP and Lift Station MPX`
 
 ## Features
 - [ ] Add the default volume for new targets so they don't need to be accounted for in the ddPCR template volume sheet : `1-processing_functions.R` lines 72-77. Or make a default entry in the same sheet for folks to know about -- with a warning in the code?.

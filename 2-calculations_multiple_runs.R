@@ -51,8 +51,8 @@ pellets_present <- quant_data$assay_variable %>% str_detect('^p') %>% any()
 volumes.data_registry <- 
   range_speedread(ss = sheeturls$sample_registry,  # this is 20x faster than read_sheet!
                   sheet = 'Concentrated samples',
-                  range = 'A:K', # specify range to read
-                  col_types = 'ccnccnnncnn')  %>% # pre-specify column types within the range
+                  range = 'A:H', # specify range to read
+                  col_types = 'ccncccnn')  %>% # pre-specify column types within the range
   
   # rename col names
   rename('Label_tube' = `Label on tube`, 
@@ -80,7 +80,7 @@ volumes.data_registry <-
   mutate_at('Biobot_id', str_remove,  ' ') %>% 
   
   # Extrapolating volumes for same bottle - If weights are written out, we assume different bottles with different volumes
-  mutate(., unique_labels = str_remove_all(Label_tube,'[:digit:]$'))  %>% # Remove the training single digit that tells the replicate # 
+  mutate(., unique_labels = str_remove_all(Label_tube,'[:digit:]$'))  %>% # Remove the trailing single digit that tells the replicate # 
   # this will be changed to the 'Bottle' column? Too much data entry
   
   group_by(unique_labels) %>% 
