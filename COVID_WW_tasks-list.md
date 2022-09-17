@@ -14,18 +14,24 @@ _(optional)_ --
 
 ## Bugs
 - [x] Fixed with `^DI$` clashing with samples containing `DI` in them. As for the E sample issue, it's been a recurring issue for some time. I just always copy paste it from the complete data sheet and fix the formatting manually. Most recently it would've occurred on plate 561 with 063022 EDDI. It also happens with EDIM, but that's a school sample so we haven't had it in a while
+- [ ] What could cause the LOD to be higher on one plate than another even if both plates have 0 droplets in NTCs? Seems like the lift station MPX plates LOD is off for some reason? _Kyle, 16-9-22_
 
 ## Features
-- [ ] Add the default volume for new targets so they don't need to be accounted for in the ddPCR template volume sheet : `1-processing_functions.R` lines 72-77. Or make a default entry in the same sheet for folks to know about
+- [ ] Add the default volume for new targets so they don't need to be accounted for in the ddPCR template volume sheet : `1-processing_functions.R` lines 72-77. Or make a default entry in the same sheet for folks to know about -- with a warning in the code?.
 	- Where should the name entered match to- the template sheet or the ddPCR well
 - [ ] Incorporate solids mass and calculate copies/g : 
-	- What is the formula? ` (copies/uL WW*50)/(pellet mass in g * dry mass %) to calculate the copies/g`
+	- What is the formula? ` (copies/uL WW*50)/(pellet mass in g * dry mass %) to calculate the copies/g` : Read the pellet calculations sheet : Columns J and M
+		- How do we deal with negative weights.. Get R to throw a warning + remove the values and name NA? 
 	- is this tube weight 3.382 g always constant? - can put it in the R code/the user inputs sheet
+	- How is the `dry mass` being calculated, could have the raw data in the sheet and the calculations in R if it is constant..
+	- Removing the prefix `p` : check with Lauren Stadler
 - [ ] Save time and memory by reading only the relevant rows in the sample registry? _read last 300 or so rows? and then read older ones if needed/ look for the plate ID match. How can you read the header + few other rows below without reading twice and joining.._
 - [x] Make the code robust to new columns in the sample registry -- _Loading specific columns only, tell users to add new columns only after a certain column.._
 
 ## Streamlining
 - [ ] Collapse the spiking/vaccine processing into separate functions so the code is more consise
+- [ ] Need more clarity and an easier way to see which variable is being used where - Tube_label vs Biobot_id etc. and need to remove redundancy.. _ex: Biobot ID column is generated with a formula in google sheet, can be done in R -- but will miss user evaluation for edge cases_
+- [ ] Simplify all temporary column names in the script for easy understanding. _Sample_name -> Sample_week ; assay_variable -> ? ; 
 
 # 9-4-22 - plotting tasks for Lauren
 
@@ -71,4 +77,6 @@ For flu data, only use Influenza A results (Rep1_A and Rep2_A)
 Recreate plots, average all N1 and N2 measurements --
 - What about the inconclusive cases when few replicates are below LOD or just 0s?
 	- I feel like excluding 0s from the averages but letting the below LOD be ; since LOD is not stored and I'm feeling lazy
-- 
+
+
+

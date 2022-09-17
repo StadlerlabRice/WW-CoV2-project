@@ -107,30 +107,37 @@ complete_LOD_table <- function(fl) {
 append_LOD_info <- function(fl, targ) {
   fl <- fl %>% filter(Target == targ)
   
+  # Check if the target is monkeypox (MPX) :: to account for lower LOD due to merged wells
+  is_monkeypox = str_detect(targ, 'MPX')
+  
   # Pull negative controls out
   negative_controls <- fl %>% filter(assay_variable == 'NTC'| 
                                        assay_variable == 'DI'| 
                                        str_detect(assay_variable, regex('BLANK', ignore.case = TRUE)) )
   
   
-  # Pull any rows with 3 droplets a.k.a the LOQ
+  # Pull any rows with 3 droplets a.k.a the LOQ. Will take their avg concentration as the LOQ
   threes <- fl %>% filter(PositiveDroplets == 3)
   # If no rows has 3 droplets then the concentration is hard coded to 0.7
     # Estimate for 3 droplets is 0.7674 copies/ul RNA (Wonder if DZ rounded down to 0.7)
-    # LOD Details - https://docs.google.com/document/d/1V1Dun0vMMb4XpyJELzMI5ClO3wWziE56Mblrm1kDyMo/edit
-  # Otherwise, take the mean of 3 droplet concentrations
+    # LOD calculation details - https://docs.google.com/document/d/1V1Dun0vMMb4XpyJELzMI5ClO3wWziE56Mblrm1kDyMo/edit
+  
   if(dim(threes)[1] == 0) {
-    three_copies <- 0.7
-  } else {
-    three_copies <- mean(threes$Copies_per_uL_RNA)
+    three_droplets_concentration <- 0.7 * (!is_monkeypox) + (0.7/MPX_wells_merged) * is_monkeypox 
+                                    # for other targets ;; For monkey pox - with >= 2 wells merged
+    
+  } else { 
+    
+    # Otherwise, take the mean of the concentrations of the wells having 3 droplets
+    three_droplets_concentration <- mean(threes$Copies_per_uL_RNA)
   }
   
-  # Calculate the LOB
+  # Calculate the LOB = mean + 1.6 stdev of (negative controls)
   limit_blank <- mean(negative_controls$Copies_per_uL_RNA, na.rm = TRUE) + 
     (1.6 * sd(negative_controls$Copies_per_uL_RNA, na.rm = TRUE))
   
   # Calculate the LOD
-  LOD <- three_copies + limit_blank
+  LOD <- three_droplets_concentration + limit_blank
   
   # Put everything into the table
   new_table <- fl %>% mutate(Positivity = case_when(Copies_per_uL_RNA < LOD ~ "Negative",

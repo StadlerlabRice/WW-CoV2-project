@@ -40,6 +40,10 @@ quant_data <- bind_rows(list_quant_data) %>%
   mutate(across(Label_tube, ~str_remove(., ' ') )) # remove spaces from the Sample_name (Started with 1123 Pavan with 1123 69S names)
 
 
+# Check if pellet samples are present using the prefix 'p' in the assay_variable
+pellets_present <- quant_data$assay_variable %>% str_detect('^p') %>% any()
+
+
 # Load metadata ----------------------------------------------------------------------
 
 
@@ -87,6 +91,12 @@ volumes.data_registry <-
                 ) ) %>% # This will not allw MAX to create -Inf :: to prevent errors in write_sheet 
   ungroup() %>% 
   select(-unique_labels, -WW_weight)
+
+# Get pellet weight related data (monkeypox, for copies/g calculation)
+week_name <- str_extract(title_name, '[:digit:]{6}')
+if(pellets_present) 
+{pellet_weight_data <- read_sheet(sheeturls$pellet_weights, sheet = str_c('Pellets ', week_name),
+                                      col_types = '-c---n------n')} # get the Tube Label, pellet_mass and dry_mass_fraction
 
 
 # Vaccine spike concentrations
@@ -331,11 +341,11 @@ if(HHD_data_output)
   }
   
   
-  # Count the outgoing samples
+  # Count the outgoing samples : All controls and NTC ; WW samples ; manhole samples (- NTC)
   num_outgoing <- map2_int(list(presentable_data, 
                                 present_only_WW, 
                                 present_manhole_samples),
-                           c(samples_to_remove, '.*', '.*'), # Select controls or all samples
+                           c(paste(samples_to_remove, 'NTC', sep = '|'), '.*', manhole_symbols_regex), # Select controls or all samples
                            
                            ~ pull(.x, Sample_ID) %>% # Make a vector - only the unique Sample_ID
                              unique %>%  # remove duplicates for different targets - N1/N2/B117..
