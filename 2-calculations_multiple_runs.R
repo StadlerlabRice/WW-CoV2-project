@@ -41,7 +41,7 @@ quant_data <- bind_rows(list_quant_data) %>%
 
 
 # Check if pellet samples are present using the prefix 'p' in the assay_variable
-pellets_present <- quant_data$assay_variable %>% str_detect('^p') %>% any()
+# pellets_present <- quant_data$assay_variable %>% str_detect('^p') %>% any()
 
 
 # Load metadata ----------------------------------------------------------------------
@@ -62,17 +62,13 @@ volumes.data_registry <-
          Sample_Type = `Grab vs Composite`,
          No_of_Hours_Missed = `HHD Notes (# of samples missed/hours)`, 
          
-         # applicable only for pellet extractions (centrifuged solids)
-         pellet_mass = 'Mass of Pellet (g)', # skipping the previous column (Tube + Pellet mass)
-         dry_mass_percent = '% dry mass',
-         
          # spiking relevant data
          Vaccine_ID = `Stock ID of Spike`,
          'Received_WW_vol' = `Total WW volume received (ml)`, 
          WW_weight = `Total WW weight measured (kg)`) %>% 
   
   select(Received_WW_vol, Label_tube, Filtered_WW_vol, Vaccine_ID, 
-         `Biobot_id`, pellet_mass, dry_mass_percent, 
+         `Biobot_id`, 
          WW_weight, Sample_Type, No_of_Hours_Missed) %>% # select only the useful columns
   
   distinct() %>% # for removing repeated data in early stuff, before 608 (interferes with the merging of volumes for same bottles)
@@ -93,10 +89,10 @@ volumes.data_registry <-
   select(-unique_labels, -WW_weight)
 
 # Get pellet weight related data (monkeypox, for copies/g calculation)
-week_name <- str_extract(title_name, '[:digit:]{6}')
-if(pellets_present) 
-{pellet_weight_data <- read_sheet(sheeturls$pellet_weights, sheet = str_c('Pellets ', week_name),
-                                      col_types = '-c---n------n')} # get the Tube Label, pellet_mass and dry_mass_fraction
+# week_name <- str_extract(title_name, '[:digit:]{6}')
+# if(pellets_present) 
+# {pellet_weight_data <- read_sheet(sheeturls$pellet_weights, sheet = str_c('Pellets ', week_name),
+#                                       col_types = '-c---n------n')} # get the Tube Label, pellet_mass and dry_mass_fraction
 
 
 # Vaccine spike concentrations
