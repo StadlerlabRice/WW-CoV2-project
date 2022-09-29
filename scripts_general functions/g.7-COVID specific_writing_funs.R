@@ -120,45 +120,16 @@ append_LOD_info <- function(fl, targ) {
   LOD_droplets = 3 + mean(negative_controls$PositiveDroplets)
   
   # Find out the avg 1/total droplets for the whole plate
+  avg_inverse_total_droplet_count <- mean(1/fl$AcceptedDroplets)
   
   # Determine the LOD in terms of copies per ul
-  LOD = LOD_droplets * 0.7674/3 * avg_inverse_total_droplet_count
-  
-  # ## Work in progress here -- 29/9/22 - Prashant
-  
-  
-  # Old calculations -- Remove them after checking 
-  # Pull any rows with 3 droplets a.k.a the LOQ. Will take their avg concentration as the LOQ
-  threes <- fl %>% filter(PositiveDroplets == 3)
-  # If no rows has 3 droplets then the concentration is hard coded to 0.7
-    # Estimate for 3 droplets is 0.7674 copies/ul RNA (Wonder if DZ rounded down to 0.7)
-    # LOD calculation details - https://docs.google.com/document/d/1V1Dun0vMMb4XpyJELzMI5ClO3wWziE56Mblrm1kDyMo/edit
-  
-  if(dim(threes)[1] == 0) {
-    three_droplets_concentration <- 0.7 * (!is_monkeypox) + (0.7/MPX_wells_merged) * is_monkeypox 
-                                    # for other targets ;; For monkey pox - with >= 2 wells merged
-    
-  } else { 
-    
-    # Otherwise, take the mean of the concentrations of the wells having 3 droplets
-    three_droplets_concentration <- mean(threes$Copies_per_uL_RNA)
-  }
-  
-  # Calculate the LOB = mean + 1.6 stdev of (negative controls)
-  limit_blank <- mean(negative_controls$Copies_per_uL_RNA, na.rm = TRUE) + 
-    (1.6 * sd(negative_controls$Copies_per_uL_RNA, na.rm = TRUE))
-  
-  # Calculate the LOD
-  LOD <- three_droplets_concentration + limit_blank
-  
-  # Need to delete till here ---
-  
-  
+  LOD = LOD_droplets * 2558.14/3 * avg_inverse_total_droplet_count # see the LOD googledoc for details 
+  # LOD calculation details - https://docs.google.com/document/d/1V1Dun0vMMb4XpyJELzMI5ClO3wWziE56Mblrm1kDyMo/edit
   
   
   # Put everything into the table
-  new_table <- fl %>% mutate(Positivity = case_when(Copies_per_uL_RNA < LOD ~ "Negative",
-                                                    Copies_per_uL_RNA >= LOD ~ "Positive",)) %>%
+  new_table <- fl %>% mutate(Positivity = case_when(PositiveDroplets < LOD_droplets ~ "Negative",
+                                                    PositiveDroplets >= LOD_droplets ~ "Positive",)) %>%
     mutate(LimitOfDet = LOD)
   
   return(new_table)

@@ -17,11 +17,13 @@ _(optional)_ --
 - [ ] What could cause the LOD to be higher on one plate than another even if both plates have 0 droplets in NTCs? Seems like the lift station MPX plates LOD is off for some reason? _Kyle, 16-9-22_ `091222 Rice WWTP and Lift Station MPX`
 
 ## Features
+- [x] Change LOD calculation with avg droplets in plate (harmonic mean..?) and update the positivity calling with 3 droplet threshold
 - [ ] Add the default volume for new targets so they don't need to be accounted for in the ddPCR template volume sheet : `1-processing_functions.R` lines 72-77. Or make a default entry in the same sheet for folks to know about -- with a warning in the code?.
 	- Where should the name entered match to- the template sheet or the ddPCR well
-- [ ] Incorporate solids mass and calculate copies/g : 
+- [x] Incorporate solids mass and calculate copies/g : 
 	- What is the formula? ` (copies/uL WW*50)/(pellet mass in g * dry mass %) to calculate the copies/g` : Read the pellet calculations sheet : Columns J and M
 		- How do we deal with negative weights.. Get R to throw a warning + remove the values and name NA? 
+		- [ ] _to do future:_ Need to implement error check for negative values for weight or fraction dry wight column
 	- is this tube weight 3.382 g always constant? - can put it in the R code/the user inputs sheet
 	- How is the `dry mass` being calculated, could have the raw data in the sheet and the calculations in R if it is constant..
 	- Removing the prefix `p` : check with Lauren Stadler
