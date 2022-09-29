@@ -116,6 +116,18 @@ append_LOD_info <- function(fl, targ) {
                                        str_detect(assay_variable, regex('BLANK', ignore.case = TRUE)) )
   
   
+  # Find the LOD in droplets = LOB + 3 droplets (~ default LOQ, LOB can be thought to be additive contamination)
+  LOD_droplets = 3 + mean(negative_controls$PositiveDroplets)
+  
+  # Find out the avg 1/total droplets for the whole plate
+  
+  # Determine the LOD in terms of copies per ul
+  LOD = LOD_droplets * 0.7674/3 * avg_inverse_total_droplet_count
+  
+  # ## Work in progress here -- 29/9/22 - Prashant
+  
+  
+  # Old calculations -- Remove them after checking 
   # Pull any rows with 3 droplets a.k.a the LOQ. Will take their avg concentration as the LOQ
   threes <- fl %>% filter(PositiveDroplets == 3)
   # If no rows has 3 droplets then the concentration is hard coded to 0.7
@@ -138,6 +150,11 @@ append_LOD_info <- function(fl, targ) {
   
   # Calculate the LOD
   LOD <- three_droplets_concentration + limit_blank
+  
+  # Need to delete till here ---
+  
+  
+  
   
   # Put everything into the table
   new_table <- fl %>% mutate(Positivity = case_when(Copies_per_uL_RNA < LOD ~ "Negative",
