@@ -61,14 +61,14 @@ volumes.data_registry <-
          
          Sample_Type = `Grab vs Composite`,
          No_of_Hours_Missed = `HHD Notes (# of samples missed/hours)`, 
-         
+
          # spiking relevant data
          Vaccine_ID = `Stock ID of Spike`,
          'Received_WW_vol' = `Total WW volume received (ml)`, 
          WW_weight = `Total WW weight measured (kg)`) %>% 
   
   select(Received_WW_vol, Label_tube, Filtered_WW_vol, Vaccine_ID, 
-         `Biobot_id`, 
+         `Biobot_id`,
          WW_weight, Sample_Type, No_of_Hours_Missed) %>% # select only the useful columns
   
   distinct() %>% # for removing repeated data in early stuff, before 608 (interferes with the merging of volumes for same bottles)
@@ -89,10 +89,11 @@ volumes.data_registry <-
   select(-unique_labels, -WW_weight)
 
 # Get pellet weight related data (monkeypox, for copies/g calculation)
-# week_name <- str_extract(title_name, '[:digit:]{6}')
-# if(pellets_present) 
-# {pellet_weight_data <- read_sheet(sheeturls$pellet_weights, sheet = str_c('Pellets ', week_name),
-#                                       col_types = '-c---n------n')} # get the Tube Label, pellet_mass and dry_mass_fraction
+week_name <- str_extract(title_name, '[:digit:]{6}')
+if(pellets_present) 
+{pellet_weight_data <- read_sheet(sheeturls$pellet_weights, sheet = str_c(week_name, ' Pellets'),
+                                      col_types = '-c---n------n') %>% # get the Tube Label, pellet_mass and dry_mass_fraction
+  mutate(across(Label_tube, ~str_remove(., ' ') )) } # remove spaces from the Sample_name
 
 
 # Vaccine spike concentrations
@@ -113,7 +114,20 @@ meta.attached_quant_data <- quant_data %>%
   # join vaccine quantification
   left_join(spike_list %>% select(Vaccine_ID, Target, spiking_virus_vaccine_stock_conc),  by = c('Vaccine_ID', 'Target') ) %>% 
   
+  # Extra analysis for Pellet samples -- Monkeypox..?
+  {if(pellets_present) {
+  mutate(.data = ., sample_type = if_else(str_detect(assay_variable, '^p'), 'Pellet', 'Liquid')) %>% # pellet or liquid?
+  mutate(across(assay_variable, ~ str_remove(.x, '^p'))) } # Remove the ^p from the pellet samples (will add back to WWTP column)
+    else . } %>% # If no pellet samples present, pipe the input to the next step
+  
+  
+  # Joining full names of the WWTPs and other samples : form Biobot_ID google sheet
   left_join(biobot_lookup) %>%  # join biobot_IDs
+  
+  # for pellet data : attach weights and re-attach ^p to the beginning of WWTP abbreviations
+  {if(pellets_present) left_join(., pellet_weight_data, by = 'Label_tube') %>% 
+      mutate(across(WWTP, ~ if_else(sample_type == 'Pellet', str_c('p', .x), .x)))  
+    else . } %>% # If no pellet samples present, pipe the input to the next step 
   
   # clean up controls etc. that don't appear in biobot_lookup
   mutate(across('WWTP', ~if_else(str_detect(., '^X')|is.na(.), assay_variable, .)), # wwtp == assay_var
@@ -123,7 +137,13 @@ meta.attached_quant_data <- quant_data %>%
   rename(Target_Name = Target) # rename to match the final output desired by HHD
 
 
-# Calculations ----
+# Detect for spiking : look for Vaccine_ID
+spiking_present <- meta.attached_quant_data$Vaccine_ID %>% is.na() %>% all() %>% {!.} # if no vaccine ID is detected then absent
+# use this later to streamline code
+
+
+
+# Calculations -------------------
 
 # Copies_per_uL_RNA to Copies_Per_Liter_WW. Spike in concentration, % recovery are calculated
 # join the results with the WWTP identifiers and names
@@ -135,11 +155,15 @@ processed_quant_data <- meta.attached_quant_data %>%
          
          # Poisson confidence intervals in copies/L WW
          PoissonConfMax_Per_Liter_WW = PoissonConfMax_per_uL_RNA *(1e6/300) * (elution_volume/Filtered_WW_vol),  
-         PoissonConfMin_Per_Liter_WW = PoissonConfMin_per_uL_RNA *(1e6/300) * (elution_volume/Filtered_WW_vol),
+         PoissonConfMin_Per_Liter_WW = PoissonConfMin_per_uL_RNA *(1e6/300) * (elution_volume/Filtered_WW_vol)) %>% 
+  
+  # calculations for pellet - dividing by mass
+  {if(pellets_present) mutate(., Copies_Per_Gram_DW = Copies_per_uL_RNA * 50/pellet_wet_mass * dry_mass_fraction)
+    else . } %>% # If no pellet samples present, pipe the input to the next step
          
-         # conditional calculations reg surrogate spiked virus
-         # Calculations for Surrogate_virus_input_per.L.WW (input) and Percentage_recovery (output/input * 100)
-         Surrogate_virus_input_per.L.WW = spiking_virus_vaccine_stock_conc * spike_virus_volume / (Received_WW_vol * 1e-3), 
+  # conditional calculations reg surrogate spiked virus
+  # Calculations for Surrogate_virus_input_per.L.WW (input) and Percentage_recovery (output/input * 100)
+  mutate(Surrogate_virus_input_per.L.WW = spiking_virus_vaccine_stock_conc * spike_virus_volume / (Received_WW_vol * 1e-3), 
          Percentage_recovery_BCoV = 100 * Copies_Per_Liter_WW/Surrogate_virus_input_per.L.WW) %>% 
   
   # (source for chemagic conc. factor calculations : Google sheet below
@@ -216,7 +240,7 @@ presentable_data <- processed_quant_data %>%
          `Received_WW_vol`, Filtered_WW_vol, 
          Copies_per_uL_RNA, 
          PoissonConfMax_per_uL_RNA, PoissonConfMin_per_uL_RNA, # 95% confidence intervals
-         Copies_Per_Liter_WW, 
+         Copies_Per_Liter_WW, any_of('Copies_Per_Gram_DW'), 
          Ct, AcceptedDroplets, PositiveDroplets, Sample_ID, 
          Detection_Limit, Positivity, 
          Sample_Type, Surrogate_virus_input_per.L.WW, `Percentage_recovery_BCoV`, 
