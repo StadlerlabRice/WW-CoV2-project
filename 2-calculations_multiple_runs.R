@@ -41,7 +41,7 @@ quant_data <- bind_rows(list_quant_data) %>%
 
 
 # Check if pellet samples are present using the prefix 'p' in the assay_variable
-# pellets_present <- quant_data$assay_variable %>% str_detect('^p') %>% any()
+pellets_present <- quant_data$assay_variable %>% str_detect('^p') %>% any()
 
 
 # Load metadata ----------------------------------------------------------------------
@@ -91,9 +91,10 @@ volumes.data_registry <-
 # Get pellet weight related data (monkeypox, for copies/g calculation)
 week_name <- str_extract(title_name, '[:digit:]{6}')
 if(pellets_present) 
-{pellet_weight_data <- read_sheet(sheeturls$pellet_weights, sheet = str_c(week_name, ' Pellets'),
-                                      col_types = '-c---n------n') %>% # get the Tube Label, pellet_mass and dry_mass_fraction
-  mutate(across(Label_tube, ~str_remove(., ' ') )) } # remove spaces from the Sample_name
+{pellet_weight_data <- read_sheet(sheeturls$pellet_weights, sheet = str_c(week_name, ' Pellets')) %>% # get the Tube Label, pellet_mass and dry_mass_fraction
+  mutate(across(Label_tube, ~str_remove(., ' ') )) %>% # remove spaces from the Sample_name
+  select(Label_tube, pellet_wet_mass, dry_mass_fraction) %>% 
+  mutate(across(c(pellet_wet_mass, dry_mass_fraction), as.numeric)) }
 
 
 # Vaccine spike concentrations
