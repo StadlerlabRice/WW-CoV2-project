@@ -117,7 +117,7 @@ append_LOD_info <- function(fl, targ) {
   
   
   # Find the LOD in droplets = LOB + 3 droplets (~ default LOQ, LOB can be thought to be additive contamination)
-  LOD_droplets = 3 + mean(negative_controls$PositiveDroplets)
+  LOD_droplets = 3 + max(negative_controls$PositiveDroplets)
   
   # Find out the avg 1/total droplets for the whole plate
   avg_inverse_total_droplet_count <- mean(1/fl$AcceptedDroplets)

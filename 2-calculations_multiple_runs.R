@@ -159,7 +159,7 @@ processed_quant_data <- meta.attached_quant_data %>%
          PoissonConfMin_Per_Liter_WW = PoissonConfMin_per_uL_RNA *(1e6/300) * (elution_volume/Filtered_WW_vol)) %>% 
   
   # calculations for pellet - dividing by mass
-  {if(pellets_present) mutate(., Copies_Per_Gram_DW = Copies_per_uL_RNA * 50/pellet_wet_mass * dry_mass_fraction)
+  {if(pellets_present) mutate(., Copies_Per_Gram_DW = Copies_per_uL_RNA * 50/(pellet_wet_mass * dry_mass_fraction))
     else . } %>% # If no pellet samples present, pipe the input to the next step
          
   # conditional calculations reg surrogate spiked virus
