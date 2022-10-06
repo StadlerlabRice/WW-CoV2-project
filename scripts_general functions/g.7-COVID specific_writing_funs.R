@@ -123,7 +123,7 @@ append_LOD_info <- function(fl, targ) {
   avg_inverse_total_droplet_count <- mean(1/fl$AcceptedDroplets)
   
   # Determine the LOD in terms of copies per ul
-  LOD = LOD_droplets * 2558.14/3 * avg_inverse_total_droplet_count # see the LOD googledoc for details 
+  LOD = LOD_droplets * 2558.14 * avg_inverse_total_droplet_count # see the LOD googledoc for details 
   # LOD calculation details - https://docs.google.com/document/d/1V1Dun0vMMb4XpyJELzMI5ClO3wWziE56Mblrm1kDyMo/edit
   
   
