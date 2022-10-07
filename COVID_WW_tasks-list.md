@@ -13,6 +13,7 @@ _(optional)_ --
 	- I'm tired of maintaining this, let's ignore this since I'm not the one using the script regularly
 
 ## Bugs
+- [ ] _Monkeypox code changes:_  The merged droplets represent both replicates but the calculation takes only 1 replicate's `pellet_wet_mass` (`dry_mass_fraction` is the same for both replicates..)
 - [x] Fixed with `^DI$` clashing with samples containing `DI` in them. As for the E sample issue, it's been a recurring issue for some time. I just always copy paste it from the complete data sheet and fix the formatting manually. Most recently it would've occurred on plate 561 with 063022 EDDI. It also happens with EDIM, but that's a school sample so we haven't had it in a while
 - [ ] What could cause the LOD to be higher on one plate than another even if both plates have 0 droplets in NTCs? Seems like the lift station MPX plates LOD is off for some reason? _Kyle, 16-9-22_ `091222 Rice WWTP and Lift Station MPX`
 
@@ -31,9 +32,11 @@ _(optional)_ --
 - [x] Make the code robust to new columns in the sample registry -- _Loading specific columns only, tell users to add new columns only after a certain column.._
 
 ## Streamlining
-- [ ] Collapse the spiking/vaccine processing into separate functions so the code is more consise
+- [x] _sample_registry :_ Pick which subset of rows to read by matching the week to `Description/Comments` field. _See if the read_sheets() can get discrete ranges of rows_.
+- [ ] Collapse the spiking/vaccine processing into separate functions so the code is more consise and make them operate conditionally
+- [ ] Simplify all temporary column names in the script for easy understanding. _Sample_name -> Sample_week ; assay_variable -> ? ;
 - [ ] Need more clarity and an easier way to see which variable is being used where - Tube_label vs Biobot_id etc. and need to remove redundancy.. _ex: Biobot ID column is generated with a formula in google sheet, can be done in R -- but will miss user evaluation for edge cases_
-- [ ] Simplify all temporary column names in the script for easy understanding. _Sample_name -> Sample_week ; assay_variable -> ? ; 
+
 
 # 9-4-22 - plotting tasks for Lauren
 
