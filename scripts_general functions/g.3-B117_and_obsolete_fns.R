@@ -30,6 +30,22 @@ calculate_B117_percentage_variant <- function(.dat)
 }
 
 
+# read in two sheets (WT and variant) for B117 assay and return fl -- old/obsolete
+
+B117_read_in_files <- function()
+  
+{
+    rps <- str_c(flnm, c('', '-variant') ) # Reading in two sheets, the second one has -variant attached
+    
+    fl <- map_dfr(rps,  # read the two files successively and attach them by row (df*r*)
+                  ~ read_sheet(sheeturls$raw_ddpcr, sheet = .x) %>% 
+                    mutate(variant_status = if_else(str_detect(.x, '-variant'),
+                                                    'Variant',
+                                                    'all'), .before = 1))
+}
+
+
+
 # Obsolete functions --------------------------------------------------
 
 # Check for neighboring dates and merge them :: Obsolete

@@ -42,14 +42,7 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   plate_template <- get_template_for(flnm, sheeturls$templates)  # Get the plate template matching file name, convert to 1 column 
   
   # B117 extra : grabbing the extra file named -variant for the B117 assay 
-  if(str_detect(flnm, regex('B117', ignore_case = TRUE))){
-    rps <- str_c(flnm, c('', '-variant') ) # Reading in two sheets, the second one has -variant attached
-    
-    fl <- map_dfr(rps,  # read the two files successively and attach them by row (df*r*)
-                  ~ read_sheet(sheeturls$raw_ddpcr, sheet = .x) %>% 
-                    mutate(variant_status = if_else(str_detect(.x, '-variant'),
-                                                    'Variant',
-                                                    'all'), .before = 1))}
+  if(str_detect(flnm, regex('B117', ignore_case = TRUE))) fl <- B117_read_in_files
   
   # Polishing ----
   
@@ -120,43 +113,15 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
            everything()) 
   
   # Data output ----
+  # removing unnecessary data outputs to save time
   
-  check_ok_and_write(final_data_with_LODs, sheeturls$data_dump, flnm) # save results to a google sheet
+  ------------------
+  # check_ok_and_write(final_data_with_LODs, sheeturls$data_dump, flnm) # save results to a google sheet
       # If you don't want to write to google sheets, use the command below and comment the one above
   # write_csv(final_data_with_LODs, str_c('excel files/Archive/Data dump files/', flnm, '.csv'), na = '')
   
   # Vaccine processing ----
-  
-  
-  # Saving vaccine data into Vaccines sheet in data dump: For easy book keeping
-  vaccine_data <- final_data_with_LODs %>% filter(str_detect(Sample_name, 'Vaccine|Vaccineb|Vacboil|stdVac') & !str_detect(Target, '^N.')) %>%
-    mutate('Prepared on' = '',
-           Week = str_extract(flnm, '[:digit:]{6}') %>% unlist() %>% str_c(collapse = ', '), # get 6 digit date :ddmmyy
-           Vaccine_ID = assay_variable, 
-           .before = 1) %>% 
-    mutate(Run_ID = str_extract(flnm, 'dd.WW[:digit:]*'), CT = NA) %>% 
-    select(`Prepared on`,	Week,	Vaccine_ID,	`Well Position`,	
-           CT,	Target,	Sample_name,	assay_variable,	`Tube ID`,	
-           biological_replicates,	Copies_per_uL_RNA,	Run_ID)
-  
-  # Add to existing sheet
-  if(vaccine_data %>% plyr::empty() %>% {!.}) sheet_append(sheeturls$data_dump, vaccine_data, 'Vaccines')
-  
-  # Mean of vaccine data
-  vaccine_data.mean <- vaccine_data %>% ungroup() %>% 
-    select(1:3, Target, Copies_per_uL_RNA, Run_ID) %>% group_by(across(-Copies_per_uL_RNA)) %>% 
-    summarise(across(Copies_per_uL_RNA, list(Mean_qPCR = mean, SD_qPCR = sd), na.rm = T), .groups = 'keep') %>% 
-    
-    # adding a RNA extraction conc. factor only if not boiled (Sbxx naming)
-    mutate('[Stock conc.] copies/ul' = `Copies_per_uL_RNA_Mean_qPCR` * if_else(str_detect(Vaccine_ID, 'S[:digit:]+'), 50/20, 1), 
-           'Estimated factor' = '',
-           Comments = '',
-           'Conc normalized to estimated factor' = '') %>% 
-    relocate(Run_ID, .after = last_col()) %>% 
-    mutate('x' = '', .before = 1)
-  
-  # Add to existing sheet in Vaccine_summary
-  if(vaccine_data.mean %>% plyr::empty() %>% {!.}) sheet_append(sheeturls$data_dump, vaccine_data.mean, 'Vaccine_summary')
+  process_vaccine_data_to_googlesheet()
   
   
   # Return the data frame
