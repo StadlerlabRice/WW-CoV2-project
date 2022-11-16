@@ -86,6 +86,8 @@ volumes.data_registry <-
 
 # Get pellet weight related data (monkeypox or future targets, for copies/g calculation)
 week_name <- str_extract(title_name, '[:digit:]{6}')
+if(!exists('pellet_weights_present')) pellet_weights_present <- 'FALSE' # make false if no user input
+
 if(pellet_weights_present) 
 {pellet_weight_data <- read_sheet(sheeturls$pellet_weights, sheet = str_c(week_name, ' Pellets')) %>% # get the Tube Label, pellet_mass and dry_mass_fraction
   mutate(across(Label_tube, ~str_remove(., ' ') )) %>% # remove spaces from the Sample_name
