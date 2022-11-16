@@ -40,13 +40,6 @@ quant_data <- bind_rows(list_quant_data) %>%
   mutate(across(Label_tube, ~str_remove(., ' ') )) # remove spaces from the Sample_name (Started with 1123 Pavan with 1123 69S names)
 
 
-# Check if pellet samples are present using the prefix 'p' in the assay_variable
-pellets_present <- quant_data$assay_variable %>% str_detect('^p') %>% any()
-
-# Also get from user input sheet : "vaccine_spike_present" if vaccine spike in is present
-# Feature : Use this to conditional for vaccine calculations -- in future
-
-
 # Load metadata ----------------------------------------------------------------------
 
 
@@ -64,14 +57,14 @@ volumes.data_registry <-
          
          Sample_Type = `Grab vs Composite`,
          No_of_Hours_Missed = `HHD Notes (# of samples missed/hours)`, 
-         
+
          # spiking relevant data
          Vaccine_ID = `Stock ID of Spike`,
          'Received_WW_vol' = `Total WW volume received (ml)`, 
          WW_weight = `Total WW weight measured (kg)`) %>% 
   
   select(Received_WW_vol, Label_tube, Filtered_WW_vol, Vaccine_ID, 
-         `Biobot_id`, 
+         `Biobot_id`,
          WW_weight, Sample_Type, No_of_Hours_Missed) %>% # select only the useful columns
   
   distinct() %>% # for removing repeated data in early stuff, before 608 (interferes with the merging of volumes for same bottles)
@@ -91,15 +84,22 @@ volumes.data_registry <-
   ungroup() %>% 
   select(-unique_labels, -WW_weight)
 
-# Get pellet weight related data (monkeypox, for copies/g calculation)
+# Get pellet weight related data (monkeypox or future targets, for copies/g calculation)
 week_name <- str_extract(title_name, '[:digit:]{6}')
-if(pellets_present) 
-{pellet_weight_data <- read_sheet(sheeturls$pellet_weights, sheet = str_c('Pellets ', week_name),
-                                      col_types = '-c---n------n') %>% # get the Tube Label, pellet_mass and dry_mass_fraction
-  mutate(across(Label_tube, ~str_remove(., ' ') )) # remove spaces from the Sample_name
+if(!exists('pellet_weights_present')) pellet_weights_present <- 'FALSE' # make false if no user input
+
+if(pellet_weights_present) 
+{pellet_weight_data <- read_sheet(sheeturls$pellet_weights, sheet = str_c(week_name, ' Pellets')) %>% # get the Tube Label, pellet_mass and dry_mass_fraction
+  mutate(across(Label_tube, ~str_remove(., ' ') )) %>% # remove spaces from the Sample_name
+  select(Label_tube, pellet_wet_mass, dry_mass_fraction) %>% 
+  mutate(across(c(pellet_wet_mass, dry_mass_fraction), as.numeric)) %>% 
   
-  # FEATURE: Need to implement error check for negative values
-}
+  # Since wells are merged for MPX analyses, the avg of replicate (2 and 1) will be merged into 1
+  # TODO : ideally all MPX volumes also need this but they are all usually 50 ml so we are not bothering as of now
+  mutate(merged_label = str_replace(Label_tube, '2$', '1')) %>% # make replicate 2 into 1 in a new temp column
+  group_by(merged_label) %>% mutate(across(pellet_wet_mass, mean, na.rm = TRUE)) %>% # take avg of the 2 replicates
+  filter(!str_detect(Label_tube, '2$')) %>% select(-merged_label) # remove the duplicate entry (old replicate 2)
+  }
 
 
 # Vaccine spike concentrations -- # Feature: Implement the switch in other places too
@@ -122,10 +122,20 @@ meta.attached_quant_data <- quant_data %>%
   # join vaccine quantification
   left_join(spike_list %>% select(Vaccine_ID, Target, spiking_virus_vaccine_stock_conc),  by = c('Vaccine_ID', 'Target') ) %>% 
   
+  # Extra analysis for Pellet samples -- Monkeypox or future targets..?
+  {if(pellet_weights_present) {
+  mutate(.data = ., sample_type = if_else(str_detect(assay_variable, '^p'), 'Pellet', 'Liquid')) %>% # pellet or liquid?
+  mutate(across(assay_variable, ~ str_remove(.x, '^p'))) } # Remove the ^p from the pellet samples (will add back to WWTP column)
+    else . } %>% # If no pellet samples present, pipe the input to the next step
+  
+  
+  # Joining full names of the WWTPs and other samples : form Biobot_ID google sheet
   left_join(biobot_lookup) %>%  # join biobot_IDs
   
-  # for pellet data : attach weights
-  {if(pellets_present) left_join(., pellet_weight_data, by = 'Label_tube')} %>% 
+  # for pellet data : attach weights and re-attach ^p to the beginning of WWTP abbreviations
+  {if(pellet_weights_present) left_join(., pellet_weight_data, by = 'Label_tube') %>% 
+      mutate(across(WWTP, ~ if_else(sample_type == 'Pellet', str_c('p', .x), .x)))  
+    else . } %>% # If no pellet samples present, pipe the input to the next step 
   
   # clean up controls etc. that don't appear in biobot_lookup
   mutate(across('WWTP', ~if_else(str_detect(., '^X')|is.na(.), assay_variable, .)), # wwtp == assay_var
@@ -139,7 +149,9 @@ meta.attached_quant_data <- quant_data %>%
 spiking_present <- meta.attached_quant_data$Vaccine_ID %>% is.na() %>% all() %>% {!.} # if no vaccine ID is detected then absent
 # use this later to streamline code
 
-# Calculations ----
+
+
+# Calculations -------------------
 
 # Copies_per_uL_RNA to Copies_Per_Liter_WW. Spike in concentration, % recovery are calculated
 # join the results with the WWTP identifiers and names
@@ -154,7 +166,8 @@ processed_quant_data <- meta.attached_quant_data %>%
          PoissonConfMin_Per_Liter_WW = PoissonConfMin_per_uL_RNA *(1e6/300) * (elution_volume/Filtered_WW_vol)) %>% 
   
   # calculations for pellet - dividing by mass
-  {if(pellets_present) mutate(., Copies_Per_Gram_DW = Copies_per_uL_RNA * 50/pellet_wet_mass * dry_mass_fraction)} %>% 
+  {if(pellet_weights_present) mutate(., Copies_Per_Gram_DW = Copies_per_uL_RNA * 50/(pellet_wet_mass * dry_mass_fraction))
+    else . } %>% # If no pellet samples present, pipe the input to the next step
          
   # conditional calculations reg surrogate spiked virus
   # Calculations for Surrogate_virus_input_per.L.WW (input) and Percentage_recovery (output/input * 100)
