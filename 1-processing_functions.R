@@ -1,7 +1,9 @@
-# Don't need to run this if you are running 2-calculations_multiple_runs : This script is called from there
+# Don't need to run this script standalone if you are running 2-calculations_multiple_runs : This script is called from there
 #---------------------------------------------------------------------
 
-# Read in the qPCR and ddPCR raw data, attach to sample names and process Cq to copy number (qPCR) 
+# Read in the qPCR and ddPCR raw data, attach to sample names and process to copies/ul RNA (ddPCR) or
+# Cq to copy number (qPCR) 
+
 # Author: Prashant Kalvapalle;  June 16 2020.
 # Merged with other /R files Aug 4, 2020
 
@@ -34,12 +36,14 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   
   # get the template volumes for each assay from the metadata sheet
   template_volume_ddpcr <- read_sheet(ss = sheeturls$user_inputs, sheet = 'ddPCR template volumes', range = 'A:B')
+  # TODO : streamline this to minimize reading another google sheet?
   
   # Data input ----
   
-  # Read in ddPCR/qPCR data and labels from plate template
+  # Read in ddPCR data and labels from plate template
   fl <- read_sheet(sheeturls$raw_ddpcr, sheet = flnm) # read excel file exported by Quantstudio
   plate_template <- get_template_for(flnm, sheeturls$templates)  # Get the plate template matching file name, convert to 1 column 
+  # TODO : saves time, but not sheet reading? : streamline this call to read only the top 10 plates and search the rest only if the key is not found
   
   # B117 extra : grabbing the extra file named -variant for the B117 assay 
   if(str_detect(flnm, regex('B117', ignore_case = TRUE))) fl <- B117_read_in_files
@@ -49,7 +53,7 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   # collect variables for combined operations (copies and Poisson confidence intervals)
   variables_per_uL_RNA <-  c('Copies_per_uL_RNA', 'PoissonConfMax_per_uL_RNA', 'PoissonConfMin_per_uL_RNA')
   
-  # Load desired qPCR result sheet and columns
+  # Load desired ddPCR result sheet and columns
   bring_results <- fl %>% 
     select(-Sample) %>% # Remove sample, it will be loaded from plate template sheet
     
@@ -82,6 +86,7 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
     mutate_at('assay_variable', as.character) %>% 
     mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
     
+    # --- push this section into BCoV specific - rename vaccine to be more general?
     mutate(backup_copies_per.ul.rna_if.undiluted = Copies_per_uL_RNA) %>%  # taking a backup of the copy number column before doing calculations for dilution factors
     mutate(across(any_of(variables_per_uL_RNA), 
                   ~ if_else(str_detect(Target, 'BCoV') & !str_detect(Sample_name, 'NTC'), 
@@ -90,11 +95,13 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
     ) %>% # Correcting for template dilution in case of BCoV ddPCRs (excluding NTC wells)
     mutate_cond(str_detect(Sample_name, 'Vaccine') & str_detect(Target, 'BCoV'), 
                 across(any_of(variables_per_uL_RNA), ~ .x * Vaccine_additional_RNA_dilution_factor_BCoV)) %>%  # Correcting for BCoV Vaccine with a higher dilution
+    # ---
     
     # Ad-hoc corrections for errors in making plate - sample dilutions etc.
     mutate_cond(str_detect(`Well Position`, adhoc_dilution_wells), # Regex of wells to manipulate
                 across(any_of(variables_per_uL_RNA), ~ . / 50) # dilution corrections or other changes
     ) %>% 
+    # TODO : Discard this adhoc dilution - not relevant ; also the baylor wells section below
     
     # Adding tag to target for baylor smaples
     { if(!str_detect(baylor_wells, 'none|None')) { 
