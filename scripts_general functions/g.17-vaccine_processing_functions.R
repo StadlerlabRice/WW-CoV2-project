@@ -58,12 +58,14 @@ check_vaccine_ID_duplicates <- function()
 
 # Write and save vaccine data from 1-processing functions
 process_vaccine_data_to_googlesheet <- function()
-  # calling only for the side effect, no input or outputs to this function
+  # calling from 1-processing_function's enviornment -- for the side effect, no input or outputs to this function
   
 {
   
   # Saving vaccine data into Vaccines sheet in data dump: For easy book keeping
-  vaccine_data <- final_data_with_LODs %>% filter(str_detect(Sample_name, 'Vaccine|Vaccineb|Vacboil|stdVac') & !str_detect(Target, '^N.')) %>%
+  vaccine_data <- final_data_with_LODs %>% 
+    filter(str_detect(Sample_name, 'Vaccine|Vaccineb|Vacboil|stdVac') & !str_detect(Target, '^N.')) %>%
+    
     mutate('Prepared on' = '',
            Week = str_extract(flnm, '[:digit:]{6}') %>% unlist() %>% str_c(collapse = ', '), # get 6 digit date :ddmmyy
            Vaccine_ID = assay_variable, 
@@ -93,5 +95,27 @@ process_vaccine_data_to_googlesheet <- function()
   if(vaccine_data.mean %>% plyr::empty() %>% {!.}) sheet_append(sheeturls$data_dump, vaccine_data.mean, 'Vaccine_summary')
   
   
+}
+
+
+# Account for dilutions to detect BCoV samples (50x) and BCoV vaccine sample (50 x 50)
+account_for_BCoV_dilutions <- function(.df)
+{
+  # collect variables for combined operations (copies and Poisson confidence intervals)
+  variables_per_uL_RNA <-  c('Copies_per_uL_RNA', 'PoissonConfMax_per_uL_RNA', 'PoissonConfMin_per_uL_RNA')
+  
+  
+  # processing begins
+  mutate(.df,
+         backup_copies_per.ul.rna_if.undiluted = Copies_per_uL_RNA) %>%  # taking a backup of the copy number column before doing calculations for dilution factors
+    mutate(across(any_of(variables_per_uL_RNA), 
+                  ~ if_else(str_detect(Target, 'BCoV') & !str_detect(Sample_name, 'NTC'), 
+                            .x * RNA_dilution_factor_BCoV, 
+                            .x))
+    ) %>% # Correcting for template dilution in case of BCoV ddPCRs (excluding NTC wells)
+    
+    
+    mutate_cond(str_detect(Sample_name, 'Vaccine') & str_detect(Target, 'BCoV'), 
+                across(any_of(variables_per_uL_RNA), ~ .x * Vaccine_additional_RNA_dilution_factor_BCoV))  # Correcting for BCoV Vaccine with a higher dilution
 }
 
