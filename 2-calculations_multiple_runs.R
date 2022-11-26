@@ -10,10 +10,30 @@ source('./0-general_functions_main.R') # Source the general_functions file
 # Read the input parameters sheet and create all the parameters
 source('./scripts_general functions/g.12-sheet-to-params.R') 
 
+# fix missing parameters with defaults
+if(!exists('pellet_weights_present')) pellet_weights_present <- 'FALSE' # make false if no user input
+if(!exists('vaccine_spike_present')) vaccine_spike_present <- 'FALSE' # make false if no user input
+
 # Preliminary ----
 
 # Source script
 source('./1-processing_functions.R') # Source the file with the ddPCR and qPCR name's attaching functions
+
+# Set template volumes used in ddPCR
+template_volume_ddpcr <- 
+  {if(unusual_template_volumes_present) { 
+    
+    # get the template volumes for each assay target from the metadata sheet -- only if required
+    read_sheet(ss = sheeturls$user_inputs, sheet = 'ddPCR template volumes', range = 'A:C', col_types = 'c-n')
+    
+    # load the default volume
+    } else tibble(Target = 'default', template_volume_per_22ulrxn = default_template_per_well)
+  } %>%
+  
+  # correction for 20 out of 22 ul loaded into ddPCR droplet generation 
+  mutate(template_vol = template_volume_per_22ulrxn * 20/22) 
+  
+default_template_vol_corrected <- default_template_per_well * 20/22 # same correction as above for ddPCR loading
 
 
 
@@ -86,10 +106,11 @@ volumes.data_registry <-
 
 # Get pellet weight related data (monkeypox or future targets, for copies/g calculation)
 week_name <- str_extract(title_name, '[:digit:]{6}')
-if(!exists('pellet_weights_present')) pellet_weights_present <- 'FALSE' # make false if no user input
 
 if(pellet_weights_present) 
-{pellet_weight_data <- read_sheet(sheeturls$pellet_weights, sheet = str_c(week_name, ' Pellets')) %>% # get the Tube Label, pellet_mass and dry_mass_fraction
+  
+  # get the Tube Label, pellet_mass and dry_mass_fraction
+{pellet_weight_data <- read_sheet(sheeturls$pellet_weights, sheet = str_c(week_name, ' Pellets')) %>% 
   mutate(across(Label_tube, ~str_remove(., ' ') )) %>% # remove spaces from the Sample_name
   select(Label_tube, pellet_wet_mass, dry_mass_fraction) %>% 
   mutate(across(c(pellet_wet_mass, dry_mass_fraction), as.numeric)) %>% 
@@ -119,10 +140,15 @@ meta.attached_quant_data <- quant_data %>%
   left_join(volumes.data_registry, by = 'Label_tube') %>%
   mutate_at('Biobot_id', ~if_else(is.na(.x), str_c(Sample_name, assay_variable), .x)) %>% # stand-by name for missing cols
   
-  # join vaccine quantification
-  left_join(spike_list %>% select(Vaccine_ID, Target, spiking_virus_vaccine_stock_conc),  by = c('Vaccine_ID', 'Target') ) %>% 
+  # join vaccine quantification :: if spike is present
+  { if(vaccine_spike_present) {
+    left_join(spike_list %>% select(Vaccine_ID, Target, spiking_virus_vaccine_stock_conc),  by = c('Vaccine_ID', 'Target') ) 
+    
+    } else .} %>% 
   
   # Extra analysis for Pellet samples -- Monkeypox or future targets..?
+  # TODO : cleanup the pellet_weights_present -> move to another script as a function if possible
+  
   {if(pellet_weights_present) {
   mutate(.data = ., sample_type = if_else(str_detect(assay_variable, '^p'), 'Pellet', 'Liquid')) %>% # pellet or liquid?
   mutate(across(assay_variable, ~ str_remove(.x, '^p'))) } # Remove the ^p from the pellet samples (will add back to WWTP column)
@@ -170,12 +196,16 @@ processed_quant_data <- meta.attached_quant_data %>%
     else . } %>% # If no pellet samples present, pipe the input to the next step
          
   # conditional calculations reg surrogate spiked virus
+  
+  # TODO : remove spiking calculations into g17 script
+  
   # Calculations for Surrogate_virus_input_per.L.WW (input) and Percentage_recovery (output/input * 100)
   mutate(Surrogate_virus_input_per.L.WW = spiking_virus_vaccine_stock_conc * spike_virus_volume / (Received_WW_vol * 1e-3), 
          Percentage_recovery_BCoV = 100 * Copies_Per_Liter_WW/Surrogate_virus_input_per.L.WW) %>% 
   
   # (source for chemagic conc. factor calculations : Google sheet below
-  # "concentration factor calc" : https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=2134801800)
+  # "concentration factor calc" : sheet below 
+  # https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=2134801800)
   
   # Remove the columns not relevant targets that are not surrogate viruses (BCoV or BRSV) or for Vaccine stocks
   mutate_cond(!str_detect(Target_Name, 'BCoV|BRSV') |
@@ -198,25 +228,8 @@ processed_quant_data <- meta.attached_quant_data %>%
 if(processed_quant_data %>%  {!'CT' %in% colnames(.)}) processed_quant_data$CT = NA
 
 # Vaccine ID duplication value check - Brings user attention to duplicate values in the Vaccine_summary in data dump
-processed_quant_data$Vaccine_ID %>% 
-  unique() %>%  # find all the Vaccine IDs in use for the current week data
-  paste(collapse = '|') %>% # make a regular expression (regex) combining them
-  
-  {filter(spike_list, str_detect(Vaccine_ID, .))} %>% 
-  unique %>%  # filter the list of vaccine data with these IDs (from data dump) that are unique
-  
-  {if(nrow (.) > 1) {
-    duplicate_vaccine_values <- . 
-    view(duplicate_vaccine_values)
-    stop("Duplicate vaccine IDs found in the data dump, 
-         please check the table: *duplicate_vaccine_values* for more information")
-  }
-    else if(nrow(.) > 0 &&  .$spiking_virus_vaccine_stock_conc == 0){
-      zero_vaccine_values <- . 
-      view(zero_vaccine_values)
-      stop("Zeros found in vaccine quants in the data dump, please fix") 
-    }
-  }
+if(vaccine_spike_present) check_vaccine_ID_duplicates()
+
 
 # Data for output ----------------------------------------------------------------------
 
@@ -354,7 +367,8 @@ if(HHD_data_output)
     write_csv(present_only_WW, file = str_c('excel files/Weekly data to HHD/', title_name, '.csv'), na = '') # output csv file
   }
   
-  # Inclusive reporting : # This ensures that no sample is missed from the reporting just because it does not exist in the biobot ID sheet
+  # Inclusive reporting : 
+  # This ensures that no sample is missed from the reporting just because it does not exist in the biobot ID sheet
   present_manhole_samples <- present_HHD_data %>%  # identify the remaining samples
     filter(! WWTP %in% WWTP_symbols & 
              !str_detect(WWTP, samples_to_remove)  # and controls : DI, NTC, Blanks, WHC etc.

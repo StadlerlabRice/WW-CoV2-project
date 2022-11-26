@@ -31,13 +31,8 @@
 
 
 # ddPCR processing: Attach sample labels from template table, calculate copies/ul using template volume/reaction, make names similar to qPCR data 
-process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilution_wells = 'none')
-{ # Baylor wells : choose 1) none, 2) '.*' for all, 3) '[A-H]([1-9]$|10)' etc. for specific wells 
-  
-  # get the template volumes for each assay from the metadata sheet
-  template_volume_ddpcr <- read_sheet(ss = sheeturls$user_inputs, sheet = 'ddPCR template volumes', range = 'A:B')
-  # TODO : streamline this to minimize reading another google sheet?
-  
+process_ddpcr <- function(flnm = flnm.here)
+{ 
   # Data input ----
   
   # Read in ddPCR data and labels from plate template
@@ -50,8 +45,6 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   
   # Polishing ----
   
-  # collect variables for combined operations (copies and Poisson confidence intervals)
-  variables_per_uL_RNA <-  c('Copies_per_uL_RNA', 'PoissonConfMax_per_uL_RNA', 'PoissonConfMin_per_uL_RNA')
   
   # Load desired ddPCR result sheet and columns
   bring_results <- fl %>% 
@@ -66,7 +59,10 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
     # filter(!is.na(Target)) %>% # I don't recall why this is here
     
     # Adding different template volumes for each target for division
-    left_join(template_volume_ddpcr) %>% # join array of template volume - different for N1,N2 and BCOV2
+    left_join(., template_volume_ddpcr, by = 'Target') %>% # join array of template volume - different for N1,N2 and BCOV2
+    replace_na(list(template_vol = default_template_vol_corrected)) %>% # use default volume for unmatched ones
+    
+    # copies per ul : calculations
     mutate('Copies_per_uL_RNA' = CopiesPer20uLWell/ template_vol, # template_vol is the ul of RNA per 20 ul well
            'PoissonConfMax_per_uL_RNA' = PoissonConfMax * 20 / template_vol,   # converting Poisson confidence intervals into copies/ul RNA units
            'PoissonConfMin_per_uL_RNA' = PoissonConfMin * 20 / template_vol) %>%
@@ -86,30 +82,16 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
     mutate_at('assay_variable', as.character) %>% 
     mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
     
-    # --- push this section into BCoV specific - rename vaccine to be more general?
-    mutate(backup_copies_per.ul.rna_if.undiluted = Copies_per_uL_RNA) %>%  # taking a backup of the copy number column before doing calculations for dilution factors
-    mutate(across(any_of(variables_per_uL_RNA), 
-                  ~ if_else(str_detect(Target, 'BCoV') & !str_detect(Sample_name, 'NTC'), 
-                            .x * RNA_dilution_factor_BCoV, 
-                            .x))
-    ) %>% # Correcting for template dilution in case of BCoV ddPCRs (excluding NTC wells)
-    mutate_cond(str_detect(Sample_name, 'Vaccine') & str_detect(Target, 'BCoV'), 
-                across(any_of(variables_per_uL_RNA), ~ .x * Vaccine_additional_RNA_dilution_factor_BCoV)) %>%  # Correcting for BCoV Vaccine with a higher dilution
-    # ---
     
-    # Ad-hoc corrections for errors in making plate - sample dilutions etc.
-    mutate_cond(str_detect(`Well Position`, adhoc_dilution_wells), # Regex of wells to manipulate
-                across(any_of(variables_per_uL_RNA), ~ . / 50) # dilution corrections or other changes
-    ) %>% 
-    # TODO : Discard this adhoc dilution - not relevant ; also the baylor wells section below
-    
-    # Adding tag to target for baylor smaples
-    { if(!str_detect(baylor_wells, 'none|None')) { 
-      mutate_at(., 'Target', as.character) %>% 
-        mutate_cond(str_detect(`Well Position`, baylor_wells), Target = str_c(Target, '/Baylor'))
+    # Account for dilutions to detect BCoV samples (50x) and BCoV vaccine sample (50 x 50)
+    {if(vaccine_spike_present)  {
+      environment(account_for_BCoV_dilutions) <- environment() # set environment to current
+      account_for_BCoV_dilutions(.)
     } else .
-    }
-  
+      
+      } 
+    
+    
   # Append LOD information ----
   
   final_data_with_LODs <- complete_LOD_table(polished_results)%>% 
@@ -122,13 +104,19 @@ process_ddpcr <- function(flnm = flnm.here, baylor_wells = 'none', adhoc_dilutio
   # Data output ----
   # removing unnecessary data outputs to save time
   
-  ------------------
   # check_ok_and_write(final_data_with_LODs, sheeturls$data_dump, flnm) # save results to a google sheet
       # If you don't want to write to google sheets, use the command below and comment the one above
   # write_csv(final_data_with_LODs, str_c('excel files/Archive/Data dump files/', flnm, '.csv'), na = '')
   
   # Vaccine processing ----
-  process_vaccine_data_to_googlesheet()
+  
+  # Extract and save vaccine data into Vaccines sheet in data dump ; along with mean and sd to `Vaccine_summary`
+  if(vaccine_spike_present) 
+  {
+    environment(process_vaccine_data_to_googlesheet) <- environment() # set environment to current
+    process_vaccine_data_to_googlesheet() # run additional script 
+  }
+  
   
   
   # Return the data frame
