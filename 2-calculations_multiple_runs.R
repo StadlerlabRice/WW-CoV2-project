@@ -123,7 +123,10 @@ processed_quant_data <- meta.attached_quant_data %>%
          
   
   # Calculations for Surrogate_virus_input_per.L.WW (input) and Percentage_recovery (output/input * 100)
-  {if(vaccine_spike_present) calculations_for_vaccine_spikeins else .} %>% 
+  {if(vaccine_spike_present) calculations_for_vaccine_spikeins(.) else {
+    
+    mutate(., Surrogate_virus_input_per.L.WW = NaN, `Percentage_recovery_BCoV` = NaN) # add empty columns 
+  }} %>% 
   
   
   # arranging data by facility name alphabetical
@@ -175,12 +178,9 @@ presentable_data <- processed_quant_data %>%
   mutate_at('Target_Name', ~str_remove(., '/Baylor')) %>% 
 
   
-  # B117 special plug
-  {if(str_detect(read_these_sheets, 'B117') %>% any) {
-    calculate_B117_percentage_variant(.) %>% # calculating the percentage of variant vs total S copies 
-    select(-any_of('variant_status')) %>% 
-    relocate(percentage_variant, .after = 'Target_Name') }
-    else .
+  # B117 special plug ; # calculating the percentage of variant vs total S copies 
+  {if(str_detect(read_these_sheets, 'B117') %>% any) {calculate_B117_percentage_variant(.) 
+     } else .
   } %>% 
   
   mutate(across(where(is.numeric), ~ round(., 2))) # rounding off all numerical things

@@ -152,5 +152,3 @@ process_all_pcr <- function(flname, baylor_wells = 'none')
   # if it is a qPCR file (WWxx), call the qpcr processor
   if(str_detect(flname, '(?<!dd\\.)WW[:digit:]*')) process_qpcr(flname, baylor_wells = baylor_wells)
 }
-
-

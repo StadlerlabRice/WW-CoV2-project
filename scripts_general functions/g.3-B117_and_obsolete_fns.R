@@ -19,7 +19,10 @@ calculate_B117_percentage_variant <- function(.dat)
     select( all_of(text_cols), all_of(value_cols)) %>%  # select only important columns
     pivot_wider(names_from = variant_status, values_from = all_of(value_cols)) %>%  # put variant and all side by side
     
-    mutate(percentage_variant = (`Copies_per_uL_RNA_Variant` / `Copies_per_uL_RNA_all` * 100) %>% round(2)) #%>%  # calculate % of variant, round it off
+    mutate(percentage_variant = (`Copies_per_uL_RNA_Variant` / `Copies_per_uL_RNA_all` * 100) %>% round(2)) %>%  # calculate % of variant, round it off
+    
+    select(-any_of('variant_status')) %>% # remove column
+    relocate(percentage_variant, .after = 'Target_Name')
     
     # below lines will produce stacked data for both variants so the B117 data is in the same format as the N1N2 data
     # mutate(across('Target_Name', ~ str_c(., '-Variant'))) %>% # add "-Variant" to the Target_Name
