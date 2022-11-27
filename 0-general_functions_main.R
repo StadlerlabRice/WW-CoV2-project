@@ -53,7 +53,9 @@ list_of_general_functions <- c("g.0-inputs_for_analysis.R",
                                'g.10-sheet_columns_renaming_funs.R',
                                'g.11-data_QC_funs.R',
                                'g.16-pick_latest_rerun.R',
-                               'g.17-vaccine_processing_functions.R')
+                               'g.17-vaccine_processing_functions.R',
+                               'g.18-pellet_weight_processing_functions.R',
+                               'g.19-get_volumes_from_sample_registry.R')
 
 
 # handy command to print a tibble in this format (read all the file names into a tibble)

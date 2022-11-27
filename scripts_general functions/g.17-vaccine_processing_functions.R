@@ -2,12 +2,28 @@
 
 # Obsolete stuff: Making small functions that process vaccine spike-in data (to keep the main code cleaner)
 
-calculations_for_vaccine_data <- function(.df)
-{
+# Calculations for Surrogate_virus_input_per.L.WW (input) and Percentage_recovery (output/input * 100)
+calculations_for_vaccine_spikeins <- function(.df)
+{ 
+  # Get spiking metadata ----
+  
+  # Get Vaccine spike concentrations from google sheet
+  spike_list <- read_sheet(sheeturls$data_dump, sheet = 'Vaccine_summary', range = 'B6:K', col_types = 'Dcccnnnccn') %>% 
+    rename(spiking_virus_vaccine_stock_conc = matches('Stock conc.'), Sample_name = Week) %>% 
+    
+    check_vaccine_ID_duplicates # give a warning for duplicates of the Vaccine_ID
+  
+  
+  # Start processing data ----
   .df %>% 
+    
+    # join vaccine quantification to the data : selected columns
+    left_join(spike_list %>% 
+                select(Vaccine_ID, Target, spiking_virus_vaccine_stock_conc),  by = c('Vaccine_ID', 'Target') ) %>% 
+  
+    # Calculate percentage recovery
     mutate(Surrogate_virus_input_per.L.WW = spiking_virus_vaccine_stock_conc * spike_virus_volume / (Received_WW_vol * 1e-3), 
            Percentage_recovery_BCoV = 100 * Copies_Per_Liter_WW/Surrogate_virus_input_per.L.WW)
-  
   
   # (source for chemagic conc. factor calculations : Google sheet below
   # "concentration factor calc" : https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=2134801800)
@@ -29,11 +45,11 @@ calculations_for_vaccine_data <- function(.df)
 
 
 # checking for duplicates in the vaccine IDs
-
-check_vaccine_ID_duplicates <- function()
+# Vaccine ID duplication value check - Brings user attention to duplicate values in the Vaccine_summary in data dump
+check_vaccine_ID_duplicates <- function(.df)
 {
   # Vaccine ID duplication value check - Brings user attention to duplicate values in the Vaccine_summary in data dump
-  processed_quant_data$Vaccine_ID %>% 
+  .df$Vaccine_ID %>% 
     unique() %>%  # find all the Vaccine IDs in use for the current week data
     paste(collapse = '|') %>% # make a regular expression (regex) combining them
     
