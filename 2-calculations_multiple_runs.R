@@ -77,42 +77,31 @@ meta.attached_quant_data <- quant_data %>%
   left_join(volumes.data_registry, by = 'Label_tube') %>%
   mutate_at('Biobot_id', ~if_else(is.na(.x), str_c(Sample_name, assay_variable), .x)) %>% # stand-by name for missing cols
   
-  # join vaccine quantification :: if spike is present
-  { if(vaccine_spike_present) {
-    left_join(spike_list %>% select(Vaccine_ID, Target, spiking_virus_vaccine_stock_conc),  by = c('Vaccine_ID', 'Target') ) 
-    
-    } else .} %>% 
   
-  # Extra analysis for Pellet samples -- Monkeypox or future targets..?
-  # TODO : cleanup the pellet_weights_present -> move to another script as a function if possible
-  
-  {if(pellet_weights_present) {
-  mutate(.data = ., sample_type = if_else(str_detect(assay_variable, '^p'), 'Pellet', 'Liquid')) %>% # pellet or liquid?
-  mutate(across(assay_variable, ~ str_remove(.x, '^p'))) } # Remove the ^p from the pellet samples (will add back to WWTP column)
-    else . } %>% # If no pellet samples present, pipe the input to the next step
+  # Extra processing for Pellet samples -- was used for Monkeypox quants
+  mutate(sample_type = if_else(str_detect(assay_variable, '^p'), 'Pellet', 'Liquid')) %>% # pellet or liquid?
+  mutate(across(assay_variable, ~ str_remove(.x, '^p'))) %>% # Remove the ^p from the pellet samples (will add back to WWTP column)
   
   
   # Joining full names of the WWTPs and other samples : form Biobot_ID google sheet
   left_join(biobot_lookup) %>%  # join biobot_IDs
   
   # for pellet data : attach weights and re-attach ^p to the beginning of WWTP abbreviations
-  {if(pellet_weights_present) left_join(., pellet_weight_data, by = 'Label_tube') %>% 
-      mutate(across(WWTP, ~ if_else(sample_type == 'Pellet', str_c('p', .x), .x)))  
-    else . } %>% # If no pellet samples present, pipe the input to the next step 
+  mutate(across(WWTP, ~ if_else(sample_type == 'Pellet', str_c('p', .x), .x))) %>% 
+  
+  # Extra processing for pellet weights
+  {if(pellet_weights_present) 
+    left_join(., pellet_weight_data, by = 'Label_tube') else . } %>% # If no pellet samples present, pipe the input to the next step 
   
   # clean up controls etc. that don't appear in biobot_lookup
   mutate(across('WWTP', ~if_else(str_detect(., '^X')|is.na(.), assay_variable, .)), # wwtp == assay_var
          across('Facility', ~if_else(str_detect(., '^X')|is.na(.), str_c(Sample_name, '/', assay_variable), .)) ) %>% 
-          # Facility = Sample_name/assay_variable
   
   rename(Target_Name = Target) # rename to match the final output desired by HHD
 
 
-# Detect for spiking : look for Vaccine_ID
-spiking_present <- meta.attached_quant_data$Vaccine_ID %>% is.na() %>% all() %>% {!.} # if no vaccine ID is detected then absent
-# use this later to streamline code
-
-
+# clean up intermediate data sources whose job is done
+rm(volumes.data_registry) 
 
 # Calculations -------------------
 
@@ -132,30 +121,10 @@ processed_quant_data <- meta.attached_quant_data %>%
   {if(pellet_weights_present) mutate(., Copies_Per_Gram_DW = Copies_per_uL_RNA * 50/(pellet_wet_mass * dry_mass_fraction))
     else . } %>% # If no pellet samples present, pipe the input to the next step
          
-  # conditional calculations reg surrogate spiked virus
-  
-  # TODO : remove spiking calculations into g17 script
   
   # Calculations for Surrogate_virus_input_per.L.WW (input) and Percentage_recovery (output/input * 100)
-  mutate(Surrogate_virus_input_per.L.WW = spiking_virus_vaccine_stock_conc * spike_virus_volume / (Received_WW_vol * 1e-3), 
-         Percentage_recovery_BCoV = 100 * Copies_Per_Liter_WW/Surrogate_virus_input_per.L.WW) %>% 
+  {if(vaccine_spike_present) calculations_for_vaccine_spikeins else .} %>% 
   
-  # (source for chemagic conc. factor calculations : Google sheet below
-  # "concentration factor calc" : sheet below 
-  # https://docs.google.com/spreadsheets/d/19oRiRcRVS23W3HqRKjhMutJKC2lFOpNK8aNUkC-No-s/edit#gid=2134801800)
-  
-  # Remove the columns not relevant targets that are not surrogate viruses (BCoV or BRSV) or for Vaccine stocks
-  mutate_cond(!str_detect(Target_Name, 'BCoV|BRSV') |
-                str_detect(Sample_name, 'Vaccine'),  # And vaccines
-              Surrogate_virus_input_per.L.WW = NA, 
-              Percentage_recovery_BCoV = NA) %>% 
-  
-  # And for vaccine (ie. Vaccine stock quants), remove Copies_Per_Liter_WW
-  mutate_cond(str_detect(Sample_name, 'Vaccine'),
-              Copies_Per_Liter_WW = NA) %>%  # not relevant for vaccine stock
-              
-    
-  select(-spiking_virus_vaccine_stock_conc) %>% 
   
   # arranging data by facility name alphabetical
   arrange(Facility) %>% 
@@ -163,9 +132,6 @@ processed_quant_data <- meta.attached_quant_data %>%
 
 # Adding a dummy CT column (if only ddPCR data is being loaded; which lacks the CT column) - for compatibility with qPCR code
 if(processed_quant_data %>%  {!'CT' %in% colnames(.)}) processed_quant_data$CT = NA
-
-# Vaccine ID duplication value check - Brings user attention to duplicate values in the Vaccine_summary in data dump
-if(vaccine_spike_present) check_vaccine_ID_duplicates()
 
 
 # Data for output ----------------------------------------------------------------------
