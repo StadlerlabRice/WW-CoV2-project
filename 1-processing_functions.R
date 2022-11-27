@@ -46,19 +46,19 @@ process_ddpcr <- function(flnm = flnm.here)
   # Polishing ----
   
   
-  # Load desired ddPCR result sheet and columns
+  # Load desired ddPCR result sheet, join the sample names from template
   bring_results <- fl %>% 
     select(-Sample) %>% # Remove sample, it will be loaded from plate template sheet
     
     raw_ddpcr_renamer %>% # rename columns and remove NO CALLs to account for Quantasoft analysis pro export  
   
-    mutate_at('Well', ~ str_replace(., '(?<=[:alpha:])0(?=[:digit:])', '') ) %>% rename('Well Position' = Well) %>% 
+    mutate_at('Well', ~ str_replace(., '(?<=[:alpha:])0(?=[:digit:])', '') ) %>% rename('Well Position' = Well) %>% # remove leading 0 from A01..
     right_join(plate_template, by = 'Well Position') %>%  # Incorporate samples names from the google sheet by matching well position
     
     # mutate_at('Target', ~str_replace_all(., c('N1' = 'N1_multiplex' , 'N2' = 'N2_multiplex'))) %>%  # old -- for compatibility with qPCR
     # filter(!is.na(Target)) %>% # I don't recall why this is here
     
-    # Adding different template volumes for each target for division
+    # Adding different template volumes for each target for division // or default (typically 10 ul/22 ul rxn)
     left_join(., template_volume_ddpcr, by = 'Target') %>% # join array of template volume - different for N1,N2 and BCOV2
     replace_na(list(template_vol = default_template_vol_corrected)) %>% # use default volume for unmatched ones
     
@@ -67,7 +67,8 @@ process_ddpcr <- function(flnm = flnm.here)
            'PoissonConfMax_per_uL_RNA' = PoissonConfMax * 20 / template_vol,   # converting Poisson confidence intervals into copies/ul RNA units
            'PoissonConfMin_per_uL_RNA' = PoissonConfMin * 20 / template_vol) %>%
     
-    select(`Sample_name`, Copies_per_uL_RNA, Target, everything())
+    select(`Sample_name`, Copies_per_uL_RNA, Target, everything()) # order - put important columns first
+  
   
   
   # polishing qPCR data - Make Biobot ID column clean
@@ -81,7 +82,8 @@ process_ddpcr <- function(flnm = flnm.here)
     
     mutate_at('assay_variable', as.character) %>% 
     mutate_at('biological_replicates', ~str_replace_na(., '')) %>% 
-    
+   
+    # TODO : cleanup -- remove redundant column name renaming/manipulations : Use the final names throughout 
     
     # Account for dilutions to detect BCoV samples (50x) and BCoV vaccine sample (50 x 50)
     {if(vaccine_spike_present)  {

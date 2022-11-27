@@ -21,8 +21,8 @@ source('./1-processing_functions.R') # Source the file with the ddPCR and qPCR n
 
 # Set template volumes used in ddPCR
 template_volume_ddpcr <- 
+  
   {if(unusual_template_volumes_present) { 
-    
     # get the template volumes for each assay target from the metadata sheet -- only if required
     read_sheet(ss = sheeturls$user_inputs, sheet = 'ddPCR template volumes', range = 'A:C', col_types = 'c-n')
     
@@ -44,9 +44,6 @@ list_quant_data <- map(read_these_sheets,
                            ~ process_ddpcr(.x) %>% 
                              select(1:15))
 
-# Acquire all the pieces of the data : read saved raw qPCR results from a google sheet -- Obsolete
-# list_quant_data2 <- map(read_these_sheets, 
-#                            ~ read_sheet(sheeturls$data_dump, sheet = ., range = 'A:M')) 
 
 # bind multiple ddPCR runs and clean up names
 quant_data <- bind_rows(list_quant_data) %>% 
@@ -62,73 +59,13 @@ quant_data <- bind_rows(list_quant_data) %>%
 
 # Load metadata ----------------------------------------------------------------------
 
-
 # Get volumes data from google sheet : "Sample registry"
-volumes.data_registry <- 
-  range_speedread(ss = sheeturls$sample_registry,  # this is 20x faster than read_sheet!
-                  sheet = 'Concentrated samples',
-                  range = 'A:H', # specify range to read
-                  col_types = 'ccncccnn')  %>% # pre-specify column types within the range
-  
-  # rename col names
-  rename('Label_tube' = `Label on tube`, 
-         'Biobot_id' = `Biobot/other ID`,
-         Filtered_WW_vol = `WW volume filtered (ml)`,
-         
-         Sample_Type = `Grab vs Composite`,
-         No_of_Hours_Missed = `HHD Notes (# of samples missed/hours)`, 
-
-         # spiking relevant data
-         Vaccine_ID = `Stock ID of Spike`,
-         'Received_WW_vol' = `Total WW volume received (ml)`, 
-         WW_weight = `Total WW weight measured (kg)`) %>% 
-  
-  select(Received_WW_vol, Label_tube, Filtered_WW_vol, Vaccine_ID, 
-         `Biobot_id`,
-         WW_weight, Sample_Type, No_of_Hours_Missed) %>% # select only the useful columns
-  
-  distinct() %>% # for removing repeated data in early stuff, before 608 (interferes with the merging of volumes for same bottles)
-  mutate_at('Label_tube', ~str_remove_all(., " ")) %>% 
-  mutate_at('Biobot_id', str_remove,  ' ') %>% 
-  
-  # Extrapolating volumes for same bottle - If weights are written out, we assume different bottles with different volumes
-  mutate(., unique_labels = str_remove_all(Label_tube,'[:digit:]$'))  %>% # Remove the trailing single digit that tells the replicate # 
-  # this will be changed to the 'Bottle' column? Too much data entry
-  
-  group_by(unique_labels) %>% 
-  mutate(across(Received_WW_vol, 
-                       ~ifelse(is.na(WW_weight), # If any of the replicates doesn't have weight
-                               if(all(is.na(.))) NA else max(., na.rm = T), # the make it's volume the max
-                               .) # Unless the volume is all NA in which case NA is used insteado of the max
-                ) ) %>% # This will not allw MAX to create -Inf :: to prevent errors in write_sheet 
-  ungroup() %>% 
-  select(-unique_labels, -WW_weight)
-
-# Get pellet weight related data (monkeypox or future targets, for copies/g calculation)
-week_name <- str_extract(title_name, '[:digit:]{6}')
-
-if(pellet_weights_present) 
-  
-  # get the Tube Label, pellet_mass and dry_mass_fraction
-{pellet_weight_data <- read_sheet(sheeturls$pellet_weights, sheet = str_c(week_name, ' Pellets')) %>% 
-  mutate(across(Label_tube, ~str_remove(., ' ') )) %>% # remove spaces from the Sample_name
-  select(Label_tube, pellet_wet_mass, dry_mass_fraction) %>% 
-  mutate(across(c(pellet_wet_mass, dry_mass_fraction), as.numeric)) %>% 
-  
-  # Since wells are merged for MPX analyses, the avg of replicate (2 and 1) will be merged into 1
-  # TODO : ideally all MPX volumes also need this but they are all usually 50 ml so we are not bothering as of now
-  mutate(merged_label = str_replace(Label_tube, '2$', '1')) %>% # make replicate 2 into 1 in a new temp column
-  group_by(merged_label) %>% mutate(across(pellet_wet_mass, mean, na.rm = TRUE)) %>% # take avg of the 2 replicates
-  filter(!str_detect(Label_tube, '2$')) %>% select(-merged_label) # remove the duplicate entry (old replicate 2)
-  }
+volumes.data_registry <- get_volumes_from_sample_registry()
 
 
-# Vaccine spike concentrations -- # Feature: Implement the switch in other places too
-if(vaccine_spike_present)
-{
-spike_list <- read_sheet(sheeturls$data_dump, sheet = 'Vaccine_summary', range = 'B6:K', col_types = 'Dcccnnnccn') %>% 
-  rename(spiking_virus_vaccine_stock_conc = matches('Stock conc.'), Sample_name = Week)  
-}
+# get pellet weight data -- if required
+if(pellet_weights_present) pellet_weight_data <- get_pellet_metadata()
+
 
 # Attach metadata ----------------------------------------------------------------------
 

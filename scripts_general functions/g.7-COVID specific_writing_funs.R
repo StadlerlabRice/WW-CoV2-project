@@ -85,8 +85,10 @@ complete_LOD_table <- function(fl) {
   targs <- unique(fl$Target)
   totalsheet <- fl[0,]
   
-  for(i in 1:length(targs)) {
-    nextsheet <- append_LOD_info(fl, targs[i])
+  # TODO :? vectorize this for loop into a map(targets, filter(..) %>% append_LOD command)
+  
+  for(i in 1:length(targs)) { # Loop over each target and 
+    nextsheet <- append_LOD_info(fl, targs[i]) # calculate a limit of detection for each target
     totalsheet <- rbind(totalsheet, nextsheet)
   }
   
@@ -106,9 +108,6 @@ complete_LOD_table <- function(fl) {
 
 append_LOD_info <- function(fl, targ) {
   fl <- fl %>% filter(Target == targ)
-  
-  # Check if the target is monkeypox (MPX) :: to account for lower LOD due to merged wells
-  is_monkeypox = str_detect(targ, 'MPX')
   
   # Pull negative controls out
   negative_controls <- fl %>% filter(assay_variable == 'NTC'| 
