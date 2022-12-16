@@ -14,6 +14,8 @@ biobot_lookup <- map_df(c('All Bayou', 'All manhole', 'All wastewater'),
                                  'Type' = 'Facility Type') %>% 
                           mutate(WWTP = as.character(WWTP) %>% str_remove(' '), # convert to char and removed spaces
                                  'assay_variable' = WWTP))
+# TODO : streamline getting all three kinds of samples into 1 sheet read call..
+
 
 # List of all WWTPs
 WWTP_symbols <- biobot_lookup %>%
