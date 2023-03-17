@@ -48,7 +48,7 @@ process_ddpcr <- function(flnm = flnm.here)
   
   # Load desired ddPCR result sheet, join the sample names from template
   bring_results <- fl %>% 
-    select(-Sample) %>% # Remove sample, it will be loaded from plate template sheet
+    select(-any_of('Sample')) %>% # Remove column called "Sample" if exists, it will be loaded from plate template sheet
     
     raw_ddpcr_renamer %>% # rename columns and remove NO CALLs to account for Quantasoft analysis pro export  
   
@@ -61,6 +61,9 @@ process_ddpcr <- function(flnm = flnm.here)
     # Adding different template volumes for each target for division // or default (typically 10 ul/22 ul rxn)
     left_join(., template_volume_ddpcr, by = 'Target') %>% # join array of template volume - different for N1,N2 and BCOV2
     replace_na(list(template_vol = default_template_vol_corrected)) %>% # use default volume for unmatched ones
+    
+    # Make a CopiesPer20uLWell if doesn't exist : for QX600 exported from Quantasoft Analysis Pro
+    {if(!'CopiesPer20uLWell' %in% colnames(.)) mutate(., CopiesPer20uLWell = Concentration * 20)} %>%
     
     # copies per ul : calculations
     mutate('Copies_per_uL_RNA' = CopiesPer20uLWell/ template_vol, # template_vol is the ul of RNA per 20 ul well
