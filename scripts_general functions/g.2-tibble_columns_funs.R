@@ -1,4 +1,4 @@
-# Functions for general operations with tibbles/data frames (manipulating columns)
+# Tiny function / wrappers for general operations with tibbles/data frames (manipulating columns)
 
 
 # takes in a qPCR file (read in columnwise) and arranges elements rowise
@@ -64,3 +64,13 @@ paste_without_NAs <- function(.string1, .string2, .sep = "-")
 }
 
 # Calculate the percentage of the B117 variant in the data after pivoting
+
+
+#' Give NAs or NaNs if missing columns in a data.frame
+#' Typical use inside a loop such as a %>% mutate(a6 = col_or_NAs(b1) * 10)
+#' @param .col = "column_name" as a string
+#' @param .df = the data frame of the column
+col_or_NAs <- function(.col, .df, .na = NaN)
+{
+  if(.col %in% colnames(.df)) .df[[.col]] else .na  # use column if exists, else put NaNs or NA etc.
+}

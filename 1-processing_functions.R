@@ -67,8 +67,8 @@ process_ddpcr <- function(flnm = flnm.here)
     
     # copies per ul : calculations
     mutate('Copies_per_uL_RNA' = CopiesPer20uLWell/ template_vol, # template_vol is the ul of RNA per 20 ul well
-           'PoissonConfMax_per_uL_RNA' = PoissonConfMax * 20 / template_vol,   # converting Poisson confidence intervals into copies/ul RNA units
-           'PoissonConfMin_per_uL_RNA' = PoissonConfMin * 20 / template_vol) %>%
+           'PoissonConfMax_per_uL_RNA' = col_or_NAs('PoissonConfMax', .) * 20 / template_vol,   # converting Poisson confidence intervals into copies/ul RNA units
+           'PoissonConfMin_per_uL_RNA' = col_or_NAs('PoissonConfMin', .) * 20 / template_vol) %>%
     
     select(`Sample_name`, Copies_per_uL_RNA, Target, everything()) # order - put important columns first
   
@@ -101,7 +101,7 @@ process_ddpcr <- function(flnm = flnm.here)
   
   final_data_with_LODs <- complete_LOD_table(polished_results)%>% 
     select(1:6, AcceptedDroplets, PositiveDroplets, # Bring important columns to beginning 
-           Positivity, LimitOfDet, Threshold, 
+           Positivity, LimitOfDet, any_of('Threshold'), 
            any_of('variant_status'), 
            PoissonConfMax_per_uL_RNA, PoissonConfMin_per_uL_RNA, 
            everything()) 
