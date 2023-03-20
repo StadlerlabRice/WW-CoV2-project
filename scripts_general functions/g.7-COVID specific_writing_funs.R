@@ -94,7 +94,7 @@ append_LOD_info <- function(fl, targ) {
   # Pull negative controls out
   negative_controls <- fl %>% filter(assay_variable == 'NTC'| 
                                        assay_variable == 'DI'| 
-                                       str_detect(assay_variable, regex('BLANK', ignore.case = TRUE)) )
+                                       str_detect(assay_variable, regex('BLANK', ignore_case = TRUE)) )
   
   
   # Find the LOD in droplets = LOB + 3 droplets (~ default LOQ, LOB can be thought to be additive contamination)
