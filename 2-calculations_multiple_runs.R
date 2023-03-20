@@ -309,14 +309,15 @@ script_user_name <- gargle::gargle_oauth_sitrep()$email[1] %>% # select the firs
 
 # Get blank samples to report any contaminations
 negative_controls_maxPositiveDroplets <- presentable_data %>% 
-  filter(across(WWTP,
-                ~ . == 'NTC',
-                . == 'DI',
-                str_detect(., regex('Blank', ignore_case = TRUE)) )) %>% 
+  filter(if_any(WWTP,
+                ~ (. == 'NTC'|
+                . == 'DI'|
+                str_detect(., regex('Blank', ignore_case = TRUE)) )
+                ) ) %>% 
   select(WWTP, PositiveDroplets) %>% 
   group_by(WWTP) %>% 
   summarise(across(PositiveDroplets, max)) %>%  # get the maximum # of positivedroplets among replicates
-  mutate(across(.fns = as.character)) # make both rows character for merging
+  mutate(across(everything(), as.character)) # make both rows character for merging
   # arrange(WWTP) # arranges in alphabetical order : Blank, DI, NTC
   
 # Sample number tally
