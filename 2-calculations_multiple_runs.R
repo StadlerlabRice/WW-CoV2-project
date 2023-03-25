@@ -250,7 +250,7 @@ if(HHD_data_output)
       # Otherwise proceed below  
         # rename to format that HHD/Kathy needs
       rename(., 'Copies_per_uL' = Copies_per_uL_RNA, # remove 'RNA' from the names
-             'PoissonConfMax_per_uL' = PoissonConfMax_per_uL_RNA,
+             'PoissonConfMax_per_uL' = PoissonConfMax_per_uL_RNA, # PoissonConf no longer sent to HHD
              'PoissonConfMin_per_uL' = PoissonConfMin_per_uL_RNA,
              
              'Recovery_Rate' = `Percentage_recovery_BCoV`) %>%
