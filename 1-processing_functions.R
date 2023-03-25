@@ -52,7 +52,7 @@ process_ddpcr <- function(flnm = flnm.here)
     
     raw_ddpcr_renamer %>% # rename columns and remove NO CALLs to account for Quantasoft analysis pro export  
   
-    mutate_at('Well', ~ str_replace(., '(?<=[:alpha:])0(?=[:digit:])', '') ) %>% rename('Well Position' = Well) %>% # remove leading 0 from A01..
+    mutate(across('Well', ~ str_replace(., '(?<=[:alpha:])0(?=[:digit:])', '') )) %>% rename('Well Position' = Well) %>% # remove leading 0 from A01..
     right_join(plate_template, by = 'Well Position') %>%  # Incorporate samples names from the google sheet by matching well position
     
     # mutate_at('Target', ~str_replace_all(., c('N1' = 'N1_multiplex' , 'N2' = 'N2_multiplex'))) %>%  # old -- for compatibility with qPCR
@@ -63,7 +63,7 @@ process_ddpcr <- function(flnm = flnm.here)
     replace_na(list(template_vol = default_template_vol_corrected)) %>% # use default volume for unmatched ones
     
     # Make a CopiesPer20uLWell if doesn't exist : for QX600 exported from Quantasoft Analysis Pro
-    {if(!'CopiesPer20uLWell' %in% colnames(.)) mutate(., CopiesPer20uLWell = Concentration * 20)} %>%
+    {if(!'CopiesPer20uLWell' %in% colnames(.)) mutate(., CopiesPer20uLWell = Concentration * 20) else .} %>%
     
     # copies per ul : calculations
     mutate('Copies_per_uL_RNA' = CopiesPer20uLWell/ template_vol, # template_vol is the ul of RNA per 20 ul well
