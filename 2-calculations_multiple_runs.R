@@ -30,10 +30,10 @@ template_volume_ddpcr <-
     } else tibble(Target = 'default', template_volume_per_22ulrxn = default_template_per_well)
   } %>%
   
-  # correction for 20 out of 22 ul loaded into ddPCR droplet generation 
-  mutate(template_vol = template_volume_per_22ulrxn * 20/22) 
+  # correction for 20 out of 22.1 ul loaded into ddPCR droplet generation (excess volume of reaction - 6 plex)
+  mutate(template_vol = template_volume_per_22ulrxn * 20/22.1) 
   
-default_template_vol_corrected <- default_template_per_well * 20/22 # same correction as above for ddPCR loading
+default_template_vol_corrected <- default_template_per_well * 20/22.1 # same correction as above for ddPCR loading
 
 
 
