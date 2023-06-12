@@ -170,7 +170,7 @@ presentable_data <- processed_quant_data %>%
          Copies_Per_Liter_WW, any_of('Copies_Per_Gram_DW'), 
          Ct, AcceptedDroplets, PositiveDroplets, Sample_ID, 
          Detection_Limit, Positivity, 
-         Sample_Type, Surrogate_virus_input_per.L.WW, `Percentage_recovery_BCoV`, 
+         Sample_Type, Surrogate_virus_input_per.L.WW, No_of_Hours_Missed, `Percentage_recovery_BCoV`, 
          Comments, any_of('variant_status'), 'Well Position',
          PoissonConfMax_Per_Liter_WW, PoissonConfMin_Per_Liter_WW) %>%
   
