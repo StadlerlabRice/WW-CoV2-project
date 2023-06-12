@@ -1,0 +1,358 @@
+---
+title: "Weekly comparisons"
+author: "Prashant Kalvapalle"
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+output: 
+  html_document:
+    theme: flatly
+    toc: TRUE
+    toc_float: TRUE
+---
+
+**Description of plots:**
+Light, smaller points show the individual replicates and the dark larger point show the mean
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 10, fig.height = 4)
+
+# Return TRUE if percentage recovery data is present
+show_percent_recovery <- 
+  results_abs %>% 
+  filter(!is.na(Percentage_recovery_BCoV)) %>% 
+  {!plyr::empty(.)}
+
+# Return TRUE of BCoV is a listed Target in the data
+show_BCoV <- 'BCoV' %in% results_abs$Target_Name
+
+# Return TRUE of pMMoV is a listed Target in the data
+show_pMMoV <- 'pMMoV' %in% results_abs$Target_Name
+  
+```
+
+`r if(show_percent_recovery){"## Percentage Recovery \n ### Density plot | Recovery "}`
+
+```{r}
+
+if(show_percent_recovery) {
+  results_abs %>% 
+    filter(!is.na(Percentage_recovery_BCoV)) %>% 
+    ggplot(aes(x = Date, y = Percentage_recovery_BCoV)) + geom_jitter(width = .1)
+}
+
+```
+
+`r  if(show_percent_recovery) {"### Violin + Density plot | Recovery"}`
+
+```{r}
+
+if(show_percent_recovery) {
+  results_abs %>% 
+    filter(!is.na(Percentage_recovery_BCoV)) %>% 
+    ggplot(aes(x = Date, y = Percentage_recovery_BCoV)) + 
+    geom_violin(show.legend = F) + 
+    geom_jitter(width = .1, alpha = .2)
+}
+
+```
+
+`r  if(show_percent_recovery) {"### Dot plot | Recovery"}`
+
+
+```{r dots}
+
+if(show_percent_recovery) {
+  nameless <- results_abs %>% select(Date, Percentage_recovery_BCoV) %>% drop_na() %>% group_by(Date) %>% arrange(Percentage_recovery_BCoV) %>%  mutate(id = row_number()) 
+  
+  nameless %>% ggplot(aes(x = id, y = Percentage_recovery_BCoV, colour = Date)) + geom_point() + geom_line()
+}
+
+```
+
+## Copies/L | Density plots
+
+### Copies/L 
+
+```{r allviolin}
+
+den.plt <- 
+{results_abs %>% 
+  ggplot(aes(x = Date, y = Copies_Per_Liter_WW, colour = Target_Name)) + 
+  geom_jitter(width = .1) + 
+  geom_violin(show.legend = F)} %>% 
+  print()
+
+ggplotly(den.plt, tooltip = 'label')
+
+```
+
+### Log Copies/L
+
+```{r logallviolin}
+
+den.plt %>% format_logscale_y() %>% print() %>% 
+  ggplotly(tooltip = 'label')
+
+```
+
+### N1-N2 Copies/L
+
+```{r n12violin}
+
+den.plt_N12 <- results_abs %>% filter(str_detect(Target_Name, 'N1|N2')) %>% 
+  ggplot(aes(x = Date, y = Copies_Per_Liter_WW, colour = Target_Name, label = WWTP)) + geom_jitter(width = .1) + geom_violin(show.legend = F)
+
+print(den.plt_N12)
+
+ggplotly(den.plt_N12, tooltip = 'label')
+
+```
+
+### Logscale N1-N2 Copies/L
+
+```{r logn12violin}
+
+den.plt_N12 %>% format_logscale_y() %>% print()
+
+```
+
+
+`r if(show_pMMoV) {"### pMMoV Copies/L"}`
+
+```{r pmmoviolin}
+
+den.plt_pmmov <- results_abs %>% filter(str_detect(Target_Name, 'pMMoV')) %>% 
+  ggplot(aes(x = Date, y = Copies_Per_Liter_WW, colour = Target_Name, label = WWTP)) + geom_jitter(width = .1) #+ geom_violin(show.legend = F)
+
+print(den.plt_pmmov)
+
+ggplotly(den.plt_pmmov, tooltip = 'label')
+
+```
+
+
+`r if(show_pMMoV) {"### Logscale pMMoV Copies/L"}`
+
+```{r logpmmovviolin}
+
+den.plt_pmmov %>% format_logscale_y() %>% print()
+
+```
+
+
+## Scatter plots (correlations)
+
+### N comparisions | Scatter
+
+```{r}
+
+plt.sctrN <- Copies_Per_Liter_WW_wide %>% ggplot(aes(x = `SARS CoV-2 N1`, y = `SARS CoV-2 N2`, colour = Date)) + geom_point() + geom_smooth(method = 'lm') 
+
+print(plt.sctrN)
+
+```
+
+Interactive plot
+
+```{r}
+plt.sctrN %>% ggplotly(dynamicTicks = T)
+
+```
+
+### N1 vs BCoV | Scatter
+
+```{r}
+
+Copies_Per_Liter_WW_wide <- results_abs %>% 
+  
+  select(WWTP, Target_Name, Date, Copies_Per_Liter_WW) %>% 
+  group_by(Date, Target_Name, WWTP) %>% 
+  
+  mutate(id = row_number()) %>% 
+  unite('WWTP', c('WWTP', id)) %>% 
+  
+  pivot_wider(names_from = Target_Name, values_from = Copies_Per_Liter_WW) 
+
+if('BCoV_M' %in% colnames(Copies_Per_Liter_WW_wide)) {
+  plt.sctrNBCOV <- Copies_Per_Liter_WW_wide %>% 
+    ggplot(aes(x = `SARS CoV-2 N1`, y = `BCoV_M`, colour = Date)) + 
+    geom_point() + 
+    geom_smooth(method = 'lm') 
+  
+  print(plt.sctrNBCOV)
+}
+
+
+```
+
+
+### N1 vs pMMoV | Scatter
+
+```{r}
+
+if('pMMoV' %in% colnames(Copies_Per_Liter_WW_wide)) {
+  plt.sctrNpMMoV <- Copies_Per_Liter_WW_wide %>% 
+    ggplot(aes(x = `SARS CoV-2 N1`, y = pMMoV, colour = Date)) + 
+    geom_point() + 
+    geom_smooth(method = 'lm') 
+  
+  print(plt.sctrNpMMoV)
+}
+
+```
+
+### Interactive plots
+
+```{r}
+
+if('BCoV_M' %in% colnames(Copies_Per_Liter_WW_wide)) {
+  plt.sctrNBCOV %>% ggplotly(dynamicTicks = T)
+}
+
+if('pMMoV' %in% colnames(Copies_Per_Liter_WW_wide)) {
+  plt.sctrNpMMoV %>% ggplotly(dynamicTicks = T)
+}
+
+
+```
+
+
+## Timeseries across site
+
+### Copies/L | Timeseries
+
+```{r timeseries, fig.width= 16, fig.height= 12}
+
+plt_timeseries_all_targets <- 
+  {plot_mean_sd_jitter(results_abs,
+                      sample_filtering_var = extra_categories, exclude_sample = T, 
+                      x_var = Date, y_var = Copies_Per_Liter_WW, colour_var = Target_Name, 
+                      ylabel = 'Genome copies/l Wastewater',
+                      print_the_plot = FALSE) + 
+      # connect the mean points iwth lines       
+      geom_line(aes(group = Target_Name, y = mean_Copies_Per_Liter_WW)) +
+      facet_wrap(facets = ~WWTP, scales = 'free_x')} %>% 
+  print()
+
+```
+
+#### Logscale Copies/L | Timeseries
+
+```{r timeserieslog, fig.width= 16, fig.height= 12}
+
+plt_timeseries_all_targets  %>% 
+  format_logscale_y() %>% 
+  print()
+
+```
+
+### N1/N2 Copies/L | Timeseries
+
+```{r timeseriesN, fig.width= 16, fig.height= 12}
+
+plt_timeseries_N12 <- 
+  plot_mean_sd_jitter(results_abs,
+                      sample_filtering_var = extra_categories, exclude_sample = T,
+                      target_filter_var = 'N1|N2',
+                      x_var = Date, y_var = Copies_Per_Liter_WW, colour_var = Target_Name, 
+                      ylabel = 'Genome copies/l Wastewater',
+                      print_the_plot = FALSE) + 
+  geom_line(aes(group = Target_Name, y = mean_Copies_Per_Liter_WW)) +
+  facet_wrap(facets = ~WWTP, scales = 'free_x')
+
+```
+
+### Logscale N1/N2 Copies/L | Timeseries
+
+```{r logtimeseriesN, fig.width= 16, fig.height= 12}
+
+plt_timeseries_N12 %>% format_logscale_y() %>% print()
+
+```
+
+
+`r if(show_BCoV) {"### BCoV | Timeseries"}`
+ 
+```{r timeseriesbcov, fig.width= 16, fig.height= 12}
+# if('BCoV' %in% colnames(results_abs)) {
+plt_timeseries_BCoV <- 
+  plot_mean_sd_jitter(results_abs,
+                      sample_filtering_var = extra_categories, exclude_sample = T,
+                      target_filter_var = 'BCoV',
+                      x_var = Date, y_var = Copies_Per_Liter_WW, colour_var = Target_Name, 
+                      ylabel = 'Genome copies/l Wastewater',
+                      print_the_plot = FALSE) + 
+  geom_line(aes(group = Target_Name, y = mean_Copies_Per_Liter_WW)) +
+  facet_wrap(facets = ~WWTP, scales = 'free_x')
+# }
+
+```
+
+
+`r if(show_pMMoV) {"### pMMoV | Timeseries"}`
+ 
+```{r timeseriespmmov, fig.width= 16, fig.height= 12}
+# if('BCoV' %in% colnames(results_abs)) {
+plt_timeseries_pMMoV <- 
+  {plot_mean_sd_jitter(results_abs,
+                      sample_filtering_var = extra_categories, exclude_sample = T,
+                      target_filter_var = 'pMMoV',
+                      x_var = Date, y_var = Copies_Per_Liter_WW, colour_var = Target_Name, 
+                      ylabel = 'Genome copies/l Wastewater',
+                      print_the_plot = FALSE) + 
+      # connect the mean points iwth lines
+      geom_line(aes(group = Target_Name, y = mean_Copies_Per_Liter_WW)) + 
+      facet_wrap(facets = ~WWTP, scales = 'free_x')} %>% 
+  print()
+# }
+
+```
+
+`r if(show_pMMoV) {"### Log pMMoV copies/L | Timeseries"}`
+
+```{r timeserieslogpmmov, fig.width= 16, fig.height= 12}
+
+plt_timeseries_pMMoV %>% format_logscale_y() %>% print()
+
+
+```
+
+
+`r if(show_percent_recovery) {"### Percentage recovery | Timeseries"}`
+
+```{r timeseriespercentreco, fig.width= 16, fig.height= 12}
+
+if(show_percent_recovery){
+  plt_timeseries_percent.recovery <- 
+    plot_mean_sd_jitter(results_abs,
+                        sample_filtering_var = extra_categories, exclude_sample = T,
+                        target_filter_var = 'BCoV',
+                        x_var = Date, y_var = Percentage_recovery_BCoV, colour_var = Target_Name, 
+                        ylabel = 'Percentage of BCoV copies recovered',
+                      print_the_plot = FALSE) + 
+    geom_line(aes(group = Target_Name, y = mean_Copies_Per_Liter_WW)) +
+    facet_wrap(facets = ~WWTP, scales = 'free_x')
+}
+
+```
+
+<!-- This code is obsolete since population, flow rate is no longer retrievable - 16-11-2021; PK -->
+<!-- ### Copies/person timeseries -->
+
+<!-- ```{r normalizedcopiesn, fig.width= 16, fig.height= 12} -->
+
+<!-- summary_normalized <- results_abs %>% select(Facility, WWTP, Target_Name, Copies_per_uL_RNA: Percentage_recovery_BCoV, Date, `Viral load per capita per day`, -any_of('Bottle')) %>% -->
+<!--   mutate('Sample_name' = Date) %>%  -->
+<!--   group_by(`Sample_name`, Target_Name, Facility, WWTP, Date) %>%  -->
+<!--   summarise_at(c('Viral load per capita per day'), lst(mean, sd), na.rm = T) -->
+
+<!-- normalized_copies_N12 <- list(summary_normalized, results_abs.list$raw.dat) %>% map(filter, str_detect(Target_Name, 'N1|N2')) %>% setNames(c('summ.dat', 'raw.dat')) -->
+
+<!-- plt_Date4 <- plot_mean_sd_jitter(normalized_copies_N12, long_format = F, sample_var = extra_categories, exclude_sample = T, x_var = Date, y_var = `Viral load per capita per day`, facet_var = WWTP, colour_var = Target_Name, ylabel = 'Viral load per capita per day', facet_style = 'manual') + geom_line(aes(group = Target_Name, y = mean_Copies_Per_Liter_WW)) + facet_wrap(facets = ~WWTP, scales = 'free_x') -->
+
+<!-- plt_Date4 %>% print() -->
+
+<!-- plt_Date4 %>% format_logscale_y() %>% print() -->
+
+<!-- ``` -->
