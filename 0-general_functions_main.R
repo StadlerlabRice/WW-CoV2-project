@@ -12,6 +12,10 @@ library(googlesheets4) # for reading and writing google sheets
 library(rlang) # for special non standard evaluation purposes (for PK..)
 library(lubridate) # for dates
 library(plotly) # for interactive plots
+library(gridExtra)
+require(data.table)
+require(dplyr)
+require(ggpubr)
 
 # pre-authorize googlesheets4 authentication (stored in cache..)
 options(gargle_oauth_email = TRUE) 
