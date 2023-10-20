@@ -103,6 +103,9 @@ meta.attached_quant_data <- quant_data %>%
 # clean up intermediate data sources whose job is done
 rm(volumes.data_registry) 
 
+# Assume default filtered volume of 50 mL for missing values in quant_data
+meta.attached_quant_data$Filtered_WW_vol[is.na(meta.attached_quant_data$Filtered_WW_vol)] <- 50
+
 # Calculations -------------------
 
 # Copies_per_uL_RNA to Copies_Per_Liter_WW. Spike in concentration, % recovery are calculated
@@ -121,7 +124,6 @@ processed_quant_data <- meta.attached_quant_data %>%
   {if(pellet_weights_present) mutate(., Copies_Per_Gram_DW = Copies_per_uL_RNA * 50/(pellet_wet_mass * dry_mass_fraction))
     else . } %>% # If no pellet samples present, pipe the input to the next step
          
-  
   # Calculations for Surrogate_virus_input_per.L.WW (input) and Percentage_recovery (output/input * 100)
   {if(vaccine_spike_present) calculations_for_vaccine_spikeins(.) else {
     
@@ -266,7 +268,7 @@ if(HHD_data_output)
   
   # Write data if not empty
   if(present_only_WW %>% plyr::empty() %>% !.){
-    check_ok_and_write(present_only_WW, sheeturls$HHD_data, title_name) # save results to a google sheet, ask for overwrite
+    write_sheet(present_only_WW, sheeturls$HHD_data, title_name) # save results to a google sheet, ask for overwrite
     write_csv(present_only_WW, file = str_c('excel files/Weekly data to HHD/', title_name, '.csv'), na = '') # output csv file
   }
   
@@ -281,7 +283,7 @@ if(HHD_data_output)
   if(present_manhole_samples %>% plyr::empty() %>% !.){
     
     # save results to a google sheet, ask for overwrite
-    check_ok_and_write(present_manhole_samples, sheeturls$HHD_data, str_c(title_name, ' -manhole')) 
+    write_sheet(present_manhole_samples, sheeturls$HHD_data, str_c(title_name, ' -manhole')) 
     write_csv(present_manhole_samples, str_c('excel files/Weekly data to HHD/', title_name, ' -manhole.csv'), na = '') # output CSV file
   }
   
@@ -385,4 +387,4 @@ write_csv(presentable_data,
           na = '') # output csv file of all the data
 
 # save to google sheet, ignore if taking longer than 20 seconds (for Camille's mac problem with google sheets)
-check_ok_and_write(presentable_data, sheeturls$complete_data, title_name) # save results to a google sheet, ask for overwrite
+write_sheet(presentable_data, sheeturls$complete_data, title_name) # save results to a google sheet, ask for overwrite
