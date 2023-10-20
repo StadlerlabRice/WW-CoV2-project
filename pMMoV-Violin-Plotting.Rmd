@@ -1,0 +1,93 @@
+---
+title: "Weekly comparisons"
+author: "Kyle Palmer"
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+output: 
+  html_document:
+    theme: flatly
+    toc: TRUE
+    toc_float: TRUE
+---
+
+**Description of plots:**
+Light, smaller points show the individual replicates and the dark larger point show the mean
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 10, fig.height = 10)
+
+# Return TRUE if percentage recovery data is present
+show_percent_recovery <- 
+  results_abs %>% 
+  filter(!is.na(Percentage_recovery_BCoV)) %>% 
+  {!plyr::empty(.)}
+
+# Return TRUE of BCoV is a listed Target in the data
+show_BCoV <- 'BCoV' %in% results_abs$Target_Name
+
+# Return TRUE of pMMoV is a listed Target in the data
+show_pMMoV <- 'pMMoV' %in% results_abs$Target_Name
+
+
+```
+
+`r if(show_pMMoV) {"### pMMoV Copies/L"}`
+
+```{r pmmoviolin}
+
+plots_list <- list()
+for (i in 1:5){
+  p <- results_abs [results_abs$group_num == i,] %>%
+    ggplot(., aes(x=WWTP, y=Copies_Per_Liter_WW)) + 
+    geom_violin() + 
+    geom_point(aes(color=Run_week, shape=Positivity)) +
+    scale_shape_manual(values=c(Negative=1, Positive=19))+
+    scale_y_continuous(trans='log10', limits = c(1,10000000)) +
+    ylab("Log-transformed concentration \n (copies/L-wastewater)")+
+    theme_bw()+
+    theme(axis.text.x = element_text(angle=90, hjust=1))
+  
+  plots_list[[i]] <- p
+}
+
+combined_plot <- ggarrange(plotlist = plots_list, ncol = 2, nrow = 3, common.legend = TRUE, legend = "bottom")
+
+
+tiff('pMMoV ddPCR Results_plot.tiff', units="in", width=10, height=10, res=500, compression = 'lzw')
+
+combined_plot
+
+dev.off()
+
+
+
+
+
+
+#Violin plot troubleshooting. Doesn't plot multiple pages correctly.
+
+
+#den.plt_pmmov <- results_abs %>% 
+ # filter(str_detect(Target_Name, 'pMMoV')) %>% 
+  #ggplot(., aes(x=WWTP, y=Copies_Per_Liter_WW)) +
+  #geom_violin() +
+  #coord_flip()+
+  #geom_point(aes(color=Run_week, shape=Positivity)) +
+  #scale_shape_manual(values=c(Negative=1, Positive=19))+
+  #scale_y_continuous(trans='log10', limits = c(1,10000000)) +
+  #ylab("Log-transformed concentration \n (copies/L-wastewater)")+
+  #theme_bw()+
+  #theme(axis.text.x = element_text(angle=90, hjust=1))
+
+#den.plt_pmmov2 <- den.plt_pmmov + facet_wrap('WWTP', scales = "free_y", ncol = 8, nrow = 8)
+
+#den.plt_pmmov3 <- den.plt_pmmov2 + theme(strip.text = element_text(size = 8, face = "bold"))
+
+#ml <- grid.arrange(den.plt_pmmov3, ncol = 4, nrow = 4, width = 14, height = 14)
+#ggsave("multipage.pdf", ml)
+#dev.off()
+
+```
+
+

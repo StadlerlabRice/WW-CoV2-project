@@ -1,0 +1,25 @@
+Facility,WWTP,Date,Lab,Target_Name,Received_WW_vol,Filtered_WW_vol,Copies_per_uL_RNA,PoissonConfMax_per_uL_RNA,PoissonConfMin_per_uL_RNA,Copies_Per_Liter_WW,Ct,AcceptedDroplets,PositiveDroplets,Sample_ID,Detection_Limit,Positivity,Sample_Type,Surrogate_virus_input_per.L.WW,No_of_Hours_Missed,Percentage_recovery_BCoV,Comments,Well Position,PoissonConfMax_Per_Liter_WW,PoissonConfMin_Per_Liter_WW
+1071/NTC,NTC,,R,pMMoV,,,0,0.44,0,,,17322,0,1071.NTC-1,,Negative,unreported,,,,,C3,,
+1071/NTC,NTC,,R,pMMoV,,,0,0.4,0,,,20023,0,1071.NTC-2,,Negative,unreported,,,,,D3,,
+1071/NTC,NTC,,R,pMMoV,,,0,0.42,0,,,18289,0,1071.NTC-3,,Negative,unreported,,,,,E3,,
+1071/NTC,NTC,,R,pMMoV,,,0,0.44,0,,,18075,0,1071.NTC-4,,Negative,unreported,,,,,F3,,
+1071/NTC,NTC,,R,pMMoV,,,0,0.42,0,,,18911,0,1071.NTC-5,,Negative,unreported,,,,,G3,,
+1071/NTC,NTC,,R,pMMoV,,,0,0.42,0,,,18734,0,1071.NTC-6,,Negative,unreported,,,,,H3,,
+Briscoe El,BRIE,09/11/23,R,pMMoV,,50,0,0.46,0,0,,16709,0,091123.BRIE-1,1423.18,Negative,composite,,0 of 24,,,A1,1540,0
+Briscoe El,BRIE,09/11/23,R,pMMoV,,50,0.4,1.08,0.22,1320,,19201,3,091123.BRIE-2,1423.18,Positive,composite,,0 of 24,,,B1,3593.33,733.33
+Brookline El,BROE,09/11/23,R,pMMoV,,50,22.88,26.4,21.12,76266.67,,19014,168,091123.BROE-1,1423.18,Positive,composite,,0 of 24,,,C1,88000,70400
+Brookline El,BROE,09/11/23,R,pMMoV,,50,19.58,22.88,17.82,65266.67,,16371,123,091123.BROE-2,1423.18,Positive,composite,,0 of 24,,,D1,76266.67,59400
+Burnet El,BURE,09/11/23,R,pMMoV,,50,0.75,1.63,0.46,2493.33,,17170,5,091123.BURE-1,1423.18,Positive,composite,,0 of 24,,,E1,5426.67,1540
+Burnet El,BURE,09/11/23,R,pMMoV,,50,0.59,1.41,0.35,1980,,17306,4,091123.BURE-2,1423.18,Positive,composite,,0 of 24,,,F1,4693.33,1173.33
+Chavez H S,CHVS,09/11/23,R,pMMoV,,40,200.86,212.08,195.14,836916.67,,16625,1241,091123.CHVS-1,1778.97,Positive,composite,,not listed,,,G1,883666.67,813083.33
+Chavez H S,CHVS,09/11/23,R,pMMoV,,36,195.14,205.7,189.86,903425.93,,18465,1341,091123.CHVS-2,1976.64,Positive,composite,,not listed,,,H1,952314.81,878981.48
+Milby H S,MILS,09/11/23,R,pMMoV,,50,8.36,10.78,7.26,27866.67,,17539,57,091123.MILS-1,1423.18,Positive,composite,,0 of 24,,,A2,35933.33,24200
+Milby H S,MILS,09/11/23,R,pMMoV,,50,9.68,12.1,8.58,32266.67,,17223,64,091123.MILS-2,1423.18,Positive,composite,,0 of 24,,,B2,40333.33,28600
+Neff El,NEEL,09/11/23,R,pMMoV,,50,10.34,12.98,9.24,34466.67,,19158,77,091123.NEEL-1,1423.18,Positive,composite,,0 of 26,,,C2,43266.67,30800
+Neff El,NEEL,09/11/23,R,pMMoV,,50,10.78,13.42,9.46,35933.33,,17337,72,091123.NEEL-2,1423.18,Positive,composite,,0 of 26,,,D2,44733.33,31533.33
+North Forest H S,NORS,09/12/23,R,pMMoV,,50,2.29,3.67,1.76,7626.67,,16945,15,091223.NORS-1,1423.18,Positive,composite,,0 of 25,,,A3,12246.67,5866.67
+North Forest H S,NORS,09/12/23,R,pMMoV,,50,1.74,2.95,1.3,5793.33,,17787,12,091223.NORS-2,1423.18,Positive,composite,,0 of 25,,,B3,9826.67,4326.67
+Park Place El,PARE,09/11/23,R,pMMoV,,50,0.53,1.25,0.31,1760,,19400,4,091123.PARE-1,1423.18,Positive,composite,,0 of 24,,,E2,4180,1026.67
+Park Place El,PARE,09/11/23,R,pMMoV,,50,0.55,1.3,0.31,1833.33,,18849,4,091123.PARE-2,1423.18,Positive,composite,,0 of 24,,,F2,4326.67,1026.67
+Sharpstown International School,SHAS,09/11/23,R,pMMoV,,50,0.84,1.69,0.53,2786.67,,18655,6,091123.SHAS-1,1423.18,Positive,composite,,0 of 24,,,G2,5646.67,1760
+Sharpstown International School,SHAS,09/11/23,R,pMMoV,,50,0.44,1.17,0.22,1466.67,,17564,3,091123.SHAS-2,1423.18,Positive,composite,,0 of 24,,,H2,3886.67,733.33

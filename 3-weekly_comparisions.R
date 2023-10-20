@@ -7,18 +7,14 @@ source('./0-general_functions_main.R') # Source the general_functions file
 
 # sheets to read from "qPCR complete data" google sheet
 # sheet name(s) in the raw data file (qPCR data dump) - Separate by comma (,)
-read_these_sheets <- c('111121 Rice Lift Station and pMMoV', '110821 Rice WWTP',
-                       '110921 Rice Congregate and pMMoV', '110821 Rice Schools and Lift Station',
-                       '110121 Rice WWTP', '110121 Rice Lift Stations and Schools',
-                       '110421 Rice Lift Station', '110321 Rice Congregate') 
-  # c('111121 Rice Lift Station and pMMoV', '110921 Rice Congregate and pMMoV',
-  #                      '110921 Rice pMMoV-N1N2',
-  #                      '110321 Rice pMMoV-N1N2', '110321 Rice Congregate')
+read_these_sheets <- c('091123 Rice Schools Sampler Test pMMoV', '091823 Rice Schools pMMoV',
+                       '092723 Rice Schools pMMoV', '100223 - 100323 Rice Schools pMMoV',
+                       '100923 - 101123 Rice Schools and Congregate pMMoV')
 
 # if you are interested in only pMMoV stuff, then make this TRUE
-filter_for_both_N1.N2.and.pMMoV_data <- TRUE # optional filtering for samples that have both N1-N2 and pMMoV
+filter_for_pMMoV_data <- TRUE # optional filtering for samples that have pMMoV
 
-title_name <- 'pMMoV comparisons-111121' # name of the filename for writing presentable data and plot title
+title_name <- '091123 - 101123 Schools pMMoV comparisons' # name of the filename for writing presentable data and plot title
 
 # Extra categories to exclude from plotting (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|std|Vaccine|Control|Water|NTC|Blank|DI' 
@@ -36,44 +32,66 @@ list_rawdata <- map(read_these_sheets,
                       compl_data_renamer) 
 
 rawdata <- bind_rows(list_rawdata)  # bind all the sheets' results into 1 data frame/tibble
+# change Run_week as a number and make it factor in ascending order
 
-results_abs <- rawdata %>% 
-  filter(!str_detect(Facility, extra_categories)) %>%  # remove unnecessary data
-  filter(!str_detect(Target_Name, 'BRSV')) %>%  # remove BRSV -- was cluttering the graphs
-  
-  # change Run_week as a number and make it factor in ascending order
-  mutate(across('Run_week', ~ as.numeric(.x) %>% as_factor)) %>% 
+
+mutate(across('Run_week', ~ as.numeric(.x) %>% as_factor)) %>% 
   
   # remove older Run_week's samples when reruns have been done
-  pick_latest_rerun %>% 
+  # pick_latest_rerun %>% 
   
   rename(Date_formatted = Date) %>% 
   # Make a date as a number from each sample_ID
   mutate(Date = str_extract(Sample_ID, '[:digit:]*(?=\\.)') %>% # extract the digit(s) followed by the .
            as.numeric %>% as.factor) # convert to a number and then a factor
 
+
+#Function to group WWTPs based on the first character#
+categorize_WWTP <- function(first_char) {
+  case_when(
+    first_char %in% c("A", "B") ~ 1,
+    first_char %in% c("C", "D") ~ 2, 
+    first_char %in% c("E", "F", "G", "H") ~ 3, 
+    first_char %in% c("I","J","K","L","M","N","O","P") ~ 4, 
+    first_char %in% c("Q","R","S","T","U","V","W","X","Y","Z") ~ 5, 
+    TRUE ~ 6  # Group 3 for other characters
+  )
+}
+
+results_abs <- rawdata %>% 
+  filter(!str_detect(Facility, extra_categories)) %>%  # remove unnecessary data
+  filter(!str_detect(Target_Name, 'BRSV')) %>%  # remove BRSV -- was cluttering the graphs
+  arrange(WWTP) %>%
+  mutate(first_char = substr(WWTP, 1, 1),
+         group_num  = categorize_WWTP(first_char)) %>%
+  select(-"first_char")
+
+results_abs <- results_abs %>% 
+  select(WWTP, Date, Target_Name, Copies_Per_Liter_WW, Sample_ID, group_num)
+
+
+
 # convert copies/L into wide format based on Targets
 Copies_Per_Liter_WW_wide <- 
   results_abs %>% 
-  select(WWTP, Date, Target_Name, Copies_Per_Liter_WW, Sample_ID) %>% 
+  select(WWTP, Date, Target_Name, Copies_Per_Liter_WW, Sample_ID, group_num) %>% 
   group_by(Target_Name, WWTP) %>% # this is what the replicates are determined on
   mutate(id = row_number()) %>% # need to make a unique id since NTCs run on different plates have the same sample_ID
   unite('WWTP_replicate', c('WWTP', id), remove = FALSE) %>% select(-id) %>% 
-  pivot_wider(names_from = Target_Name, values_from = Copies_Per_Liter_WW) 
+  pivot_wider(names_from = Target_Name, values_from = Copies_Per_Liter_WW)
 
 # optional filtering step
-if(filter_for_both_N1.N2.and.pMMoV_data) {
+if(filter_for_pMMoV_data) {
   Copies_Per_Liter_WW_wide <- 
     Copies_Per_Liter_WW_wide %>% 
-    filter( !is.na(`SARS CoV-2 N1`) & 
-              !is.na(`SARS CoV-2 N2`) &
-              !is.na(pMMoV))
+    filter(!is.na(pMMoV))
   
   subset_samples_with_N12.pMMoV <-  # picks the WWTP name and Run_week
     Copies_Per_Liter_WW_wide %>% 
     select(WWTP, Sample_ID) %>% 
     # separate(WWTP, c('WWTP_unique', NA), sep = '_') %>% 
-    unique
+    unique 
+
   
   # Take the subset of the data of identified above from the main dataset (overwrites)
   results_abs <- semi_join(results_abs, subset_samples_with_N12.pMMoV) # semi_join(x,y):keeps only rows in both x and y
@@ -82,8 +100,9 @@ if(filter_for_both_N1.N2.and.pMMoV_data) {
 # Plots to html ----
 
 # calling r markdown file
-rmarkdown::render('3.1-Weekly_comparison plots.rmd', 
-                  output_file = str_c('./qPCR analysis/Weekly ', title_name, '.html'))
+rmarkdown::render('pMMoV-Violin-Plotting.Rmd', #Use this line for only pMMoV plots
+#rmarkdown::render('3.1-Weekly_comparison-plots.Rmd', 
+                output_file = str_c('./qPCR analysis/Weekly ', title_name, ".html"))
 
 # optional save command for specific plots
 # ggsave( str_c('qPCR analysis/Extra graphs/', title_name, '.pdf'),
