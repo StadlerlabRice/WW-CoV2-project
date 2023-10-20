@@ -24,7 +24,7 @@ extra_categories = 'Std|std|Vaccine|Control|Water|NTC|Blank|DI'
 # Data input ----
 
 # Acquire all the pieces of the data : read saved raw qPCR results from a google sheet
-list_rawdata <- map(read_these_sheets, 
+list_rawdata <- map(read_these_sheets,
                     ~ read_sheet(sheeturls$complete_data , sheet = .x) %>%  
                       mutate('Run_week' = str_extract(.x, '[:digit:]*(?= Rice)')) %>%
                       
@@ -32,44 +32,40 @@ list_rawdata <- map(read_these_sheets,
                       compl_data_renamer) 
 
 rawdata <- bind_rows(list_rawdata)  # bind all the sheets' results into 1 data frame/tibble
-# change Run_week as a number and make it factor in ascending order
+
+results_abs <- rawdata %>% 
+  filter(!str_detect(Facility, extra_categories)) %>%  # remove unnecessary data
+  filter(!str_detect(Target_Name, 'BRSV')) %>%  # remove BRSV -- was cluttering the graphs
 
 
-mutate(across('Run_week', ~ as.numeric(.x) %>% as_factor)) %>% 
+  # change Run_week as a number and make it factor in ascending order
+  mutate(across('Run_week', ~ as.numeric(.x) %>% as_factor)) %>% 
   
   # remove older Run_week's samples when reruns have been done
-  # pick_latest_rerun %>% 
+ # pick_latest_rerun %>% 
   
   rename(Date_formatted = Date) %>% 
   # Make a date as a number from each sample_ID
   mutate(Date = str_extract(Sample_ID, '[:digit:]*(?=\\.)') %>% # extract the digit(s) followed by the .
            as.numeric %>% as.factor) # convert to a number and then a factor
-
-
-#Function to group WWTPs based on the first character#
-categorize_WWTP <- function(first_char) {
-  case_when(
-    first_char %in% c("A", "B") ~ 1,
-    first_char %in% c("C", "D") ~ 2, 
-    first_char %in% c("E", "F", "G", "H") ~ 3, 
-    first_char %in% c("I","J","K","L","M","N","O","P") ~ 4, 
-    first_char %in% c("Q","R","S","T","U","V","W","X","Y","Z") ~ 5, 
-    TRUE ~ 6  # Group 3 for other characters
-  )
-}
-
-results_abs <- rawdata %>% 
-  filter(!str_detect(Facility, extra_categories)) %>%  # remove unnecessary data
-  filter(!str_detect(Target_Name, 'BRSV')) %>%  # remove BRSV -- was cluttering the graphs
-  arrange(WWTP) %>%
+ 
+   #Function to group WWTPs based on the first character#
+  categorize_WWTP <- function(first_char) {
+    case_when(
+      first_char %in% c("A", "B") ~ 1,
+      first_char %in% c("C", "D") ~ 2, 
+      first_char %in% c("E", "F", "G", "H") ~ 3, 
+      first_char %in% c("I","J","K","L","M","N","O","P") ~ 4, 
+      first_char %in% c("Q","R","S","T","U","V","W","X","Y","Z") ~ 5, 
+      TRUE ~ 6  # Group 3 for other characters
+    )
+  }
+  
+results_abs <- results_abs %>%
+  arrange(WWTP) %>%  
   mutate(first_char = substr(WWTP, 1, 1),
          group_num  = categorize_WWTP(first_char)) %>%
   select(-"first_char")
-
-results_abs <- results_abs %>% 
-  select(WWTP, Date, Target_Name, Copies_Per_Liter_WW, Sample_ID, group_num)
-
-
 
 # convert copies/L into wide format based on Targets
 Copies_Per_Liter_WW_wide <- 
