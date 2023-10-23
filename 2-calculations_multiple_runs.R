@@ -266,7 +266,7 @@ if(HHD_data_output)
   
   # Write data if not empty
   if(present_only_WW %>% plyr::empty() %>% !.){
-    check_ok_and_write(present_only_WW, sheeturls$HHD_data, title_name) # save results to a google sheet, ask for overwrite
+    write_sheet(present_only_WW, sheeturls$HHD_data, title_name) # save results to a google sheet, ask for overwrite
     write_csv(present_only_WW, file = str_c('excel files/Weekly data to HHD/', title_name, '.csv'), na = '') # output csv file
   }
   
@@ -281,7 +281,7 @@ if(HHD_data_output)
   if(present_manhole_samples %>% plyr::empty() %>% !.){
     
     # save results to a google sheet, ask for overwrite
-    check_ok_and_write(present_manhole_samples, sheeturls$HHD_data, str_c(title_name, ' -manhole')) 
+    write_sheet(present_manhole_samples, sheeturls$HHD_data, str_c(title_name, ' -manhole')) 
     write_csv(present_manhole_samples, str_c('excel files/Weekly data to HHD/', title_name, ' -manhole.csv'), na = '') # output CSV file
   }
   
@@ -385,4 +385,4 @@ write_csv(presentable_data,
           na = '') # output csv file of all the data
 
 # save to google sheet, ignore if taking longer than 20 seconds (for Camille's mac problem with google sheets)
-check_ok_and_write(presentable_data, sheeturls$complete_data, title_name) # save results to a google sheet, ask for overwrite
+write_sheet(presentable_data, sheeturls$complete_data, title_name) # save results to a google sheet, ask for overwrite
