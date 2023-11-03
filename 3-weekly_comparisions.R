@@ -9,7 +9,8 @@ source('./0-general_functions_main.R') # Source the general_functions file
 # sheet name(s) in the raw data file (qPCR data dump) - Separate by comma (,)
 read_these_sheets <- c('091123 Rice Schools Sampler Test pMMoV', '091823 Rice Schools pMMoV',
                        '092723 Rice Schools pMMoV', '100223 - 100323 Rice Schools pMMoV',
-                       '100923 - 101123 Rice Schools and Congregate pMMoV', '101623 - 101823 Rice Schools and Congregate pMMoV')
+                       '100923 - 101123 Rice Schools and Congregate pMMoV', '101623 - 101823 Rice Schools and Congregate pMMoV',
+                       '102323 - 102523 Rice Schools and Congregate pMMoV')
 
 # if you are interested in only pMMoV stuff, then make this TRUE
 filter_for_pMMoV_data <- TRUE # optional filtering for samples that have pMMoV
@@ -48,7 +49,10 @@ results_abs <- rawdata %>%
   # Make a date as a number from each sample_ID
   mutate(Date = str_extract(Sample_ID, '[:digit:]*(?=\\.)') %>% # extract the digit(s) followed by the .
            as.numeric %>% as.factor) # convert to a number and then a factor
- 
+
+  results_abs <- results_abs %>%
+    left_join(biobot_lookup %>% select(WWTP, Type), by = "WWTP")
+
    #Function to group WWTPs based on the first character#
   categorize_WWTP <- function(first_char) {
     case_when(
@@ -56,8 +60,9 @@ results_abs <- rawdata %>%
       first_char %in% c("C", "D") ~ 2, 
       first_char %in% c("E", "F", "G", "H") ~ 3, 
       first_char %in% c("I","J","K","L","M","N","O","P") ~ 4, 
-      first_char %in% c("Q","R","S","T","U","V","W","X","Y","Z") ~ 5, 
-      TRUE ~ 6  # Group 3 for other characters
+      first_char %in% c("Q","R","S") ~ 5, 
+      first_char %in% c("T","U","V","W","X","Y","Z") ~ 6,
+      TRUE ~ 7  # Group 3 for other characters
     )
   }
   
@@ -70,7 +75,7 @@ results_abs <- results_abs %>%
 # convert copies/L into wide format based on Targets
 Copies_Per_Liter_WW_wide <- 
   results_abs %>% 
-  select(WWTP, Date, Target_Name, Copies_Per_Liter_WW, Sample_ID, group_num) %>% 
+  select(WWTP, Date, Target_Name, Copies_Per_Liter_WW, Sample_ID, group_num, Type) %>% 
   group_by(Target_Name, WWTP) %>% # this is what the replicates are determined on
   mutate(id = row_number()) %>% # need to make a unique id since NTCs run on different plates have the same sample_ID
   unite('WWTP_replicate', c('WWTP', id), remove = FALSE) %>% select(-id) %>% 

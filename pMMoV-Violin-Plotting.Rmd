@@ -37,7 +37,7 @@ show_pMMoV <- 'pMMoV' %in% results_abs$Target_Name
 ```{r pmmoviolin}
 
 plots_list <- list()
-for (i in 1:5){
+for (i in 1:6){
   p <- results_abs [results_abs$group_num == i,] %>%
     ggplot(., aes(x=WWTP, y=Copies_Per_Liter_WW)) + 
     geom_violin() + 
