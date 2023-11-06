@@ -53,24 +53,35 @@ results_abs <- rawdata %>%
   results_abs <- results_abs %>%
     left_join(biobot_lookup %>% select(WWTP, Type), by = "WWTP")
 
-   #Function to group WWTPs based on the first character#
-  categorize_WWTP <- function(first_char) {
+  results_abs <- results_abs %>%
+    arrange(WWTP) %>%  
+    mutate(type_group = case_when(
+      Type %in% c("Jail", "NH", "Shelter") ~ 1,
+      Type == "School" ~ 2,
+      TRUE ~ 3  # Group 3 for other types
+    ))
+  
+  categorize_WWTP <- function(type_group, WWTP) {
+    
     case_when(
-      first_char %in% c("A", "B") ~ 1,
-      first_char %in% c("C", "D") ~ 2, 
-      first_char %in% c("E", "F", "G", "H") ~ 3, 
-      first_char %in% c("I","J","K","L","M","N","O","P") ~ 4, 
-      first_char %in% c("Q","R","S") ~ 5, 
-      first_char %in% c("T","U","V","W","X","Y","Z") ~ 6,
-      TRUE ~ 7  # Group 3 for other characters
+      type_group == 1 & substr(WWTP, 1, 1) %in% c("A", "B", "C", "D", "E", "F", "G", "H") ~ 1,
+      type_group == 1 & substr(WWTP, 1, 1) %in% c("I", "J", "K", "L", "M", "N", "O", "P", "Q", "R") ~ 2,
+      type_group == 1 & substr(WWTP, 1, 1) %in% c("S", "T", "U", "V", "W", "X", "Y", "Z") ~ 3,
+      
+      type_group == 2 & substr(WWTP, 1, 1) %in% c("A", "B") ~ 4,
+      type_group == 2 & substr(WWTP, 1, 1) %in% c("C", "D") ~ 5,
+      type_group == 2 & substr(WWTP, 1, 1) %in% c("E", "F", "G", "H") ~ 6,
+      type_group == 2 & substr(WWTP, 1, 1) %in% c("I", "J", "K", "L", "M", "N", "O", "P", "Q") ~ 7,
+      type_group == 2 & substr(WWTP, 1, 1) %in% c("R", "S", "T", "U", "V", "W", "X", "Y", "Z") ~ 8,
+      
+      TRUE ~ 9  # Handle other characters
     )
   }
   
-results_abs <- results_abs %>%
-  arrange(WWTP) %>%  
-  mutate(first_char = substr(WWTP, 1, 1),
-         group_num  = categorize_WWTP(first_char)) %>%
-  select(-"first_char")
+  results_abs <- results_abs %>%
+    arrange(WWTP) %>%
+    mutate(first_char = substr(WWTP, 1, 1),
+           group_num = categorize_WWTP(type_group, WWTP))
 
 # convert copies/L into wide format based on Targets
 Copies_Per_Liter_WW_wide <- 

@@ -37,7 +37,7 @@ show_pMMoV <- 'pMMoV' %in% results_abs$Target_Name
 ```{r pmmoviolin}
 
 plots_list <- list()
-for (i in 1:6){
+for (i in 1:8){
   p <- results_abs [results_abs$group_num == i,] %>%
     ggplot(., aes(x=WWTP, y=Copies_Per_Liter_WW)) + 
     geom_violin() + 
@@ -51,7 +51,7 @@ for (i in 1:6){
   plots_list[[i]] <- p
 }
 
-combined_plot <- ggarrange(plotlist = plots_list, ncol = 2, nrow = 3, common.legend = TRUE, legend = "bottom")
+combined_plot <- ggarrange(plotlist = plots_list, ncol = 2, nrow = 4, common.legend = TRUE, legend = "bottom")
 
 
 tiff('pMMoV ddPCR Results_plot.tiff', units="in", width=10, height=10, res=500, compression = 'lzw')
