@@ -50,9 +50,11 @@ results_abs <- rawdata %>%
   mutate(Date = str_extract(Sample_ID, '[:digit:]*(?=\\.)') %>% # extract the digit(s) followed by the .
            as.numeric %>% as.factor) # convert to a number and then a factor
 
+#Join Facility Type to dataframe
   results_abs <- results_abs %>%
     left_join(biobot_lookup %>% select(WWTP, Type), by = "WWTP")
-
+  
+#Categorize WWTP based on facility type, then arrange alphabetically
   results_abs <- results_abs %>%
     arrange(WWTP) %>%  
     mutate(type_group = case_when(

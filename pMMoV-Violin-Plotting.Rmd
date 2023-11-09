@@ -62,6 +62,25 @@ dev.off()
 
 
 
+```{r timeseriespmmov, fig.width= 16, fig.height= 12}
+# if('BCoV' %in% colnames(results_abs)) {
+plt_timeseries_pMMoV <- 
+  {plot_mean_sd_jitter(results_abs,
+                      sample_filtering_var = extra_categories, exclude_sample = T,
+                      target_filter_var = 'pMMoV',
+                      x_var = Date, y_var = Copies_Per_Liter_WW, colour_var = Target_Name, 
+                      ylabel = 'Genome copies/l Wastewater',
+                      print_the_plot = FALSE) + 
+      # connect the mean points iwth lines
+      geom_line(aes(group = Target_Name, y = mean_Copies_Per_Liter_WW)) + 
+      facet_wrap(facets = ~WWTP, scales = 'free_x')} %>% 
+  print()
+# }
+
+ggplotly(plt_timeseries_pMMoV, tooltip = 'Date')
+
+
+
 
 
 
