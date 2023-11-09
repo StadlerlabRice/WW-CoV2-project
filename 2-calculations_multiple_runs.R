@@ -103,6 +103,9 @@ meta.attached_quant_data <- quant_data %>%
 # clean up intermediate data sources whose job is done
 rm(volumes.data_registry) 
 
+# Assume default filtered volume of 50 mL for missing values in quant_data
+meta.attached_quant_data$Filtered_WW_vol[is.na(meta.attached_quant_data$Filtered_WW_vol)] <- 50
+
 # Calculations -------------------
 
 # Copies_per_uL_RNA to Copies_Per_Liter_WW. Spike in concentration, % recovery are calculated
