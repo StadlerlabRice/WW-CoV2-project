@@ -69,7 +69,7 @@ plt_timeseries_pMMoV <-
 y_var = Copies_Per_Liter_WW, colour_var = Run_week, ylabel = 'Genome copies/l Wastewater', print_the_plot = FALSE) + 
       # connect the mean points with lines
       geom_line(aes(group = Date, y = mean_Copies_Per_Liter_WW)) + 
-      facet_wrap(facets = ~WWTP, scales = 'free_x') +
+      facet_wrap(facets = ~WWTP, scales = 'free_y') +
       scale_y_log10() +
      theme(axis.text.x = element_blank(), axis.title.y = element_text(margin = margin(b = 20)), legend.position = 'none') 
 } %>% 
