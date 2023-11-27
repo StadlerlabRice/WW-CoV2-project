@@ -62,22 +62,30 @@ dev.off()
 
 
 
-```{r timeseriespmmov, fig.width= 16, fig.height= 12}
 # if('BCoV' %in% colnames(results_abs)) {
 plt_timeseries_pMMoV <- 
   {plot_mean_sd_jitter(results_abs,
-                      sample_filtering_var = extra_categories, exclude_sample = T,
-                      target_filter_var = 'pMMoV',
-                      x_var = Date, y_var = Copies_Per_Liter_WW, colour_var = Target_Name, 
-                      ylabel = 'Genome copies/l Wastewater',
-                      print_the_plot = FALSE) + 
-      # connect the mean points iwth lines
-      geom_line(aes(group = Target_Name, y = mean_Copies_Per_Liter_WW)) + 
-      facet_wrap(facets = ~WWTP, scales = 'free_x')} %>% 
+                      sample_filtering_var = extra_categories,           exclude_sample = T, target_filter_var = 'pMMoV', x_var = Date, 
+y_var = Copies_Per_Liter_WW, colour_var = Run_week, ylabel = 'Genome copies/l Wastewater', print_the_plot = FALSE) + 
+      # connect the mean points with lines
+      geom_line(aes(group = Date, y = mean_Copies_Per_Liter_WW)) + 
+      facet_wrap(facets = ~WWTP, scales = 'free_x') +
+      scale_y_log10() +
+     theme(axis.text.x = element_blank(), axis.title.y = element_text(margin = margin(b = 20)), legend.position = 'none') 
+} %>% 
   print()
 # }
 
-ggplotly(plt_timeseries_pMMoV, tooltip = 'Date')
+layout_ggplotly <- function(gg, x=-0.03, y=-0.03, l=200, b=200, t=200){
+    ## works when faceted
+    gg[['x']][['layout']][['annotations']][[1]][['y']] <- x
+    gg[['x']][['layout']][['annotations']][[2]][['x']] <- y
+    gg %>%
+        layout(margin=list(l=l, b=b, t=t))
+}
+
+ggplotly(plt_timeseries_pMMoV, tooltip = c("WWTP", "Date")) %>%
+  layout_ggplotly(y=-0.05)
 
 
 
