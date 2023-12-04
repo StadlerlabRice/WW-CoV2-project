@@ -1,0 +1,80 @@
+---
+title: "pMMoV-Timeseries"
+author: "Kyle"
+date: '2023-12-02'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r Timeseries Plots}
+
+# Create a directory to save individual plots
+dir.create("individual_plots", showWarnings = FALSE)
+
+# List to store individual plots
+plot_list <- list()
+
+# Loop through each WWTP
+for (wwtp in unique(results_abs$WWTP)) {
+  # Subset data for the specific WWTP
+  subset_data <- results_abs[results_abs$WWTP == wwtp, ]
+  
+  # Create a timeseries plot
+  p <- ggplot(subset_data, aes(x = Date, y = Copies_Per_Liter_WW, color = Run_week, shape = Positivity)) +
+    geom_point() +
+    geom_line(aes(group = Run_week)) +
+    scale_shape_manual(values = c(Negative = 1, Positive = 19)) +
+    scale_y_log10(limits = c(1, 10000000)) +
+    ylab("Log-transformed concentration \n (copies/L-wastewater)") +
+    ggtitle(paste("Timeseries Plot for", wwtp)) +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  
+
+  
+  # Save the individual plot
+  ggsave(paste0("individual_plots/", gsub("/", "_", wwtp), "_timeseries_plot.png"), plot = p)
+  
+     # Add vertical lines for specific dates and WWTPs
+  if (wwtp %in% c("BRIE", "PARE")) {
+    p <- p + geom_vline(xintercept = as.numeric(as.Date("2023-10-05")), linetype = "dashed", color = "red")
+  } else if (wwtp == "SCAE") {
+    p <- p + geom_vline(xintercept = as.numeric(as.Date("2023-10-24")), linetype = "dashed", color = "blue")
+  }
+  
+  # Add the plot to the list
+  plot_list[[wwtp]] <- p
+}
+
+# Set the file name for the multi-page PDF
+pdf_file <- "combined_plots.pdf"
+
+# Open a PDF device
+pdf(pdf_file)
+
+# Loop through the list of plots and print them to the PDF
+lapply(plot_list, print)
+
+# Close the PDF device
+dev.off()
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

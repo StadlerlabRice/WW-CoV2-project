@@ -115,7 +115,8 @@ if(filter_for_pMMoV_data) {
 # Plots to html ----
 
 # calling r markdown file
-rmarkdown::render('pMMoV-Violin-Plotting.Rmd', #Use this line for only pMMoV plots
+rmarkdown::render('pMMoV-Timeseries-Plotting.Rmd',
+#rmarkdown::render('pMMoV-Violin-Plotting.Rmd', #Use this line for only pMMoV plots
 #rmarkdown::render('3.1-Weekly_comparison-plots.Rmd', 
                 output_file = str_c('./qPCR analysis/Weekly ', title_name, ".html"))
 

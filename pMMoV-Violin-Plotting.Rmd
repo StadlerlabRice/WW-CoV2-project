@@ -17,6 +17,7 @@ Light, smaller points show the individual replicates and the dark larger point s
 
 knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 10, fig.height = 10)
 
+
 # Return TRUE if percentage recovery data is present
 show_percent_recovery <- 
   results_abs %>% 
@@ -35,7 +36,7 @@ show_pMMoV <- 'pMMoV' %in% results_abs$Target_Name
 `r if(show_pMMoV) {"### pMMoV Copies/L"}`
 
 ```{r pmmoviolin}
-
+{
 plots_list <- list()
 for (i in 1:8){
   p <- results_abs [results_abs$group_num == i,] %>%
@@ -58,38 +59,33 @@ tiff('pMMoV ddPCR Results_plot.tiff', units="in", width=10, height=10, res=500, 
 
 combined_plot
 
-dev.off()
-
+dev.off()}
 
 
 # if('BCoV' %in% colnames(results_abs)) {
-plt_timeseries_pMMoV <- 
-  {plot_mean_sd_jitter(results_abs,
-                      sample_filtering_var = extra_categories,           exclude_sample = T, target_filter_var = 'pMMoV', x_var = Date, 
-y_var = Copies_Per_Liter_WW, colour_var = Run_week, ylabel = 'Genome copies/l Wastewater', print_the_plot = FALSE) + 
+#plt_timeseries_pMMoV <- 
+#  {plot_mean_sd_jitter(results_abs,
+#                      sample_filtering_var = extra_categories,           exclude_sample = T, target_filter_var = 'pMMoV', x_var = Date, 
+#y_var = Copies_Per_Liter_WW, colour_var = Run_week, ylabel = 'Genome copies/l Wastewater', print_the_plot = FALSE) + 
       # connect the mean points with lines
-      geom_line(aes(group = Date, y = mean_Copies_Per_Liter_WW)) + 
-      facet_wrap(facets = ~WWTP) +
-      scale_y_log10()+ 
-     theme(axis.text.x = element_blank(), axis.title.y = element_text(margin = margin(b = 20))) + 
-  geom_vline(xintercept = as.numeric(as.Date("2023-10-05")), color = "red", linetype = "dashed", 
-             data = results_abs[results_abs$WWTP %in% c("BRIE", "PARE"), ]) +
-  geom_vline(xintercept = as.numeric(as.Date("2023-10-24")), color = "blue", linetype = "dashed", 
-             data = results_abs[results_abs$WWTP == "SCAE", ])
-} %>% 
-  print()
+#      geom_line(aes(group = Date, y = mean_Copies_Per_Liter_WW)) + 
+#      facet_wrap(facets = ~WWTP) +
+#      scale_y_log10()+ 
+#     theme(axis.text.x = element_blank(), axis.title.y = element_text(margin = margin(b = 20))) 
+#} %>% 
+ # print()
 # }
 
-layout_ggplotly <- function(gg, x=-0.03, y=-0.03, l=200, b=200, t=200){
+#layout_ggplotly <- function(gg, x=-0.03, y=-0.03, l=200, b=200, t=200){
     ## works when faceted
-    gg[['x']][['layout']][['annotations']][[1]][['y']] <- x
-    gg[['x']][['layout']][['annotations']][[2]][['x']] <- y
-    gg %>%
-        layout(margin=list(l=l, b=b, t=t))
-}
+#    gg[['x']][['layout']][['annotations']][[1]][['y']] <- x
+#    gg[['x']][['layout']][['annotations']][[2]][['x']] <- y
+#    gg %>%
+#        layout(margin=list(l=l, b=b, t=t))
+#}
 
-ggplotly(plt_timeseries_pMMoV, tooltip = c("group", "x")) %>%
-  layout_ggplotly(y=-0.07)
+#ggplotly(plt_timeseries_pMMoV, tooltip = c("group", "x")) %>%
+#  layout_ggplotly(y=-0.07)
 
 
 
