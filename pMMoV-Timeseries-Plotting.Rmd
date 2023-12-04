@@ -31,7 +31,7 @@ for (wwtp in unique(results_abs$WWTP)) {
   # Create a timeseries plot
   p <- ggplot(subset_data, aes(x = Date, y = Copies_Per_Liter_WW, color = Run_week, shape = Positivity)) +
     geom_point() +
-    geom_line(aes(group = Run_week)) +
+    geom_line(aes(group = Date)) +
     scale_shape_manual(values = c(Negative = 1, Positive = 19)) +
     scale_y_log10(limits = c(1, 10000000)) +
     ylab("Log-transformed concentration \n (copies/L-wastewater)") +
@@ -46,9 +46,9 @@ for (wwtp in unique(results_abs$WWTP)) {
   
      # Add vertical lines for specific dates and WWTPs
   if (wwtp %in% c("BRIE", "PARE")) {
-    p <- p + geom_vline(xintercept = as.numeric(as.Date("2023-10-05")), linetype = "dashed", color = "red")
+    p <- p + geom_vline(xintercept = as.numeric(results_abs$Date[100523]), linetype = "dashed", color = "red")
   } else if (wwtp == "SCAE") {
-    p <- p + geom_vline(xintercept = as.numeric(as.Date("2023-10-24")), linetype = "dashed", color = "blue")
+    p <- p + geom_vline(xintercept = as.numeric(results_abs$Date[102423]), linetype = "dashed", color = "blue")
   }
   
   # Add the plot to the list
