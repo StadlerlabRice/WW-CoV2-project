@@ -12,7 +12,8 @@ read_these_sheets <- c('091123 Rice Schools Sampler Test pMMoV', '091823 Rice Sc
                        '100923 - 101123 Rice Schools and Congregate pMMoV', '101623 - 101823 Rice Schools and Congregate pMMoV',
                        '102323 - 102523 Rice Schools and Congregate pMMoV', '103023 - 110123 Rice Schools and Congregate pMMoV',
                        '110623 - 111523 Rice Schools and Congregate pMMoV', '112123 - 112923 Rice Schools and Congregate pMMoV',
-                       '120423 - 121323 Rice Schools and Congregate pMMoV', '121223 - 010324 Rice Schools and Congregate pMMoV')
+                       '120423 - 121323 Rice Schools and Congregate pMMoV', '121223 - 010324 Rice Schools and Congregate pMMoV',
+                       '010824 - 012424 Rice Schools and Congregate PMMoV')
 
 # if you are interested in only pMMoV stuff, then make this TRUE
 filter_for_pMMoV_data <- TRUE # optional filtering for samples that have pMMoV
