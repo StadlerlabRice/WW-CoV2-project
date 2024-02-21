@@ -34,7 +34,7 @@
 process_ddpcr <- function(flnm = flnm.here)
 { 
   # QX-600 corrections ----
-  QX600_corrections <- str_detect(flnm, 'PLEX|ENTV')
+  QX600_corrections <- str_detect(flnm, 'PLEX|ENTV|MMR')
   
   qx600_droplet_correction <- if(QX600_corrections) 0.795/0.85 else 1 # change to equivalent QX-200 values
   
