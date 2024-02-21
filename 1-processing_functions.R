@@ -33,6 +33,12 @@
 # ddPCR processing: Attach sample labels from template table, calculate copies/ul using template volume/reaction, make names similar to qPCR data 
 process_ddpcr <- function(flnm = flnm.here)
 { 
+  # QX-600 corrections ----
+  QX600_corrections <- str_detect(flnm, 'PLEX|ENTV|MMR')
+  
+  qx600_droplet_correction <- if(QX600_corrections) 0.795/0.85 else 1 # change to equivalent QX-200 values
+  
+  
   # Data input ----
   
   # Read in ddPCR data and labels from plate template
@@ -69,6 +75,9 @@ process_ddpcr <- function(flnm = flnm.here)
     mutate('Copies_per_uL_RNA' = CopiesPer20uLWell/ template_vol, # template_vol is the ul of RNA per 20 ul well
            'PoissonConfMax_per_uL_RNA' = col_or_NAs('PoissonConfMax', .) * 20 / template_vol,   # converting Poisson confidence intervals into copies/ul RNA units
            'PoissonConfMin_per_uL_RNA' = col_or_NAs('PoissonConfMin', .) * 20 / template_vol) %>%
+    
+    # QX-600 corrections
+    mutate(across(contains('Copies|Concentration|Poisson'), ~ .x * qx600_droplet_correction)) %>% 
     
     select(`Sample_name`, Copies_per_uL_RNA, Target, everything()) # order - put important columns first
   

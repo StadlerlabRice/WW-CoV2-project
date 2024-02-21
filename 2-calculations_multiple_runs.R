@@ -124,7 +124,6 @@ processed_quant_data <- meta.attached_quant_data %>%
   {if(pellet_weights_present) mutate(., Copies_Per_Gram_DW = Copies_per_uL_RNA * 50/(pellet_wet_mass * dry_mass_fraction))
     else . } %>% # If no pellet samples present, pipe the input to the next step
          
-  
   # Calculations for Surrogate_virus_input_per.L.WW (input) and Percentage_recovery (output/input * 100)
   {if(vaccine_spike_present) calculations_for_vaccine_spikeins(.) else {
     
