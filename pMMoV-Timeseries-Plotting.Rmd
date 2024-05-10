@@ -29,8 +29,8 @@ plot_list <- list()
 
 # Define an extended color palette
 extended_colors <- c("red", "blue", "green", "orange", "purple", "pink", "brown", "cyan", "magenta", "yellow", 
-                     "darkgreen", "darkblue", "darkred", "darkorange", "darkpurple", "darkpink", "darkbrown", 
-                     "darkcyan", "darkmagenta", "darkyellow")
+                     "darkgreen", "darkblue", "darkred", "darkorange", "aquamarine", "burlywood", "beige", 
+                     "darkcyan", "darkmagenta", "chocolate")
 
 # Loop through each WWTP
 for (wwtp in unique(results_abs$WWTP)) {
