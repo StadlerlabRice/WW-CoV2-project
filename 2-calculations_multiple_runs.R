@@ -19,7 +19,7 @@ if(!exists('vaccine_spike_present')) vaccine_spike_present <- 'FALSE' # make fal
 # Source script
 source('./1-processing_functions.R') # Source the file with the ddPCR and qPCR name's attaching functions
 
-# Set template volumes used in ddPCR
+# Set template volumes used in ddPCR``
 template_volume_ddpcr <- 
   
   {if(unusual_template_volumes_present) { 
@@ -176,7 +176,7 @@ presentable_data <- processed_quant_data %>%
          Comments, any_of('variant_status'), 'Well Position',
          PoissonConfMax_Per_Liter_WW, PoissonConfMin_Per_Liter_WW) %>%
   
-  mutate_at('Target_Name', ~str_replace_all(., c('.*N1.*' = 'SARS CoV-2 N1', '.*N2.*' = 'SARS CoV-2 N2'))) %>% 
+  mutate_at('Target_Name', ~str_replace_all(., c('\\bN1\\b' = 'SARS CoV-2 N1', '\\bN2\\b' = 'SARS CoV-2 N2'))) %>% 
   mutate_at('Target_Name', ~str_remove(., '/Baylor')) %>% 
 
   
