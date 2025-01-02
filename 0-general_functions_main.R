@@ -30,8 +30,9 @@ sheeturls <- list(templates = 'https://docs.google.com/spreadsheets/d/19oRiRcRVS
 #Archived         raw_ddpcr = 'https://docs.google.com/spreadsheets/d/1jdO_P9SZGezSTLiIARtSmA7qaUuX3wA-jCe7YiQ1sCI/edit#gid=0',
                   raw_ddpcr = 'https://docs.google.com/spreadsheets/d/171Gu1-V5ZgRp8yPRui6MJSjg2vO3xQA3ySzeAhH90HE/edit#gid=1875632220',
 
-                  user_inputs = 'https://docs.google.com/spreadsheets/d/1SAINnazqMrjTBSuhYiIBbx8B7_reHzaEuwGTdkNA6wk/edit#gid=492585552',
-                  
+#Archived         #user_inputs = 'https://docs.google.com/spreadsheets/d/1SAINnazqMrjTBSuhYiIBbx8B7_reHzaEuwGTdkNA6wk/edit#gid=492585552',
+                  user_inputs = 'https://docs.google.com/spreadsheets/d/1Xr_MRbfpuQcR2GCWaR4k6Ubc3jxW9jQASUTgnIPjHeI/edit?gid=0#gid=0',
+
                   # Outputs
                   data_dump = 'https://docs.google.com/spreadsheets/d/1ouk-kCJHERRhOMNP07lXfiC3aGB4wtWXpnYf5-b2CI4/edit#gid=0',
                   complete_data = 'https://docs.google.com/spreadsheets/d/1ltvW7xZf2aUPoBchD4NFGuV0gGWPkdsOW3a0Hxalm-Y/edit#gid=1363292517',
