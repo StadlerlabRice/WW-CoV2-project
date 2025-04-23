@@ -7,18 +7,12 @@ source('./0-general_functions_main.R') # Source the general_functions file
 
 # sheets to read from "qPCR complete data" google sheet
 # sheet name(s) in the raw data file (qPCR data dump) - Separate by comma (,)
-read_these_sheets <- c('091123 Rice Schools Sampler Test pMMoV', '091823 Rice Schools pMMoV',
-                       '092723 Rice Schools pMMoV', '100223 - 100323 Rice Schools pMMoV',
-                       '100923 - 101123 Rice Schools and Congregate pMMoV', '101623 - 101823 Rice Schools and Congregate pMMoV',
-                       '102323 - 102523 Rice Schools and Congregate pMMoV', '103023 - 110123 Rice Schools and Congregate pMMoV',
-                       '110623 - 111523 Rice Schools and Congregate pMMoV', '112123 - 112923 Rice Schools and Congregate pMMoV',
-                       '120423 - 121323 Rice Schools and Congregate pMMoV', '121223 - 010324 Rice Schools and Congregate pMMoV',
-                       '010824 - 012424 Rice Schools and Congregate PMMoV')
+read_these_sheets <- c('041425 Rice pMMoV')
 
 # if you are interested in only pMMoV stuff, then make this TRUE
-filter_for_pMMoV_data <- TRUE # optional filtering for samples that have pMMoV
+filter_for_pMMoV_data <- FALSE # optional filtering for samples that have pMMoV
 
-title_name <- '091123 - 112923 Schools and Congregate pMMoV comparisons' # name of the filename for writing presentable data and plot title
+title_name <- '041425 pMMoV Testing' # name of the filename for writing presentable data and plot title
 
 # Extra categories to exclude from plotting (separate by | like this 'Vaccine|Troubleshooting')
 extra_categories = 'Std|std|Vaccine|Control|Water|NTC|Blank|DI' 
@@ -57,41 +51,74 @@ results_abs <- rawdata %>%
   results_abs <- results_abs %>%
     left_join(biobot_lookup %>% select(WWTP, Type), by = "WWTP")
   
-#Categorize WWTP based on facility type, then arrange alphabetically
+  
+  # Ensure Date_formatted is in Date format
+  results_abs$Date_formatted <- tryCatch(
+    as.Date(results_abs$Date_formatted, format = "%m/%d/%y"),
+    error = function(e) {
+      message("Error converting Date_formatted: ", e)
+      return(NA)  # Return NA for invalid dates
+    }
+  )
+
+  
+  # Categorize WWTP based on date and arrange alphabetically
   results_abs <- results_abs %>%
-    arrange(WWTP) %>%  
+    arrange(WWTP) %>%
     mutate(type_group = case_when(
-      Type %in% c("Jail", "NH", "Shelter") ~ 1,
-      Type == "School" ~ 2,
-      TRUE ~ 3  # Group 3 for other types
+      Date_formatted == as.Date("2025-03-24") ~ 1,  # Type group 1 for 03/24/25
+      Date_formatted == as.Date("2025-03-25") ~ 2,  # Type group 2 for 03/25/25
+      TRUE ~ 3  # Group 3 for other dates
     ))
   
+  # Function to categorize based on date
   categorize_WWTP <- function(type_group, WWTP) {
-    
     case_when(
-      type_group == 1 & substr(WWTP, 1, 1) %in% c("A", "B", "C", "D", "E", "F", "G", "H") ~ 1,
-      type_group == 1 & substr(WWTP, 1, 1) %in% c("I", "J", "K", "L", "M", "N", "O", "P", "Q", "R") ~ 2,
-      type_group == 1 & substr(WWTP, 1, 1) %in% c("S", "T", "U", "V", "W", "X", "Y", "Z") ~ 3,
-      
-      type_group == 2 & substr(WWTP, 1, 1) %in% c("A", "B") ~ 4,
-      type_group == 2 & substr(WWTP, 1, 1) %in% c("C", "D") ~ 5,
-      type_group == 2 & substr(WWTP, 1, 1) %in% c("E", "F", "G", "H") ~ 6,
-      type_group == 2 & substr(WWTP, 1, 1) %in% c("I", "J", "K", "L", "M", "N", "O", "P", "Q") ~ 7,
-      type_group == 2 & substr(WWTP, 1, 1) %in% c("R", "S", "T", "U", "V", "W", "X", "Y", "Z") ~ 8,
-      
-      TRUE ~ 9  # Handle other characters
+      type_group == 1 ~ 1,  # If type_group is 1, category 1
+      type_group == 2 ~ 2,  # If type_group is 2, category 2
+      TRUE ~ 3  # Default case for other types
     )
   }
   
+  # Apply the categorize_WWTP function to your data if needed
   results_abs <- results_abs %>%
-    arrange(WWTP) %>%
-    mutate(first_char = substr(WWTP, 1, 1),
-           group_num = categorize_WWTP(type_group, WWTP))
+    mutate(date_category = mapply(categorize_WWTP, type_group, WWTP))
+  
+#Categorize WWTP based on facility type, then arrange alphabetically
+  #  results_abs <- results_abs %>%
+  #    arrange(WWTP) %>%  
+  #   mutate(type_group = case_when(
+  #     Type %in% c("Jail", "NH", "Shelter") ~ 1,
+  #     Type == "School" ~ 2,
+  #     TRUE ~ 3  # Group 3 for other types
+  #  ))
+  
+  # categorize_WWTP <- function(type_group, WWTP) {
+    
+  #  case_when(
+  #   type_group == 1 & substr(WWTP, 1, 1) %in% c("A", "B", "C", "D", "E", "F", "G", "H") ~ 1,
+  #    type_group == 1 & substr(WWTP, 1, 1) %in% c("I", "J", "K", "L", "M", "N", "O", "P", "Q", "R") ~ 2,
+  #    type_group == 1 & substr(WWTP, 1, 1) %in% c("S", "T", "U", "V", "W", "X", "Y", "Z") ~ 3,
+      
+  #    type_group == 2 & substr(WWTP, 1, 1) %in% c("A", "B") ~ 4,
+  #    type_group == 2 & substr(WWTP, 1, 1) %in% c("C", "D") ~ 5,
+  #    type_group == 2 & substr(WWTP, 1, 1) %in% c("E", "F", "G", "H") ~ 6,
+  #    type_group == 2 & substr(WWTP, 1, 1) %in% c("I", "J", "K", "L", "M", "N", "O", "P", "Q") ~ 7,
+  #    type_group == 2 & substr(WWTP, 1, 1) %in% c("R", "S", "T", "U", "V", "W", "X", "Y", "Z") ~ 8,
+      
+  #   TRUE ~ 9  # Handle other characters
+  #  )
+  # }
+  
+  # results_abs <- results_abs %>%
+  #  arrange(WWTP) %>%
+  #  mutate(first_char = substr(WWTP, 1, 1),
+  #        group_num = categorize_WWTP(type_group, WWTP))
 
 # convert copies/L into wide format based on Targets
 Copies_Per_Liter_WW_wide <- 
   results_abs %>% 
-  select(WWTP, Date, Target_Name, Copies_Per_Liter_WW, Sample_ID, group_num, Type) %>% 
+  select(WWTP, Date, Target_Name, Copies_Per_Liter_WW, Sample_ID) %>% 
   group_by(Target_Name, WWTP) %>% # this is what the replicates are determined on
   mutate(id = row_number()) %>% # need to make a unique id since NTCs run on different plates have the same sample_ID
   unite('WWTP_replicate', c('WWTP', id), remove = FALSE) %>% select(-id) %>% 
@@ -117,6 +144,7 @@ if(filter_for_pMMoV_data) {
 # Plots to html ----
 
 # calling r markdown file
+#rmarkdown::render('scripts_extra/Violin_Plotting.Rmd',
 rmarkdown::render('pMMoV-Timeseries-Plotting.Rmd',
 #rmarkdown::render('pMMoV-Violin-Plotting.Rmd', #Use this line for only pMMoV plots
 #rmarkdown::render('3.1-Weekly_comparison-plots.Rmd', 

@@ -1,0 +1,44 @@
+---
+title: "Violin Plotting"
+author: "Kyle"
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+output: 
+  html_document:
+    theme: flatly
+    toc: TRUE
+    toc_float: TRUE
+---
+
+**Description of plots:**
+Light, smaller points show the individual replicates and the dark larger point show the mean
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.width = 10, fig.height = 10)
+```
+
+
+# Filter data to get only type_group 1 and 2
+data_filtered <- results_abs %>% 
+  filter(type_group %in% c(1, 2)) 
+
+# Create a violin plot comparing Copies_per_uL_RNA from type_group 1 and type_group 2
+p <- ggplot(data_filtered, aes(x = factor(type_group), y = Copies_per_uL_RNA, color = factor(type_group))) +
+  geom_point() +
+  geom_violin() +  # Create violin plot
+  scale_y_continuous(trans = 'log10', limits = c(1, 10000000)) +  # Log-transformed scale for y-axis
+  ylab("Log-transformed concentration (copies/uL RNA)") +  # Y-axis label
+  ggtitle("Comparison of Copies per uL RNA by Type Group") +  # Plot title
+  scale_color_manual(values = c("blue", "red")) +  # Customize colors for type_group 1 and 2
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), axis.title.x = element_blank())  # Customize plot theme
+
+# Open a PDF device to save the plot
+pdf("comparison_violin_plot.pdf")
+
+# Print the plot to the PDF
+print(p)
+
+# Close the PDF device
+dev.off()
